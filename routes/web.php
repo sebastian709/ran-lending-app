@@ -14,7 +14,7 @@ Route::get('/test-broadcast', function () {
 
 
 Route::prefix('admin')->group(function () {
-    Route::get('/', fn () => view('admin.home'))->name('admin.dashboard');
-    Route::get('/home', fn () => view('admin.home'))->name('admin.home');
+    Route::get('/dashboard', fn () => view('admin.home'))->name('admin.home');
     Route::get('/about', fn () => view('admin.about'))->name('admin.about');
+    Route::get('/blogpost', fn () => view('admin.blogpost'))->name('admin.blogpost');
 });

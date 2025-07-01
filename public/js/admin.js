@@ -1,3 +1,26 @@
+function updateBreadcrumb(url) {
+  const segments = url.replace(/^\/+|\/+$/g, '').split('/');
+  let breadcrumbHTML = '';
+  let path = '';
+
+  // Filter out "admin" and "dashboard"
+  const filteredSegments = segments.filter(segment => segment !== 'admin' && segment !== '');
+
+  filteredSegments.forEach((segment, index) => {
+    path += '/' + segment;
+    const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+
+    if (index === filteredSegments.length - 1) {
+      breadcrumbHTML += `<li class="breadcrumb-item active" aria-current="page">${label}</li>`;
+    } else {
+      breadcrumbHTML += `<li class="breadcrumb-item"><a href="${path}">${label}</a></li>`;
+    }
+  });
+
+  $('#breadcrumbs').html(breadcrumbHTML);
+}
+
+
 $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
   const url = $(this).data('url');
@@ -9,8 +32,14 @@ $(document).on('click', '[data-url]', function (e) {
 
     $('.sidebar .nav-link').removeClass('active');
     $(`[data-url="${url}"]`).addClass('active');
+
+    updateBreadcrumb(url);
   });
 });
+
+
+
+
 
 window.onpopstate = function () {
   $.get(location.pathname, function (data) {
@@ -55,8 +84,10 @@ $(window).on('scroll', function () {
   if (scrollPos > 10) {
     $('.topbar').addClass('scrolled');
     $('.top-bar-icon').addClass('scrolled');
+    $('.toggle-btn').addClass('scrolled');
   } else {
     $('.topbar').removeClass('scrolled');
     $('.top-bar-icon').removeClass('scrolled');
+    $('.toggle-btn').removeClass('scrolled');
   }
 });

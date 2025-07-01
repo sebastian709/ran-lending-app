@@ -10,3 +10,57 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
+/* ========== Floating Action Bar ========== */
+.floating-action-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0d6efd;
+    color: white;
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1040;
+    max-width: 720px;
+    width: calc(100% - 40px);
+}
+
+/* Pills inside Floating Bar */
+.floating-action-bar .nav-pills .nav-link {
+    color: white;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+}
+
+.floating-action-bar .nav-pills .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+/* Create Button */
+.floating-action-bar .create-btn {
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 576px) {
+    .floating-action-bar {
+        flex-direction: column;
+        align-items: stretch;
+        bottom: 15px;
+        padding: 1rem;
+    }
+
+    .floating-action-bar .create-btn {
+        width: 100%;
+        margin-top: 0.75rem;
+    }
+
+    .floating-action-bar ul.nav {
+        justify-content: space-around;
+        gap: 0.5rem;
+    }
+}

@@ -1,0 +1,44 @@
+/* Sticky on Desktop */
+@media (min-width: 768px) {
+    .sticky-desktop {
+        position: sticky;
+        top: 60px; /* adjust this based on your topbar height */
+        z-index: 1020;
+        background-color: transparent;
+        box-shadow: none !important;
+        transition: color 0.3s ease;
+    }
+
+    .sticky-desktop.scrolled {
+        background-color: #3E3AF7;
+        border-radius: 0% !important;
+    }
+}
+
+/* Mobile Floating Action Panel */
+@media (max-width: 767.98px) {
+    .mobile-action {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+        pointer-events: none;
+    }
+
+    .mobile-action > div {
+        pointer-events: all;
+        margin: 0 auto 10px;
+        max-width: 100%;
+        width: calc(100% - 20px); /* para may 10px spacing left & right */
+    }
+
+    .mobile-action .nav-pills .nav-link {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+    }
+
+    .mobile-action .btn {
+        font-size: 0.85rem;
+    }
+}

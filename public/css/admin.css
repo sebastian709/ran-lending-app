@@ -87,7 +87,8 @@ body {
   background-color: transparent;
   height: 60px;
   top: 0;
-  backdrop-filter: blur(10px);
+  /* backdrop-filter: blur(10px); */
+  transition: color 0.3s ease;
 }
 
 .topbar.scrolled {
@@ -205,5 +206,13 @@ body {
 
 .top-bar-icon.scrolled {
   color: #f7c040;
+}
+
+.toggle-btn{
+  transition: color 0.3s ease;
+}
+
+.toggle-btn.scrolled{
+  border: 1px solid rgb(69, 69, 69);
 }
 
