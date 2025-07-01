@@ -37,7 +37,7 @@
                 <i class="bi bi-list"></i>
             </button>
 
-            <nav aria-label="breadcrumb" class="mt-2 ml-4">
+            <nav aria-label="breadcrumb" class="mt-2 ml-4 breadcrumbs-container">
                 <ol class="breadcrumb rounded-breadcrumb px-3 py-2 mb-0">
                     <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="#">Users</a></li>
@@ -50,7 +50,7 @@
                 <div class="dropdown">
                     <button class="btn position-relative text-white p-0" type="button" id="notifDropdown"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell-fill fs-5"></i>
+                        <i class="bi bi-bell-fill fs-5 top-bar-icon"></i>
                         <span class="position-absolute top-0 start-100 translate-middle-y badge rounded-pill bg-danger"
                             style="font-size: 0.65rem; transform: translate(-40%, -40%) !important;">
                             3
@@ -97,13 +97,11 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="{{ asset('js/admin.js') }}"></script>
     <!-- Bootstrap JS (Dropdowns need this) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('js/admin.js') }}"></script>
 </body>
 
 </html>
