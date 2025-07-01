@@ -12,9 +12,14 @@ Route::get('/test-broadcast', function () {
     return 'Test broadcasted!';
 });
 
-
+// admin routes
 Route::prefix('admin')->group(function () {
+    Route::get('/', fn () => view('admin.home'))->name('admin.home');
     Route::get('/dashboard', fn () => view('admin.home'))->name('admin.home');
     Route::get('/about', fn () => view('admin.about'))->name('admin.about');
     Route::get('/blogpost', fn () => view('admin.blogpost'))->name('admin.blogpost');
+
+    Route::prefix('blogpost')->group(function () {
+        Route::get('/createBlogpost', fn () => view('admin.createBlogpost'))->name('admin.createBlogpost');
+    });
 });

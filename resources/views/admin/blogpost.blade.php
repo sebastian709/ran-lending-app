@@ -20,7 +20,7 @@
                         </li>
                     </ul>
 
-                    <a href="#" class="btn btn-light fw-semibold text-primary">
+                    <a href="#" class="btn btn-light fw-semibold text-primary" data-url="/admin/blogpost/createBlogpost">
                         <i class="bi bi-plus-lg"></i> Create Blogpost
                     </a>
                 </div>
@@ -39,7 +39,7 @@
                                 <a class="nav-link text-white btn-sm" href="#">Published</a>
                             </li>
                         </ul>
-                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary w-100">
+                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary w-100" data-url="/admin/blogpost/createBlogpost">
                             <i class="bi bi-plus-lg"></i> Create Blogpost
                         </a>
                     </div>

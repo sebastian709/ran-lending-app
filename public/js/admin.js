@@ -1,29 +1,67 @@
 $(document).ready(function () {
-  // Set active nav-link on page load
   const currentPath = window.location.pathname;
 
   $('.sidebar .nav-link').each(function () {
     const url = $(this).data('url');
-    if (url === currentPath) {
+
+    // Set active if currentPath starts with data-url
+    if (currentPath.startsWith(url)) {
       $(this).addClass('active');
     } else {
       $(this).removeClass('active');
     }
   });
+
+  initCKEditor();
 });
+
+
+
+let editorInstance; // Define globally at the top
+
+function initCKEditor() {
+  const editorElement = document.querySelector('#blogContent');
+  if (editorElement) {
+    ClassicEditor
+      .create(editorElement)
+      .then(editor => {
+        editorInstance = editor; // Store globally so you can access later
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+}
+
+
+function createNewEditor(target) {
+    ClassicEditor
+        .create(target)
+        .then(editor => {
+            editorInstance = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
 
 
 function updateBreadcrumb(url) {
   const segments = url.replace(/^\/+|\/+$/g, '').split('/');
   let breadcrumbHTML = '';
-  let path = '';
+  let path = '/admin';
 
-  // Filter out "admin" and "dashboard"
+  // Filter out 'admin' and empty segments
   const filteredSegments = segments.filter(segment => segment !== 'admin' && segment !== '');
 
   filteredSegments.forEach((segment, index) => {
     path += '/' + segment;
-    const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+
+    // Convert camelCase or PascalCase to 'Title Case'
+    const label = segment
+      .replace(/([A-Z])/g, ' $1')         // insert space before capital letters
+      .replace(/^./, str => str.toUpperCase()) // capitalize first character
+      .trim();
 
     if (index === filteredSegments.length - 1) {
       breadcrumbHTML += `<li class="breadcrumb-item active" aria-current="page">${label}</li>`;
@@ -34,6 +72,8 @@ function updateBreadcrumb(url) {
 
   $('#breadcrumbs').html(breadcrumbHTML);
 }
+
+
 
 
 $(document).on('click', '[data-url]', function (e) {
@@ -49,6 +89,8 @@ $(document).on('click', '[data-url]', function (e) {
     $(`[data-url="${url}"]`).addClass('active');
 
     updateBreadcrumb(url);
+    // ✅ Initialize CKEditor AFTER injecting content
+    initCKEditor();
   });
 });
 
@@ -106,3 +148,6 @@ $(window).on('scroll', function () {
     $('.toggle-btn').removeClass('scrolled');
   }
 });
+
+
+
