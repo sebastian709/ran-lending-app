@@ -7,12 +7,12 @@
             <div class="col-lg-12">
                 <!-- 🔵 Sticky Tabs + Button (Desktop Only) -->
                 <div
-                    class="blog-tabs sticky-desktop d-none d-md-flex justify-content-between align-items-center px-3 py-2 mb-3 rounded shadow-sm">
+                    class="blog-tabs sticky-desktop d-none d-md-flex justify-content-between align-items-center pe-3 py-2 mb-3 rounded shadow-sm">
                     <div class="d-none d-md-flex justify-content-between align-items-center">
-                        <a href="#" class="btn btn-light fw-semibold text-primary mx-1" data-url="/admin/blogpost">
+                        <a href="#" class="btn btn-light fw-semibold text-primary me-3" data-url="/admin/blogpost">
                             <i class="bi bi-card-list"></i> Blog list
                         </a>
-                        <a href="#" class="btn btn-light fw-semibold text-primary mx-1 px-5">
+                        <a href="#" class="btn btn-light fw-semibold text-primary mw-2 px-5">
                             <i class="bi bi-plus-square"></i> Add New Post
                         </a>
                     </div>
