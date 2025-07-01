@@ -1,3 +1,30 @@
+$(document).ready(function () {
+  // Set active state on sidebar links
+  const currentPath = window.location.pathname;
+
+  $('.sidebar .nav-link').each(function () {
+    const linkPath = $(this).data('url');
+    if (linkPath === currentPath) {
+      $('.sidebar .nav-link').removeClass('active');
+      $(this).addClass('active');
+    }
+  });
+
+  // Optional: Set active tab (e.g. All Posts, Drafts, etc.)
+  $('.bp-tab').each(function () {
+    const tabText = $(this).text().trim().toLowerCase();
+    const urlPath = window.location.pathname.toLowerCase();
+
+    if (urlPath.includes('blogpost')) {
+      $('.bp-tab').removeClass('active');
+      // You could optionally add logic here to set which tab is active based on query or route
+      if (tabText === 'all posts') {
+        $(this).addClass('active');
+      }
+    }
+  });
+});
+
 function updateBreadcrumb(url) {
   const segments = url.replace(/^\/+|\/+$/g, '').split('/');
   let breadcrumbHTML = '';
