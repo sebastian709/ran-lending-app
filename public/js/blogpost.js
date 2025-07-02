@@ -1,5 +1,4 @@
-const input = document.querySelector('#tagsInput');
-new Tagify(input);
+
 
 $(window).on('scroll', function () {
   const scrollPos = $(window).scrollTop();
@@ -17,57 +16,75 @@ $(document).on('click', '.bp-tab', function (e) {
   $(this).addClass('active');          // add active to clicked one
 });
 
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('featuredImageInput');
-const previewContainer = document.getElementById('previewContainer');
-const previewImage = document.getElementById('previewImage');
-const removeImageBtn = document.getElementById('removeImageBtn');
+function initBlogImageUpload() {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('featuredImageInput');
+  const previewContainer = document.getElementById('previewContainer');
+  const previewImage = document.getElementById('previewImage');
+  const removeImageBtn = document.getElementById('removeImageBtn');
 
-// Open file dialog
-dropZone.addEventListener('click', () => fileInput.click());
-
-// Handle file selection
-fileInput.addEventListener('change', handleFile);
-
-// Handle drag events
-dropZone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  dropZone.classList.add('dragover');
-});
-
-dropZone.addEventListener('dragleave', () => {
-  dropZone.classList.remove('dragover');
-});
-
-dropZone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  dropZone.classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) {
-    fileInput.files = e.dataTransfer.files;
-    handleFile();
+  if (!dropZone || !fileInput || !previewContainer || !previewImage || !removeImageBtn) {
+    return; // Not on the blog post page
   }
-});
 
-function handleFile() {
-  const file = fileInput.files[0];
-  if (file && file.type.startsWith('image/')) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewImage.src = e.target.result;
-      previewContainer.classList.remove('d-none');
-      dropZone.classList.add('d-none'); // hide drop zone after preview
-    };
-    reader.readAsDataURL(file);
+  // Prevent double binding
+  dropZone.replaceWith(dropZone.cloneNode(true));
+  fileInput.replaceWith(fileInput.cloneNode(true));
+  removeImageBtn.replaceWith(removeImageBtn.cloneNode(true));
+
+  // Re-grab new elements
+  const newDropZone = document.getElementById('dropZone');
+  const newFileInput = document.getElementById('featuredImageInput');
+  const newRemoveImageBtn = document.getElementById('removeImageBtn');
+
+  newDropZone.addEventListener('click', () => newFileInput.click());
+  newFileInput.addEventListener('change', handleFile);
+  newDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    newDropZone.classList.add('dragover');
+  });
+  newDropZone.addEventListener('dragleave', () => {
+    newDropZone.classList.remove('dragover');
+  });
+  newDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    newDropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      newFileInput.files = e.dataTransfer.files;
+      handleFile();
+    }
+  });
+
+  newRemoveImageBtn.addEventListener('click', () => {
+    newFileInput.value = '';
+    previewContainer.classList.add('d-none');
+    previewImage.src = '#';
+    newDropZone.classList.remove('d-none');
+  });
+
+  function handleFile() {
+    const file = newFileInput.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewContainer.classList.remove('d-none');
+        newDropZone.classList.add('d-none');
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }
 
-removeImageBtn.addEventListener('click', () => {
-  fileInput.value = '';
-  previewContainer.classList.add('d-none');
-  previewImage.src = '#';
-  dropZone.classList.remove('d-none'); // show drop zone again
-});
+function createBPTagify(){
+  const cbpInput = document.querySelector('#tagsInput');
+
+  if(!cbpInput){
+    return;
+  }
+  new Tagify(cbpInput);
+}
 
 
 $(document).on('click', '.btn-cbp-preview', function (e) {
@@ -101,15 +118,15 @@ $(document).on('click', '.btn-cbp-preview', function (e) {
   const hasImage = featuredImage && featuredImage !== '#';
 
   const categoryColorMap = {
-  'Jewelry': '#ffe5ec',
-  'Travel and Tours': '#e0f7fa',
-  'Charity': '#f3e5f5',
-  'Shops': '#fff3cd',
-};
+    'Jewelry': '#ffe5ec',
+    'Travel and Tours': '#e0f7fa',
+    'Charity': '#f3e5f5',
+    'Shops': '#fff3cd',
+  };
 
-const bgColor = categoryColorMap[categoryLabel] || '#f8f9fa';
+  const bgColor = categoryColorMap[categoryLabel] || '#f8f9fa';
 
-const previewHTML = `<div class="cbp-preview-wrapper">
+  const previewHTML = `<div class="cbp-preview-wrapper">
                       <!-- Header -->
                       <div class="cbp-preview-header text-center mb-4">
                         <h2 class="cbp-preview-title text-primary">${title}</h2>

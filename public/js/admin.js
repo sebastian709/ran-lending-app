@@ -13,6 +13,27 @@ $(document).ready(function () {
   });
 
   initCKEditor();
+  initBlogImageUpload();
+  createBPTagify()
+});
+
+$(document).on('click', '[data-url]', function (e) {
+  e.preventDefault();
+  const url = $(this).data('url');
+
+  $.get(url, function (data) {
+    const content = $(data).find('#content').html();
+    $('#content').html(content);
+    window.history.pushState({}, '', url);
+
+    $('.sidebar .nav-link').removeClass('active');
+    $(`[data-url="${url}"]`).addClass('active');
+
+    updateBreadcrumb(url);
+    initCKEditor();
+    initBlogImageUpload();
+    createBPTagify();
+  });
 });
 
 
@@ -73,31 +94,6 @@ function updateBreadcrumb(url) {
   $('#breadcrumbs').html(breadcrumbHTML);
 }
 
-
-
-
-$(document).on('click', '[data-url]', function (e) {
-  e.preventDefault();
-  const url = $(this).data('url');
-
-  $.get(url, function (data) {
-    const content = $(data).find('#content').html();
-    $('#content').html(content);
-    window.history.pushState({}, '', url);
-
-    $('.sidebar .nav-link').removeClass('active');
-    $(`[data-url="${url}"]`).addClass('active');
-
-    updateBreadcrumb(url);
-    // ✅ Initialize CKEditor AFTER injecting content
-    initCKEditor();
-  });
-});
-
-
-
-
-
 window.onpopstate = function () {
   $.get(location.pathname, function (data) {
     const content = $(data).find('#content').html();
@@ -125,15 +121,7 @@ overlay.addEventListener('click', () => {
   overlay.classList.remove('show');
 });
 
-window.addEventListener('scroll', function () {
-  const bellIcon = document.getElementById('notifIcon');
 
-  if (window.scrollY > 10) {
-    bellIcon.classList.add('scrolled');
-  } else {
-    bellIcon.classList.remove('scrolled');
-  }
-});
 
 $(window).on('scroll', function () {
   const scrollPos = $(window).scrollTop();
