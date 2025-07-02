@@ -7,9 +7,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "getbrevo/brevo-php": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "pusher/pusher-php-server": "^7.2"
+        "laravel/ui": "^4.6",
+        "pusher/pusher-php-server": "^7.2",
+        "sendinblue/api-v3-sdk": "^8.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

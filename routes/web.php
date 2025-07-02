@@ -3,8 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
+use App\Http\Controllers\Auth\OtpVerificationController;
 
-Route::get('/', [ChatTestController::class, 'welcome']);
+// Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
 Route::post('/test-broadcast', [ChatTestController::class, 'broadcast']);
 
@@ -28,3 +29,10 @@ Route::prefix('admin')->group(function () {
 
 
 Route::post('/admin/blogpost/store', [BlogPostController::class, 'store']);
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
+Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
