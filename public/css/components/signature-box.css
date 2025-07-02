@@ -34,8 +34,8 @@
 }
 
 .signature-target.filled:hover {
-    border: 2px dashed #bbb;
-    background-color: rgba(0, 0, 0, 0.03);
+    border: 2px dashed #bbb !important;
+    background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
 .signature-target img {
