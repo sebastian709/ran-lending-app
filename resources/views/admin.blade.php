@@ -12,6 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/blogpost.css') }}">
+
+    @stack('styles')
 </head>
 
 <body>
@@ -102,6 +104,8 @@
         </div>
     </div>
     
+
+    
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
     <!-- Bootstrap JS (Dropdowns need this) -->
@@ -114,6 +118,8 @@
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
+    @stack('scripts')
+    
 </body>
 
 </html>

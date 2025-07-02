@@ -19,7 +19,7 @@ Route::get('/test-broadcast', function () {
 Route::prefix('admin')->group(function () {
     Route::get('/', fn () => view('admin.home'))->name('admin.home');
     Route::get('/dashboard', fn () => view('admin.home'))->name('admin.home');
-    Route::get('/about', fn () => view('admin.about'))->name('admin.about');
+    Route::get('/blankpage', fn () => view('admin.blankpage'))->name('admin.blankpage');
 
     Route::prefix('blogpost')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
@@ -36,3 +36,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
