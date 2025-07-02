@@ -1,7 +1,7 @@
 @extends('admin')
 
 @section('content')
-
+    <form id="blogForm" method="POST" enctype="multipart/form-data"></form>
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -9,18 +9,18 @@
                 <div
                     class="blog-tabs sticky-desktop d-none d-md-flex justify-content-between align-items-center pe-3 py-2 mb-3 rounded shadow-sm">
                     <div class="d-none d-md-flex justify-content-between align-items-center">
-                        <a href="#" class="btn btn-light fw-semibold text-primary me-3" data-url="/admin/blogpost">
+                        <a href="#" class="btn btn-light fw-semibold text-primary me-3 px-5" data-url="/admin/blogpost">
                             <i class="bi bi-card-list"></i> Blog list
                         </a>
-                        <a href="#" class="btn btn-light fw-semibold text-primary mw-2 px-5">
+                        <!-- <a href="#" class="btn btn-light fw-semibold text-primary mw-2 px-5">
                             <i class="bi bi-plus-square"></i> Add New Post
-                        </a>
+                        </a> -->
                     </div>
                     <div class="d-none d-md-flex justify-content-between align-items-center">
                         <a href="#" class="btn btn-light fw-semibold text-primary mx-2 px-5 btn-cbp-preview">
                             <i class="bi bi-eye-fill"></i> Preview
                         </a>
-                        <a href="#" class="btn btn-light fw-semibold text-primary mx-2 px-5">
+                        <a href="#" class="btn btn-light fw-semibold text-primary mx-2 px-5 btn-cbp-publish">
                             <i class="bi bi-file-earmark-medical-fill"></i> Publish
                         </a>
                     </div>
@@ -33,7 +33,7 @@
                         <a href="#" class="btn btn-light btn-sm fw-semibold text-primary px-5" data-url="/admin/blogpost">
                             <i class="bi bi-card-list"></i> Blog list
                         </a>
-                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary px-5 mx-1">
+                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary px-5 mx-1 btn-cbp-publish">
                             <i class="bi bi-file-earmark-medical-fill"></i> Publish
                         </a>
                     </div>
@@ -77,6 +77,37 @@
 
 
                     <div class="accordion shadow-sm" id="blogSettingsAccordion">
+                        <!-- Status Panel -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingStatus">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseStatus" aria-expanded="false" aria-controls="collapseStatus">
+                                    <i class="bi bi-info-circle-fill me-2"></i> Post Status
+                                </button>
+                            </h2>
+                            <div id="collapseStatus" class="accordion-collapse collapse" aria-labelledby="headingStatus"
+                                data-bs-parent="#blogSettingsAccordion">
+                                <div class="accordion-body">
+                                    @php
+                                        $statuses = [
+                                            ['label' => 'Draft', 'value' => 'draft', 'icon' => 'bi-pencil-square', 'color' => 'text-secondary'],
+                                            ['label' => 'Published', 'value' => 'published', 'icon' => 'bi-check-circle-fill', 'color' => 'text-success'],
+                                        ];
+                                    @endphp
+
+                                    @foreach ($statuses as $status)
+                                        <label
+                                            class="status-option form-check mb-3 d-flex align-items-center border rounded px-3 py-2">
+                                            <input class="form-check-input me-3" type="radio" name="status"
+                                                value="{{ $status['value'] }}" {{ $loop->first ? 'checked' : '' }}>
+                                            <i class="bi {{ $status['icon'] }} me-2 fs-5 {{ $status['color'] }}"></i>
+                                            <span class="fs-6 fw-semibold text-dark">{{ $status['label'] }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Featured Image Panel -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFeaturedImage">
@@ -172,4 +203,5 @@
             </div>
         </div>
     </div>
+    </form>
 @endsection

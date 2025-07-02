@@ -93,7 +93,6 @@ $(document).on('click', '.btn-cbp-preview', function (e) {
   const title = $('#blogTitle').val() || 'Untitled Blog';
   const excerpt = $('#blogExcerpt').val() || '';
   const content = editorInstance?.getData?.() || $('#blogContent').val();
-  const tags = $('#tagsInput').val() || '';
   let tagList = '';
   const rawTags = $('#tagsInput').val();
 
@@ -182,6 +181,81 @@ $(document).on('click', '.btn-cbp-preview', function (e) {
     }
   });
 });
+
+$(document).on('click', '.btn-cbp-publish', function (e) {
+  e.preventDefault();
+
+  const status = $('input[name="status"]:checked').val();
+  const title = $('#blogTitle').val() || 'Untitled Blog';
+  const excerpt = $('#blogExcerpt').val() || '';
+  const content = editorInstance?.getData?.() || $('#blogContent').val();
+  const rawTags = $('#tagsInput').val();
+
+  let tags = [];
+  try {
+    const parsedTags = JSON.parse(rawTags);
+    tags = parsedTags.map(tag => tag.value);
+  } catch (e) {
+    tags = (rawTags || '').split(',').map(tag => tag.trim());
+  }
+
+  const selectedCategory = $('input[name="category"]:checked').closest('label');
+  const category = selectedCategory.find('span').text() || 'Uncategorized';
+
+  const fileInput = document.getElementById('featuredImageInput');
+  const file = fileInput?.files[0] || null;
+
+  // Use FormData to send file
+  const formData = new FormData();
+  formData.append('status', status);
+  formData.append('title', title);
+  formData.append('excerpt', excerpt);
+  formData.append('content', content);
+  formData.append('tags', JSON.stringify(tags));
+  formData.append('category', category);
+
+  if (file) {
+    formData.append('featured_image', file);
+  }
+
+  $.ajax({
+    url: '/admin/blogpost/store',
+    method: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function (response) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Published!',
+        text: 'Your blog post has been saved successfully.',
+        timer: 2000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        didClose: () => {
+          $(`[data-url="/admin/blogpost"]`).trigger('click');
+        }
+      });
+    },
+    error: function (xhr) {
+      let msg = 'Something went wrong.';
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        msg = xhr.responseJSON.message;
+      }
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: msg
+      });
+    }
+  });
+});
+
+
+
 
 
 

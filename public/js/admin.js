@@ -14,7 +14,7 @@ $(document).ready(function () {
 
   initCKEditor();
   initBlogImageUpload();
-  createBPTagify()
+  createBPTagify();
 });
 
 $(document).on('click', '[data-url]', function (e) {
