@@ -11,10 +11,19 @@ $(window).on('scroll', function () {
 });
 
 $(document).on('click', '.bp-tab', function (e) {
-  e.preventDefault(); // prevent default link behavior if needed
-  $('.bp-tab').removeClass('active');  // remove active from all
-  $(this).addClass('active');          // add active to clicked one
+  e.preventDefault();
+
+  $('.bp-tab').removeClass('active');
+  $(this).addClass('active');
+
+  const status = $(this).text().trim().toLowerCase(); // all posts / drafts / published
+  const filterStatus = status === 'all posts' ? 'all' : status === 'drafts' ? 'draft' : status;
+
+  $.get('/admin/blogpost', { status: filterStatus }, function (data) {
+    $('#blogPostList').html(data);
+  });
 });
+
 
 function initBlogImageUpload() {
   const dropZone = document.getElementById('dropZone');
