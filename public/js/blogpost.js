@@ -10,18 +10,16 @@ $(window).on('scroll', function () {
   }
 });
 
+// ✅ AJAX tab filter
 $(document).on('click', '.bp-tab', function (e) {
   e.preventDefault();
-
   $('.bp-tab').removeClass('active');
   $(this).addClass('active');
 
-  const status = $(this).text().trim().toLowerCase(); // all posts / drafts / published
+  const status = $(this).text().trim().toLowerCase();
   const filterStatus = status === 'all posts' ? 'all' : status === 'drafts' ? 'draft' : status;
 
-  $.get('/admin/blogpost', { status: filterStatus }, function (data) {
-    $('#blogPostList').html(data);
-  });
+  loadBlogPostList(filterStatus);
 });
 
 

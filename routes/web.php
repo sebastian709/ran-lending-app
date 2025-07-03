@@ -23,6 +23,7 @@ Route::prefix('admin')->group(function () {
 
     Route::prefix('blogpost')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
+        Route::get('/filter', [BlogPostController::class, 'index']); // shared lang to
         Route::post('/store', [BlogPostController::class, 'store']);
         Route::get('/createBlogpost', fn() => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
 

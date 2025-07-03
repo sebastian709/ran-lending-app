@@ -40,20 +40,24 @@ class BlogPostController extends Controller
     public function index(Request $request)
     {
         $status = $request->input('status');
-
         $query = BlogPost::latest();
+
         if ($status && $status !== 'all') {
             $query->where('status', $status);
         }
 
         $posts = $query->get();
 
-        if ($request->ajax()) {
+        // 🟡 STEP 1: AJAX request → return only list
+        if ($request->ajax() && $request->has('status')) {
             return view('admin.blogpost.partials.bloglist', compact('posts'))->render();
         }
 
+        // 🟢 STEP 2: Normal page load → return full page
         return view('admin.blogpost.index', compact('posts'));
     }
+
+
 
 }
 
