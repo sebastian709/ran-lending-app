@@ -19,6 +19,8 @@ class ForgotPasswordController extends Controller
 {
     public function sendResetLinkEmail(Request $request)
 {
+
+    // dd($request->all());
     // $request->validate([
     //     'email' => 'required|email|exists:users,email',
     // ]);
