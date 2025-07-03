@@ -36,3 +36,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
