@@ -84,14 +84,7 @@ function initBlogImageUpload() {
   }
 }
 
-function createBPTagify() {
-  const cbpInput = document.querySelector('#tagsInput');
 
-  if (!cbpInput) {
-    return;
-  }
-  new Tagify(cbpInput);
-}
 
 
 $(document).on('click', '.btn-cbp-preview', function (e) {
@@ -263,6 +256,333 @@ $(document).on('click', '.btn-cbp-publish', function (e) {
     }
   });
 });
+
+
+$(document).on('click', '.btn-bpl-view', function (e) {
+  e.preventDefault();
+  const postId = $(this).data('bp_id');
+
+  $.get(`/admin/blogpost/view/${postId}`, function (data) {
+    const {
+      title = 'Untitled',
+      excerpt = '',
+      content = '',
+      tags = [],
+      category = 'Uncategorized',
+      featured_image = null,
+    } = data;
+
+    const tagList = (Array.isArray(tags) ? tags : []).map(tag => `
+      <span class="badge vbp-badge-tag">${tag.value}</span>
+    `).join('') || '<span class="text-muted fst-italic">No tags added</span>';
+
+    const categoryIconMap = {
+      'jewelry': ['bi-gem', '#ffe5ec'],
+      'travel and tours': ['bi-airplane-engines', '#e0f7fa'],
+      'charity': ['bi-heart-fill', '#f3e5f5'],
+      'shops': ['bi-shop', '#fff3cd'],
+    };
+
+    const key = category.toLowerCase();
+    const [icon, bgColor] = categoryIconMap[key] || ['bi-folder-fill', '#f8f9fa'];
+
+    const previewHTML = `
+      <div class="vbp-preview-wrapper">
+        <!-- Header -->
+        <div class="vbp-header text-center mb-4">
+          <h2 class="vbp-title text-gradient">${title}</h2>
+          <p class="vbp-subtitle text-muted">${excerpt}</p>
+        </div>
+
+        <!-- Featured Image -->
+        ${featured_image ? `
+          <div class="vbp-image text-center mb-4">
+            <img src="${featured_image}" class="img-fluid rounded border shadow-sm" style="max-height: 250px; object-fit: cover;">
+          </div>
+        ` : ''}
+
+        <!-- Category -->
+        <div class="vbp-category card border-0 shadow-sm mb-4" style="background-color: ${bgColor};">
+          <div class="card-body d-flex align-items-center">
+            <i class="bi ${icon} fs-4 text-primary me-3"></i>
+            <div>
+              <div class="text-uppercase small fw-bold text-muted">Category</div>
+              <div class="fw-semibold fs-5 text-dark">${category}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="vbp-tags mb-4">
+          <div class="text-uppercase small fw-bold text-muted mb-2">
+            <i class="bi bi-tags-fill me-2 text-primary"></i> Tags
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            ${tagList}
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Content -->
+        <div class="vbp-content">
+          ${content || '<p class="text-muted fst-italic">No content written.</p>'}
+        </div>
+      </div>
+    `;
+
+    $.confirm({
+      title: `<i class="bi bi-eye-fill me-2"></i> <span class="text-gradient">Blog Preview</span>`,
+      content: previewHTML,
+      columnClass: 'lg',
+      boxWidth: '90%',
+      useBootstrap: false,
+      buttons: {
+        close: {
+          text: 'Close',
+          btnClass: 'btn btn-secondary'
+        }
+      }
+    });
+  });
+});
+
+
+
+$(document).on('click', '.btn-bpl-edit', function (e) {
+  e.preventDefault();
+  const postId = $(this).data('bp_id');
+
+  $.get(`/admin/blogpost/fetch/${postId}`, function (data) {
+    const {
+      id, title, excerpt, content,
+      status, category, tags,
+      featured_image
+    } = data;
+
+    const tagValue = JSON.stringify(tags || []);
+
+    const formHTML = `
+      <form id="editBlogForm" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="${id}">
+        <div class="ubp-container container-fluid">
+          <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+              <div class="card ubp-card shadow">
+                <div class="card-body">
+                  <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">Blog Title</label>
+                    <input type="text" id="blogTitle" name="title" class="form-control ubp-input" value="${title}">
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">Short Description</label>
+                    <textarea id="blogExcerpt" name="excerpt" rows="2" class="form-control ubp-input">${excerpt}</textarea>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-primary">Content</label>
+                    <textarea id="blogContent" name="content" rows="10" class="form-control ubp-editor-area">${content}</textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+              <div class="card ubp-card shadow">
+                <div class="card-body">
+                  <!-- Status -->
+                  <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">Status</label>
+                    <div class="d-flex flex-wrap gap-3">
+                      ${['draft', 'published'].map(s => `
+                        <label class="form-check d-flex align-items-center gap-2 ubp-radio">
+                          <input class="form-check-input" type="radio" name="status" value="${s}" ${s === status ? 'checked' : ''}>
+                          <span>${s.charAt(0).toUpperCase() + s.slice(1)}</span>
+                        </label>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <!-- Category -->
+                  <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">Category</label>
+                    <div class="d-flex flex-column gap-2">
+                      ${['jewelry', 'travel and tours', 'charity', 'shops'].map(cat => `
+                        <label class="form-check d-flex align-items-center gap-2 ubp-radio">
+                          <input class="form-check-input" type="radio" name="category" value="${cat}" ${cat === (category?.toLowerCase?.() || '') ? 'checked' : ''}>
+                          <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+                        </label>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <!-- Tags -->
+                  <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">Tags</label>
+                    <input id="tagsInput" name="tags" class="form-control" value='${tagValue}'>
+                  </div>
+
+                  <!-- Featured Image -->
+                  <div>
+                    <label class="form-label fw-bold text-primary">Featured Image</label>
+                    <div class="featured-drop-area text-center border border-dashed rounded p-4 mb-2 ${featured_image ? 'd-none' : ''}" id="dropZone">
+                      <i class="bi bi-cloud-arrow-up fs-1 text-muted"></i>
+                      <p class="text-muted mb-1">Drag & drop image or click to upload</p>
+                      <p class="text-muted small mb-0">Accepted: JPG, PNG, WEBP (Max: 2MB)</p>
+                      <input type="file" id="featuredImageInput" name="featured_image" accept="image/*" hidden>
+                    </div>
+
+                    <div id="previewContainer" class="position-relative ${featured_image ? '' : 'd-none'}">
+                      <img id="previewImage" src="${featured_image || '#'}" class="img-fluid rounded border shadow-sm w-100 object-fit-cover" style="height: 200px;">
+                      <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" id="removeImageBtn" title="Remove Image">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    `;
+
+    $.confirm({
+      title: `<i class="bi bi-pencil-square me-2"></i> <span class="text-gradient">Edit Blogpost</span>`,
+      content: formHTML,
+      columnClass: 'xl',
+      boxWidth: '90%',
+      useBootstrap: false,
+      buttons: {
+        save: {
+          text: '💾 Save Changes',
+          btnClass: 'btn ubp-btn-gradient text-white',
+          action: function () {
+            const $confirmBox = this.$el.closest('.jconfirm');
+            const originalZIndex = $confirmBox.css('z-index');
+            $confirmBox.css('z-index', 1050);
+
+            Swal.fire({
+              title: 'Are you sure?',
+              text: 'This will update the blog post.',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, update it!',
+              cancelButtonText: 'Cancel',
+              reverseButtons: true,
+              customClass: {
+                confirmButton: 'btn btn-primary',
+                cancelButton: 'btn btn-secondary'
+              },
+              buttonsStyling: false
+            }).then(result => {
+
+              if (result.isConfirmed) {
+                const formEl = document.getElementById('editBlogForm');
+                const formData = new FormData(formEl);
+                formData.set('content', editorInstance?.getData?.() || '');
+                formData.set('tags', $('#tagsInput').val());
+
+                $.ajax({
+                  url: '/admin/blogpost/update',
+                  method: 'POST',
+                  data: formData,
+                  processData: false,
+                  contentType: false,
+                  success: function (res) {
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Updated!',
+                      text: res.message,
+                      timer: 1500,
+                      showConfirmButton: false
+                    });
+                    $('.jconfirm').remove();
+                    // Optional: Reload blog list
+                    // reloadBlogList();
+                    $confirmBox.css('z-index', originalZIndex);
+                    $('[data-url="/admin/blogpost"]').trigger('click');
+                  },
+                  error: function (xhr) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Update failed!',
+                      text: xhr.responseJSON?.message || 'Something went wrong. Please check your inputs.',
+                      timer: 2000,
+                      showConfirmButton: false
+                    });
+                    $confirmBox.css('z-index', originalZIndex);
+                  }
+                });
+              }
+            });
+
+            return false;
+          }
+        },
+        cancel: {
+          text: 'Cancel',
+          btnClass: 'btn btn-secondary'
+        }
+      },
+      onContentReady: function () {
+        initCKEditor();
+        createBPTagify();
+        initBlogImageUpload();
+      }
+    });
+  });
+});
+
+$(document).on('click', '.btn-bp-status', function (e) {
+  e.preventDefault();
+  const $btn = $(this);
+  const postId = $btn.data('bp_id');
+  const newStatus = $btn.data('status');
+  const capitalized = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+
+  Swal.fire({
+    title: `Move to ${capitalized}?`,
+    text: `Do you want to move this post to ${newStatus}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: `Yes, move to ${capitalized}`,
+    cancelButtonText: 'Cancel',
+    customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-secondary'
+    },
+    buttonsStyling: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.post('/admin/blogpost/update-status', {
+        id: postId,
+        status: newStatus,
+        _token: $('meta[name="csrf-token"]').attr('content')
+      }, function (res) {
+        Swal.fire({
+          icon: 'success',
+          title: `Moved to ${capitalized}!`,
+          text: res.message,
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          didClose: () => {
+            loadBlogPostList?.(); // Refresh list if SPA
+          }
+        });
+      }).fail(err => {
+        Swal.fire('Error', 'Failed to update status', 'error');
+      });
+    }
+  });
+});
+
+
+
 
 
 

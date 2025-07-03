@@ -15,7 +15,15 @@ $(document).ready(function () {
   initCKEditor();
   initBlogImageUpload();
   createBPTagify();
+
+  // ✅ CSRF setup - FIXED closing
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
 });
+
 
 $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
@@ -67,14 +75,23 @@ function initCKEditor() {
 
 
 function createNewEditor(target) {
-    ClassicEditor
-        .create(target)
-        .then(editor => {
-            editorInstance = editor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
+  ClassicEditor
+    .create(target)
+    .then(editor => {
+      editorInstance = editor;
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+function createBPTagify() {
+  const cbpInput = document.querySelector('#tagsInput');
+
+  if (!cbpInput) {
+    return;
+  }
+  new Tagify(cbpInput);
 }
 
 
