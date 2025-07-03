@@ -17,18 +17,20 @@ Route::get('/test-broadcast', function () {
 
 // admin routes
 Route::prefix('admin')->group(function () {
-    Route::get('/', fn () => view('admin.home'))->name('admin.home');
-    Route::get('/dashboard', fn () => view('admin.home'))->name('admin.home');
-    Route::get('/blankpage', fn () => view('admin.blankpage'))->name('admin.blankpage');
+    Route::get('/', fn() => view('admin.home'))->name('admin.home');
+    Route::get('/dashboard', fn() => view('admin.home'))->name('admin.home');
+    Route::get('/blankpage', fn() => view('admin.blankpage'))->name('admin.blankpage');
 
     Route::prefix('blogpost')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
-        Route::get('/createBlogpost', fn () => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
+        Route::post('/store', [BlogPostController::class, 'store']);
+        Route::get('/createBlogpost', fn() => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
+
     });
 });
 
 
-Route::post('/admin/blogpost/store', [BlogPostController::class, 'store']);
+
 
 Auth::routes();
 

@@ -37,11 +37,23 @@ class BlogPostController extends Controller
         return response()->json(['message' => 'Blog post saved successfully.']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = BlogPost::latest()->get(); // you can paginate later
+        $status = $request->input('status');
+
+        $query = BlogPost::latest();
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $posts = $query->get();
+
+        if ($request->ajax()) {
+            return view('admin.blogpost.partials.bloglist', compact('posts'))->render();
+        }
 
         return view('admin.blogpost.index', compact('posts'));
     }
+
 }
 
