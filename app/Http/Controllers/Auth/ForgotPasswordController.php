@@ -17,66 +17,11 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class ForgotPasswordController extends Controller
 {
-<<<<<<< Updated upstream
-    /*
-    |--------------------------------------------------------------------------
-    | Password Reset Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling password reset emails and
-    | includes a trait which assists in sending these notifications from
-    | your application to your users. Feel free to explore this trait.
-    |
-    */
-=======
->>>>>>> Stashed changes
     public function sendResetLinkEmail(Request $request)
 {
     // $request->validate([
     //     'email' => 'required|email|exists:users,email',
     // ]);
-<<<<<<< Updated upstream
-=======
-    // Generate OTP
-    $otp = random_int(100000, 999999);
-    $email = $request->email;
-
-    // Store OTP
-    DB::table('password_otps')->updateOrInsert(
-        ['email' => $email],
-        [
-            'otp' => $otp,
-            'expires_at' => Carbon::now()->addMinutes(10),
-            'created_at' => now(),
-            'updated_at' => now()
-        ]
-    );
-    $config = Configuration::getDefaultConfiguration()
-    ->setApiKey('api-key', env('BREVO_API_KEY'));
-
-$apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
-
-$emailObj = new SendSmtpEmail([
-    'subject' => 'Your OTP Code',
-    'sender' => ['name' => 'YourApp', 'email' => 'lordanniel@gmail.com'],
-    'to' => [['email' => $email]],
-    'htmlContent' => "<p>Your OTP is <strong>$otp</strong>. It will expire in 10 minutes.</p>",
-]);
-
-
-$apiInstance->sendTransacEmail($emailObj);
-
-try {
-    $apiInstance->sendTransacEmail($emailObj);
-} catch (\Exception $e) {
-    return back()->withErrors(['email' => 'Failed to send email: ' . $e->getMessage()]);
-}
-
-
-    return back()->with('status', 'OTP sent to your email');
-}
->>>>>>> Stashed changes
-
     // Generate OTP
     $otp = random_int(100000, 999999);
     $email = $request->email;
@@ -116,8 +61,5 @@ try {
     return back()->with('status', 'OTP sent to your email');
 }
 
-
-
-    
     use SendsPasswordResetEmails;
 }

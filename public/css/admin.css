@@ -216,3 +216,31 @@ body {
   border: 1px solid rgb(69, 69, 69);
 }
 
+.paper-layout {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 60px;
+    max-width: 900px;
+    font-family: 'Georgia', serif;
+    color: #212529;
+}
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .paper-layout {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0;
+        padding: 60px !important;
+    }
+
+    .btn {
+        display: none !important;
+    }
+}
+
+

@@ -1,0 +1,56 @@
+.signature-wrapper {
+    margin-top: 60px;
+    position: relative;
+}
+
+.signature-target {
+    width: 100%;
+    /* max-width: 300px; */
+    height: 100px;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    background-color: transparent;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.signature-target:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.signature-target.filled {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+.signature-target.filled:hover {
+    border: 2px dashed #bbb !important;
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.signature-target img {
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+    background-color: transparent;
+}
+
+.signature-mark-text {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.signature-info {
+    padding-top: 60px;
+}

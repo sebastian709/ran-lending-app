@@ -1,47 +1,74 @@
-@extends('layouts.app')
+<!-- login.blade.php -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - RAN Lending</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+</head>
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+<body>
+<div class="d-flex flex-column min-vh-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ url('/') }}" class="d-flex align-items-center text-decoration-none text-muted">
+                    <i class="ri-arrow-left-line me-2"></i>
+                    <span>Back to Home</span>
+                </a>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+        <div class="w-100" style="max-width: 400px;" id="forgot-step1-container">
+            <div class="text-center mb-4">
+                <a href="#" class="font-pacifico text-primary-custom text-decoration-none" style="font-size: 2.5rem;">RAN Lending</a>
+                <h1 class="h2 fw-bold mb-2">Forgot Password - Email Verification</h1>
+            </div>
+
+            <div class="form-container rounded-custom p-4">
+                <form id="forgot-step1-form">
+                    <p class="text-muted mb-3">Enter the email address linked to your account:</p>
+                    <div class="mb-3">
+                        <div class="position-relative">
+                            
+                            <input type="email" id="forgot-email" class="form-control email-input" placeholder="Enter your email address">
+                        </div>
+                        <div id="forgot-email-error" class="text-danger small mt-1 d-none">Invalid email format format.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 fw-medium">Send Verification Code</button>
+                    <p class="mt-3 small text-muted">We'll send a 6-digit code via email to verify your identity.</p>
+                </form>
+
+                <hr class="my-4">
+                <button id="back-to-login-btn1" class="btn btn-link w-100 text-muted text-decoration-none" type="button" onclick="window.location.href='{{ route('login') }}'">
+                    <i class="ri-arrow-left-line me-1"></i>
+                    Back to Login
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white py-3 border-top">
+        <div class="container">
+            <div class="text-center text-muted small">
+                &copy; 2025 RAN Lending. All rights reserved.
+            </div>
+        </div>
+    </footer>
 </div>
-@endsection
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -15,28 +15,47 @@ $(document).ready(function () {
   initCKEditor();
   initBlogImageUpload();
   createBPTagify();
+
+  // ✅ CSRF setup - FIXED closing
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
 });
+
 
 $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
   const url = $(this).data('url');
 
   $.get(url, function (data) {
-    const content = $(data).find('#content').html();
-    $('#content').html(content);
+    const content = $(data).find('#content').html(); // ito yung @yield('content')
+    $('#content').html(content); // i-inject sa layout
     window.history.pushState({}, '', url);
 
     $('.sidebar .nav-link').removeClass('active');
     $(`[data-url="${url}"]`).addClass('active');
 
     updateBreadcrumb(url);
-    initCKEditor();
-    initBlogImageUpload();
-    createBPTagify();
+
+    // Call plugins safely
+    initCKEditor?.();
+    initBlogImageUpload?.();
+    createBPTagify?.();
+
+    // 🟢 Call loadBlogPostList IF present
+    if ($('#blogPostList').length) {
+      loadBlogPostList(); // default: all
+    }
   });
 });
 
-
+function loadBlogPostList(status = 'all') {
+  $.get('/admin/blogpost', { status }, function (data) {
+    $('#blogPostList').html(data);
+  });
+}
 
 let editorInstance; // Define globally at the top
 
@@ -56,14 +75,23 @@ function initCKEditor() {
 
 
 function createNewEditor(target) {
-    ClassicEditor
-        .create(target)
-        .then(editor => {
-            editorInstance = editor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
+  ClassicEditor
+    .create(target)
+    .then(editor => {
+      editorInstance = editor;
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+function createBPTagify() {
+  const cbpInput = document.querySelector('#tagsInput');
+
+  if (!cbpInput) {
+    return;
+  }
+  new Tagify(cbpInput);
 }
 
 

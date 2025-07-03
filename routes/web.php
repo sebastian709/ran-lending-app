@@ -17,18 +17,26 @@ Route::get('/test-broadcast', function () {
 
 // admin routes
 Route::prefix('admin')->group(function () {
-    Route::get('/', fn () => view('admin.home'))->name('admin.home');
-    Route::get('/dashboard', fn () => view('admin.home'))->name('admin.home');
-    Route::get('/about', fn () => view('admin.about'))->name('admin.about');
+    Route::get('/', fn() => view('admin.home'))->name('admin.home');
+    Route::get('/dashboard', fn() => view('admin.home'))->name('admin.home');
+    Route::get('/blankpage', fn() => view('admin.blankpage'))->name('admin.blankpage');
 
     Route::prefix('blogpost')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
-        Route::get('/createBlogpost', fn () => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
+        Route::get('/filter', [BlogPostController::class, 'index']);
+        Route::post('/store', [BlogPostController::class, 'store']);
+        Route::get('/createBlogpost', fn() => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
+
+        Route::get('/view/{id}', [BlogPostController::class, 'view']);
+        Route::get('/fetch/{id}', [BlogPostController::class, 'fetch']);
+        Route::post('/update', [BlogPostController::class, 'update']);
+        Route::post('/update-status', [BlogPostController::class, 'updateStatus']);
+
     });
 });
 
 
-Route::post('/admin/blogpost/store', [BlogPostController::class, 'store']);
+
 
 Auth::routes();
 
@@ -36,3 +44,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
+
