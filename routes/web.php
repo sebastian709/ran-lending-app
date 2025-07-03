@@ -23,9 +23,14 @@ Route::prefix('admin')->group(function () {
 
     Route::prefix('blogpost')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
-        Route::get('/filter', [BlogPostController::class, 'index']); // shared lang to
+        Route::get('/filter', [BlogPostController::class, 'index']);
         Route::post('/store', [BlogPostController::class, 'store']);
         Route::get('/createBlogpost', fn() => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
+
+        Route::get('/view/{id}', [BlogPostController::class, 'view']);
+        Route::get('/fetch/{id}', [BlogPostController::class, 'fetch']);
+        Route::post('/update', [BlogPostController::class, 'update']);
+        Route::post('/update-status', [BlogPostController::class, 'updateStatus']);
 
     });
 });

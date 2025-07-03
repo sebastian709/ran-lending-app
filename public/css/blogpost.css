@@ -249,3 +249,72 @@
 .text-secondary {
     color: #6c757d;
 }
+
+.ubp-card {
+  border-radius: 12px;
+  background-color: #f9f9fb;
+  transition: all 0.3s;
+}
+
+.ubp-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.ubp-input,
+.ubp-editor-area {
+  border-radius: 8px;
+}
+
+.ubp-editor-area {
+  min-height: 250px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.ubp-radio span {
+  font-weight: 500;
+}
+
+.ubp-btn-gradient {
+  background: linear-gradient(135deg, #1B5FFB, #5F16F2) !important;
+  border: none;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #1B5FFB, #5F16F2) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 700 !important;
+}
+
+.vbp-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.vbp-subtitle {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.vbp-badge-tag {
+  background-color: #1B5FFB;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.35em 0.65em;
+  border-radius: 0.5rem;
+}
+
+.vbp-preview-wrapper {
+  padding: 1rem 0.5rem;
+}
+
+.vbp-content p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.vbp-image img {
+  border-radius: 12px;
+}
