@@ -12,9 +12,6 @@
                         <a href="#" class="btn btn-light fw-semibold text-primary me-3 px-5" data-url="/admin/blogpost">
                             <i class="bi bi-card-list"></i> Blog list
                         </a>
-                        <!-- <a href="#" class="btn btn-light fw-semibold text-primary mw-2 px-5">
-                                    <i class="bi bi-plus-square"></i> Add New Post
-                                </a> -->
                     </div>
                     <div class="d-none d-md-flex justify-content-between align-items-center">
                         <a href="#" class="btn btn-light fw-semibold text-primary mx-2 px-5 btn-cbp-preview">
@@ -26,18 +23,25 @@
                     </div>
                 </div>
 
-                <!-- 🔴 Floating Tabs + Button (Mobile Only) -->
+                <!-- 🌟 Floating Action Bar (Mobile Only) -->
                 <div class="mobile-action d-md-none">
-                    <div
-                        class="bg-primary text-white p-2 rounded-top d-flex flex-row align-items-center justify-content-center shadow">
-                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary px-5" data-url="/admin/blogpost">
-                            <i class="bi bi-card-list"></i> Blog list
+                    <div class="mobile-bar shadow-lg">
+                        <a href="#" class="mobile-item" data-url="/admin/blogpost">
+                            <i class="bi bi-card-list"></i>
+                            <span>Blog</span>
                         </a>
-                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary px-5 mx-1 btn-cbp-publish">
-                            <i class="bi bi-file-earmark-medical-fill"></i> Publish
+                        <a href="#" class="mobile-item btn-cbp-preview">
+                            <i class="bi bi-eye-fill"></i>
+                            <span>Preview</span>
+                        </a>
+                        <a href="#" class="mobile-item primary btn-cbp-publish">
+                            <i class="bi bi-file-earmark-medical-fill"></i>
+                            <span>Publish</span>
                         </a>
                     </div>
                 </div>
+
+
             </div>
         </div>
     </div>
@@ -127,7 +131,7 @@
                             <div class="accordion-body">
 
                                 <!-- Drop Zone -->
-                                <div class="featured-drop-area text-center border border-2 border-dashed rounded p-4 mb-2"
+                                <div class="featured-drop-area text-center border border-dashed rounded p-4 mb-2"
                                     id="dropZone">
                                     <i class="bi bi-cloud-arrow-up fs-1 text-muted"></i>
                                     <p class="text-muted mb-1">Drag & drop image here or click to upload</p>

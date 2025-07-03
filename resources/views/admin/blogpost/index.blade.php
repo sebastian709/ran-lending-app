@@ -30,16 +30,16 @@
                     <div class="bg-primary text-white p-2 rounded-top d-flex flex-column align-items-center shadow">
                         <ul class="nav nav-pills mb-2 justify-content-center">
                             <li class="nav-item">
-                                <a class="nav-link active text-white btn-sm me-1" href="#">All Posts</a>
+                                <a class="nav-link active text-white btn-sm me-1 bp-tab" href="#">All Posts</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white btn-sm me-1" href="#">Drafts</a>
+                                <a class="nav-link text-white btn-sm me-1 bp-tab" href="#">Drafts</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white btn-sm" href="#">Published</a>
+                                <a class="nav-link text-white btn-sm bp-tab" href="#">Published</a>
                             </li>
                         </ul>
-                        <a href="#" class="btn btn-light btn-sm fw-semibold text-primary w-100"
+                        <a href="#" class="btn btn-light fw-semibold text-primary w-100"
                             data-url="/admin/blogpost/createBlogpost">
                             <i class="bi bi-plus-lg"></i> Create Blogpost
                         </a>
