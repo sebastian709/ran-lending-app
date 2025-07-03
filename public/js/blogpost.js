@@ -10,6 +10,19 @@ $(window).on('scroll', function () {
   }
 });
 
+function abpReloadListByActiveTab() {
+  const currentFilter = $('.bp-tab.active:visible').text().trim().toLowerCase();
+
+  let activeABPtab = currentFilter === 'all posts'
+    ? 'all'
+    : currentFilter === 'drafts'
+    ? 'draft'
+    : currentFilter;
+
+  console.log(activeABPtab);
+  loadBlogPostList?.(activeABPtab);
+}
+
 // ✅ AJAX tab filter
 $(document).on('click', '.bp-tab', function (e) {
   e.preventDefault();
@@ -504,7 +517,7 @@ $(document).on('click', '.btn-bpl-edit', function (e) {
                     // Optional: Reload blog list
                     // reloadBlogList();
                     $confirmBox.css('z-index', originalZIndex);
-                    $('[data-url="/admin/blogpost"]').trigger('click');
+                    abpReloadListByActiveTab();
                   },
                   error: function (xhr) {
                     Swal.fire({
@@ -571,7 +584,7 @@ $(document).on('click', '.btn-bp-status', function (e) {
           timerProgressBar: true,
           showConfirmButton: false,
           didClose: () => {
-            loadBlogPostList?.(); // Refresh list if SPA
+            abpReloadListByActiveTab();
           }
         });
       }).fail(err => {
