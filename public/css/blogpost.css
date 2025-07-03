@@ -23,26 +23,71 @@
 @media (max-width: 767.98px) {
     .mobile-action {
         position: fixed;
-        bottom: 0;
+        bottom: 20px;
         left: 0;
         right: 0;
-        z-index: 1050;
+        z-index: 1055;
         pointer-events: none;
     }
 
     .mobile-action > div {
         pointer-events: all;
-        margin: 0 auto 10px;
-        width: calc(100% - 20px);
     }
 
-    .mobile-action .nav-pills .nav-link {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.75rem;
+    .mobile-bar {
+        pointer-events: all;
+        margin: 0 auto;
+        max-width: 360px;
+        background: linear-gradient(135deg, #ffffffdd, #f9f9ffdd);
+        backdrop-filter: blur(14px);
+        border-radius: 1.5rem;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
 
-    .mobile-action .btn {
-        font-size: 0.85rem;
+    .mobile-item {
+        flex: 1;
+        text-align: center;
+        color: #444;
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transition: all 0.2s ease-in-out;
+        border-radius: 1rem;
+        padding: 8px 6px;
+    }
+
+    .mobile-item i {
+        font-size: 1.3rem;
+        display: block;
+        margin-bottom: 3px;
+        color: #666;
+    }
+
+    .mobile-item:hover {
+        background-color: rgba(62, 58, 247, 0.08);
+        color: #3e3af7;
+    }
+
+    .mobile-item:hover i {
+        color: #3e3af7;
+    }
+
+    .mobile-item.primary {
+        background: #3e3af7;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .mobile-item.primary i {
+        color: #fff;
+    }
+
+    .mobile-item.primary:hover {
+        background: #2d2adf;
     }
 }
 
@@ -192,10 +237,15 @@
 .text-purple {
     color: #6f42c1;
 }
-.text-warning { color: #ffc107; }
-.text-primary { color: #0d6efd; }
-.text-danger { color: #dc3545; }
-.text-secondary { color: #6c757d; }
-
-
-
+.text-warning {
+    color: #ffc107;
+}
+.text-primary {
+    color: #0d6efd;
+}
+.text-danger {
+    color: #dc3545;
+}
+.text-secondary {
+    color: #6c757d;
+}

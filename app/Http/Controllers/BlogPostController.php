@@ -11,12 +11,12 @@ class BlogPostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'excerpt' => 'nullable|string',
-            'content' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'tags' => 'nullable',
+            'excerpt' => 'required|string',
+            'content' => 'required|string',
+            'category' => 'required|string|max:100',
+            'tags' => 'required',
             'status' => 'required|in:draft,published',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'featured_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $imagePath = null;

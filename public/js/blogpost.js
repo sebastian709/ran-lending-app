@@ -77,10 +77,10 @@ function initBlogImageUpload() {
   }
 }
 
-function createBPTagify(){
+function createBPTagify() {
   const cbpInput = document.querySelector('#tagsInput');
 
-  if(!cbpInput){
+  if (!cbpInput) {
     return;
   }
   new Tagify(cbpInput);
@@ -186,7 +186,7 @@ $(document).on('click', '.btn-cbp-publish', function (e) {
   e.preventDefault();
 
   const status = $('input[name="status"]:checked').val();
-  const title = $('#blogTitle').val() || 'Untitled Blog';
+  const title = $('#blogTitle').val();
   const excerpt = $('#blogExcerpt').val() || '';
   const content = editorInstance?.getData?.() || $('#blogContent').val();
   const rawTags = $('#tagsInput').val();
@@ -200,7 +200,7 @@ $(document).on('click', '.btn-cbp-publish', function (e) {
   }
 
   const selectedCategory = $('input[name="category"]:checked').closest('label');
-  const category = selectedCategory.find('span').text() || 'Uncategorized';
+  const category = selectedCategory.find('span').text();
 
   const fileInput = document.getElementById('featuredImageInput');
   const file = fileInput?.files[0] || null;
@@ -248,7 +248,10 @@ $(document).on('click', '.btn-cbp-publish', function (e) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: msg
+        text: msg,
+        timer: 1500,
+        showConfirmButton: false,
+        timerProgressBar: true
       });
     }
   });
