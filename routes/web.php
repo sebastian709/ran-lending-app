@@ -31,7 +31,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/fetch/{id}', [BlogPostController::class, 'fetch']);
         Route::post('/update', [BlogPostController::class, 'update']);
         Route::post('/update-status', [BlogPostController::class, 'updateStatus']);
-
     });
 });
 

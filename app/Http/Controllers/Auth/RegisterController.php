@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserDetails;
+use App\Models\UserIncome;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -48,11 +50,8 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        //MOVE VALIDATION VIA JS
+        $this->create($data);
     }
 
     /**
@@ -63,10 +62,39 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        // dd($data);
+
+        $user = User::create([
+            'firstname'     => $data['firstname'],
+            'lastname'      => $data['lastname'],
+            'middlename'    => $data['middlename'],
+            'contactno'     => $data['contactnumber'],
+            'is_referral'   => $data['referral_source'],
+            'referral_source_id'   => $data['referral_names'],
+            'email'         => $data['email'],
+            'password'      => Hash::make($data['password']),
         ]);
+
+        // dd($user->id);
+
+        UserDetails::create([
+            'user_id'  => $user->id,
+            'house_no'  => $data['house_no'],
+            'street'    => $data['street'] ,
+            'barangay'  => $data['barangay'] ,
+            'city'      => $data['city'] ,
+            'province'  => $data['province'] ,
+        ]);
+
+        UserIncome::create([
+            'user_id' => $user->id ,
+            'occupation' => $data['occupation'] ,
+            'income' => $data['income'] ,
+            'employment_status' => $data['employment_status'] ,
+        ]);
+
+
+        dd($data);
+
     }
 }
