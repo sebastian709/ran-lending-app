@@ -556,7 +556,8 @@ $(document).on('click', '.btn-bp-status', function (e) {
   const postId = $btn.data('bp_id');
   const newStatus = $btn.data('status');
   const capitalized = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-  console.log('test authasdadsadsadsadsads asasddasdsadasadsadsadsadsadsadsadsads');
+  console.log('test authasdadsadsadsadsads');
+  console.log('test test');
   Swal.fire({ 
     title: `Move to ${capitalized}?`,
     text: `Do you want to move this post to ${newStatus}?`,
