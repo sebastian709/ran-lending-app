@@ -51,6 +51,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         //MOVE VALIDATION VIA JS
+        // dd($data);
         $this->create($data);
     }
 
@@ -65,20 +66,20 @@ class RegisterController extends Controller
         // dd($data);
 
         $user = User::create([
-            'firstname'     => $data['firstname'],
-            'lastname'      => $data['lastname'],
-            'middlename'    => $data['middlename'],
-            'contactno'     => $data['contactnumber'],
-            'is_referral'   => $data['referral_source'],
+            'firstname'            => $data['firstname'],
+            'lastname'             => $data['lastname'],
+            'middlename'           => $data['middlename'],
+            'contactno'            => $data['contactnumber'],
+            'is_referral'          => $data['referral_source'],
             'referral_source_id'   => $data['referral_names'],
-            'email'         => $data['email'],
-            'password'      => Hash::make($data['password']),
+            'email'                => $data['email'],
+            'password'             => Hash::make($data['password']),
         ]);
 
         // dd($user->id);
 
         UserDetails::create([
-            'user_id'  => $user->id,
+            'user_id'   => $user->id,
             'house_no'  => $data['house_no'],
             'street'    => $data['street'] ,
             'barangay'  => $data['barangay'] ,
@@ -94,7 +95,7 @@ class RegisterController extends Controller
         ]);
 
 
-        dd($data);
-
+        // dd($data);
+        return 1;
     }
 }
