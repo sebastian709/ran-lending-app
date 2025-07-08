@@ -95,12 +95,7 @@
                 <input type="text" class="form-control" placeholder="Province" name="province"  required />
               </div>
             </div>
-            <div class="d-flex justify-content-end mt-4">
-              <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="nextStep(2)">
-                Next <i class="ri-arrow-right-line"></i>
-              </button>
-            </div>
-          </form>
+            <button type="button" class="btn btn-primary-custom w-100 mt-4" onclick="nextStep(2)">Next</button>
         </div>
 
         <!-- Step 2: Employment & Referral -->
@@ -141,15 +136,7 @@
                 </select>
               </div>
             </div>
-            <div class="d-flex justify-content-between mt-4">
-              <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(1)">
-                <i class="ri-arrow-left-line"></i>Previous
-              </button>
-              <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="nextStep(3)">
-                Next <i class="ri-arrow-right-line"></i>
-              </button>
-            </div>
-          </form>
+            <button type="button" class="btn btn-primary-custom w-100 mt-4" onclick="nextStep(3)">Next</button>
         </div>
 
         <!-- Step 3: Account Creation -->
@@ -167,14 +154,7 @@
                 <li>At least one special character</li>
               </ul>
             </div>
-            <div class="d-flex justify-content-between mt-4">
-              <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(2)">
-                <i class="ri-arrow-left-line"></i>Previous
-              </button>
-              <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="nextStep(4)">
-                Save and Verify <i class="ri-arrow-right-line"></i>
-              </button>
-            </div>
+            <input type="submit" class="btn btn-primary-custom w-100 mt-3" placeholder="Save and Verify">
           </form>
         </div>
 
@@ -197,14 +177,6 @@
               <button type="submit" class="btn btn-primary-custom w-100">Verify Code</button>
               <p class="small text-muted mt-2 mb-0">Didn't receive the code? <button type="button" class="btn btn-link text-primary-custom p-0">Resend Code</button></p>
             </div>
-            <div class="d-flex justify-content-between mt-4">
-                <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(3)">
-                  <i class="ri-arrow-left-line"></i>Previous
-                </button>
-                <button type="button" class="btn d-flex align-items-center gap-2 d-none text-muted" onclick="nextStep(4)">
-                  Save and Verify <i class="ri-arrow-right-line"></i>
-                </button>
-            </div>
           </form>
         </div>
 
@@ -215,11 +187,7 @@
           </div>
           <h4 class="fw-bold mb-2">Verification Successful!</h4>
           <p class="text-muted mb-4">You can now log in and proceed with your loan application.</p>
-          <a href="login" class="btn btn-primary-custom w-100">Log In</a>
-        </div>
-        <div class="mt-4 text-center">
-          <p class="text-muted mb-2">Already have an account?</p>
-          <button onclick="window.location.href='login'" class="btn btn-outline-secondary-custom w-50 fw-medium">Login</button>
+          <a href="login.html" class="btn btn-primary-custom w-100">Log In</a>
         </div>
       </div>
     </main>
@@ -228,12 +196,6 @@
     const steps = document.querySelectorAll('.form-step');
     const progressBar = document.getElementById('form-progress');
     function nextStep(n) {
-      steps.forEach(step => step.classList.remove('active'));
-      document.getElementById(`step-${n}`).classList.add('active');
-      progressBar.style.width = `${n * 20}%`;
-    }
-
-    function prevStep(n) {
       steps.forEach(step => step.classList.remove('active'));
       document.getElementById(`step-${n}`).classList.add('active');
       progressBar.style.width = `${n * 20}%`;
