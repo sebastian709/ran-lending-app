@@ -11,6 +11,18 @@
     @php
         $categoryKey = strtolower($post->category ?? 'uncategorized');
         $iconData = $categoryIcons[$categoryKey] ?? ['icon' => 'bi-folder-fill', 'color' => 'text-secondary'];
+
+        $statusBadge = "";
+
+        if($post->status === 'published'){
+            $statusBadge = "bg-success";
+        } else if($post->status === 'draft') {
+            $statusBadge = "bg-warning text-secondary";
+        } else if($post->status === 'archived') {
+            $statusBadge = "bg-secondary";
+        } else {
+            $statusBadge = "bg-danger";
+        }
     @endphp
 
     <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
@@ -35,11 +47,11 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="badge {{ $post->status === 'published' ? 'bg-success' : 'bg-warning text-dark' }}">
+                    <span class="badge {{ $statusBadge }}">
                         {{ ucfirst($post->status) }}
                     </span>
-                    <small class="text-muted">
-                        <i class="bi bi-calendar-event me-1"></i> {{ $post->created_at->format('M d, Y') }}
+                    <small class="{{ $post->status === 'deleted' ? 'text-danger' : 'text-muted' }}">
+                        <i class="bi bi-calendar-event me-1"></i> {{ $post->status === 'deleted' ? $post->deleted_at->format('M d, Y') : $post->created_at->format('M d, Y') }}
                     </small>
                 </div>
 
@@ -63,7 +75,7 @@
                         @endif
 
                         {{-- Archive Button --}}
-                        @if ($post->status === 'draft' || $post->status === 'published')
+                        @if ($post->status === 'draft' || $post->status === 'published' || $post->status === 'deleted')
                             <a href="#" class="text-danger action-icon btn-bp-status" title="Archive"
                                 data-bp_id="{{ $post->id }}" data-status="archived">
                                 <i class="bi bi-archive fs-5"></i>
