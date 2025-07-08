@@ -63,35 +63,36 @@
 
         <!-- Step 1: Personal Information -->
         <div class="form-container rounded-custom p-4 form-step active" id="step-1">
-          <form id="register-form">
+          <form id="register-form" method="POST" action="{{ route('register') }}">
+          @csrf
             <h5 class="mb-3">Personal Information</h5>
             <div class="row g-3">
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Last Name" required pattern="\S+" />
+                <input type="text" class="form-control" placeholder="Last Name" name="lastname" required pattern="\S+" />
               </div>
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="First Name" required pattern="\S+" />
+                <input type="text" class="form-control" placeholder="First Name" name="firstname" required pattern="\S+" />
               </div>
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Middle Name" required pattern="\S+" />
+                <input type="text" class="form-control" placeholder="Middle Name" name="middlename"  required pattern="\S+" />
               </div>
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Contact Number" required pattern="\d{4}-\d{3}-\d{4}" />
+                <input type="text" class="form-control" placeholder="Contact Number" name="contactnumber" required  />
               </div>
               <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="House No." required />
+                <input type="text" class="form-control" placeholder="House No." name="house_no" required />
               </div>
               <div class="col-md-8">
-                <input type="text" class="form-control" placeholder="Street Name" required />
+                <input type="text" class="form-control" placeholder="Street Name" name="street"  required />
               </div>
               <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="Barangay" required />
+                <input type="text" class="form-control" placeholder="Barangay" name="barangay"  required />
               </div>
               <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="City" required />
+                <input type="text" class="form-control" placeholder="City" name="city"  required />
               </div>
               <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="Province" required />
+                <input type="text" class="form-control" placeholder="Province" name="province"  required />
               </div>
             </div>
             <div class="d-flex justify-content-end mt-4">
@@ -104,21 +105,20 @@
 
         <!-- Step 2: Employment & Referral -->
         <div class="form-container rounded-custom p-4 form-step" id="step-2">
-          <form>
             <h5 class="mb-3">Employment</h5>
             <div class="row g-3">
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Occupation/Source of Income" required />
+                <input type="text" class="form-control" placeholder="Occupation/Source of Income" name="occupation" required />
               </div>
               <div class="col-md-6">
-                <input type="number" class="form-control" placeholder="Monthly Income" required />
+                <input type="number" class="form-control" placeholder="Monthly Income" name="income" required />
               </div>
               <div class="col-md-6">
-                <select class="form-select" required>
-                  <option value="">Employment Status</option>
-                  <option>Employed</option>
-                  <option>Self employed</option>
-                  <option>None</option>
+                <select class="form-select" name="employment_status" required>
+                  <option value="0">Employment Status</option>
+                  <option value="1">Employed</option>
+                  <option value="2">Self employed</option>
+                  <option value="0">None</option>
                 </select>
               </div>
             </div>
@@ -126,17 +126,18 @@
             <h5 class="mb-3">Where did you find us?</h5>
             <div class="row g-3">
               <div class="col-md-12">
-                <select class="form-select" id="referral-source" required>
-                  <option value="">Select</option>
-                  <option>Social Media</option>
-                  <option>Referral</option>
+                <select class="form-select" id="referral-source" name="referral_source" required>
+                  <option value="0">Select</option>
+                  <option value="1">Social Media</option>
+                  <option value="2">Referral</option>
                 </select>
               </div>
               <div class="col-md-12 d-none" id="referral-names">
-                <select class="form-select">
-                  <option>Ms. NC</option>
-                  <option>Ms. Riki</option>
-                  <option>Ms. Almira</option>
+                <select class="form-select" name="referral_names">
+                  <option value="0">Select</option>
+                  <option value="1">Ms. NC</option>
+                  <option value="2">Ms. Riki</option>
+                  <option value="3">Ms. Almira</option>
                 </select>
               </div>
             </div>
@@ -153,13 +154,12 @@
 
         <!-- Step 3: Account Creation -->
         <div class="form-container rounded-custom p-4 form-step" id="step-3">
-          <form>
             <div class="mb-3">
-              <input type="email" class="form-control" placeholder="Email Address or Mobile Number" required />
+              <input type="email" class="form-control" placeholder="Email Address or Mobile Number" name="email" required />
               <div class="invalid-feedback d-none" id="email-error">Please enter a valid email address.</div>
             </div>
             <div class="mb-3">
-              <input type="password" class="form-control" placeholder="Password" required />
+              <input type="password" class="form-control" placeholder="Password" name="password" required />
               <ul class="list-unstyled small text-muted password-criteria mt-2">
                 <li>Minimum 8 characters</li>
                 <li>Uppercase and lowercase letters</li>
@@ -241,8 +241,9 @@
 
     document.getElementById('referral-source').addEventListener('change', function() {
       const referralNames = document.getElementById('referral-names');
-      referralNames.classList.toggle('d-none', this.value !== 'Referral');
+      referralNames.classList.toggle('d-none', this.value === 1);
     });
+
   </script>
 </body>
 </html>

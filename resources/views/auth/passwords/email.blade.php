@@ -36,14 +36,17 @@
             </div>
 
             <div class="form-container rounded-custom p-4">
-                <form id="forgot-step1-form">
+                <form method="POST" action="{{ route('password.email') }}" id="forgot-step1-form">
+                    @csrf
                     <p class="text-muted mb-3">Enter the email address linked to your account:</p>
                     <div class="mb-3">
                         <div class="position-relative">
                             
-                            <input type="email" id="forgot-email" class="form-control email-input" placeholder="Enter your email address">
+                            <input type="email" id="email" name="email" class="form-control email-input" placeholder="Enter your email address" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         </div>
-                        <div id="forgot-email-error" class="text-danger small mt-1 d-none">Invalid email format format.</div>
+                        @error('email')
+                            <div id="forgot-email-error" class="text-danger small mt-1 d-none">Invalid email format format.</div>
+                        @enderror
                     </div>
 
                     <button type="submit" class="btn btn-primary-custom w-100 fw-medium">Send Verification Code</button>
