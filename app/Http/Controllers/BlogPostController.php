@@ -125,15 +125,22 @@ class BlogPostController extends Controller
     {
         $request->validate([
             'id' => 'required|exists:blog_posts,id',
-            'status' => 'required|in:draft,published,archived',
+            'status' => 'required|in:draft,published,archived,deleted',
         ]);
 
         $post = BlogPost::findOrFail($request->id);
+
+        if ($request->status === 'deleted') {
+            $post->delete(); // soft delete ito, maglalagay ng date sa deleted_at
+            return response()->json(['message' => 'Post soft deleted']);
+        }
+
         $post->status = $request->status;
         $post->save();
 
         return response()->json(['message' => 'Status updated to ' . $request->status]);
     }
+
 
 
 }
