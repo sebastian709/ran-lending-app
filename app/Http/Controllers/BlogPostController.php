@@ -40,24 +40,28 @@ class BlogPostController extends Controller
     public function index(Request $request)
     {
         $status = $request->input('status');
+
+        // Default query
         $query = BlogPost::latest();
 
-        if ($status && $status !== 'all') {
+        // Gamitin lang ang withTrashed() kapag status is 'deleted'
+        if ($status === 'deleted') {
+            $query = BlogPost::withTrashed()->where('status', 'deleted')->latest();
+        } elseif ($status && $status !== 'all') {
             $query->where('status', $status);
         } elseif (!$status || $status === 'all') {
-            $query->where('status', '!=', 'archived'); // ← exclude archived by default
+            $query->where('status', '!=', 'archived');
         }
 
         $posts = $query->get();
 
-        // 🟡 STEP 1: AJAX request → return only list
         if ($request->ajax() && $request->has('status')) {
             return view('admin.blogpost.partials.bloglist', compact('posts'))->render();
         }
 
-        // 🟢 STEP 2: Normal page load → return full page
         return view('admin.blogpost.index', compact('posts'));
     }
+
 
     public function view($id)
     {
@@ -128,18 +132,32 @@ class BlogPostController extends Controller
             'status' => 'required|in:draft,published,archived,deleted',
         ]);
 
-        $post = BlogPost::findOrFail($request->id);
+        $post = BlogPost::withTrashed()->findOrFail($request->id); // ← FIXED
 
+        // If restoring from soft-delete and setting status back to archived
+        if ($post->trashed() && $request->status === 'archived') {
+            $post->restore(); // remove deleted_at
+            $post->status = 'archived';
+            $post->save();
+
+            return response()->json(['message' => 'Post restored and status set to archived']);
+        }
+
+        // If marking as deleted (soft delete)
         if ($request->status === 'deleted') {
-            $post->delete(); // soft delete ito, maglalagay ng date sa deleted_at
+            $post->status = 'deleted';
+            $post->save();
+            $post->delete(); // soft delete
             return response()->json(['message' => 'Post soft deleted']);
         }
 
+        // Normal status update
         $post->status = $request->status;
         $post->save();
 
         return response()->json(['message' => 'Status updated to ' . $request->status]);
     }
+
 
 
 

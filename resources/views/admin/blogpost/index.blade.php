@@ -21,6 +21,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-white bp-tab" href="#">Archived</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white bp-tab" href="#">Deleted</a>
+                        </li>
                     </ul>
 
                     <a href="#" class="btn btn-light fw-semibold text-primary" data-url="/admin/blogpost/createBlogpost">
@@ -43,6 +46,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-white btn-sm bp-tab" href="#">Archived</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white btn-sm bp-tab" href="#">Deleted</a>
                             </li>
                         </ul>
                         <a href="#" class="btn btn-light fw-semibold text-primary w-100"
