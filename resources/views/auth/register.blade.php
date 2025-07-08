@@ -40,7 +40,7 @@
     <header class="bg-white shadow-sm">
       <div class="container py-3">
         <div class="d-flex justify-content-between align-items-center">
-          <a href="login.html" class="d-flex align-items-center text-decoration-none text-muted">
+          <a href="login" class="d-flex align-items-center text-decoration-none text-muted">
             <i class="ri-arrow-left-line me-2"></i>
             <span>Back to Login</span>
           </a>
@@ -170,9 +170,8 @@
               <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(2)">
                 <i class="ri-arrow-left-line"></i>Previous
               </button>
-              <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="nextStep(4)">
-                Save and Verify <i class="ri-arrow-right-line"></i>
-              </button>
+              <input type="submit" class="btn d-flex align-items-center gap-2 text-muted" value='Save and Verify'>
+
             </div>
           </form>
         </div>
