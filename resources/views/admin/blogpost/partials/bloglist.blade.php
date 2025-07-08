@@ -69,6 +69,14 @@
                                 <i class="bi bi-archive fs-5"></i>
                             </a>
                         @endif
+
+                        {{-- Delete Button --}}
+                        @if ($post->status === 'archived')
+                            <a href="#" class="text-danger action-icon btn-bp-status" title="Delete"
+                                data-bp_id="{{ $post->id }}" data-status="deleted">
+                                <i class="bi bi-trash fs-5"></i>
+                            </a>
+                        @endif
                     </div>
 
                     {{-- RIGHT: View & Edit --}}
