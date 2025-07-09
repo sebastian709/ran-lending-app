@@ -9,3 +9,26 @@
         </ul>
     </div>
 </div>
+
+@section('scripts')
+<script>
+    document.getElementById('sidebarToggle')?.addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (event) {
+        const sidebar = document.getElementById('sidebar');
+        const toggle = document.getElementById('sidebarToggle');
+        if (window.innerWidth <= 991.98 && !sidebar.contains(event.target) && !toggle?.contains(event.target)) {
+            sidebar.classList.remove('show');
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        const sidebar = document.getElementById('sidebar');
+        if (window.innerWidth > 991.98) {
+            sidebar.classList.remove('show');
+        }
+    });
+</script>
+@endsection
