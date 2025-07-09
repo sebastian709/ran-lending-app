@@ -15,12 +15,26 @@ Route::get('/test-broadcast', function () {
     return 'Test broadcasted!';
 });
 
+# Landing Page
+Route::get('/', fn() => view('index'))->name('index');
+
+# multi-purpose website
+Route::get('/main', fn() => view('main.index'))->name('main.index');
+Route::get('/jewelry', fn() => view('main.jewelry'))->name('main.jewelry');
+Route::get('/charity', fn() => view('main.charity'))->name('main.charity');
+Route::get('/travel-and-tours', fn() => view('main.travel-and-tours'))->name('main.travel-and-tours');
+
+
+
 // admin routes
 Route::prefix('admin')->group(function () {
-    Route::get('/', fn() => view('admin.home'))->name('admin.home');
-    Route::get('/dashboard', fn() => view('admin.home'))->name('admin.home');
-    Route::get('/blankpage', fn() => view('admin.blankpage'))->name('admin.blankpage');
+    // dashboard
+    Route::get('/', fn() => view('admin.main.index'))->name('admin.main.index');
 
+    // testing only
+    Route::get('/blankpage', fn() => view('admin.testing-only.blankpage'))->name('admin.testing-only.blankpage');
+
+    // blogpost
     Route::prefix('blogpost')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
         Route::get('/filter', [BlogPostController::class, 'index']);

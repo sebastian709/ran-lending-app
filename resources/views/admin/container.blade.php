@@ -21,7 +21,7 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <h4>RAN Serenity</h4>
-        <a href="#" class="nav-link active" data-url="/admin/dashboard">
+        <a href="#" class="nav-link active" data-url="/admin/">
             <i class="bi bi-columns-gap"></i> Dashboard
         </a>
         <a href="#" class="nav-link" data-url="/admin/blogpost">

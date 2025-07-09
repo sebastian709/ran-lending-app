@@ -1,4 +1,4 @@
-@extends('admin')
+@extends('admin.container')
 
 @section('content')
     <div class="container my-5">

@@ -10,7 +10,7 @@ class ChatTestController extends Controller
 {
     public function index()
     {
-        return view('chat');
+        return view('admin.testing-only.chat');
     }
 
     public function broadcast(Request $request)
