@@ -14,8 +14,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#6a1b9a",
-                        secondary: "#9c27b0"
+                        primary: "#76689a",
+                        secondary: "#76689a"
                     },
                     borderRadius: {
                         none: "0px",
@@ -144,7 +144,7 @@
         <div class="container mx-auto px-4 relative z-10">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="text-white">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Discover Amazing Destinations — Create Unforgettable Memories</h1>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Discover new destinations, Create lasting memories.</h1>
                     <p class="text-xl mb-8">Experience the world's most beautiful places with our expertly crafted travel packages and personalized service.</p>
                     <div class="flex flex-wrap gap-4">
                         <button class="bg-white text-primary px-8 py-3 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Explore Packages</button>
@@ -205,7 +205,7 @@
     </section>
 
     <!-- Why Choose Us -->
-    <section class="py-20 bg-gray-50">
+    <section class="py-20 bg-[#e7e2e2]">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose RAN Travel & Tours</h2>
@@ -238,7 +238,7 @@
     </section>
 
     <!-- Blog Section -->
-    <section class="py-20 bg-white" id="blog">
+    <section class="py-20 bg-[#f5efef]" id="blog">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Travel Stories & Tips</h2>
@@ -352,70 +352,9 @@
         </div>
     </footer>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
-        <script src="{{ asset('js/index.js') }}"></script>
-    <script id="tripCalculator">
-        document.addEventListener('DOMContentLoaded', function() {
-            const destination = document.getElementById('destination');
-            const travelers = document.getElementById('travelers');
-            const duration = document.getElementById('duration');
-            const calculateBtn = document.getElementById('calculateTrip');
-            const baseCostEl = document.getElementById('baseCost');
-            const groupCostEl = document.getElementById('groupCost');
-            const totalCostEl = document.getElementById('totalCost');
-
-            const destinationPrices = {
-                'tropical': 899,
-                'mountain': 1299,
-                'cultural': 1099,
-                'city': 799
-            };
-
-            calculateBtn.addEventListener('click', function() {
-                const selectedDestination = destination.value;
-                const numTravelers = parseInt(travelers.value) || 0;
-                const tripDuration = parseInt(duration.value) || 0;
-
-                if (!selectedDestination || numTravelers === 0 || tripDuration === 0) {
-                    baseCostEl.textContent = '$0.00';
-                    groupCostEl.textContent = '$0.00';
-                    totalCostEl.textContent = '$0.00';
-                    return;
-                }
-
-                const basePrice = destinationPrices[selectedDestination];
-                const durationMultiplier = Math.max(1, tripDuration / 7); // Base price is for 7 days
-                const adjustedBasePrice = basePrice * durationMultiplier;
-                const groupTotal = adjustedBasePrice * numTravelers;
-
-                // Update display
-                baseCostEl.textContent = `$${adjustedBasePrice.toFixed(2)}`;
-                groupCostEl.textContent = `$${groupTotal.toFixed(2)}`;
-                totalCostEl.textContent = `$${groupTotal.toFixed(2)}`;
-            });
-        });
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+    <script src="{{ asset('js/index.js') }}"></script>
     </script>
-
-    <script id="mobileMenuToggle">
-        document.addEventListener("DOMContentLoaded", function () {
-            const menuToggle = document.getElementById("menuToggle");
-            const mobileMenu = document.getElementById("mobileMenu");
-
-            menuToggle.addEventListener("click", function () {
-                mobileMenu.classList.toggle("hidden");
-                // Toggle icon between menu and close
-                const icon = menuToggle.querySelector("i");
-                if (icon.classList.contains("ri-menu-line")) {
-                    icon.classList.remove("ri-menu-line");
-                    icon.classList.add("ri-close-line");
-                } else {
-                    icon.classList.remove("ri-close-line");
-                    icon.classList.add("ri-menu-line");
-                }
-            });
-        });
-    </script>
-
     <script id="navbarScroll">
         document.addEventListener("DOMContentLoaded", function () {
             const navbar = document.querySelector("nav");

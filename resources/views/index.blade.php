@@ -12,7 +12,7 @@
         <script>
             tailwind.config = {
                 theme: {
-                    extend: { colors: { primary: "#6a1b9a", secondary: "#9c27b0" }, borderRadius: { none: "0px", sm: "4px", DEFAULT: "8px", md: "12px", lg: "16px", xl: "20px", "2xl": "24px", "3xl": "32px", full: "9999px", button: "8px" } },
+                    extend: { colors: { primary: "#76689a", secondary: "#76689a" }, borderRadius: { none: "0px", sm: "4px", DEFAULT: "8px", md: "12px", lg: "16px", xl: "20px", "2xl": "24px", "3xl": "32px", full: "9999px", button: "8px" } },
                 },
             };
         </script>
@@ -294,7 +294,7 @@
             </div>
         </section>
         <!-- Why Choose Us -->
-        <section class="py-20 bg-gray-50">
+        <section class="py-20 bg-[#e7e2e2]">
             <div class="container mx-auto px-4">
                 <div class="text-center mb-16">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose Our Lending Services</h2>
@@ -519,24 +519,6 @@
             showSlide(0);
             startAutoplay();
            
-        </script>
-        <script id="mobileMenuToggle">
-            document.addEventListener("DOMContentLoaded", function () {
-                const menuToggle = document.getElementById("menuToggle");
-                const mobileMenu = document.getElementById("mobileMenu");
-                menuToggle.addEventListener("click", function () {
-                    mobileMenu.classList.toggle("hidden");
-                    // Toggle icon between menu and close
-                    const icon = menuToggle.querySelector("i");
-                    if (icon.classList.contains("ri-menu-line")) {
-                        icon.classList.remove("ri-menu-line");
-                        icon.classList.add("ri-close-line");
-                    } else {
-                        icon.classList.remove("ri-close-line");
-                        icon.classList.add("ri-menu-line");
-                    }
-                });
-            });
         </script>
         <script id="navbarScroll">
             document.addEventListener("DOMContentLoaded", function () {

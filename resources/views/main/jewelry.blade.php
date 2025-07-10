@@ -14,8 +14,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#6a1b9a",
-                        secondary: "#9c27b0"
+                        primary: "#76689a",
+                        secondary: "#76689a"
                     },
                     borderRadius: {
                         none: "0px",
@@ -151,7 +151,7 @@
         <div class="container mx-auto px-4 relative z-10">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="text-white">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Exquisite Jewelry — Crafted with Passion & Precision</h1>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Adorn yourself with treasures that last a lifetime.</h1>
                     <p class="text-xl mb-8">Discover our stunning collection of handcrafted jewelry pieces that celebrate life's most precious moments with timeless elegance.</p>
                     <div class="flex flex-wrap gap-4">
                         <a href="https://www.facebook.com/profile.php?id=61555856647935&sk=photos_albums" target="_blank" rel="noopener noreferrer"
@@ -248,7 +248,7 @@
     </section>
 
     <!-- Why Choose Us -->
-    <section class="py-20 bg-white" id="about">
+    <section class="py-20 bg-[#f5efef]" id="about">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose RAN Jewelry</h2>
@@ -286,7 +286,7 @@
     </section>
 
     <!-- Blog Section -->
-    <section class="py-20 bg-gray-50" id="blog">
+    <section class="py-20 bg-[#e7e2e2]" id="blog">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Jewelry Stories & Care Tips</h2>

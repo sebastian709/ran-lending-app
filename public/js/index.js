@@ -5,3 +5,19 @@ $(document).on('click', '[data-url]', function (e) {
   
   window.location.href = url;
 });
+
+ document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("menuToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+    menuToggle.addEventListener("click", function () {
+        mobileMenu.classList.toggle("hidden");
+        const icon = menuToggle.querySelector("i");
+        if (icon.classList.contains("ri-menu-line")) {
+            icon.classList.remove("ri-menu-line");
+            icon.classList.add("ri-close-line");
+        } else {
+            icon.classList.remove("ri-close-line");
+            icon.classList.add("ri-menu-line");
+        }
+    });
+});
