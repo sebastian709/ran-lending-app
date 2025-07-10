@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\Auth\OtpVerificationController;
+use App\Http\Controllers\Auth\RegisterController;
+
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
@@ -52,21 +54,16 @@ Route::prefix('admin')->group(function () {
     });
 });
 
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
 
 
 
-
+//AUTH
 Auth::routes();
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
-
-// borrower routes
-Route::get('/apply-loan', function () {
-    return view('borrower.loan-apply');
-})->name('loan.apply');
-
-
+//AJAX
+Route::post('/register-auth-send', [OtpVerificationController::class, 'regauthsend'])->name('reg.auth.send');
+Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthcheck'])->name('reg.auth.check');
