@@ -390,39 +390,32 @@
                     <p class="text-gray-600 max-w-3xl mx-auto">Explore insights, stories, and updates from our businesses and initiatives.</p>
                 </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Blog Post  -->
-                @forelse ($posts as $post)
-                    <div
-                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Blog Post 1 -->
-                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                        <div class="overflow-hidden">
-                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
-                                alt="Blog Image"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @forelse ($posts as $post)
+                        <div class="bg-white rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
+                            <div class="overflow-hidden">
+                                <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                                    alt="Blog Image"
+                                    class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                            </div>
+                            <div class="p-6">
+                                <span class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
+                                <span class="text-sm text-gray-500 ml-2">|
+                                    {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}
+                                </span>
+                                <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
+                                <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
+                                <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <span
-                                class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
-                            <span class="text-sm text-gray-500 ml-2">|
-                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
-                            <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
-                            <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
-                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More
-                                →</a>
+                    @empty
+                        <div class="col-span-full">
+                            <p class="text-center text-gray-500">No blog posts available.</p>
                         </div>
-                    </div>
-                @empty
-                    <div class="col-span-4">
-                        <p class="text-center text-gray-500">No blog posts available.</p>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
             </div>
-        </div>
-    </section>
-
+        </section>
 
     <!-- Social Media Section -->
     <section class="py-20 bg-gradient-to-r from-primary to-secondary text-white" id="Social">
