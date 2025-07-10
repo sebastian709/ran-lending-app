@@ -258,50 +258,31 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <!-- Blog Post 1 -->
-              <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                  <div class="overflow-hidden">
-                      <img src="https://readdy.ai/api/search-image?query=modern%20financial%20district%20with%20skyscrapers%20and%20business%20people%2C%20professional%20corporate%20environment%2C%20purple%20lighting%20accents%2C%20elegant%20and%20luxurious%20atmosphere&width=800&height=1200&seq=lending1&orientation=portrait" alt="Blog Image 1"
-                          class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                  </div>
-                  <div class="p-6">
-                      <span class="text-sm text-purple-600 font-semibold uppercase">Lending</span>
-                      <span class="text-sm text-gray-500 ml-2">| June 15, 2025</span>
-                      <h3 class="text-xl font-bold text-gray-800 mt-2">How Flexible Lending Transformed Local Startups</h3>
-                      <p class="text-gray-600 mt-3">Discover how our tailored lending solutions helped small businesses scale with confidence and reduced financial pressure.</p>
-                      <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                  </div>
-              </div>
-
-              <!-- Blog Post 2 -->
-              <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                  <div class="overflow-hidden">
-                      <img src="https://readdy.ai/api/search-image?query=luxury%20jewelry%20display%20with%20elegant%20rings%20and%20necklaces%2C%20soft%20purple%20lighting%2C%20premium%20jewelry%20showcase%2C%20high-end%20retail%20environment&width=800&height=1200&seq=jewelry1&orientation=portrait" alt="Blog Image 2"
-                          class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                  </div>
-                  <div class="p-6">
-                      <span class="text-sm text-purple-600 font-semibold uppercase">Jewelry</span>
-                      <span class="text-sm text-gray-500 ml-2">| May 28, 2025</span>
-                      <h3 class="text-xl font-bold text-gray-800 mt-2">The Art of Crafting Meaningful Jewelry Pieces</h3>
-                      <p class="text-gray-600 mt-3">A behind-the-scenes look at how our expert artisans create stunning, meaningful jewelry for every occasion.</p>
-                      <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                  </div>
-              </div>
-
-              <!-- Blog Post 3 -->
-              <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                  <div class="overflow-hidden">
-                      <img src="https://readdy.ai/api/search-image?query=luxury%20travel%20destination%20with%20scenic%20beach%20resort%2C%20purple%20sunset%2C%20exclusive%20vacation%20experience%2C%20high-end%20travel%20photography&width=800&height=1200&seq=travel1&orientation=portrait" alt="Blog Image 3"
-                          class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                  </div>
-                  <div class="p-6">
-                      <span class="text-sm text-purple-600 font-semibold uppercase">Travel & Tours</span>
-                      <span class="text-sm text-gray-500 ml-2">| April 10, 2025</span>
-                      <h3 class="text-xl font-bold text-gray-800 mt-2">Top 5 Destinations for a Family Getaway</h3>
-                      <p class="text-gray-600 mt-3">From tropical beaches to cultural landmarks, explore the top places to make unforgettable family memories.</p>
-                      <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                  </div>
-              </div>
+              <!-- Blog Post  -->
+                @forelse ($posts as $post)
+                    <div
+                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
+                        <div class="overflow-hidden">
+                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                                alt="Blog Image"
+                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <span
+                                class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
+                            <span class="text-sm text-gray-500 ml-2">|
+                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
+                            <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
+                            <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
+                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More
+                                →</a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-4">
+                        <p class="text-center text-gray-500">No blog posts available.</p>
+                    </div>
+                @endforelse
           </div>
       </div>
   </section>

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\Auth\OtpVerificationController;
@@ -19,10 +20,11 @@ Route::get('/test-broadcast', function () {
 Route::get('/', fn() => view('index'))->name('index');
 
 # multi-purpose website
-Route::get('/main', fn() => view('main.index'))->name('main.index');
-Route::get('/jewelry', fn() => view('main.jewelry'))->name('main.jewelry');
-Route::get('/hub', fn() => view('main.charity'))->name('main.charity');
-Route::get('/travel-and-tours', fn() => view('main.travel-and-tours'))->name('main.travel-and-tours');
+Route::get('/main', [BlogPostController::class, 'landingView']);
+Route::get('/jewelry', [BlogPostController::class, 'landingJewelry']);
+Route::get('/hub', [BlogPostController::class, 'landingHub']);
+Route::get('/travel-and-tours', [BlogPostController::class, 'landingTAT']);
+
 
 
 
@@ -45,8 +47,12 @@ Route::prefix('admin')->group(function () {
         Route::get('/fetch/{id}', [BlogPostController::class, 'fetch']);
         Route::post('/update', [BlogPostController::class, 'update']);
         Route::post('/update-status', [BlogPostController::class, 'updateStatus']);
+
+        
     });
 });
+
+
 
 
 

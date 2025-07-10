@@ -245,50 +245,31 @@
                 <p class="text-gray-600 max-w-3xl mx-auto">Discover inspiring travel stories, helpful tips, and the latest updates from our adventures around the world.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Blog Post 1 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                    <div class="overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                             alt="Travel Tips" class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                <!-- Blog Post  -->
+                @forelse ($posts as $post)
+                    <div
+                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
+                        <div class="overflow-hidden">
+                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                                alt="Blog Image"
+                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <span
+                                class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
+                            <span class="text-sm text-gray-500 ml-2">|
+                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
+                            <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
+                            <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
+                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More
+                                →</a>
+                        </div>
                     </div>
-                    <div class="p-6">
-                        <span class="text-sm text-purple-600 font-semibold uppercase">Travel Tips</span>
-                        <span class="text-sm text-gray-500 ml-2">| June 15, 2025</span>
-                        <h3 class="text-xl font-bold text-gray-800 mt-2">10 Essential Packing Tips for Your Next Adventure</h3>
-                        <p class="text-gray-600 mt-3">Master the art of efficient packing with these expert tips that will make your travels smoother and more enjoyable.</p>
-                        <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
+                @empty
+                    <div class="col-span-4">
+                        <p class="text-center text-gray-500">No blog posts available.</p>
                     </div>
-                </div>
-
-                <!-- Blog Post 2 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                    <div class="overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                             alt="Hidden Gems" class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-sm text-purple-600 font-semibold uppercase">Destinations</span>
-                        <span class="text-sm text-gray-500 ml-2">| May 28, 2025</span>
-                        <h3 class="text-xl font-bold text-gray-800 mt-2">Hidden Gems: Off-the-Beaten-Path Destinations</h3>
-                        <p class="text-gray-600 mt-3">Discover breathtaking locations that most travelers never see, perfect for your next unique adventure.</p>
-                        <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                    </div>
-                </div>
-
-                <!-- Blog Post 3 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                    <div class="overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                             alt="Budget Travel" class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-sm text-purple-600 font-semibold uppercase">Budget Travel</span>
-                        <span class="text-sm text-gray-500 ml-2">| April 10, 2025</span>
-                        <h3 class="text-xl font-bold text-gray-800 mt-2">How to Travel the World on a Budget</h3>
-                        <p class="text-gray-600 mt-3">Learn proven strategies to explore amazing destinations without breaking the bank, from accommodation to dining.</p>
-                        <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
