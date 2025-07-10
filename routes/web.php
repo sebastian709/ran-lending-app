@@ -25,13 +25,15 @@ Route::get('/jewelry', [BlogPostController::class, 'landingJewelry']);
 Route::get('/hub', [BlogPostController::class, 'landingHub']);
 Route::get('/travel-and-tours', [BlogPostController::class, 'landingTAT']);
 
+#index page routes - Lending website
+Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
 
 
 
 // admin routes
 Route::prefix('admin')->group(function () {
     // dashboard
-    Route::get('/', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
+    Route::get('/', fn() => view('auth.login'))->name('auth.login');
 
     // testing only
     Route::get('/blankpage', fn() => view('admin.testing-only.blankpage'))->name('admin.testing-only.blankpage');
