@@ -293,50 +293,31 @@
                 <p class="text-gray-600 max-w-3xl mx-auto">Discover the latest trends, care tips, and inspiring stories from the world of fine jewelry.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Blog Post 1 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                    <div class="overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                             alt="Jewelry Care" class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                <!-- Blog Post  -->
+                @forelse ($posts as $post)
+                    <div
+                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
+                        <div class="overflow-hidden">
+                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                                alt="Blog Image"
+                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <span
+                                class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
+                            <span class="text-sm text-gray-500 ml-2">|
+                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
+                            <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
+                            <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
+                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More
+                                →</a>
+                        </div>
                     </div>
-                    <div class="p-6">
-                        <span class="text-sm text-purple-600 font-semibold uppercase">Care Tips</span>
-                        <span class="text-sm text-gray-500 ml-2">| June 15, 2025</span>
-                        <h3 class="text-xl font-bold text-gray-800 mt-2">How to Care for Your Diamond Jewelry</h3>
-                        <p class="text-gray-600 mt-3">Learn essential tips to keep your diamond jewelry sparkling and beautiful for generations to come.</p>
-                        <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
+                @empty
+                    <div class="col-span-4">
+                        <p class="text-center text-gray-500">No blog posts available.</p>
                     </div>
-                </div>
-
-                <!-- Blog Post 2 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                    <div class="overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                             alt="Engagement Rings" class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-sm text-purple-600 font-semibold uppercase">Trends</span>
-                        <span class="text-sm text-gray-500 ml-2">| May 28, 2025</span>
-                        <h3 class="text-xl font-bold text-gray-800 mt-2">2025 Engagement Ring Trends</h3>
-                        <p class="text-gray-600 mt-3">Discover the most popular engagement ring styles and trends that are capturing hearts this year.</p>
-                        <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                    </div>
-                </div>
-
-                <!-- Blog Post 3 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                    <div class="overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                             alt="Custom Design" class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-sm text-purple-600 font-semibold uppercase">Custom Design</span>
-                        <span class="text-sm text-gray-500 ml-2">| April 10, 2025</span>
-                        <h3 class="text-xl font-bold text-gray-800 mt-2">The Art of Custom Jewelry Design</h3>
-                        <p class="text-gray-600 mt-3">Explore the creative process behind custom jewelry and how to bring your unique vision to life.</p>
-                        <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
