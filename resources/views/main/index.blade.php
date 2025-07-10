@@ -13,7 +13,7 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: { colors: { primary: "#6a1b9a", secondary: "#9c27b0" }, borderRadius: { none: "0px", sm: "4px", DEFAULT: "8px", md: "12px", lg: "16px", xl: "20px", "2xl": "24px", "3xl": "32px", full: "9999px", button: "8px" } },
+                extend: { colors: { primary: "#76689a", secondary: "#76689a" }, borderRadius: { none: "0px", sm: "4px", DEFAULT: "8px", md: "12px", lg: "16px", xl: "20px", "2xl": "24px", "3xl": "32px", full: "9999px", button: "8px" } },
             },
         };
     </script>
@@ -133,16 +133,16 @@
     </nav>
     <!-- Hero Section -->
     <section class="relative min-h-screen">
-        <div class="hidden md:grid md:grid-cols-4 h-[calc(100vh)]" id="heroGrid">
+        <div class="hidden md:grid md:grid-cols-5 h-[calc(100vh)]" id="heroGrid">
             <!-- Lending -->
             <div data-url="/" class="group relative overflow-hidden cursor-pointer transition-all duration-500"
                 id="lendingHero">
                 <div
                     class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=modern%20financial%20district%20with%20skyscrapers%20and%20business%20people%2C%20professional%20corporate%20environment%2C%20purple%20lighting%20accents%2C%20elegant%20and%20luxurious%20atmosphere&width=800&height=1200&seq=lending1&orientation=portrait')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div class="absolute inset-0 bg-primary/30 group-hover:bg-primary/20 transition-all duration-500"></div>
                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
-                    <h3 class="text-2xl font-bold mb-2">RAN Serenity Lending</h3>
+                    <h3 class="text-xl font-bold mb-2">RAN Serenity Lending</h3>
                     <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Flexible
                         financial solutions tailored to your needs</p>
                     <button data-url="/"
@@ -156,11 +156,11 @@
                 <div
                     class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=luxury%20jewelry%20display%20with%20elegant%20rings%20and%20necklaces%2C%20soft%20purple%20lighting%2C%20premium%20jewelry%20showcase%2C%20high-end%20retail%20environment&width=800&height=1200&seq=jewelry1&orientation=portrait')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div class="absolute inset-0 bg-primary/30 group-hover:bg-primary/20 transition-all duration-500"></div>
                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
-                    <h3 class="text-2xl font-bold mb-2">RAN Serenity Jewelry</h3>
-                    <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Exquisite
-                        pieces for life's special moments</p>
+                    <h3 class="text-xl font-bold mb-2">RAN Serenity Jewelry</h3>
+                    <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Adorn
+                        yourself with treasures that last a lifetime.</p>
                     <button data-url="/jewelry"
                         class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn
                         More</button>
@@ -172,9 +172,9 @@
                 <div
                     class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=luxury%20travel%20destination%20with%20scenic%20beach%20resort%2C%20purple%20sunset%2C%20exclusive%20vacation%20experience%2C%20high-end%20travel%20photography&width=800&height=1200&seq=travel1&orientation=portrait')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div class="absolute inset-0 bg-primary/30 group-hover:bg-primary/20 transition-all duration-500"></div>
                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
-                    <h3 class="text-2xl font-bold mb-2">RAN Serenity Travel & Tours</h3>
+                    <h3 class="text-xl font-bold mb-2">RAN Serenity Travel & Tours</h3>
                     <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         Unforgettable journeys to dream destinations</p>
                     <button data-url="/travel-and-tours"
@@ -188,9 +188,9 @@
                 <div
                     class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=charitable%20community%20service%20event%2C%20diverse%20group%20of%20volunteers%20helping%20others%2C%20warm%20purple%20lighting%2C%20inspiring%20humanitarian%20photography&width=800&height=1200&seq=charity1&orientation=portrait')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div class="absolute inset-0 bg-primary/30 group-hover:bg-primary/20 transition-all duration-500"></div>
                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
-                    <h3 class="text-2xl font-bold mb-2">RAN Serenity Hub</h3>
+                    <h3 class="text-xl font-bold mb-2">RAN Serenity Hub</h3>
                     <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Making a
                         difference in communities worldwide</p>
                     <button data-url="/hub"
@@ -198,7 +198,23 @@
                         More</button>
                 </div>
             </div>
+            <!-- Shop -->
+            <div class="group relative overflow-hidden cursor-pointer transition-all duration-500" id="charityHero">
+                <div
+                    class="absolute inset-0 bg-[url('https://media.istockphoto.com/id/1361840527/photo/clothing-store-with-clothes-shoes-other-personal-accessories-and-neon-lights.jpg?s=612x612&w=0&k=20&c=oUg05zuEHG8eVFx4VtyX8Chhf90Ua1cWi6C1U46oluM=')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="absolute inset-0 bg-primary/30 group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div class="relative h-full flex flex-col justify-end p-8 text-white">
+                    <h3 class="text-xl font-bold mb-2">RAN Serenity Shop</h3>
+                    <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Connecting
+                        Merchants. Uplifting Communities</p>
+                    <button onclick="window.location.href='charity.html'"
+                        class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn
+                        More</button>
+                </div>
+            </div>
         </div>
+
         <!-- Mobile Carousel -->
         <div class="md:hidden h-[calc(100vh)]" id="mobileCarousel">
             <div class="relative h-full">
@@ -267,6 +283,22 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Shop Slide -->
+                    <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-500">
+                        <div class="relative h-full">
+                            <div
+                                class="absolute inset-0 bg-[url('https://media.istockphoto.com/id/1361840527/photo/clothing-store-with-clothes-shoes-other-personal-accessories-and-neon-lights.jpg?s=612x612&w=0&k=20&c=oUg05zuEHG8eVFx4VtyX8Chhf90Ua1cWi6C1U46oluM=')] bg-cover bg-center">
+                            </div>
+                            <div class="absolute inset-0 bg-primary/40"></div>
+                            <div class="relative h-full flex flex-col justify-end p-8 text-white">
+                                <h3 class="text-2xl font-bold mb-2">RAN Serenity Shop</h3>
+                                <p class="text-sm mb-4">Connecting Merchants. Uplifting Communities</p>
+                                <button
+                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
+                                    More</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- Carousel Navigation -->
                 <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
@@ -274,20 +306,20 @@
                     <button class="carousel-dot w-2 h-2 rounded-full bg-white/50" data-index="1"></button>
                     <button class="carousel-dot w-2 h-2 rounded-full bg-white/50" data-index="2"></button>
                     <button class="carousel-dot w-2 h-2 rounded-full bg-white/50" data-index="3"></button>
+                    <button class="carousel-dot w-2 h-2 rounded-full bg-white/50" data-index="4"></button>
                 </div>
             </div>
         </div>
     </section>
-
     <!-- Business Sections -->
-    <section class="py-20 bg-white" id="business">
+    <section class="py-20 bg-[#f5efef]" id="business">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our Business</h2>
                 <p class="text-gray-600 max-w-3xl mx-auto">Explore our diverse range of businesses designed to meet your
                     various needs from financial services to travel experiences.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Lending Business -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
                     <div class="p-8">
@@ -368,11 +400,44 @@
                         </div>
                     </div>
                 </div>
+                <!-- Shop -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="p-8">
+                        <div
+                            class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
+                            <i class="ri-store-line ri-2x"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Shop</h3>
+                        <p class="text-gray-600 mb-6">Join our mission to make a positive impact on communities in need.
+                            Through sustainable programs and direct assistance, we're creating meaningful change
+                            together.</p>
+                        <div class="flex items-center">
+                            <button
+                                class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
+                                More</button>
+                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Shop Now <i
+                                    class="ri-arrow-right-line ml-1"></i> </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Quote -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="p-8 flex flex-col justify-center items-center text-center h-full">
+                        <div
+                            class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
+                            <i class="ri-double-quotes-l ri-2x"></i>
+                        </div>
+                        <blockquote class="text-xl italic text-gray-700 mb-4">
+                            "Do Everything in Love."
+                        </blockquote>
+                        <p class="text-sm text-gray-500">Corinthians 16 : 14</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
     <!-- Features Section -->
-    <section class="py-20 bg-gray-50" id="About">
+    <section class="py-20 bg-[#e7e2e2]" id="About">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose Us</h2>
@@ -410,9 +475,8 @@
             </div>
         </div>
     </section>
-
     <!-- Blog Section -->
-    <section class="py-20 bg-white" id="Blog">
+    <section class="py-20 bg-[#f5efef]" id="Blog">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Latest Blog Posts</h2>
@@ -420,11 +484,10 @@
                     and initiatives.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Blog Post  -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @forelse ($posts as $post)
                     <div
-                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
+                        class="bg-white rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
                         <div class="overflow-hidden">
                             <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
                                 alt="Blog Image"
@@ -434,7 +497,8 @@
                             <span
                                 class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
                             <span class="text-sm text-gray-500 ml-2">|
-                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
+                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}
+                            </span>
                             <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
                             <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
                             <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More
@@ -442,14 +506,13 @@
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-4">
+                    <div class="col-span-full">
                         <p class="text-center text-gray-500">No blog posts available.</p>
                     </div>
                 @endforelse
             </div>
         </div>
     </section>
-
 
     <!-- Social Media Section -->
     <section class="py-20 bg-gradient-to-r from-primary to-secondary text-white" id="Social">
@@ -510,12 +573,14 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Financial Lending</a>
-                        </li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Luxury Jewelry</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Travel & Tours</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Charitable
-                                Initiatives</a></li>
+                        <li><a data-url="/" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                                Lending</a></li>
+                        <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                                Jewelry</a></li>
+                        <li><a data-url="/travel-and-tours" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
+                                Serenity Travel & Tours</a></li>
+                        <li><a data-url="/hub" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                                Hub</a></li>
                     </ul>
                 </div>
                 <div>
@@ -646,24 +711,6 @@
             // Initialize carousel
             showSlide(0);
             startAutoplay();
-        });
-    </script>
-    <script id="mobileMenuToggle">
-        document.addEventListener("DOMContentLoaded", function () {
-            const menuToggle = document.getElementById("menuToggle");
-            const mobileMenu = document.getElementById("mobileMenu");
-            menuToggle.addEventListener("click", function () {
-                mobileMenu.classList.toggle("hidden");
-                // Toggle icon between menu and close
-                const icon = menuToggle.querySelector("i");
-                if (icon.classList.contains("ri-menu-line")) {
-                    icon.classList.remove("ri-menu-line");
-                    icon.classList.add("ri-close-line");
-                } else {
-                    icon.classList.remove("ri-close-line");
-                    icon.classList.add("ri-menu-line");
-                }
-            });
         });
     </script>
     <script id="navbarScroll">
