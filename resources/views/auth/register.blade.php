@@ -294,7 +294,7 @@
         },
         success: function (res) {
           if (res == 1) {
-            prevStep(5)
+            $('#register-form').submit();
           }else{
             alert()
           }
