@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register - RAN Lending</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
@@ -170,42 +171,44 @@
               <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(2)">
                 <i class="ri-arrow-left-line"></i>Previous
               </button>
-              <input type="submit" class="btn d-flex align-items-center gap-2 text-muted" value='Save and Verify'>
+              <button type="button" id="authreggen" class=" btn d-flex align-items-center gap-2 text-muted" >Save and Verify</button>
 
             </div>
-          </form>
         </div>
-
         <!-- Step 4: Verification -->
         <div class="form-container rounded-custom p-4 form-step" id="step-4">
           <div class="text-center mb-4">
             <h4 class="fw-bold">RAN Serenity Lending Account verification</h4>
-            <p class="text-muted small">We've sent a 6-digit verification code to your email or phone.<br>This code is valid for 5 minutes.</p>
+            <p class="text-muted small">We've sent a 6-digit verification code to your email or phone.<br>This code is valid for 10 minutes.</p>
           </div>
-          <form onsubmit="event.preventDefault(); nextStep(5);">
+          <!-- <form onsubmit="event.preventDefault(); nextStep(5);"> -->
             <div class="d-flex justify-content-center mb-3">
-              <input type="text" maxlength="1" class="otp-input" />
-              <input type="text" maxlength="1" class="otp-input" />
-              <input type="text" maxlength="1" class="otp-input" />
-              <input type="text" maxlength="1" class="otp-input" />
-              <input type="text" maxlength="1" class="otp-input" />
-              <input type="text" maxlength="1" class="otp-input" />
+              <input type="text" maxlength="1" class="reg-otp-input otp-input" />
+              <input type="text" maxlength="1" class="reg-otp-input otp-input" />
+              <input type="text" maxlength="1" class="reg-otp-input otp-input" />
+              <input type="text" maxlength="1" class="reg-otp-input otp-input" />
+              <input type="text" maxlength="1" class="reg-otp-input otp-input" />
+              <input type="text" maxlength="1" class="reg-otp-input otp-input" />
             </div>
             <div class="text-center">
-              <button type="submit" class="btn btn-primary-custom w-100">Verify Code</button>
+              <button type="button" id="regauthcheck" class="btn btn-primary-custom w-100">Verify Code</button>
               <p class="small text-muted mt-2 mb-0">Didn't receive the code? <button type="button" class="btn btn-link text-primary-custom p-0">Resend Code</button></p>
             </div>
             <div class="d-flex justify-content-between mt-4">
-                <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(3)">
+                <!-- <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(3)">
                   <i class="ri-arrow-left-line"></i>Previous
-                </button>
-                <button type="button" class="btn d-flex align-items-center gap-2 d-none text-muted" onclick="nextStep(4)">
+                </button> -->
+                <button type="button" class="btn d-flex align-items-center gap-2 d-none text-muted " onclicks="nextStep(4)">
                   Save and Verify <i class="ri-arrow-right-line"></i>
                 </button>
             </div>
           </form>
         </div>
-
+        @if(session('success'))
+            <div class="alert alert-success success_register">
+                {{ session('success') }}
+            </div>
+        @endif
         <!-- Step 5: Success Message -->
         <div class="form-container rounded-custom p-4 form-step text-center" id="step-5">
           <div class="success-icon mb-3">
@@ -222,7 +225,15 @@
       </div>
     </main>
   </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
+    // CHECK IF REGISTERED > REDIRECT TO OTP
+    $(document).ready(function() {
+        let success = $('.success_register').text();
+        if (success) {
+            nextStep(5)
+        }
+    });
     const steps = document.querySelectorAll('.form-step');
     const progressBar = document.getElementById('form-progress');
     function nextStep(n) {
@@ -241,6 +252,57 @@
       const referralNames = document.getElementById('referral-names');
       referralNames.classList.toggle('d-none', this.value === 1);
     });
+
+    //OTP GENERATE
+  $(document).on('click' , '#authreggen' , function (e) {
+    console.log('click');
+    let email = $('input[name="email"]').val();
+
+    $.ajax({
+      url: '{{ route("reg.auth.send") }}',
+        method: 'POST',
+        data: {
+            email : email,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (res) {
+          if (res == 1) {
+            prevStep(4)
+          }
+        },
+        error: function (xhr) {
+        }
+    });
+  });
+
+  //OTP VALIDATE
+  $(document).on('click' , '#regauthcheck' , function (e) {
+    console.log('click');
+    let email = $('input[name="email"]').val();
+    let otp = '';
+    $('.otp-input').each(function () {
+        otp += $(this).val();
+    });
+
+    $.ajax({
+      url: '{{ route("reg.auth.check") }}',
+        method: 'POST',
+        data: {
+            email : email,
+            otp : otp,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (res) {
+          if (res == 1) {
+            prevStep(5)
+          }else{
+            alert()
+          }
+        },
+        error: function (xhr) {
+        }
+    });
+  });
 
   </script>
 </body>

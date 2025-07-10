@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('contactno');
             $table->integer('referral_source_id')->index();
             $table->integer('referral_id')->default(0)->index();
+            $table->integer('status')->default(1)->index();
             $table->integer('is_admin')->default(0)->index();
             $table->integer('is_referral')->default(0)->index();
             $table->string('email')->unique()->index();
@@ -37,6 +38,7 @@ return new class extends Migration
             $table->string('barangay');
             $table->string('city');
             $table->string('province');
+            $table->integer('status')->default(1)->index();
             $table->timestamps();
         });
 
@@ -46,6 +48,7 @@ return new class extends Migration
             $table->string('occupation');
             $table->decimal('income');
             $table->integer('employment_status');
+            $table->integer('status')->default(1)->index();
             $table->timestamps();
         });
 
