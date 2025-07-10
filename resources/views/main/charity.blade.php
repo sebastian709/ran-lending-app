@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAN Charity</title>
+  <title>RAN Serenity Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
@@ -170,7 +170,7 @@
   <section id="about" class="py-20 bg-white">
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Support RAN Charity?</h2>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Support RAN Serenity Hub?</h2>
         <p class="text-gray-600 max-w-3xl mx-auto">We believe in sustainable impact, transparent giving, and long-term community transformation.</p>
       </div>
       <div class="grid md:grid-cols-3 gap-8">

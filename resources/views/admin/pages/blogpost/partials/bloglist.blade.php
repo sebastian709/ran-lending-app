@@ -2,7 +2,7 @@
     $categoryIcons = [
         'jewelry' => ['icon' => 'bi-gem', 'color' => 'text-warning'],
         'travel and tours' => ['icon' => 'bi-airplane-engines', 'color' => 'text-primary'],
-        'charity' => ['icon' => 'bi-heart-fill', 'color' => 'text-danger'],
+        'hub' => ['icon' => 'bi-heart-fill', 'color' => 'text-danger'],
         'shops' => ['icon' => 'bi-shop', 'color' => 'text-purple'],
     ];
 @endphp

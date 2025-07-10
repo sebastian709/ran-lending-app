@@ -56,10 +56,10 @@ class BlogPostController extends Controller
         $posts = $query->get();
 
         if ($request->ajax() && $request->has('status')) {
-            return view('admin.blogpost.partials.bloglist', compact('posts'))->render();
+            return view('admin.pages.blogpost.partials.bloglist', compact('posts'))->render();
         }
 
-        return view('admin.blogpost.index', compact('posts'));
+        return view('admin.pages.blogpost.index', compact('posts'));
     }
 
 

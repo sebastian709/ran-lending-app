@@ -132,7 +132,7 @@ $(document).on('click', '.btn-cbp-preview', function (e) {
   const categoryColorMap = {
     'Jewelry': '#ffe5ec',
     'Travel and Tours': '#e0f7fa',
-    'Charity': '#f3e5f5',
+    'Hub': '#f3e5f5',
     'Shops': '#fff3cd',
   };
 
@@ -292,7 +292,7 @@ $(document).on('click', '.btn-bpl-view', function (e) {
     const categoryIconMap = {
       'jewelry': ['bi-gem', '#ffe5ec'],
       'travel and tours': ['bi-airplane-engines', '#e0f7fa'],
-      'charity': ['bi-heart-fill', '#f3e5f5'],
+      'Hub': ['bi-heart-fill', '#f3e5f5'],
       'shops': ['bi-shop', '#fff3cd'],
     };
 
@@ -423,7 +423,7 @@ $(document).on('click', '.btn-bpl-edit', function (e) {
                   <div class="mb-4">
                     <label class="form-label fw-bold text-primary">Category</label>
                     <div class="d-flex flex-column gap-2">
-                      ${['jewelry', 'travel and tours', 'charity', 'shops'].map(cat => `
+                      ${['jewelry', 'travel and tours', 'hub', 'shops'].map(cat => `
                         <label class="form-check d-flex align-items-center gap-2 ubp-radio">
                           <input class="form-check-input" type="radio" name="category" value="${cat}" ${cat === (category?.toLowerCase?.() || '') ? 'checked' : ''}>
                           <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>

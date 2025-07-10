@@ -172,7 +172,7 @@
                                     $categories = [
                                         ['label' => 'Jewelry', 'icon' => 'bi-gem'],
                                         ['label' => 'Travel and Tours', 'icon' => 'bi-airplane-engines'],
-                                        ['label' => 'Charity', 'icon' => 'bi-heart-fill'],
+                                        ['label' => 'Hub', 'icon' => 'bi-heart-fill'],
                                         ['label' => 'Shops', 'icon' => 'bi-shop'],
                                     ];
                                 @endphp
