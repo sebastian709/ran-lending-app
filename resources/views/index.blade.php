@@ -325,16 +325,14 @@
                 </div>
             </div>
         </section>
-        <!-- Blog Section -->
-        <section class="py-20 bg-white" id="Blog">
+        
+        <!-- <section class="py-20 bg-white" id="Blog">
             <div class="container mx-auto px-4">
                 <div class="text-center mb-16">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Latest Blog Posts</h2>
                     <p class="text-gray-600 max-w-3xl mx-auto">Discover helpful tips, inspiring stories, and the latest updates on hassle-free lending.</p>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Blog Post 1 -->
                     <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
                         <div class="overflow-hidden">
                             <img src="https://readdy.ai/api/search-image?query=modern%20financial%20district%20with%20skyscrapers%20and%20business%20people%2C%20professional%20corporate%20environment%2C%20purple%20lighting%20accents%2C%20elegant%20and%20luxurious%20atmosphere&width=800&height=1200&seq=lending1&orientation=portrait" alt="Blog Image 1"
@@ -348,40 +346,10 @@
                             <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
                         </div>
                     </div>
-
-                    <!-- Blog Post 2 -->
-                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                        <div class="overflow-hidden">
-                            <img src="https://readdy.ai/api/search-image?query=luxury%20jewelry%20display%20with%20elegant%20rings%20and%20necklaces%2C%20soft%20purple%20lighting%2C%20premium%20jewelry%20showcase%2C%20high-end%20retail%20environment&width=800&height=1200&seq=jewelry1&orientation=portrait" alt="Blog Image 2"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                        </div>
-                        <div class="p-6">
-                            <span class="text-sm text-purple-600 font-semibold uppercase">Jewelry</span>
-                            <span class="text-sm text-gray-500 ml-2">| May 28, 2025</span>
-                            <h3 class="text-xl font-bold text-gray-800 mt-2">The Art of Crafting Meaningful Jewelry Pieces</h3>
-                            <p class="text-gray-600 mt-3">A behind-the-scenes look at how our expert artisans create stunning, meaningful jewelry for every occasion.</p>
-                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                        </div>
-                    </div>
-
-                    <!-- Blog Post 3 -->
-                    <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                        <div class="overflow-hidden">
-                            <img src="https://readdy.ai/api/search-image?query=luxury%20travel%20destination%20with%20scenic%20beach%20resort%2C%20purple%20sunset%2C%20exclusive%20vacation%20experience%2C%20high-end%20travel%20photography&width=800&height=1200&seq=travel1&orientation=portrait" alt="Blog Image 3"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                        </div>
-                        <div class="p-6">
-                            <span class="text-sm text-purple-600 font-semibold uppercase">Travel & Tours</span>
-                            <span class="text-sm text-gray-500 ml-2">| April 10, 2025</span>
-                            <h3 class="text-xl font-bold text-gray-800 mt-2">Top 5 Destinations for a Family Getaway</h3>
-                            <p class="text-gray-600 mt-3">From tropical beaches to cultural landmarks, explore the top places to make unforgettable family memories.</p>
-                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More →</a>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </section>
-         <!-- Footer -->
+        </section> -->
+        <!-- Footer -->
         <footer class="bg-gray-900 text-white pt-16 pb-8">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">

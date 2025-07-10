@@ -145,16 +145,16 @@
                         <button data-url="/travel-and-tours" class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn More</button>
                     </div>
                 </div>
-                <!-- Charity -->
-                <div data-url="/charity" class="group relative overflow-hidden cursor-pointer transition-all duration-500" id="charityHero">
+                <!-- Hub -->
+                <div data-url="/hub" class="group relative overflow-hidden cursor-pointer transition-all duration-500" id="charityHero">
                     <div
                         class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=charitable%20community%20service%20event%2C%20diverse%20group%20of%20volunteers%20helping%20others%2C%20warm%20purple%20lighting%2C%20inspiring%20humanitarian%20photography&width=800&height=1200&seq=charity1&orientation=portrait')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500"
                     ></div>
                     <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-all duration-500"></div>
                     <div class="relative h-full flex flex-col justify-end p-8 text-white">
-                        <h3 class="text-2xl font-bold mb-2">RAN Serenity Charity</h3>
+                        <h3 class="text-2xl font-bold mb-2">RAN Serenity Hub</h3>
                         <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Making a difference in communities worldwide</p>
-                        <button data-url="/charity" class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn More</button>
+                        <button data-url="/hub" class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn More</button>
                     </div>
                 </div>
             </div>
@@ -204,7 +204,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Charity Slide -->
+                        <!-- Hub Slide -->
                         <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-500">
                             <div class="relative h-full">
                                 <div
@@ -212,7 +212,7 @@
                                 ></div>
                                 <div class="absolute inset-0 bg-primary/40"></div>
                                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
-                                    <h3 class="text-2xl font-bold mb-2">RAN Serenity Charity</h3>
+                                    <h3 class="text-2xl font-bold mb-2">RAN Serenity Hub</h3>
                                     <p class="text-sm mb-4">Making a difference in communities worldwide</p>
                                     <button class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn More</button>
                                 </div>
@@ -280,13 +280,13 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Charity -->
+                    <!-- Hub -->
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
                         <div class="p-8">
                             <div class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
                                 <i class="ri-heart-line ri-2x"></i>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Charity</h3>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Hub</h3>
                             <p class="text-gray-600 mb-6">Join our mission to make a positive impact on communities in need. Through sustainable programs and direct assistance, we're creating meaningful change together.</p>
                             <div class="flex items-center">
                                 <button class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn More</button>
@@ -338,7 +338,7 @@
                     <p class="text-gray-600 max-w-3xl mx-auto">Explore insights, stories, and updates from our businesses and initiatives.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <!-- Blog Post 1 -->
                     <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
                         <div class="overflow-hidden">

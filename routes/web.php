@@ -21,7 +21,7 @@ Route::get('/', fn() => view('index'))->name('index');
 # multi-purpose website
 Route::get('/main', fn() => view('main.index'))->name('main.index');
 Route::get('/jewelry', fn() => view('main.jewelry'))->name('main.jewelry');
-Route::get('/charity', fn() => view('main.charity'))->name('main.charity');
+Route::get('/hub', fn() => view('main.charity'))->name('main.charity');
 Route::get('/travel-and-tours', fn() => view('main.travel-and-tours'))->name('main.travel-and-tours');
 
 
@@ -29,7 +29,7 @@ Route::get('/travel-and-tours', fn() => view('main.travel-and-tours'))->name('ma
 // admin routes
 Route::prefix('admin')->group(function () {
     // dashboard
-    Route::get('/', fn() => view('admin.main.index'))->name('admin.main.index');
+    Route::get('/', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
 
     // testing only
     Route::get('/blankpage', fn() => view('admin.testing-only.blankpage'))->name('admin.testing-only.blankpage');
@@ -39,7 +39,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/', [BlogPostController::class, 'index']);
         Route::get('/filter', [BlogPostController::class, 'index']);
         Route::post('/store', [BlogPostController::class, 'store']);
-        Route::get('/createBlogpost', fn() => view('admin.blogpost.createBlogpost'))->name('admin.blogpost.createBlogpost');
+        Route::get('/createBlogpost', fn() => view('admin.pages.blogpost.createBlogpost'))->name('admin.pages.blogpost.createBlogpost');
 
         Route::get('/view/{id}', [BlogPostController::class, 'view']);
         Route::get('/fetch/{id}', [BlogPostController::class, 'fetch']);

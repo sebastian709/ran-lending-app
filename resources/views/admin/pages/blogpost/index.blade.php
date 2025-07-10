@@ -60,7 +60,7 @@
 
                 <!-- Blog Card Grid -->
                 <div id="blogPostList" class="row">
-                    @include('admin.blogpost.partials.bloglist', ['posts' => $posts])
+                    @include('admin.pages.blogpost.partials.bloglist', ['posts' => $posts])
                 </div>
             </div>
         </div>
