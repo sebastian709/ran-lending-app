@@ -4,6 +4,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #0056b3;
@@ -608,15 +609,20 @@
                       </div>
 
                       <!-- Signature Section -->
-                      <div class="mb-4">
+                        <div class="mb-4">
                         <label class="form-label fw-medium">Signature</label>
                         <p class="text-muted">Click the button below to sign or upload your handwritten signature.</p>
-                        <div class="d-flex flex-column flex-md-row gap-3">
-                          <button class="btn btn-outline-primary-custom">Sign</button>
-                          <input type="file" class="form-control" accept="image/*" id="signatureInput" style="max-width: 300px;">
+
+                        <div class="flex justify-start">
+                            <div class="w-full md:w-auto md:max-w-[260px]">
+                            @include('components.signature-box', [
+                                'name' => 'Lordan Lingat',
+                                'position' => 'Mentor',
+                                'customWidth' => '500px'
+                            ])  
+                            </div>
                         </div>
-                        <div id="signaturePreview" class="mt-2 preview-container"></div>
-                      </div>
+                        </div>
 
                       <!-- Submit Button -->
                       <button class="btn btn-primary-custom w-100" id="submitFinalApplication" disabled onclick="submitFinalLoanApplication()">

@@ -54,3 +54,27 @@
 .signature-info {
     padding-top: 60px;
 }
+
+.signature-download-btn {
+    opacity: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #333;
+    transition: opacity 0.5s ease;
+    text-decoration: none;
+    right: 5px;
+}
+
+.signature-download-btn:hover {
+    opacity: 0;
+    background-color: #0D6EFD;
+    border: 1px solid #ccc;
+    color: #d9d9d9;
+}
+
+.signature-target:hover .signature-download-btn {
+    opacity: 1;
+}
