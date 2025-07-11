@@ -98,7 +98,7 @@
                                     </div>
                                 </div>
 
-                                <button type="button" class="btn btn-primary-custom btn-md w-100" onclick="submitPrecheck()">
+                                <button type="button" class="btn btn-primary-custom btn-md w-100 la_submit_precheck">
                                     <i class="ri-send-plane-line me-2"></i>
                                     Submit Application
                                 </button>
@@ -194,7 +194,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary-custom btn-md w-100" onclick="proceedWithLoan()">
+                                <button class="btn btn-primary-custom btn-md w-100 la_proceed_loan">
                                     <i class="ri-arrow-right-line me-2"></i>
                                     Proceed with Application
                                 </button>
@@ -216,7 +216,7 @@
                                     <label class="form-label fw-medium mb-3">
                                         Choose your loan amount: ₱<span id="loan-amount-display">5000</span>
                                     </label>
-                                    <input type="range" class="form-range" id="loanAmountSlider" min="1000" max="5000" step="500" value="5000" oninput="updateLoanAmount(this.value)">
+                                    <input type="range" class="form-range la_loan_amount_slider" id="loanAmountSlider" min="1000" max="5000" step="500" value="5000">
                                     <div class="d-flex justify-content-between small text-muted">
                                         <span>₱1,000</span>
                                         <span>₱5,000</span>
@@ -226,7 +226,7 @@
                                 <div class="row mb-4">
                                     <div class="col-md-6">
                                         <label for="standardTenure" class="form-label fw-medium">Loan Tenure (months)</label>
-                                        <select class="form-select" id="standardTenure" onchange="updateLoanSummary()">
+                                        <select class="form-select la_standard_tenure" id="standardTenure">
                                             <option value="1">1 month</option>
                                             <option value="2">2 months</option>
                                             <option value="3">3 months</option>
@@ -269,7 +269,7 @@
                                     </div>
                                 </div>
 
-                                <button class="btn btn-primary-custom btn-md w-100" onclick="proceedWithLoan()">
+                                <button class="btn btn-primary-custom btn-md w-100 la_proceed_loan">
                                     <i class="ri-arrow-right-line me-2"></i>
                                     Proceed
                                 </button>
@@ -347,7 +347,7 @@
 
                       <!-- Terms & Conditions -->
                       <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" id="termsCheckbox" onchange="toggleSubmit()">
+                        <input class="form-check-input la_terms_checkbox" type="checkbox" id="termsCheckbox">
                         <label class="form-check-label" for="termsCheckbox">
                           I agree to the <a href="#">Terms and Conditions</a>
                         </label>
@@ -370,7 +370,7 @@
                         </div>
 
                       <!-- Submit Button -->
-                      <button class="btn btn-primary-custom w-100" id="submitFinalApplication" disabled onclick="submitFinalLoanApplication()">
+                      <button class="btn btn-primary-custom w-100 la_submit_final_application" id="submitFinalApplication" disabled>
                         Submit Application
                       </button>
                     </div>

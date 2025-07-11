@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+$(function () {
     let currentStep = 'precheck';
     let formData = {
         referralType: '',
@@ -7,170 +7,145 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Sidebar toggle for mobile
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
-    }
-
-    // Handle referral type selection
-    document.querySelectorAll('input[name="referralType"]').forEach(radio => {
-        radio.addEventListener('change', function () {
-            const referralCodeSection = document.getElementById('referral-code-section');
-            if (this.value === 'admin') {
-                referralCodeSection.style.display = 'block';
-            } else {
-                referralCodeSection.style.display = 'none';
-            }
-            formData.referralType = this.value;
-        });
+    $(document).on('click', '#la_sidebar_toggle', function () {
+        $('#sidebar').toggleClass('show');
     });
 
-    function submitPrecheck() {
-        // Show loading step
-        showStep('loading');
-
-        // Simulate processing time
-        setTimeout(() => {
-            showStep('eligibility');
-
-            // Show appropriate result based on referral type
-            if (formData.referralType === 'admin') {
-                document.getElementById('admin-result').style.display = 'block';
-                document.getElementById('standard-result').style.display = 'none';
-            } else {
-                document.getElementById('admin-result').style.display = 'none';
-                document.getElementById('standard-result').style.display = 'block';
-                updateLoanSummary();
+    // Click outside sidebar on mobile
+    $(document).on('click', function (e) {
+        if ($(window).width() <= 991.98) {
+            const sidebar = $('#sidebar');
+            const sidebarToggle = $('#la_sidebar_toggle');
+            if (!sidebar.is(e.target) && sidebar.has(e.target).length === 0 &&
+                !sidebarToggle.is(e.target) && sidebarToggle.has(e.target).length === 0) {
+                sidebar.removeClass('show');
             }
-        }, 3000);
-    }
+        }
+    });
+
+    // Resize handler to reset sidebar
+    $(window).on('resize', function () {
+        if ($(window).width() > 991.98) {
+            $('#sidebar').removeClass('show');
+        }
+    });
+
+    // Handle referral type change
+    $(document).on('change', 'input[name="referralType"]', function () {
+        const val = $(this).val();
+        formData.referralType = val;
+
+        if (val === 'admin') {
+            $('#referral-code-section').show();
+        } else {
+            $('#referral-code-section').hide();
+        }
+    });
 
     function showStep(step) {
-        // Hide all steps
-        document.querySelectorAll('.step-content').forEach(content => {
-            content.classList.remove('active');
-        });
-
-        // Show current step
-        document.getElementById(step + '-step').classList.add('active');
+        $('.step-content').removeClass('active');
+        $('#' + step + '-step').addClass('active');
         currentStep = step;
-    }
-
-    function updateLoanAmount(value) {
-        formData.loanAmount = parseInt(value);
-        document.getElementById('loan-amount-display').textContent = parseInt(value).toLocaleString();
-        updateLoanSummary();
     }
 
     function updateLoanSummary() {
         const amount = formData.loanAmount;
-        const tenure = parseInt(document.getElementById('standardTenure').value);
-        const interestRate = 0.05; // 5%
-        const total = amount * (1 + interestRate);
-
-        document.getElementById('summary-amount').textContent = amount.toLocaleString();
-        document.getElementById('summary-tenure').textContent = tenure;
-        document.getElementById('summary-total').textContent = Math.round(total).toLocaleString();
-
+        const tenure = parseInt($('#standardTenure').val());
+        const total = amount * 1.05;
+        $('#summary-amount').text(amount.toLocaleString());
+        $('#summary-tenure').text(tenure);
+        $('#summary-total').text(Math.round(total).toLocaleString());
         formData.tenure = tenure;
     }
 
-    function proceedWithLoan() {
-        // alert('Proceeding with loan application...');
-        showStep('full-loan-application');
-    }
-
-    function goBackToDashboard() {
-        // This would redirect back to dashboard
-        alert('Redirecting back to dashboard...');
-        // window.location.href = 'dashboard.html';
-    }
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function (event) {
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-
-        if (window.innerWidth <= 991.98) {
-            if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-                sidebar.classList.remove('show');
-            }
-        }
-    });
-
-    // Handle window resize
-    window.addEventListener('resize', function () {
-        const sidebar = document.getElementById('sidebar');
-        if (window.innerWidth > 991.98) {
-            sidebar.classList.remove('show');
-        }
-    });
-
-    // Initialize loan summary
-    updateLoanSummary();
-
     function updateAdminLoanSummary() {
-        const amount = parseInt(document.getElementById('customAmount').value) || 0;
-        const tenure = parseInt(document.getElementById('adminTenure').value);
-        const interestRate = 0.05;
-        const total = amount * (1 + interestRate);
-
-        document.getElementById('admin-summary-amount').textContent = amount.toLocaleString();
-        document.getElementById('admin-summary-tenure').textContent = tenure;
-        document.getElementById('admin-summary-total').textContent = Math.round(total).toLocaleString();
+        const amount = parseInt($('#customAmount').val()) || 0;
+        const tenure = parseInt($('#adminTenure').val());
+        const total = amount * 1.05;
+        $('#admin-summary-amount').text(amount.toLocaleString());
+        $('#admin-summary-tenure').text(tenure);
+        $('#admin-summary-total').text(Math.round(total).toLocaleString());
     }
 
-    // Attach event listeners
-    if (document.getElementById('customAmount')) {
-        document.getElementById('customAmount').addEventListener('input', updateAdminLoanSummary);
-        document.getElementById('adminTenure').addEventListener('change', updateAdminLoanSummary);
-    }
+    // Admin loan input & dropdown
+    $(document).on('input', '#customAmount', updateAdminLoanSummary);
+    $(document).on('change', '#adminTenure', updateAdminLoanSummary);
 
-    function toggleSubmit() {
-        document.getElementById('submitFinalApplication').disabled = !document.getElementById('termsCheckbox').checked;
-    }
+    // Loan amount slider
+    $(document).on('input', '.la_loan_amount_slider', function () {
+        const amount = parseInt(this.value);
+        formData.loanAmount = amount;
+        $('#loan-amount-display').text(amount.toLocaleString());
+        updateLoanSummary();
+    });
 
-    function submitFinalLoanApplication() {
+    // Standard loan tenure
+    $(document).on('change', '.la_standard_tenure', function () {
+        updateLoanSummary();
+    });
+
+    // Submit precheck
+    $(document).on('click', '.la_submit_precheck', function () {
+        showStep('loading');
+        setTimeout(() => {
+            showStep('eligibility');
+            if (formData.referralType === 'admin') {
+                $('#admin-result').show();
+                $('#standard-result').hide();
+            } else {
+                $('#admin-result').hide();
+                $('#standard-result').show();
+                updateLoanSummary();
+            }
+        }, 3000);
+    });
+
+    // Proceed with loan
+    $(document).on('click', '.la_proceed_loan', function () {
+        showStep('full-loan-application');
+    });
+
+    // Final application submit
+    $(document).on('click', '.la_submit_final_application', function () {
         alert("Thank you for your loan application! We are currently reviewing your request. Our team will be in touch with you shortly for a brief interview to finalize the process. Please expect a call soon.");
-        // Optional: redirect or show back-to-home button
-    }
+    });
 
-    // Call once initially
-    updateAdminLoanSummary();
+    // Terms checkbox
+    $(document).on('change', '.la_terms_checkbox', function () {
+        $('#submitFinalApplication').prop('disabled', !$(this).prop('checked'));
+    });
 
+    // File previews
     function previewImage(inputId, previewContainerId) {
-        const input = document.getElementById(inputId);
-        const previewContainer = document.getElementById(previewContainerId);
+        const $input = $('#' + inputId);
+        const $preview = $('#' + previewContainerId);
+        if (!$input.length || !$preview.length) return;
 
-        if (!input || !previewContainer) return; // ⛔ Skip kung wala
-        
-        input.addEventListener('change', function () {
-            previewContainer.innerHTML = ''; // Clear previous preview
-            const files = input.files;
-
+        $input.on('change', function () {
+            $preview.empty();
+            const files = this.files;
             Array.from(files).forEach(file => {
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = function (e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        previewContainer.appendChild(img);
-                    };
+                        const $img = $('<img>').attr('src', e.target.result);
+                        $preview.append($img);
+                    }
                     reader.readAsDataURL(file);
                 } else {
-                    previewContainer.innerHTML = '<p class="text-muted">File preview not available (non-image).</p>';
+                    $preview.html('<p class="text-muted">File preview not available (non-image).</p>');
                 }
             });
         });
     }
 
-    // Initialize previews for relevant inputs
     previewImage('payslipInput', 'payslipPreview');
     previewImage('qrInput', 'qrPreview');
     previewImage('govIdInput', 'govIdPreview');
     previewImage('signatureInput', 'signaturePreview');
     previewImage('billingInput', 'billingPreview');
 
+    // Init on load
+    updateLoanSummary();
+    updateAdminLoanSummary();
 });
