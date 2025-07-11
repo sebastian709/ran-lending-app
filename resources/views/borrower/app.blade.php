@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,78 +28,20 @@
     @yield('styles')
 
     <!-- $.confirm -->
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
+    <!-- borrower css -->
+    <link rel="stylesheet" href="{{ asset('css/borrower.css') }}">
     @stack('sb-styles')
-
-    <style>
-    :root {
-        --primary-color: #0056b3;
-        --secondary-color: #ff8c00;
-    }
-
-    .font-pacifico {
-        font-family: 'Pacifico', cursive;
-    }
-
-    .bg-primary-custom {
-        background-color: var(--primary-color) !important;
-    }
-
-    .text-primary-custom {
-        color: var(--primary-color) !important;
-    }
-
-    .btn-outline-primary-custom {
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-        border-radius: 8px;
-    }
-
-    .btn-outline-primary-custom:hover {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-    .navbar-custom {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background-color: white !important;
-    }
-
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-    }
-
-    .notification-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: #dc3545;
-        color: white;
-        border-radius: 50%;
-        width: 18px;
-        height: 18px;
-        font-size: 0.7rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-</style>
-
 </head>
+
 <body>
     <div id="app">
         {{-- Navbar (optional: can customize this if needed) --}}
+        <input type="hidden" value="{{ Auth::user()->id }}" id="gb_user_id">
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container-fluid px-4">
-                <a class="navbar-brand font-pacifico text-primary-custom text-decoration-none" href="{{ url('/') }}" style="font-size: 1.8rem;">
+                <a class="navbar-brand font-pacifico text-primary-custom text-decoration-none" href="{{ url('/') }}"
+                    style="font-size: 1.8rem;">
                     RAN Lending
                 </a>
 
@@ -116,9 +59,12 @@
                         <div class="dropdown">
                             <button class="btn p-0 border-0 bg-transparent" type="button" data-bs-toggle="dropdown">
                                 <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-2">{{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}</div>
+                                    <div class="user-avatar me-2">
+                                        {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
+                                    </div>
                                     <div class="d-none d-md-block text-start">
-                                        <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</div>
+                                        <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
+                                        </div>
                                         <div class="small text-muted"></div>
                                     </div>
                                     <i class="ri-arrow-down-s-line ms-2 text-muted"></i>
@@ -127,11 +73,14 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="#"><i class="ri-user-line me-2"></i>Profile</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="ri-settings-line me-2"></i>Settings</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="ri-question-line me-2"></i>Help & Support</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="ri-question-line me-2"></i>Help &
+                                        Support</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li>
                                     <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="ri-logout-box-line me-2"></i>Logout
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -154,7 +103,13 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
     <script src="{{ asset('js/index.js') }}"></script>
+    <script src="{{ asset('js/borrower.js') }}"></script>
     @yield('scripts')
     @stack('sb-scripts')
+    <script>
+        const authUser = @json(Auth::user());
+        console.log(authUser);
+    </script>
 </body>
+
 </html>
