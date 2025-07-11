@@ -15,9 +15,8 @@ class LoanStatusSeeder extends Seeder
     {
         DB::table('loan_status')->insert([
             ['loan_status' => 'Pending', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['loan_status' => 'Draft', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['loan_status' => 'On Review', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['loan_status' => 'Completed', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Accept', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Reject', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }
