@@ -20,16 +20,19 @@
 
             <div class="row mt-5 pt-5">
                 <div class="col-md-6 text-center">
-                    @include('admin.components.signature-box', [
+                    @include('components.signature-box', [
                         'name' => 'Sebastian Jabson',
-                        'position' => 'Chef'
+                        'position' => 'Chef',
+                        'mode' => 1,
+                        'signature' => asset('storage/uploads/signatures/test.png')
                     ])
                 </div>
 
                 <div class="col-md-6 text-center">
-                    @include('admin.components.signature-box', [
+                    @include('components.signature-box', [
                         'name' => 'Lordan Lingat',
-                        'position' => 'Mentor'
+                        'position' => 'Mentor',
+                        'mode' => 1
                     ])           
                 </div>
 
