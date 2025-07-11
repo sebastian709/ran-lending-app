@@ -133,7 +133,7 @@
                 </select>
               </div>
               <div class="col-md-12 d-none" id="referral-names">
-                <select class="form-select" name="referral_names">
+                <select class="form-select" name="referral_names" required>
                   <option value="0">Select</option>
                   <option value="1">Ms. NC</option>
                   <option value="2">Ms. Riki</option>
@@ -154,16 +154,21 @@
         <!-- Step 3: Account Creation -->
         <div class="form-container rounded-custom p-4 form-step" id="step-3">
             <div class="mb-3">
-              <input type="email" class="form-control" placeholder="Email Address or Mobile Number" name="email" required />
+              <input type="email" class="form-control reg_email" placeholder="Email Address" name="email" required />
               <div class="invalid-feedback d-none" id="email-error">Please enter a valid email address.</div>
             </div>
             <div class="mb-3">
-              <input type="password" class="form-control" placeholder="Password" name="password" required />
-              <ul class="list-unstyled small text-muted password-criteria mt-2">
-                <li>Minimum 8 characters</li>
-                <li>Uppercase and lowercase letters</li>
-                <li>At least one number</li>
-                <li>At least one special character</li>
+              <div class="position-relative">
+                <input type="password" class="form-control reg_password" placeholder="Password" name="password" id="password" required>
+                <div class="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3" style="cursor: pointer;">
+                  <i class="ri-eye-line text-muted"></i>
+                </div>
+              </div>
+              <ul class="list-unstyled small password-criteria mt-2">
+                <li data-rule="length" class="text-muted"><i class="ri-close-line me-1"></i>Minimum 8 characters</li>
+                <li data-rule="case" class="text-muted"><i class="ri-close-line me-1"></i>Uppercase and lowercase letters</li>
+                <li data-rule="number" class="text-muted"><i class="ri-close-line me-1"></i>At least one number</li>
+                <li data-rule="special" class="text-muted"><i class="ri-close-line me-1"></i>At least one special character</li>
               </ul>
             </div>
             <!-- <input type="submit" class="btn btn-primary-custom w-100 mt-3" placeholder="Save and Verify"> -->
@@ -171,7 +176,7 @@
               <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(2)">
                 <i class="ri-arrow-left-line"></i>Previous
               </button>
-              <button type="button" id="authreggen" class=" btn d-flex align-items-center gap-2 text-muted" >Save and Verify</button>
+              <button type="button" id="authreggen" class=" btn d-flex align-items-center gap-2 text-muted border-0" disabled>Save and Verify</button>
 
             </div>
         </div>
@@ -205,7 +210,7 @@
           </form>
         </div>
         @if(session('success'))
-            <div class="alert alert-success success_register">
+            <div class="alert alert-success success_register d-none">
                 {{ session('success') }}
             </div>
         @endif
@@ -226,7 +231,10 @@
     </main>
   </div>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+  <script src="{{ asset('js/auth.js') }}"></script>
   <script>
+
     // CHECK IF REGISTERED > REDIRECT TO OTP
     $(document).ready(function() {
         let success = $('.success_register').text();
@@ -234,9 +242,13 @@
             nextStep(5)
         }
     });
+
     const steps = document.querySelectorAll('.form-step');
     const progressBar = document.getElementById('form-progress');
+
     function nextStep(n) {
+      if (n > 1 && !validateStep(n)) return; 
+
       steps.forEach(step => step.classList.remove('active'));
       document.getElementById(`step-${n}`).classList.add('active');
       progressBar.style.width = `${n * 20}%`;
@@ -248,16 +260,24 @@
       progressBar.style.width = `${n * 20}%`;
     }
 
-    document.getElementById('referral-source').addEventListener('change', function() {
-      const referralNames = document.getElementById('referral-names');
-      referralNames.classList.toggle('d-none', this.value === 1);
-    });
-
     //OTP GENERATE
   $(document).on('click' , '#authreggen' , function (e) {
-    console.log('click');
+    
     let email = $('input[name="email"]').val();
+    const emailField = $('input[name="email"]');
+    const emailError = $('#email-error');
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email || !emailRegex.test(email)) {
+      emailField.addClass('is-invalid');
+      emailError.removeClass('d-none');
+      return; 
+    } else {
+      emailField.removeClass('is-invalid');
+      emailError.addClass('d-none');
+    }
+    
     $.ajax({
       url: '{{ route("reg.auth.send") }}',
         method: 'POST',
