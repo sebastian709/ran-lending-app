@@ -164,12 +164,15 @@
                   <i class="ri-eye-line text-muted"></i>
                 </div>
               </div>
-              <ul class="list-unstyled small password-criteria mt-2">
-                <li data-rule="length" class="text-muted"><i class="ri-close-line me-1"></i>Minimum 8 characters</li>
-                <li data-rule="case" class="text-muted"><i class="ri-close-line me-1"></i>Uppercase and lowercase letters</li>
-                <li data-rule="number" class="text-muted"><i class="ri-close-line me-1"></i>At least one number</li>
-                <li data-rule="special" class="text-muted"><i class="ri-close-line me-1"></i>At least one special character</li>
-              </ul>
+              <div class="mt-3 bg-light p-3 rounded">
+                <p class="small fw-medium text-dark mb-2">Password must include:</p>
+                <ul class="list-unstyled small password-criteria mt-2">
+                  <li data-rule="length" class="text-muted"><i class="ri-close-line me-1"></i>Minimum 8 characters</li>
+                  <li data-rule="case" class="text-muted"><i class="ri-close-line me-1"></i>Uppercase and lowercase letters</li>
+                  <li data-rule="number" class="text-muted"><i class="ri-close-line me-1"></i>At least one number</li>
+                  <li data-rule="special" class="text-muted"><i class="ri-close-line me-1"></i>At least one special character</li>
+                </ul>
+              </div>
             </div>
             <!-- <input type="submit" class="btn btn-primary-custom w-100 mt-3" placeholder="Save and Verify"> -->
             <div class="d-flex justify-content-between mt-4">
@@ -229,7 +232,16 @@
         </div>
       </div>
     </main>
+    <!-- Footer -->
+    <footer class="bg-white py-3 border-top">
+        <div class="container">
+            <div class="text-center text-muted small">
+                &copy; 2025 RAN Lending. All rights reserved.
+            </div>
+        </div>
+    </footer>
   </div>
+  
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
   <script src="{{ asset('js/auth.js') }}"></script>
