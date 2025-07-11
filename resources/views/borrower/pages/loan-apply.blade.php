@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('borrower.app')
 
 @section('styles')
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
@@ -267,7 +267,7 @@
 @section('content')
     <div class="d-flex">
         <!-- Sidebar -->
-        @include('sidebar')
+        @include('borrower.layouts.sidebar')
 
         <!-- Main Content -->
         <div class="main-content flex-grow-1">

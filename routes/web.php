@@ -63,7 +63,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 
 //AUTH
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('borrower.pages.home');
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
 //AJAX
@@ -72,5 +72,5 @@ Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthc
 
 // borrower routes
 Route::get('/apply-loan', function () {
-    return view('borrower.loan-apply');
+    return view('borrower.pages.loan-apply');
 })->name('loan.apply');
