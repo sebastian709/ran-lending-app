@@ -40,6 +40,7 @@ class RegisterController extends Controller
             'is_referral'         => $request->referral_source,
             'referral_source_id'  => $request->referral_names,
             'email'               => $request->email,
+            'emai_verified_at'    => now(),
             'password'            => Hash::make($request->password),
         ]);
 

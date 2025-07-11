@@ -69,6 +69,8 @@ Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('
 //AJAX
 Route::post('/register-auth-send', [OtpVerificationController::class, 'regauthsend'])->name('reg.auth.send');
 Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthcheck'])->name('reg.auth.check');
+Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauthsend'])->name('forgot.auth.send');
+Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->name('forgot.change.pass');
 
 // borrower routes
 Route::get('/apply-loan', function () {
