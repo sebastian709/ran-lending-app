@@ -74,3 +74,7 @@ Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthc
 Route::get('/apply-loan', function () {
     return view('borrower.pages.loan-apply');
 })->name('loan.apply');
+
+Route::get('/active-loan', function () {
+    return view('borrower.pages.active-loan');
+})->name('loan.active');
