@@ -65,10 +65,10 @@ if (!window._signatureBoxInitialized) {
                                           <a href="${img}" 
                                             download="signature.png" 
                                             class="signature-download-btn position-absolute"
-                                            onclick="event.stopPropagation();" style="top: 0.25rem; right: 0.25rem;">
-                                            <i class="bi bi-download fs-5"></i>
+                                            onclick="event.stopPropagation();" style="top: 0.25rem; right: 0.25rem;"
                                             data-bs-toggle="tooltip"
-                                            title="Download Signature"
+                                            title="Download Signature">
+                                            <i class="bi bi-download fs-5"></i>
                                           </a>`);
                             $target.removeClass('signature-empty').addClass('signature-filled filled');
                         }
