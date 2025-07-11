@@ -26,6 +26,10 @@
     {{-- Custom Styles from child views --}}
     @yield('styles')
 
+    <!-- $.confirm -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
+    @stack('sb-styles')
+
     <style>
     :root {
         --primary-color: #0056b3;
@@ -147,6 +151,10 @@
     </div>
 
     {{-- Scripts injected from child views --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+    <script src="{{ asset('js/index.js') }}"></script>
     @yield('scripts')
+    @stack('sb-scripts')
 </body>
 </html>

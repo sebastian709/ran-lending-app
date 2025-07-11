@@ -1,9 +1,10 @@
-@extends('layouts.app')
+@extends('borrower.app')
 
 @section('styles')
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #0056b3;
@@ -266,13 +267,13 @@
 @section('content')
     <div class="d-flex">
         <!-- Sidebar -->
-        @include('sidebar')
+        @include('borrower.layouts.sidebar')
 
         <!-- Main Content -->
         <div class="main-content flex-grow-1">
             <div class="container-fluid p-4" style="max-width: 1200px;">
                 <!-- Header with Back Button -->
-                 <button class="btn btn-outline-primary-custom me-3 mb-3" onclick="goBackToDashboard()">
+                 <button class="btn btn-outline-primary-custom me-3 mb-3" data-url="/home">
                     <i class="ri-arrow-left-line me-2"></i>
                     Back
                 </button>
@@ -608,15 +609,20 @@
                       </div>
 
                       <!-- Signature Section -->
-                      <div class="mb-4">
+                        <div class="mb-4">
                         <label class="form-label fw-medium">Signature</label>
                         <p class="text-muted">Click the button below to sign or upload your handwritten signature.</p>
-                        <div class="d-flex flex-column flex-md-row gap-3">
-                          <button class="btn btn-outline-primary-custom">Sign</button>
-                          <input type="file" class="form-control" accept="image/*" id="signatureInput" style="max-width: 300px;">
+
+                        <div class="flex justify-start">
+                            <div class="w-full md:w-auto md:max-w-[260px]">
+                            @include('components.signature-box', [
+                                'name' => 'Lordan Lingat',
+                                'position' => 'Mentor',
+                                'customWidth' => '500px'
+                            ])  
+                            </div>
                         </div>
-                        <div id="signaturePreview" class="mt-2 preview-container"></div>
-                      </div>
+                        </div>
 
                       <!-- Submit Button -->
                       <button class="btn btn-primary-custom w-100" id="submitFinalApplication" disabled onclick="submitFinalLoanApplication()">
@@ -630,8 +636,6 @@
     </div>
 @endsection
 
-
-@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let currentStep = 'precheck';
@@ -803,4 +807,3 @@
     previewImage('signatureInput', 'signaturePreview');
     previewImage('billingInput', 'billingPreview');
 </script>
-@endsection

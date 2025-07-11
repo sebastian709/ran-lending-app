@@ -61,7 +61,15 @@ if (!window._signatureBoxInitialized) {
                         }
 
                         if (img) {
-                            $target.html(`<img src="${img}" alt="Signature" style="width: 300px; height: 100px; object-fit: contain;">`);
+                            $target.html(`<img src="${img}" alt="Signature" style="width: 300px; height: 100px; object-fit: contain;">
+                                          <a href="${img}" 
+                                            download="signature.png" 
+                                            class="signature-download-btn position-absolute"
+                                            onclick="event.stopPropagation();" style="top: 0.25rem; right: 0.25rem;"
+                                            data-bs-toggle="tooltip"
+                                            title="Download Signature">
+                                            <i class="bi bi-download fs-5"></i>
+                                          </a>`);
                             $target.removeClass('signature-empty').addClass('signature-filled filled');
                         }
                     }
@@ -141,6 +149,25 @@ if (!window._signatureBoxInitialized) {
                     reader.readAsDataURL(file);
                 }
 
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".signature-target").forEach(function (target) {
+            const img = target.querySelector("img");
+            if (img && img.complete && img.naturalHeight !== 0) {
+                target.classList.add("filled");
+            }
+
+            // For late-loading images
+            if (img) {
+                img.onload = function () {
+                    target.classList.add("filled");
+                };
+                img.onerror = function () {
+                    target.classList.remove("filled");
+                };
             }
         });
     });

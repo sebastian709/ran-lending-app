@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/blogpost.css') }}">
 
-    @stack('styles')
+    @stack('sb-styles')
 </head>
 
 <body>
@@ -118,7 +118,7 @@
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
-    @stack('scripts')
+    @stack('sb-scripts')
     
 </body>
 
