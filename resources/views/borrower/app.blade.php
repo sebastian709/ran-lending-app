@@ -37,7 +37,7 @@
 <body>
     <div id="app">
         {{-- Navbar (optional: can customize this if needed) --}}
-        <input type="hidden" value="{{ Auth::user()->id }}" id="gb_user_id">
+        <input type="hidden" id="gb_user_id" value="{{ Auth::id() }}">
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container-fluid px-4">
                 <a class="navbar-brand font-pacifico text-primary-custom text-decoration-none" href="{{ url('/') }}"

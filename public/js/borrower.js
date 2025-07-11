@@ -1,10 +1,68 @@
 $(function () {
+    const userId = $('#gb_user_id').val();
+    let loan_applicantion_id = null;
+
+
     let currentStep = 'precheck';
     let formData = {
         referralType: '',
         loanAmount: 5000,
         tenure: 1
     };
+
+    if (userId) {
+        $.ajax({
+            url: `/borrower/fetch-income/${userId}`,
+            method: 'GET',
+            success: function (res) {
+                loan_application_id = res.loan_application_id;
+
+                $('#occupation').val(res.occupation);
+                $('#income').val(res.income);
+                $(`input[name="employmentStatus"][value="${res.employment_status}"]`).prop('checked', true).prop('disabled', false);
+
+                if (res.purpose_of_loan) $('#la_purpose').val(res.purpose_of_loan);
+                if (res.referral) $(`input[name="referralType"][value="${res.referral}"]`).prop('checked', true);
+
+                // 👇 Standard Referral Fields Only
+                if (res.loan_amount) {
+                    $('#loanAmountSlider').val(parseFloat(res.loan_amount));
+                    $('#loan-amount-display').text(parseFloat(res.loan_amount).toLocaleString());
+                    formData.loanAmount = parseFloat(res.loan_amount); // update formData too
+                }
+
+                if (res.loan_tenure) $('#standardTenure').val(res.loan_tenure);
+
+                if (res.interest_rate) {
+                    const percent = parseFloat(res.interest_rate) * 100;
+                    $('.la_loan_interest').text(`${percent}%`);
+                }
+
+                if (res.total_amount) {
+                    $('#summary-total').text(parseFloat(res.total_amount).toLocaleString());
+                }
+
+                // Recalculate loan summary
+                updateLoanSummary();
+            }
+            ,
+            error: function () {
+                console.warn('No income data found for this user.');
+            }
+        });
+    }
+
+
+    // la_go_home
+    $(document).on('click', '.la_back_step', function () {
+        if (currentStep === "eligibility") {
+            showStep('precheck');
+            $('.la_go_home').removeClass('d-none');
+            $(this).addClass('d-none');
+        } else if (currentStep === "full-loan-application") {
+            showStep('eligibility');
+        }
+    });
 
     // Sidebar toggle for mobile
     $(document).on('click', '#la_sidebar_toggle', function () {
@@ -74,6 +132,7 @@ $(function () {
     // Loan amount slider
     $(document).on('input', '.la_loan_amount_slider', function () {
         const amount = parseInt(this.value);
+        $(this).val(amount);
         formData.loanAmount = amount;
         $('#loan-amount-display').text(amount.toLocaleString());
         updateLoanSummary();
@@ -84,11 +143,56 @@ $(function () {
         updateLoanSummary();
     });
 
-    // Submit precheck
     $(document).on('click', '.la_submit_precheck', function () {
+        const userId = $('#gb_user_id').val();
+        const purpose = $('#la_purpose').val();
+        const referral = $('input[name="referralType"]:checked').val() || null;
+        let load_step = 0;
+        if (currentStep === "precheck") {
+            load_step = 1;
+        } else if (currentStep === "eligibility") {
+            load_step = 2;
+        } else if (currentStep === "full-loan-application") {
+            load_step = 3;
+        }
+
+        // Optional: you can skip AJAX if both purpose and referral are empty
+        if (!purpose && !referral) {
+            proceedToEligibility();
+            return;
+        }
+
+        $.ajax({
+            url: '/borrower/save-precheck',
+            method: 'POST',
+            data: {
+                user_id: userId,
+                purpose_of_loan: purpose,
+                referral: referral,
+                load_step: load_step
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
+            },
+            beforeSend: function () {
+                proceedToEligibility();
+            },
+            success: function (r) {
+                loan_applicantion_id = r.loan_applicantion_id;
+            },
+            error: function () {
+                console.error('Failed to save precheck data.');
+                proceedToEligibility(); // still continue even if saving failed
+            }
+        });
+    });
+
+    function proceedToEligibility() {
         showStep('loading');
         setTimeout(() => {
             showStep('eligibility');
+            $('.la_go_home').addClass('d-none');
+            $('.la_back_step').removeClass('d-none');
             if (formData.referralType === 'admin') {
                 $('#admin-result').show();
                 $('#standard-result').hide();
@@ -98,12 +202,49 @@ $(function () {
                 updateLoanSummary();
             }
         }, 3000);
+    }
+
+
+    $(document).on('click', '.la_proceed_loan', function () {
+        const loanAmount = formData.loanAmount; // from slider
+        const loanTenure = parseInt($('#standardTenure').val()) || 0;
+
+        // Get interest from DOM span (e.g. "5%") and convert to decimal
+        const interestText = $('.la_loan_interest').text().trim();
+        const interestRate = parseFloat(interestText.replace('%', '')) / 100;
+
+        const totalAmount = loanAmount + (loanAmount * interestRate);
+
+        if (!loan_applicantion_id) {
+            console.error('Missing loan_application_id');
+            return;
+        }
+
+        $.ajax({
+            url: '/borrower/update-loan-details',
+            method: 'POST',
+            data: {
+                loan_application_id: loan_applicantion_id,
+                load_step: 2,
+                loan_amount: loanAmount.toFixed(2),
+                loan_tenure: loanTenure,
+                interest_rate: interestRate.toFixed(3),
+                total_amount: totalAmount.toFixed(2)
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (res) {
+                if (res.success) {
+                    showStep('full-loan-application');
+                }
+            },
+            error: function () {
+                alert('Failed to update loan details.');
+            }
+        });
     });
 
-    // Proceed with loan
-    $(document).on('click', '.la_proceed_loan', function () {
-        showStep('full-loan-application');
-    });
 
     // Final application submit
     $(document).on('click', '.la_submit_final_application', function () {

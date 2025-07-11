@@ -78,3 +78,8 @@ Route::get('/apply-loan', function () {
 Route::get('/active-loan', function () {
     return view('borrower.pages.active-loan');
 })->name('loan.active');
+
+Route::get('/borrower/fetch-income/{id}', [App\Http\Controllers\HomeController::class, 'fetchIncome']);
+Route::post('/borrower/save-precheck', [App\Http\Controllers\HomeController::class, 'savePrecheck']);
+Route::post('/borrower/update-loan-details', [App\Http\Controllers\HomeController::class, 'updateLoanDetails']);
+

@@ -18,9 +18,13 @@
         <div class="main-content flex-grow-1">
             <div class="container-fluid p-4" style="max-width: 1200px;">
                 <!-- Header with Back Button -->
-                 <button class="btn btn-outline-primary-custom me-3 mb-3" data-url="/home">
+                <button class="btn btn-outline-primary-custom me-3 mb-3 la_back_step d-none">
                     <i class="ri-arrow-left-line me-2"></i>
                     Back
+                </button>
+                <button class="btn btn-outline-primary-custom me-3 mb-3 la_go_home" data-url="/home">
+                    <i class="ri-home-line me-2"></i>
+                    Go Home
                 </button>
                 <div class="d-flex align-items-center mb-4">
                    
@@ -44,12 +48,12 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="occupation" class="form-label fw-medium">Occupation</label>
-                                        <input type="text" class="form-control" id="occupation" value="Software Developer">
+                                        <input type="text" class="form-control" id="occupation" disabled>
                                         <div class="form-text">Auto-populated from your profile</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="income" class="form-label fw-medium">Current Income (₱)</label>
-                                        <input type="number" class="form-control" id="income" value="50000">
+                                        <input type="number" class="form-control" id="income" disabled>
                                         <div class="form-text">Auto-populated from your profile</div>
                                     </div>
                                 </div>
@@ -58,22 +62,22 @@
                                     <label class="form-label fw-medium">Employment Status</label>
                                     <div class="form-text mb-2">Auto-populated from your profile</div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="employed" value="employed" checked>
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="employed" value="1" disabled>
                                         <label class="form-check-label" for="employed">Employed</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="self-employed" value="self-employed">
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="self-employed" value="2" disabled>
                                         <label class="form-check-label" for="self-employed">Self Employed</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="none">
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="3" disabled>
                                         <label class="form-check-label" for="none">None</label>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="purpose" class="form-label fw-medium">Purpose of Loan (Optional)</label>
-                                    <textarea class="form-control" id="purpose" rows="3" placeholder="Tell us how you plan to use this loan..."></textarea>
+                                    <textarea class="form-control" id="la_purpose" rows="3" placeholder="Tell us how you plan to use this loan..."></textarea>
                                 </div>
 
                                 <div class="mb-4">
@@ -253,7 +257,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Interest Rate:</span>
-                                                <span class="fw-medium">5%</span>
+                                                <span class="fw-medium la_loan_interest">5%</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
