@@ -153,6 +153,7 @@
     {{-- Scripts injected from child views --}}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+    <script src="{{ asset('js/index.js') }}"></script>
     @yield('scripts')
     @stack('sb-scripts')
 </body>

@@ -273,7 +273,7 @@
         <div class="main-content flex-grow-1">
             <div class="container-fluid p-4" style="max-width: 1200px;">
                 <!-- Header with Back Button -->
-                 <button class="btn btn-outline-primary-custom me-3 mb-3" onclick="goBackToDashboard()">
+                 <button class="btn btn-outline-primary-custom me-3 mb-3" data-url="/home">
                     <i class="ri-arrow-left-line me-2"></i>
                     Back
                 </button>
