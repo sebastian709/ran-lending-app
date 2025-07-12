@@ -18,9 +18,13 @@
         <div class="main-content flex-grow-1">
             <div class="container-fluid p-4" style="max-width: 1200px;">
                 <!-- Header with Back Button -->
-                 <button class="btn btn-outline-primary-custom me-3 mb-3" data-url="/home">
+                <button class="btn btn-outline-primary-custom me-3 mb-3 la_back_step d-none">
                     <i class="ri-arrow-left-line me-2"></i>
                     Back
+                </button>
+                <button class="btn btn-outline-primary-custom me-3 mb-3 la_go_home" data-url="/home">
+                    <i class="ri-home-line me-2"></i>
+                    Go Home
                 </button>
                 <div class="d-flex align-items-center mb-4">
                    
@@ -44,36 +48,35 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="occupation" class="form-label fw-medium">Occupation</label>
-                                        <input type="text" class="form-control" id="occupation" value="Software Developer">
-                                        <div class="form-text">Auto-populated from your profile</div>
+                                        <input type="text" class="form-control" id="occupation" disabled>
+                                        
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="income" class="form-label fw-medium">Current Income (₱)</label>
-                                        <input type="number" class="form-control" id="income" value="50000">
-                                        <div class="form-text">Auto-populated from your profile</div>
+                                        <input type="number" class="form-control" id="income" disabled>
+                                        
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-medium">Employment Status</label>
-                                    <div class="form-text mb-2">Auto-populated from your profile</div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="employed" value="employed" checked>
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="employed" value="1" disabled>
                                         <label class="form-check-label" for="employed">Employed</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="self-employed" value="self-employed">
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="self-employed" value="2" disabled>
                                         <label class="form-check-label" for="self-employed">Self Employed</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="none">
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="3" disabled>
                                         <label class="form-check-label" for="none">None</label>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="purpose" class="form-label fw-medium">Purpose of Loan (Optional)</label>
-                                    <textarea class="form-control" id="purpose" rows="3" placeholder="Tell us how you plan to use this loan..."></textarea>
+                                    <textarea class="form-control" id="la_purpose" rows="3" placeholder="Tell us how you plan to use this loan..."></textarea>
                                 </div>
 
                                 <div class="mb-4">
@@ -253,7 +256,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Interest Rate:</span>
-                                                <span class="fw-medium">5%</span>
+                                                <span class="fw-medium la_loan_interest">5%</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -280,106 +283,112 @@
 
                 <!-- Full Loan Application Step -->
                 <div id="full-loan-application-step" class="step-content">
-                  <div class="dashboard-card">
-                    <div class="card-header bg-primary-custom text-white rounded-top p-2">
-                      <h4 class="mb-0">
-                        <i class="ri-edit-box-line me-2"></i>
-                        Full Loan Application
-                      </h4>
-                    </div>
-                    <div class="card-body p-4">
-                      
-                      <!-- Proof of Income -->
-                      <div class="mb-4">
-                        <label class="form-label fw-medium">Upload your payslip from the last 30 days</label>
-                        <input type="file" class="form-control" accept="image/*,application/pdf" id="payslipInput">
-                        <div id="payslipPreview" class="mt-2 preview-container"></div>
-                      </div>
-
-                      <!-- Bank Info & QR Code -->
-                      <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
-                          <label class="form-label fw-medium">Bank Name</label>
-                          <input type="text" class="form-control">
+                    <div class="dashboard-card border rounded shadow-sm overflow-hidden">
+                        <div class="card-header bg-primary-custom text-white rounded-top p-2">
+                        <h4 class="mb-0 d-flex align-items-center gap-2">
+                            <i class="ri-edit-box-line"></i>
+                            Full Loan Application
+                        </h4>
                         </div>
-                        <div class="col-md-6 mb-3">
-                          <label class="form-label fw-medium">Account Number</label>
-                          <input type="text" class="form-control">
-                        </div>
-                        <div class="col-12">
-                          <label class="form-label fw-medium">Upload QR Code (GCash/Bank)</label>
-                          <input type="file" class="form-control" accept="image/*" id="qrInput">
-                          <div id="qrPreview" class="mt-2 preview-container"></div>
-                        </div>
-                      </div>
 
-                      <!-- Government ID -->
-                      <div class="mb-4">
-                        <label class="form-label fw-medium">Government ID</label>
-                        <select class="form-select mb-2">
-                          <option selected disabled>Select your ID</option>
-                          <option>Driver’s License</option>
-                          <option>PhilSys</option>
-                          <option>Philippine Passport</option>
-                          <option>Unified Multi-Purpose ID (UMID)</option>
-                          <option>Postal ID</option>
-                          <option>SSS (Social Security System) ID</option>
-                          <option>Work ID</option>
-                        </select>
-                        <div class="form-text text-muted mb-3">
-                          <i class="ri-information-line"></i>
-                          Upload an ID that includes both your photo and signature.
-                        </div>
-                        <label class="form-label fw-medium">Upload ID Image</label>
-                        <input type="file" class="form-control mb-2" accept="image/*" id="govIdInput">
-                        <div id="govIdPreview" class="mt-2 preview-container"></div>
-                        <div class="form-text">
-                          Upload a clear photo of yourself holding your ID for verification.
-                        </div>
-                      </div>
+                        <div class="card-body p-4">
 
-                      <!-- Billing Statement -->
-                      <div class="mb-4">
-                        <label class="form-label fw-medium">Billing Statement</label>
-                        <input type="file" class="form-control" accept="application/pdf,image/*" id="billingInput">
-                        <div id="billingPreview" class="mt-2 preview-container"></div>
-                      </div>
-
-                      <!-- Terms & Conditions -->
-                      <div class="form-check mb-4">
-                        <input class="form-check-input la_terms_checkbox" type="checkbox" id="termsCheckbox">
-                        <label class="form-check-label" for="termsCheckbox">
-                          I agree to the <a href="#">Terms and Conditions</a>
-                        </label>
-                      </div>
-
-                      <!-- Signature Section -->
+                        <!-- Proof of Income -->
                         <div class="mb-4">
-                        <label class="form-label fw-medium">Signature</label>
-                        <p class="text-muted">Click the button below to sign or upload your handwritten signature.</p>
-
-                        <div class="flex justify-start">
-                            <div class="w-full md:w-auto md:max-w-[260px]">
-                            @include('components.signature-box', [
-                                'name' => 'Lordan Lingat',
-                                'position' => 'Mentor',
-                                'customWidth' => '500px'
-                            ])  
+                            <label class="form-label fw-medium">Upload your payslip from the last 30 days</label>
+                            <input type="file" class="form-control la_payslip_img" accept="image/*,application/pdf" id="payslipInput">
+                            <div id="payslipPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
+                            No preview
                             </div>
                         </div>
+
+                        <!-- Bank Info & QR Code -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                            <label class="form-label fw-medium">Bank Name</label>
+                            <input type="text" class="form-control la_bank_name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                            <label class="form-label fw-medium">Account Number</label>
+                            <input type="text" class="form-control la_account_number">
+                            </div>
+                            <div class="col-12">
+                            <label class="form-label fw-medium">Upload QR Code (GCash/Bank)</label>
+                            <input type="file" class="form-control la_qr_code" accept="image/*" id="qrInput">
+                            <div id="qrPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
+                                No preview
+                            </div>
+                            </div>
                         </div>
 
-                      <!-- Submit Button -->
-                      <button class="btn btn-primary-custom w-100 la_submit_final_application" id="submitFinalApplication" disabled>
-                        Submit Application
-                      </button>
+                        <!-- Government ID -->
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Government ID</label>
+                            <select class="form-select mb-2 la_government_id">
+                            <option selected disabled>Select your ID</option>
+                            <option value="1">Driver’s License</option>
+                            <option value="2">PhilSys</option>
+                            <option value="3">Philippine Passport</option>
+                            <option value="4">Unified Multi-Purpose ID (UMID)</option>
+                            <option value="5">Postal ID</option>
+                            <option value="6">SSS (Social Security System) ID</option>
+                            <option value="7">Work ID</option>
+                            </select>
+                            <div class="form-text text-muted mb-3 d-flex align-items-start gap-1">
+                            <i class="ri-information-line mt-1"></i>
+                            <span>Upload an ID that includes both your photo and signature.</span>
+                            </div>
+
+                            <label class="form-label fw-medium">Upload ID Image</label>
+                            <input type="file" class="form-control mb-2 la_government_id_img" accept="image/*" id="govIdInput">
+                            <div id="govIdPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
+                            No preview
+                            </div>
+                            <div class="form-text">
+                            Upload a clear photo of yourself holding your ID for verification.
+                            </div>
+                        </div>
+
+                        <!-- Billing Statement -->
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Billing Statement</label>
+                            <input type="file" class="form-control la_billing_statement" accept="application/pdf,image/*" id="billingInput">
+                            <div id="billingPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
+                            No preview
+                            </div>
+                        </div>
+
+                        <!-- Terms & Conditions -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input la_terms_checkbox" type="checkbox" id="termsCheckbox">
+                            <label class="form-check-label" for="termsCheckbox">
+                            I agree to the <a href="#">Terms and Conditions</a>
+                            </label>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Signature</label>
+                            <p class="text-muted">Click the button below to sign or upload your handwritten signature.</p>
+                            <div class="w-100" style="max-width: 300px;">
+                            @include('components.signature-box', [
+                                'nameClass' => 'c-applicant-name-1',
+                                'positionClass' => 'c-applicant-position-1'
+                                
+                            ])
+                            </div>
+                            <!-- 'customWidth' => '500px' -->
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button class="btn btn-primary-custom w-100 la_submit_final_application" id="submitFinalApplication" disabled>
+                            Submit Application
+                        </button>
+                        </div>
                     </div>
-                  </div>
-                </div>
+                    </div>
             </div>
         </div>
     </div>
 @endsection
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

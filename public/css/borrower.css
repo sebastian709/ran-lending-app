@@ -284,3 +284,33 @@
     margin-bottom: 10px;
     border: 1px solid #ccc;
 }
+
+.thank-you-message {
+    max-width: 700px;
+    margin: 6rem auto;
+    padding: 3rem 2rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.thank-you-message .icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.thank-you-message h2 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.thank-you-message p {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.btn-back-home {
+    margin-top: 2rem;
+}
