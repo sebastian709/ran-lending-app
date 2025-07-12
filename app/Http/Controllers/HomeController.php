@@ -37,16 +37,16 @@ class HomeController extends Controller
         try {
             // Fetch income info
             $income = DB::table('user_incomes')
-                ->join('users','user_incomes.user_id','=','users.id')
+                ->join('users', 'user_incomes.user_id', '=', 'users.id')
                 ->select(
                     'user_incomes.occupation',
                     'user_incomes.income',
                     'user_incomes.employment_status',
-                    DB::raw('CONCAT(users.firstname, " ", users.lastname) as fullname')            
+                    DB::raw('CONCAT(users.firstname, " ", users.lastname) as fullname')
                 )
-                    ->where('user_incomes.user_id', $id)
-                    ->where('user_incomes.status', 1)
-                    ->first();
+                ->where('user_incomes.user_id', $id)
+                ->where('user_incomes.status', 1)
+                ->first();
 
             if (!$income) {
                 return response()->json([
@@ -63,7 +63,7 @@ class HomeController extends Controller
 
             return response()->json([
                 'loan_application_id' => $loan->id ?? '',
-                'fullname'=> $income->fullname ?? '',
+                'fullname' => $income->fullname ?? '',
                 'occupation' => $income->occupation ?? '',
                 'income' => $income->income ?? '',
                 'employment_status' => $income->employment_status ?? '',
@@ -96,20 +96,34 @@ class HomeController extends Controller
 
     public function savePrecheck(Request $request)
     {
+        $userId = auth()->id();
+
         $validated = $request->validate([
-            'user_id' => 'required|integer',
             'load_step' => 'required|integer',
             'purpose_of_loan' => 'nullable|string',
             'referral' => 'nullable|string',
+            'occupation' => 'required|string',
+            'income' => 'required|numeric',
+            'employmentStatus' => 'required|integer',
         ]);
 
         $existing = DB::table('loan_application')
-            ->where('loan_applicant', $validated['user_id'])
+            ->where('loan_applicant', $userId)
             ->where('loan_status', 0)
             ->first();
 
         if ($existing) {
-            // Update existing
+            // Update user income
+            DB::table('user_incomes')
+                ->where('user_id', $userId)
+                ->update([
+                    'occupation' => $validated['occupation'],
+                    'income' => $validated['income'],
+                    'employment_status' => $validated['employmentStatus'],
+                    'updated_at' => now()
+                ]);
+
+            // Update existing loan
             DB::table('loan_application')
                 ->where('id', $existing->id)
                 ->update([
@@ -119,25 +133,42 @@ class HomeController extends Controller
                     'updated_at' => now()
                 ]);
 
-            $loanId = $existing->id; // ← get the existing ID
+            
+
+            $loanId = $existing->id;
         } else {
-            // Insert new and get the ID
+            // Update or insert income record
+            DB::table('user_incomes')
+                ->updateOrInsert(
+                    ['user_id' => $userId],
+                    [
+                        'occupation' => $validated['occupation'],
+                        'income' => $validated['income'],
+                        'employment_status' => $validated['employmentStatus'],
+                        'updated_at' => now()
+                    ]
+                );
+            // Insert new loan
             $loanId = DB::table('loan_application')->insertGetId([
                 'load_step' => $validated['load_step'],
-                'loan_applicant' => $validated['user_id'],
+                'loan_applicant' => $userId,
                 'purpose_of_loan' => $validated['purpose_of_loan'],
                 'referral' => $validated['referral'],
                 'loan_status' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            
         }
 
         return response()->json([
             'success' => true,
-            'loan_applicantion_id' => $loanId
+            'loan_application_id' => $loanId,
+            'referral_type' => $validated['referral']
         ]);
     }
+
 
     public function updateLoanDetails(Request $request)
     {
@@ -186,7 +217,7 @@ class HomeController extends Controller
 
             $data = [
                 'load_step' => $request->load_step,
-                'loan_status' => 1, // Pending
+                'loan_status' => 2, // Pending
                 'bank_name' => $request->bank_name,
                 'account_number' => $request->account_number,
                 'government_type_id' => $request->government_type_id,
@@ -255,7 +286,7 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
-        return $loanApplication->loan_status ?? null; 
+        return $loanApplication->loan_status ?? 999;
     }
 
 }

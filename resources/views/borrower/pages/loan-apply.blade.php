@@ -48,12 +48,12 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="occupation" class="form-label fw-medium">Occupation</label>
-                                        <input type="text" class="form-control" id="occupation" disabled>
+                                        <input type="text" class="form-control" id="occupation">
                                         
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="income" class="form-label fw-medium">Current Income (₱)</label>
-                                        <input type="number" class="form-control" id="income" disabled>
+                                        <input type="number" class="form-control" id="income">
                                         
                                     </div>
                                 </div>
@@ -61,15 +61,15 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-medium">Employment Status</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="employed" value="1" disabled>
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="employed" value="1">
                                         <label class="form-check-label" for="employed">Employed</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="self-employed" value="2" disabled>
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="self-employed" value="2">
                                         <label class="form-check-label" for="self-employed">Self Employed</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="3" disabled>
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="3">
                                         <label class="form-check-label" for="none">None</label>
                                     </div>
                                 </div>
@@ -182,7 +182,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Interest Rate:</span>
-                                                <span class="fw-medium">5%</span>
+                                                <span class="fw-medium la_ad_loan_interest">5%</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -197,7 +197,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary-custom btn-md w-100 la_proceed_loan">
+                                <button class="btn btn-primary-custom btn-md w-100 la_ad_proceed_loan">
                                     <i class="ri-arrow-right-line me-2"></i>
                                     Proceed with Application
                                 </button>

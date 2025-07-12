@@ -1,8 +1,8 @@
 $(function () {
     let current_routes = window.location.pathname;
     const userId = $('#gb_user_id').val();
-    let loan_applicantion_id = null;
-
+    let loan_application_id = null;
+    let gb_refferal_type = "friend";
 
     let currentStep = 'precheck';
     let formData = {
@@ -211,6 +211,9 @@ $(function () {
         const userId = $('#gb_user_id').val();
         const purpose = $('#la_purpose').val();
         const referral = $('input[name="referralType"]:checked').val() || null;
+        const occupation = $('#occupation').val();
+        const income = $('#income').val();
+        const employmentStatus = $('input[name="employmentStatus"]:checked').val();
 
         // Optional: you can skip AJAX if both purpose and referral are empty
         if (!purpose && !referral) {
@@ -225,6 +228,9 @@ $(function () {
                 user_id: userId,
                 purpose_of_loan: purpose,
                 referral: referral,
+                occupation: occupation,
+                income: income,
+                employmentStatus: employmentStatus,
                 load_step: 1
             },
             headers: {
@@ -234,7 +240,10 @@ $(function () {
                 proceedToEligibility();
             },
             success: function (r) {
-                loan_applicantion_id = r.loan_applicantion_id;
+                loan_application_id = r.loan_application_id;
+                gb_refferal_type = r.referral_type;
+
+                console.log(gb_refferal_type, loan_application_id);
             },
             error: function () {
                 console.error('Failed to save precheck data.');
@@ -261,18 +270,19 @@ $(function () {
     }
 
 
-    $(document).on('click', '.la_proceed_loan', function () {
-        const loanAmount = formData.loanAmount; // from slider
-        const loanTenure = parseInt($('#standardTenure').val()) || 0;
+    $(document).on('click', '.la_proceed_loan, .la_ad_proceed_loan', function () {
+        const loanAmountRaw = gb_refferal_type == 'admin' ? $('#customAmount').val() : formData.loanAmount;
+        const loanAmount = parseFloat(loanAmountRaw) || 0;
+        const loanTenure = gb_refferal_type == 'admin' ? $('#adminTenure').val() : parseInt($('#standardTenure').val()) || 0;
+        const interestText = gb_refferal_type == 'admin' ? $('.la_ad_loan_interest').text().trim() : $('.la_loan_interest').text().trim();
 
-        // Get interest from DOM span (e.g. "5%") and convert to decimal
-        const interestText = $('.la_loan_interest').text().trim();
+
         const interestRate = parseFloat(interestText.replace('%', '')) / 100;
 
         const totalAmount = loanAmount + (loanAmount * interestRate);
 
-        if (!loan_applicantion_id) {
-            console.error('Missing loan_application_id');
+        if (!loan_application_id) {
+            console.error('Missing loan_application_id', loan_application_id);
             return;
         }
 
@@ -280,7 +290,7 @@ $(function () {
             url: '/borrower/update-loan-details',
             method: 'POST',
             data: {
-                loan_application_id: loan_applicantion_id,
+                loan_application_id: loan_application_id,
                 load_step: 2,
                 loan_amount: loanAmount.toFixed(2),
                 loan_tenure: loanTenure,
@@ -304,14 +314,14 @@ $(function () {
 
     $(document).on('click', '.la_submit_final_application', function () {
         console.log({
-            id: loan_applicantion_id,
+            id: loan_application_id,
             bank: $('.la_bank_name').val(),
             signature: $('.signature-filled img').attr('src'),
             payslip: $('#payslipInput')[0].files[0],
         });
         const formData = new FormData();
 
-        formData.append('loan_application_id', loan_applicantion_id);
+        formData.append('loan_application_id', loan_application_id);
         formData.append('load_step', 3);
         formData.append('bank_name', $('.la_bank_name').val());
         formData.append('account_number', $('.la_account_number').val());

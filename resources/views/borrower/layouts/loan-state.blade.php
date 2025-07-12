@@ -1,12 +1,12 @@
-@if (is_null($loanStatus))
+@if ($loanStatus == 999 || $loanStatus == 0)
     {{-- Not applied for loan --}}
     <div class="empty-state-icon">
         <i class="ri-money-dollar-circle-line"></i>
     </div>
-    <h2 class="h3 fw-bold mb-3">Hi, {{ Auth::user()->firstname }}! You Haven't Applied for a Loan Yet.</h2>
-    <p class="text-muted mb-4 fs-5">No worries! It's quick and easy to get started. Apply for a loan today!</p>
+    <h2 class="h3 fw-bold mb-3">Hi, {{ Auth::user()->firstname }}! {{ $loanStatus == 0 ? 'You Have a Pending Loan Application' : "You Haven't Applied for a Loan Yet." }}</h2>
+    <p class="text-muted mb-4 fs-5">{{$loanStatus == 0 ? "You're just a few steps away from completing your application, Click below to continue." : "No worries! It's quick and easy to get started. Apply for a loan today!"}}</p>
     <button onclick="window.location.href='{{ url('/apply-loan') }}'" class="btn btn-primary-custom btn-lg">
-        <i class="ri-add-circle-line me-2"></i>Apply for a Loan
+        <i class="ri-{{ $loanStatus == 0 ? 'arrow-right' :'add-circle' }}-line me-2"></i> {{ $loanStatus == 0 ? 'Continue Your Application' : 'Apply for a Loan'}}
     </button>
 
 @elseif ($loanStatus == 1)
