@@ -242,24 +242,14 @@ class HomeController extends Controller
 
             //send EMAIL CONFIRMATION ======================================
             $email = auth()->user()->email;
-
+            $htmlContent = view('components.emails.state_email')->render();
             $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', env('BREVO_API_KEY'));
             $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
             $emailObj = new SendSmtpEmail([
                 'subject' => '✅ Your Loan Application is Now Being Processed',
                 'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
                 'to' => [['email' => $email]],
-                'htmlContent' => "
-                    <div style='font-family: Arial, sans-serif; color: #333; padding: 20px; max-width: 600px;'>
-                        <h2 style='color: #4A90E2;'>Loan Application Update</h2>
-                        <p>Hello,</p>
-                        <p>We’re happy to let you know that your loan application is now being processed.</p>
-                        <p>Our team is currently reviewing your submitted information. We’ll notify you as soon as a decision has been made.</p>
-                        <p>If you have any questions or need to provide additional documents, please don’t hesitate to reach out to us.</p>
-                        <br>
-                        <p>Thank you for choosing Ran Serenity.<br>The Ran Serenity Team</p>
-                    </div>
-                ",
+                'htmlContent' => $htmlContent
             ]);
             
             $apiInstance->sendTransacEmail($emailObj);
