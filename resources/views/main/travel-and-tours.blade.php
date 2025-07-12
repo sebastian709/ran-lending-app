@@ -354,7 +354,7 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a data-url="/" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/lending" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Lending</a></li>
                         <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Jewelry</a></li>

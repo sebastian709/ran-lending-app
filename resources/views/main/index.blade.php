@@ -135,7 +135,7 @@
     <section class="relative min-h-screen">
         <div class="hidden md:grid md:grid-cols-5 h-[calc(100vh)]" id="heroGrid">
             <!-- Lending -->
-            <div data-url="/" class="group relative overflow-hidden cursor-pointer transition-all duration-500"
+            <div data-url="/lending" class="group relative overflow-hidden cursor-pointer transition-all duration-500"
                 id="lendingHero">
                 <div
                     class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=modern%20financial%20district%20with%20skyscrapers%20and%20business%20people%2C%20professional%20corporate%20environment%2C%20purple%20lighting%20accents%2C%20elegant%20and%20luxurious%20atmosphere&width=800&height=1200&seq=lending1&orientation=portrait')] bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500">
@@ -145,7 +145,7 @@
                     <h3 class="text-xl font-bold mb-2">RAN Serenity Lending</h3>
                     <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Flexible
                         financial solutions tailored to your needs</p>
-                    <button data-url="/"
+                    <button data-url="/lending"
                         class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn
                         More</button>
                 </div>
@@ -573,7 +573,7 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a data-url="/" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/lending" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Lending</a></li>
                         <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Jewelry</a></li>
