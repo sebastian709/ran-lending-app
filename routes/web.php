@@ -19,18 +19,16 @@ Route::get('/test-broadcast', function () {
 });
 
 # Landing Page
-Route::get('/', fn() => view('index'))->name('index');
+Route::get('/lending', fn() => view('index'))->name('index');
 
 # multi-purpose website
-Route::get('/main', [BlogPostController::class, 'landingView']);
+Route::get('/', [BlogPostController::class, 'landingView']);
 Route::get('/jewelry', [BlogPostController::class, 'landingJewelry']);
 Route::get('/hub', [BlogPostController::class, 'landingHub']);
 Route::get('/travel-and-tours', [BlogPostController::class, 'landingTAT']);
 
 #index page routes - Lending website
 Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
-
-
 
 // admin routes
 Route::prefix('admin')->group(function () {
