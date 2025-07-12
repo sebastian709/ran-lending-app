@@ -18,7 +18,7 @@
     <div class="signature-target mx-auto {{ isset($signature) ? 'filled' : '' }}">
         @if (isset($signature))
             <div class="position-relative d-inline-block">
-                <img src="{{ $signature }}" alt="Signature">
+                <img src="{{ $signature }}" alt="Signature" class="la_signature_img">
             </div>
             <a href="{{ $signature }}" 
                 download="signature.png" 
@@ -38,7 +38,7 @@
 
     <div class="signature-info mt-0 pt-4">
         <hr class="mb-2" style="width: 100%;">
-        <p class="mb-0 fw-semibold">{{ $name ?? 'Name Here' }}</p>
-        <small class="text-muted">{{ $position ?? 'Position Here' }}</small>
+        <p class="mb-0 fw-semibold {{ $nameClass ?? '' }}">{{ $name ?? 'Name Here' }}</p>
+        <small class="text-muted {{ $positionClass ?? '' }}">{{ $position ?? 'Position Here' }}</small>
     </div>
 </div>
