@@ -17,6 +17,9 @@ class BlogPost extends Model
         'featured_image',
         'tags_json',
         'status',
+        'added_by', 
+        'updated_by',
+        'deleted_by',
     ];
 
     protected $casts = [

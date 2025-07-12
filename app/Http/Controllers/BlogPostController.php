@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BlogPost;
+use Illuminate\Support\Carbon;
 
 class BlogPostController extends Controller
 {
@@ -32,6 +33,9 @@ class BlogPostController extends Controller
             'status' => $validated['status'], // ⬅️ dito mo isinasama ang status
             'featured_image' => $imagePath,
             'tags_json' => json_decode($validated['tags'] ?? '[]', true),
+            'added_by' => '1',
+            'updated_by' => '0',
+            'deleted_by' => '0'
         ]);
 
         return response()->json(['message' => 'Blog post saved successfully.']);
