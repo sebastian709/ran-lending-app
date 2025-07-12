@@ -16,7 +16,7 @@
         </div>
         <h2 class="text-primary-custom">Thank You for Your Loan Application!</h2>
         <p>We are currently reviewing your request. Our team will be in touch with you shortly for a brief interview to finalize the process. Please expect a call soon.</p>
-        <a href="apply-loan" class="btn btn-primary-custom btn-back-home mt-3">
+        <a href="home" class="btn btn-primary-custom btn-back-home mt-3">
             Back to Home
         </a>
         <div class="progress mt-5">
