@@ -90,7 +90,16 @@ class OtpVerificationController extends Controller
     public function forgotauthsend(Request $request){
         $otp = random_int(100000, 999999);
         $email = $request->email;
-    
+        
+        $exist = DB::table('users')
+            ->where('email', $email)
+            ->first();
+
+        if ($exist == null) {
+            return response()->json(0);
+            die();
+        }
+
         // Store OTP
         DB::table('password_otps')->updateOrInsert(
             ['email' => $email],

@@ -20,7 +20,7 @@
         <header class="bg-white shadow-sm">
             <div class="container py-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="#" class="d-flex align-items-center text-decoration-none text-muted">
+                    <a href="{{ url('/') }}" class="d-flex align-items-center text-decoration-none text-muted">
                         <i class="ri-arrow-left-line me-2"></i>
                         <span>Back to Home</span>
                     </a>
@@ -42,20 +42,20 @@
                         <p class="text-muted mb-3">Enter the email address linked to your account:</p>
                         <div class="mb-3">
                             <div class="position-relative">
-                                
                                 <input type="email" id="forgot-email" name="email" class="form-control email-input" placeholder="Enter your email address">
+                                <div id="no-email-error" class="text-danger text-center  small mt-1 d-none">Email address not registered.</div>
                             </div>
-                            <div id="forgot-email-error" class="text-danger small mt-1 d-none">Invalid email format format.</div>
+                            <div id="forgot-email-error" class="text-danger small mt-1 d-none">Invalid email format .</div>
                         </div>
 
-                        <button type="button" id="authgen" class="btn btn-primary-custom w-100 fw-medium">Send Verification Code</button>
+                        <button type="button" class="authgen btn btn-primary-custom w-100 fw-medium">Send Verification Code</button>
                         <p class="mt-3 small text-muted">We'll send a 6-digit code via email to verify your identity.</p>
 
                     <hr class="my-4">
-                    <button id="back-to-login-btn1" class="btn btn-link w-100 text-muted text-decoration-none">
+                    <a href="{{ url('/login') }}"" id="back-to-login-btn1" class="btn btn-link w-100 text-muted text-decoration-none">
                         <i class="ri-arrow-left-line me-1"></i>
                         Back to Login
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@
                         <button type="button" id="authcheck" class="btn btn-primary-custom w-100 fw-medium">Verify Code</button>
                         
                         <div class="text-center mt-3">
-                            <button type="button" id="resend-code-btn" class="btn btn-link text-primary-custom p-0 small text-decoration-none">
+                            <button type="button" class="authgen resend-code-btn btn btn-link text-primary-custom p-0 small text-decoration-none">
                                 <i class="ri-refresh-line me-1"></i>
                                 Resend Code
                                 <span id="timer" class="text-muted">(59s)</span>
@@ -159,7 +159,7 @@
                     </div>
                     <h2 class="h3 fw-bold mb-3">Success!</h2>
                     <p class="text-muted mb-4">Your password has been changed. You can now log in with your new password.</p>
-                    <button id="back-to-login-success" class="btn btn-primary-custom w-100 fw-medium">Back to Login</button>
+                    <a href="{{ url('/login') }}" id="back-to-login-success" class="btn btn-primary-custom w-100 fw-medium">Back to Login</a>
                 </div>
             </div>
         </main>
@@ -183,7 +183,7 @@
 $(document).ready(function() {
     let timer;
     const timerElement = document.getElementById('timer');
-    const resendCodeBtn = document.getElementById('resend-code-btn');
+    const resendCodeBtn = document.getElementsByClassName('resend-code-btn');
 
     function startTimer() {
         console.log('startTimer')
@@ -206,7 +206,8 @@ $(document).ready(function() {
     }
 });
     //OTP GENERATE
-    $(document).on('click' , '#authgen' , function (e) {
+    $(document).on('click' , '.authgen' , function (e) {
+        let dis = $(this);
         let email = $('input[name="email"]').val();
         const emailField = $('input[name="email"]');
         const emailError = $('#email-error');
@@ -231,8 +232,17 @@ $(document).ready(function() {
             },
             success: function (res) {
             if (res == 1) {
-                $('#forgot-step1-container').addClass('d-none')
-                $('#forgot-step2-container').removeClass('d-none')
+                if (dis.hasClass('resend-code-btn')) {
+                    $('.resend-code-btn').text('Code Has Been Sent.')
+                    setTimeout(function () {
+                    $('.resend-code-btn').text('Resend Code')
+                    }, 3000);
+                }else{
+                    $('#forgot-step1-container').addClass('d-none')
+                    $('#forgot-step2-container').removeClass('d-none')
+                }
+            }else{
+                $('#no-email-error').removeClass('d-none')
             }
             },
             error: function (xhr) {
@@ -259,8 +269,6 @@ $(document).on('click' , '#authcheck' , function (e) {
           if (res == 1) {
             $('#forgot-step2-container').addClass('d-none')
             $('#forgot-step3-container').removeClass('d-none')
-          }else{
-            alert()
           }
         },
         error: function (xhr) {
