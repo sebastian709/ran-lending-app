@@ -39,32 +39,7 @@
                 <div class="col-12">
                     <div class="dashboard-card">
                         <div class="empty-state">
-                            <div class="empty-state-icon">
-                                <i class="ri-money-dollar-circle-line"></i>
-                            </div>
-                            <h2 class="h3 fw-bold mb-3">Hi, {{ Auth::user()->firstname }}! You Haven't Applied for a Loan Yet.</h2>
-                            <p class="text-muted mb-4 fs-5">No worries! It's quick and easy to get started. Apply for a loan today!</p>
-                            <button onclick="window.location.href='{{ url('/apply-loan') }}'" class="btn btn-primary-custom btn-lg" id="apply-loan-btn">
-                                <i class="ri-add-circle-line me-2"></i>Apply for a Loan
-                            </button>
-
-                            <div class="row mt-5">
-                                <div class="col-md-4 mb-3 text-center">
-                                    <i class="ri-time-line text-primary-custom" style="font-size: 2rem;"></i>
-                                    <h5 class="fw-bold mt-2">Quick Process</h5>
-                                    <p class="small text-muted">Get approved in as little as 24 hours</p>
-                                </div>
-                                <div class="col-md-4 mb-3 text-center">
-                                    <i class="ri-shield-check-line text-primary-custom" style="font-size: 2rem;"></i>
-                                    <h5 class="fw-bold mt-2">Secure & Safe</h5>
-                                    <p class="small text-muted">Bank-level protection for your data</p>
-                                </div>
-                                <div class="col-md-4 mb-3 text-center">
-                                    <i class="ri-customer-service-2-line text-primary-custom" style="font-size: 2rem;"></i>
-                                    <h5 class="fw-bold mt-2">24/7 Support</h5>
-                                    <p class="small text-muted">Our team is ready to assist anytime</p>
-                                </div>
-                            </div>
+                            @include('borrower.layouts.loan-state')
                         </div>
                     </div>
                 </div>
@@ -85,4 +60,5 @@
         </div>
     </div>  
 </div>
+@stack('scripts')
 @endsection

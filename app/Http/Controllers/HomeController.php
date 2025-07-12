@@ -27,7 +27,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('borrower.pages.home');
+        $loanStatus = $this->getLoanStatus();
+
+        return view('borrower.pages.home', compact('loanStatus'));
     }
 
     public function fetchIncome($id)
@@ -243,4 +245,18 @@ class HomeController extends Controller
             ], 500);
         }
     }
+
+    public function getLoanStatus()
+    {
+        $userId = auth()->id();
+
+        $loanApplication = DB::table('loan_application')
+            ->where('loan_applicant', $userId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $loanApplication->loan_status ?? null; 
+    }
+
 }
+
