@@ -91,7 +91,7 @@ function toggleRule(rule, isValid) {
 
 //OTP pasting andd typing
 $(document).ready(function () {
-  const inputs = $('.reg-otp-input');
+  const inputs = $('.otp-input');
 
   // Move to next input on keyup
   inputs.on('input', function () {
@@ -99,7 +99,7 @@ $(document).ready(function () {
     const val = input.val();
 
     if (val.length === 1) {
-      input.next('.reg-otp-input').focus();
+      input.next('.otp-input').focus();
     }
   });
 
@@ -123,7 +123,7 @@ $(document).ready(function () {
 
   inputs.on('keydown', function (e) {
     if (e.key === 'Backspace' && !$(this).val()) {
-      $(this).prev('.reg-otp-input').focus();
+      $(this).prev('.otp-input').focus();
     }
   });
 });
