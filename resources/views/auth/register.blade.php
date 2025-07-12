@@ -41,7 +41,7 @@
     <header class="bg-white shadow-sm">
       <div class="container py-3">
         <div class="d-flex justify-content-between align-items-center">
-          <a href="login" class="d-flex align-items-center text-decoration-none text-muted">
+          <a href="{{ url('/login') }}" class="d-flex align-items-center text-decoration-none text-muted">
             <i class="ri-arrow-left-line me-2"></i>
             <span>Back to Login</span>
           </a>
@@ -179,7 +179,7 @@
               <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(2)">
                 <i class="ri-arrow-left-line"></i>Previous
               </button>
-              <button type="button" id="authreggen" class=" btn d-flex align-items-center gap-2 text-muted border-0" disabled>Save and Verify</button>
+              <button type="button" class="authreggen btn d-flex align-items-center gap-2 text-muted border-0">Save and Verify</button>
 
             </div>
         </div>
@@ -200,7 +200,7 @@
             </div>
             <div class="text-center">
               <button type="button" id="regauthcheck" class="btn btn-primary-custom w-100">Verify Code</button>
-              <p class="small text-muted mt-2 mb-0">Didn't receive the code? <button type="button" class="btn btn-link text-primary-custom p-0">Resend Code</button></p>
+              <p class="small text-muted mt-2 mb-0">Didn't receive the code? <button type="button" class="authreggen authreggenresend btn btn-link text-primary-custom p-0">Resend Code</button></p>
             </div>
             <div class="d-flex justify-content-between mt-4">
                 <!-- <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(3)">
@@ -273,8 +273,8 @@
     }
 
     //OTP GENERATE
-  $(document).on('click' , '#authreggen' , function (e) {
-    
+  $(document).on('click' , '.authreggen' , function (e) {
+    let dis = $(this);
     let email = $('input[name="email"]').val();
     const emailField = $('input[name="email"]');
     const emailError = $('#email-error');
@@ -299,7 +299,16 @@
         },
         success: function (res) {
           if (res == 1) {
-            prevStep(4)
+            if (dis.hasClass('authreggenresend')) {
+                $('.authreggenresend').text('Code Has Been Sent.')
+                setTimeout(function () {
+                  $('.authreggenresend').text('Resend Code')
+                }, 3000);
+            }else{
+              prevStep(4)
+            }
+          }else{
+            alert()
           }
         },
         error: function (xhr) {
