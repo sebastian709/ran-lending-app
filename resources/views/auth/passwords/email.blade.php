@@ -52,7 +52,7 @@
                         <p class="mt-3 small text-muted">We'll send a 6-digit code via email to verify your identity.</p>
 
                     <hr class="my-4">
-                    <a href="{{ url('/login') }}"" id="back-to-login-btn1" class="btn btn-link w-100 text-muted text-decoration-none">
+                    <a href="{{ url('/login') }}" id="back-to-login-btn1" class="btn btn-link w-100 text-muted text-decoration-none">
                         <i class="ri-arrow-left-line me-1"></i>
                         Back to Login
                     </a>

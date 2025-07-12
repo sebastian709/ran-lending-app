@@ -24,13 +24,14 @@ class OtpVerificationController extends Controller
     public function regauthsend(Request $request){
         $otp = random_int(100000, 999999);
         $email = $request->email;
+        $htmlContent = view('components.emails.registration_otp', ['otp' => $otp])->render();
     
         // Store OTP
         DB::table('password_otps')->updateOrInsert(
             ['email' => $email],
             [
                 'otp' => $otp,
-                'expires_at' => Carbon::now()->addMinutes(10),
+                'expires_at' => Carbon::now()->addMinutes(3),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -44,17 +45,7 @@ class OtpVerificationController extends Controller
             'subject' => '✅ Complete Your Registration - OTP Inside',
             'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
-            'htmlContent' => "
-                <div style='font-family: Arial, sans-serif; color: #333; padding: 20px; max-width: 600px;'>
-                    <h2 style='color: #4A90E2;'>Welcome to Ran Serenity!</h2>
-                    <p>To complete your registration, please use the verification code below:</p>
-                    <p style='font-size: 28px; font-weight: bold; color: #4A90E2; letter-spacing: 2px;'>$otp</p>
-                    <p>This code will expire in <strong>10 minutes</strong>, so please enter it promptly.</p>
-                    <p>If you didn’t request this registration, you can safely ignore this email.</p>
-                    <br>
-                    <p>Thank you,<br>The Ran Serenity </p>
-                </div>
-            ",
+            'htmlContent' => $htmlContent
         ]);
         
         // $apiInstance->sendTransacEmail($emailObj);
@@ -90,7 +81,8 @@ class OtpVerificationController extends Controller
     public function forgotauthsend(Request $request){
         $otp = random_int(100000, 999999);
         $email = $request->email;
-        
+        $htmlContent = view('components.emails.password_reset', ['otp' => $otp])->render();
+
         $exist = DB::table('users')
             ->where('email', $email)
             ->first();
@@ -105,7 +97,7 @@ class OtpVerificationController extends Controller
             ['email' => $email],
             [
                 'otp' => $otp,
-                'expires_at' => Carbon::now()->addMinutes(10),
+                'expires_at' => Carbon::now()->addMinutes(3),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -119,19 +111,9 @@ class OtpVerificationController extends Controller
             'subject' => '🔐 Password Reset Request - OTP Inside',
             'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
-            'htmlContent' => "
-                <div style='font-family: Arial, sans-serif; color: #333; padding: 20px; max-width: 600px;'>
-                    <h2 style='color: #4A90E2;'>Password Reset Requested</h2>
-                    <p>We received a request to reset your password for your Ran Serenity account.</p>
-                    <p>Use the OTP code below to proceed:</p>
-                    <p style='font-size: 28px; font-weight: bold; color: #4A90E2; letter-spacing: 2px;'>$otp</p>
-                    <p>This code will expire in <strong>10 minutes</strong>.</p>
-                    <p>If you didn’t request a password reset, please ignore this email or contact support.</p>
-                    <br>
-                    <p>Stay safe,<br>The Ran Serenity Team</p>
-                </div>
-            ",
+            'htmlContent' => $htmlContent
         ]);
+
         
         try {
             $apiInstance->sendTransacEmail($emailObj);
