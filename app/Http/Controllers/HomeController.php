@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Brevo\Client\Api\TransactionalEmailsApi;
+use Brevo\Client\Model\SendSmtpEmail;
+use Brevo\Client\Configuration;
+use GuzzleHttp\Client as GuzzleClient;
 
 class HomeController extends Controller
 {
@@ -264,6 +271,21 @@ class HomeController extends Controller
                 ->where('id', $request->loan_application_id)
                 ->update($data);
 
+            //send EMAIL CONFIRMATION ======================================
+            $email = auth()->user()->email;
+            $htmlContent = view('components.emails.state_email')->render();
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', env('BREVO_API_KEY'));
+            $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
+            $emailObj = new SendSmtpEmail([
+                'subject' => '✅ Your Loan Application is Now Being Processed',
+                'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+                'to' => [['email' => $email]],
+                'htmlContent' => $htmlContent
+            ]);
+            
+            $apiInstance->sendTransacEmail($emailObj);
+            //==============================================================
+                
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'
