@@ -20,12 +20,12 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('loan_applications', function (Blueprint $table) {
-            $table->string('purpose_of_loan')->nullable()->change();
-            $table->string('payslip_img')->nullable()->change();
-            $table->string('upload_qr_code_img')->nullable()->change();
-            $table->string('government_id_img')->nullable()->change();
-            $table->string('billing_statement_img')->nullable()->change();
-            $table->string('signature_img')->nullable()->change();
+            // $table->string('purpose_of_loan')->nullable()->change();
+            // $table->string('payslip_img')->nullable()->change();
+            // $table->string('upload_qr_code_img')->nullable()->change();
+            // $table->string('government_id_img')->nullable()->change();
+            // $table->string('billing_statement_img')->nullable()->change();
+            // $table->string('signature_img')->nullable()->change();
         });
     }
 };
