@@ -30,7 +30,7 @@ class OtpVerificationController extends Controller
             ['email' => $email],
             [
                 'otp' => $otp,
-                'expires_at' => Carbon::now()->addMinutes(10),
+                'expires_at' => Carbon::now()->addMinutes(3),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -47,9 +47,10 @@ class OtpVerificationController extends Controller
             'htmlContent' => "
                 <div style='font-family: Arial, sans-serif; color: #333; padding: 20px; max-width: 600px;'>
                     <h2 style='color: #4A90E2;'>Welcome to Ran Serenity!</h2>
+                    <img src='https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'>
                     <p>To complete your registration, please use the verification code below:</p>
                     <p style='font-size: 28px; font-weight: bold; color: #4A90E2; letter-spacing: 2px;'>$otp</p>
-                    <p>This code will expire in <strong>10 minutes</strong>, so please enter it promptly.</p>
+                    <p>This code will expire in <strong>3 minutes</strong>, so please enter it promptly.</p>
                     <p>If you didn’t request this registration, you can safely ignore this email.</p>
                     <br>
                     <p>Thank you,<br>The Ran Serenity </p>
@@ -105,7 +106,7 @@ class OtpVerificationController extends Controller
             ['email' => $email],
             [
                 'otp' => $otp,
-                'expires_at' => Carbon::now()->addMinutes(10),
+                'expires_at' => Carbon::now()->addMinutes(3),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -125,7 +126,7 @@ class OtpVerificationController extends Controller
                     <p>We received a request to reset your password for your Ran Serenity account.</p>
                     <p>Use the OTP code below to proceed:</p>
                     <p style='font-size: 28px; font-weight: bold; color: #4A90E2; letter-spacing: 2px;'>$otp</p>
-                    <p>This code will expire in <strong>10 minutes</strong>.</p>
+                    <p>This code will expire in <strong>3 minutes</strong>.</p>
                     <p>If you didn’t request a password reset, please ignore this email or contact support.</p>
                     <br>
                     <p>Stay safe,<br>The Ran Serenity Team</p>
