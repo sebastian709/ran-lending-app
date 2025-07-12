@@ -35,7 +35,7 @@ Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.
 // admin routes
 Route::prefix('admin')->group(function () {
     // dashboard
-    Route::get('/', fn() => view('auth.login'))->name('auth.login');
+    Route::get('/', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
 
     // testing only
     Route::get('/blankpage', fn() => view('admin.testing-only.blankpage'))->name('admin.testing-only.blankpage');
