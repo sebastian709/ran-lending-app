@@ -208,7 +208,7 @@
                     <h3 class="text-xl font-bold mb-2">RAN Serenity Shop</h3>
                     <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Connecting
                         Merchants. Uplifting Communities</p>
-                    <button onclick="window.location.href='charity.html'"
+                    <button onclick="window.location.href='/'"
                         class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn
                         More</button>
                 </div>
@@ -226,11 +226,11 @@
                                 class="absolute inset-0 bg-[url('https://readdy.ai/api/search-image?query=modern%20financial%20district%20with%20skyscrapers%20and%20business%20people%2C%20professional%20corporate%20environment%2C%20purple%20lighting%20accents%2C%20elegant%20and%20luxurious%20atmosphere&width=800&height=1200&seq=lending1&orientation=portrait')] bg-cover bg-center">
                             </div>
                             <div class="absolute inset-0 bg-primary/40"></div>
-                            <div class="relative h-full flex flex-col justify-end p-8 text-white">
+                            <div class="relative h-full flex flex-col justify-end p-8 text-white z-3">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Lending</h3>
                                 <p class="text-sm mb-4">Flexible financial solutions tailored to your needs</p>
-                                <button
-                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
+                                <button data-url="/lending" 
+                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap z-3">Learn
                                     More</button>
                             </div>
                         </div>
@@ -245,8 +245,8 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Jewelry</h3>
                                 <p class="text-sm mb-4">Exquisite pieces for life's special moments</p>
-                                <button
-                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
+                                <button data-url="/jewelry" 
+                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap z-3">Learn
                                     More</button>
                             </div>
                         </div>
@@ -261,8 +261,8 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Travel & Tours</h3>
                                 <p class="text-sm mb-4">Unforgettable journeys to dream destinations</p>
-                                <button
-                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
+                                <button data-url="/travel-and-tours" 
+                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap z-3">Learn
                                     More</button>
                             </div>
                         </div>
@@ -277,8 +277,8 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Hub</h3>
                                 <p class="text-sm mb-4">Making a difference in communities worldwide</p>
-                                <button
-                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
+                                <button data-url="/hub" 
+                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap z-3">Learn
                                     More</button>
                             </div>
                         </div>
@@ -293,8 +293,8 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Shop</h3>
                                 <p class="text-sm mb-4">Connecting Merchants. Uplifting Communities</p>
-                                <button
-                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
+                                <button data-url="/" 
+                                    class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap z-3">Learn
                                     More</button>
                             </div>
                         </div>
@@ -332,10 +332,10 @@
                             needs. Our competitive rates and personalized service make borrowing simple and accessible.
                         </p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/lending"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
                                 More</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/lending" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -352,10 +352,10 @@
                             From timeless classics to contemporary designs, find the perfect expression of your style.
                         </p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/jewelry"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Browse
                                 Collection</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/jewelry" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -372,10 +372,10 @@
                             experiences. From exotic destinations to cultural adventures, we create memories that last a
                             lifetime.</p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/travel-and-tours"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Explore
                                 Packages</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/travel-and-tours" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -392,10 +392,10 @@
                             Through sustainable programs and direct assistance, we're creating meaningful change
                             together.</p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/hub"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
                                 More</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/hub" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -412,10 +412,10 @@
                             Through sustainable programs and direct assistance, we're creating meaningful change
                             together.</p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
                                 More</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Shop Now <i
+                            <span data-url="/" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Shop Now <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -728,6 +728,35 @@
                 }
             });
         });
+
+         const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.carousel-dot');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+            if (i === index) {
+                slide.classList.remove('opacity-0', 'pointer-events-none');
+                slide.classList.add('opacity-100', 'pointer-events-auto', 'z-10');
+            } else {
+                slide.classList.remove('opacity-100', 'pointer-events-auto', 'z-10');
+                slide.classList.add('opacity-0', 'pointer-events-none');
+            }
+            });
+
+            dots.forEach((dot, i) => {
+            dot.classList.toggle('bg-white', i === index);
+            dot.classList.toggle('bg-white/50', i !== index);
+            });
+        }
+
+        dots.forEach((dot) => {
+            dot.addEventListener('click', () => {
+            const index = parseInt(dot.getAttribute('data-index'));
+            showSlide(index);
+            });
+        });
+        showSlide(0);
+
     </script>
 </body>
 
