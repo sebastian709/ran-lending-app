@@ -78,7 +78,7 @@
                 <input type="text" class="form-control" placeholder="Middle Name" name="middlename"  required pattern="\S+" />
               </div>
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Contact Number" name="contactnumber" required  />
+                <input type="text" class="form-control" placeholder="Contact Number" name="contactnumber" maxlength="11" required  />
               </div>
               <div class="col-md-4">
                 <input type="text" class="form-control" placeholder="House No." name="house_no" required />
@@ -187,7 +187,7 @@
         <div class="form-container rounded-custom p-4 form-step" id="step-4">
           <div class="text-center mb-4">
             <h4 class="fw-bold">RAN Serenity Lending Account verification</h4>
-            <p class="text-muted small">We've sent a 6-digit verification code to your email or phone.<br>This code is valid for 3 minutes.</p>
+            <p class="text-muted small">We've sent a 6-digit verification code to your email.<br>This code is valid for 3 minutes.</p>
           </div>
           <!-- <form onsubmit="event.preventDefault(); nextStep(5);"> -->
             <div class="d-flex justify-content-center mb-3">
