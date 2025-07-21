@@ -186,6 +186,9 @@
         </div>
         <!-- Step 4: Verification -->
         <div class="form-container rounded-custom p-4 form-step" id="step-4">
+          <div id="otp-alert" class="alert alert-success text-center d-none" role="alert">
+            A new verification code has been sent to your email!
+        </div>
           <div class="text-center mb-4">
             <h4 class="fw-bold">RAN Serenity Lending Account verification</h4>
             <p class="text-muted small">We've sent a 6-digit verification code to your email or phone.<br>This code is valid for 3 minutes.</p>
@@ -304,10 +307,14 @@
         success: function (res) {
           if (res == 1) {
             if (dis.hasClass('authreggenresend')) {
-                $('.authreggenresend').text('Code Has Been Sent.')
-                setTimeout(function () {
-                  $('.authreggenresend').text('Resend Code')
-                }, 3000);
+                 $('#otp-alert')
+                .removeClass('d-none')
+                .fadeIn();
+                 setTimeout(function () {
+                // Hide alert
+                $('#otp-alert').fadeOut(function () {
+                    $(this).addClass('d-none');
+                });}, 3000);
             }else{
               prevStep(4)
             }
