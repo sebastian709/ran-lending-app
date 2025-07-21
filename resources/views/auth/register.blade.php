@@ -155,6 +155,7 @@
         <div class="form-container rounded-custom p-4 form-step" id="step-3">
             <div class="mb-3">
               <input type="email" class="form-control reg_email" placeholder="Email Address" name="email" required />
+              <center><div class="text-danger small mt-1 d-none" id="email-exists-error">Email Already Exist.</div></center>
               <div class="invalid-feedback d-none" id="email-error">Please enter a valid email address.</div>
             </div>
             <div class="mb-3">
@@ -197,6 +198,9 @@
               <input type="text" maxlength="1" class="reg-otp-input otp-input" />
               <input type="text" maxlength="1" class="reg-otp-input otp-input" />
               <input type="text" maxlength="1" class="reg-otp-input otp-input" />
+            </div>
+            <div class="text-center">
+              <div class="text-danger small mt-1 d-none" id="otp-error">Invalid OTP.</div>
             </div>
             <div class="text-center">
               <button type="button" id="regauthcheck" class="btn btn-primary-custom w-100">Verify Code</button>
@@ -307,8 +311,11 @@
             }else{
               prevStep(4)
             }
+          }else if(res == 2){
+            console.log('test');
+            $('#email-exists-error').removeClass('d-none');
           }else{
-            alert()
+            alert('error contact admin')
           }
         },
         error: function (xhr) {
@@ -318,7 +325,6 @@
 
   //OTP VALIDATE
   $(document).on('click' , '#regauthcheck' , function (e) {
-    console.log('click');
     let email = $('input[name="email"]').val();
     let otp = '';
     $('.otp-input').each(function () {
@@ -337,7 +343,7 @@
           if (res == 1) {
             $('#register-form').submit();
           }else{
-            alert()
+            $('#otp-error').removeClass('d-none');
           }
         },
         error: function (xhr) {

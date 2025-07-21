@@ -147,7 +147,7 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary to-secondary text-white shadow-md">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
-                <a href="#" class="text-2xl font-['Pacifico'] text-white">RAN Serenity HUB</a>
+                <a href="/" class="text-2xl font-['Pacifico'] text-white">RAN Serenity HUB</a>
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Home</a>
@@ -330,7 +330,7 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                 <div>
-                    <a href="#" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">RAN Serenity</a>
+                    <a href="/" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">RAN Serenity</a>
                     <p class="text-gray-400 mb-6">Empowering your success through diverse business solutions in lending,
                         jewelry, travel, and charitable initiatives.</p>
                     <div class="flex space-x-4 lg:hidden">
@@ -369,9 +369,7 @@
                     <h3 class="text-lg font-bold mb-6">Quick Links</h3>
                     <ul class="space-y-3">
                         <li><a href="#About" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="#business" class="text-gray-400 hover:text-white transition-colors">Business</a>
-                        </li>
-                        <li><a href="#Blog" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Business</a></li>
                         <li><a href="#Social" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
                     </ul>
                 </div>
