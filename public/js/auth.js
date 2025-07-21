@@ -80,11 +80,11 @@ function toggleRule(rule, isValid) {
   const $icon = $rule.find('i');
 
   if (isValid) {
-    $rule.removeClass('text-muted text-danger').addClass('text-success');
-    $icon.removeClass('ri-close-line').addClass('ri-check-line');
+    $rule.addClass('valid');
+    // $icon.removeClass('ri-close-line').addClass('ri-check-line');
   } else {
-    $rule.removeClass('text-muted text-success').addClass('text-danger');
-    $icon.removeClass('ri-check-line').addClass('ri-close-line');
+    $rule.removeClass('valid');
+    // $icon.removeClass('ri-check-line').addClass('ri-close-line');
   }
 }
 

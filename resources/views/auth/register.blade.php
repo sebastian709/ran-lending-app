@@ -168,10 +168,10 @@
               <div class="mt-3 bg-light p-3 rounded">
                 <p class="small fw-medium text-dark mb-2">Password must include:</p>
                 <ul class="list-unstyled small password-criteria mt-2">
-                  <li data-rule="length" class="text-muted"><i class="ri-close-line me-1"></i>Minimum 8 characters</li>
-                  <li data-rule="case" class="text-muted"><i class="ri-close-line me-1"></i>Uppercase and lowercase letters</li>
-                  <li data-rule="number" class="text-muted"><i class="ri-close-line me-1"></i>At least one number</li>
-                  <li data-rule="special" class="text-muted"><i class="ri-close-line me-1"></i>At least one special character</li>
+                  <li data-rule="length" class="text-muted"></i>Minimum 8 characters</li>
+                  <li data-rule="case" class="text-muted"></i>Uppercase and lowercase letters</li>
+                  <li data-rule="number" class="text-muted"></i>At least one number</li>
+                  <li data-rule="special" class="text-muted"></i>At least one special character</li>
                 </ul>
               </div>
             </div>
@@ -180,7 +180,7 @@
               <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(2)">
                 <i class="ri-arrow-left-line"></i>Previous
               </button>
-              <button type="button" class="authreggen btn d-flex align-items-center gap-2 text-muted border-0">Save and Verify</button>
+              <button type="button" id="authreggen" class="authreggen btn d-flex align-items-center gap-2 text-muted border-0" disabled>Save and Verify</button>
 
             </div>
         </div>
