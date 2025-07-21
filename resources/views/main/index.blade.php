@@ -206,8 +206,7 @@
                 <div class="absolute inset-0 bg-primary/30 group-hover:bg-primary/20 transition-all duration-500"></div>
                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
                     <h3 class="text-xl font-bold mb-2">RAN Serenity Shop</h3>
-                    <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Connecting
-                        Merchants. Uplifting Communities</p>
+                    <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Every item in our shop is chosen with purpose — whether it’s for your wardrobe, home, or lifestyle.</p>
                     <button onclick="window.location.href='charity.html'"
                         class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn
                         More</button>
@@ -292,7 +291,7 @@
                             <div class="absolute inset-0 bg-primary/40"></div>
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Shop</h3>
-                                <p class="text-sm mb-4">Connecting Merchants. Uplifting Communities</p>
+                                <p class="text-sm mb-4">Every item in our shop is chosen with purpose — whether it’s for your wardrobe, home, or lifestyle.</p>
                                 <button
                                     class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
                                     More</button>
@@ -327,7 +326,7 @@
                             class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
                             <i class="ri-bank-line ri-2x"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Lending</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity LENDING</h3>
                         <p class="text-gray-600 mb-6">Access flexible lending solutions tailored to your financial
                             needs. Our competitive rates and personalized service make borrowing simple and accessible.
                         </p>
@@ -347,7 +346,7 @@
                             class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
                             <i class="ri-gem-line ri-2x"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Jewelry</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity JEWELRY</h3>
                         <p class="text-gray-600 mb-6">Discover our exquisite collection of handcrafted jewelry pieces.
                             From timeless classics to contemporary designs, find the perfect expression of your style.
                         </p>
@@ -367,7 +366,7 @@
                             class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
                             <i class="ri-plane-line ri-2x"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Travel & Tours</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity TRAVEL & TOURS</h3>
                         <p class="text-gray-600 mb-6">Embark on unforgettable journeys with our curated travel
                             experiences. From exotic destinations to cultural adventures, we create memories that last a
                             lifetime.</p>
@@ -387,7 +386,7 @@
                             class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
                             <i class="ri-heart-line ri-2x"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Hub</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity HUB</h3>
                         <p class="text-gray-600 mb-6">Join our mission to make a positive impact on communities in need.
                             Through sustainable programs and direct assistance, we're creating meaningful change
                             together.</p>
@@ -407,7 +406,7 @@
                             class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
                             <i class="ri-store-line ri-2x"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity Shop</h3>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">RAN Serenity SHOP</h3>
                         <p class="text-gray-600 mb-6">Join our mission to make a positive impact on communities in need.
                             Through sustainable programs and direct assistance, we're creating meaningful change
                             together.</p>
