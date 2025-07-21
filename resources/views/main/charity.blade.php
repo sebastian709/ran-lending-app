@@ -435,10 +435,15 @@
 
             <!-- Bank Details -->
             <div class="bg-gray-100 rounded-lg p-4 text-left text-gray-800 space-y-2 text-sm md:text-base">
-                <div><strong>Bank Name:</strong> ABC Bank Philippines</div>
-                <div><strong>Account Number:</strong> 1234-5678-9012</div>
-                <div><strong>Account Name:</strong> RAN Serenity Foundation</div>
+                <div><strong>Bank Name:</strong> Metrobank</div>
+                <div><strong>Account Number:</strong> 466-3-466-28180-9</div>
+                <div><strong>Account Name:</strong> Almira Avendano</div>
             </div>
+             <p class="text-muted small text-center mt-3">
+                <i class="ri-phone-line text-primary"></i> 
+                Need assistance? <br>Please reach out to our admin:
+                <a href="tel:09691899935" class="text-primary-custom fw-bold">0969-189-9935</a>
+            </p>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
