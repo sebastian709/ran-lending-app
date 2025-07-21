@@ -57,7 +57,7 @@ Route::prefix('admin')->group(function () {
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
 
-
+Route::post('/upload', [BlogPostController::class, 'upload']);
 
 //AUTH
 Auth::routes();

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BlogPost;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class BlogPostController extends Controller
 {
@@ -55,6 +57,7 @@ class BlogPostController extends Controller
             $query->where('status', $status);
         } elseif (!$status || $status === 'all') {
             $query->where('status', '!=', 'archived');
+            $query->where('status', '!=', 'draft');
         }
 
         $posts = $query->get();
@@ -203,6 +206,19 @@ class BlogPostController extends Controller
         $posts = $query->take(3)->get();
 
         return view('main.travel-and-tours', compact('posts'));
+    }
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $path = $request->file('upload')->store('uploads', 'public');
+
+            return response()->json([
+                'url' => asset('storage/' . $path),
+            ]);
+        }
+
+        return response()->json(['error' => 'No file uploaded.'], 400);
     }
 
 

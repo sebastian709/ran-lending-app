@@ -17,6 +17,7 @@
         "vite": "^6.3.5"
     },
     "dependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^41.4.2",
         "sib-api-v3-sdk": "^8.5.0"
     }
 }

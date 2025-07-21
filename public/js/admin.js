@@ -57,26 +57,20 @@ function loadBlogPostList(status = 'all') {
   });
 }
 
-let editorInstance; // Define globally at the top
+let editorInstance; // Global CKEditor instance
 
 function initCKEditor() {
   const editorElement = document.querySelector('#blogContent');
   if (editorElement) {
-    ClassicEditor
-      .create(editorElement)
-      .then(editor => {
-        editorInstance = editor; // Store globally so you can access later
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    createNewEditor(editorElement);
   }
 }
 
-
 function createNewEditor(target) {
   ClassicEditor
-    .create(target)
+    .create(target, {
+      extraPlugins: [MyCustomUploadAdapterPlugin]
+    })
     .then(editor => {
       editorInstance = editor;
     })
@@ -84,6 +78,63 @@ function createNewEditor(target) {
       console.error(error);
     });
 }
+
+// Plugin to hook into FileRepository
+function MyCustomUploadAdapterPlugin(editor) {
+  editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+    return new MyUploadAdapter(loader);
+  };
+}
+
+// Upload adapter with image compression
+class MyUploadAdapter {
+  constructor(loader) {
+    this.loader = loader;
+  }
+
+  async upload() {
+    return this.loader.file
+      .then(async file => {
+        // Compress the image before upload
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true
+        };
+
+        try {
+          const compressedFile = await imageCompression(file, options);
+
+          const data = new FormData();
+          data.append('upload', compressedFile);
+
+          return fetch('/upload', {
+            method: 'POST',
+            body: data,
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+          })
+            .then(response => response.json())
+            .then(result => {
+              return {
+                default: result.url // adjust based on your server's response
+              };
+            });
+        } catch (err) {
+          console.error('Compression failed:', err);
+          throw err;
+        }
+      });
+  }
+
+  abort() {
+    // Optional: handle abort if needed
+  }
+}
+
+
+
 
 function createBPTagify() {
   const cbpInput = document.querySelector('#tagsInput');
