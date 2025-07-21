@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers\Auth;
-
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +22,14 @@ class OtpVerificationController extends Controller
 
     // REGISTER
     public function regauthsend(Request $request){
-        $otp = random_int(100000, 999999);
+        
         $email = $request->email;
+        // dd(User::where('email', $email)->exists());
+        if (User::where('email', $email)->exists()) {
+            return response()->json(2); //2 email exists already
+        }
+
+        $otp = random_int(100000, 999999);
     
         // Store OTP
         DB::table('password_otps')->updateOrInsert(
