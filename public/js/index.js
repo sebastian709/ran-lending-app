@@ -22,3 +22,31 @@ $(document).on('click', '[data-url]', function (e) {
         }
     });
 });
+
+const slides = document.querySelectorAll('.carousel-slide');
+const dots = document.querySelectorAll('.carousel-dot');
+
+function showSlide(index) {
+    slides.forEach((slide, i) => {
+    if (i === index) {
+        slide.classList.remove('opacity-0', 'pointer-events-none');
+        slide.classList.add('opacity-100', 'pointer-events-auto', 'z-10');
+    } else {
+        slide.classList.remove('opacity-100', 'pointer-events-auto', 'z-10');
+        slide.classList.add('opacity-0', 'pointer-events-none');
+    }
+    });
+
+    dots.forEach((dot, i) => {
+    dot.classList.toggle('bg-white', i === index);
+    dot.classList.toggle('bg-white/50', i !== index);
+    });
+}
+
+dots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+    const index = parseInt(dot.getAttribute('data-index'));
+    showSlide(index);
+    });
+});
+showSlide(0);

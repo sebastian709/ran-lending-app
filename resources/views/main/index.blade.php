@@ -207,7 +207,7 @@
                 <div class="relative h-full flex flex-col justify-end p-8 text-white">
                     <h3 class="text-xl font-bold mb-2">RAN Serenity Shop</h3>
                     <p class="text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Every item in our shop is chosen with purpose — whether it’s for your wardrobe, home, or lifestyle.</p>
-                    <button onclick="window.location.href='charity.html'"
+                    <button data-url="/" 
                         class="bg-white text-primary px-6 py-3 rounded-button font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">Learn
                         More</button>
                 </div>
@@ -228,7 +228,7 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Lending</h3>
                                 <p class="text-sm mb-4">Flexible financial solutions tailored to your needs</p>
-                                <button
+                                <button data-url="/lending"
                                     class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
                                     More</button>
                             </div>
@@ -244,7 +244,7 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Jewelry</h3>
                                 <p class="text-sm mb-4">Exquisite pieces for life's special moments</p>
-                                <button
+                                <button data-url="/jewelry"
                                     class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
                                     More</button>
                             </div>
@@ -260,7 +260,7 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Travel & Tours</h3>
                                 <p class="text-sm mb-4">Unforgettable journeys to dream destinations</p>
-                                <button
+                                <button data-url="/travel-and-tours"
                                     class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
                                     More</button>
                             </div>
@@ -276,7 +276,7 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Hub</h3>
                                 <p class="text-sm mb-4">Making a difference in communities worldwide</p>
-                                <button
+                                <button data-url="/hub"
                                     class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
                                     More</button>
                             </div>
@@ -292,7 +292,7 @@
                             <div class="relative h-full flex flex-col justify-end p-8 text-white">
                                 <h3 class="text-2xl font-bold mb-2">RAN Serenity Shop</h3>
                                 <p class="text-sm mb-4">Every item in our shop is chosen with purpose — whether it’s for your wardrobe, home, or lifestyle.</p>
-                                <button
+                                <button data-url="/" 
                                     class="bg-white text-primary px-6 py-3 rounded-button font-medium whitespace-nowrap">Learn
                                     More</button>
                             </div>
@@ -331,10 +331,10 @@
                             needs. Our competitive rates and personalized service make borrowing simple and accessible.
                         </p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/lending"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
                                 More</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/lending" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -351,10 +351,10 @@
                             From timeless classics to contemporary designs, find the perfect expression of your style.
                         </p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/jewelry"
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Browse
                                 Collection</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/jewelry" class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -371,10 +371,10 @@
                             experiences. From exotic destinations to cultural adventures, we create memories that last a
                             lifetime.</p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/travel-and-tours" 
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Explore
                                 Packages</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span  data-url="/travel-and-tours"  class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -391,10 +391,10 @@
                             Through sustainable programs and direct assistance, we're creating meaningful change
                             together.</p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/hub" 
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
                                 More</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
+                            <span data-url="/hub"  class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Visit Page <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
@@ -411,10 +411,10 @@
                             Through sustainable programs and direct assistance, we're creating meaningful change
                             together.</p>
                         <div class="flex items-center">
-                            <button
+                            <button data-url="/shop" 
                                 class="bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Learn
                                 More</button>
-                            <span class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Shop Now <i
+                            <span data-url="/shop"  class="ml-4 text-primary font-medium cursor-pointer flex items-center"> Shop Now <i
                                     class="ri-arrow-right-line ml-1"></i> </span>
                         </div>
                     </div>
