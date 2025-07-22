@@ -19,7 +19,7 @@
     <header class="bg-white shadow-sm">
         <div class="container py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="{{ url('/') }}" class="d-flex align-items-center text-decoration-none text-muted">
+                <a href="{{ url('/lending') }}" class="d-flex align-items-center text-decoration-none text-muted">
                     <i class="ri-arrow-left-line me-2"></i>
                     <span>Back to Home</span>
                 </a>
