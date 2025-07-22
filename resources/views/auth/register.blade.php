@@ -78,7 +78,7 @@
                 <input type="text" class="form-control" placeholder="Middle Name" name="middlename"  required pattern="\S+" />
               </div>
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Contact Number" name="contactnumber" required  />
+                <input type="text" class="form-control" placeholder="Contact Number" name="contactnumber" maxlength="11" required  />
               </div>
               <div class="col-md-4">
                 <input type="text" class="form-control" placeholder="House No." name="house_no" required />
@@ -111,7 +111,8 @@
                 <input type="text" class="form-control" placeholder="Occupation/Source of Income" name="occupation" required />
               </div>
               <div class="col-md-6">
-                <input type="number" class="form-control" placeholder="Monthly Income" name="income" required />
+                <input type="text" class="form-control" placeholder="Monthly Income" name="income" required id="income">
+
               </div>
               <div class="col-md-6">
                 <select class="form-select" name="employment_status" required>
@@ -332,6 +333,10 @@
 
   //OTP VALIDATE
   $(document).on('click' , '#regauthcheck' , function (e) {
+
+
+    let rawValue = $('#income').val().replace(/,/g, '');
+    $('#income').val(rawValue); // set raw numeric value
     let email = $('input[name="email"]').val();
     let otp = '';
     $('.otp-input').each(function () {

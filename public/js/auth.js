@@ -21,17 +21,40 @@ function validateStep(n) {
   currentStep.find('input[required], select[required]').each(function () {
     const $input = $(this);
     const value = $input.val()?.trim();
+    const name = $input.attr('name');
 
     const isSelect = $input.is('select');
-    const isInvalid = !value || (isSelect && value === '0');
+    const isEmpty = !value || (isSelect && value === '0');
 
-    if (isInvalid) {
+    let customError = null;
+
+    // Validation for contactnumber field
+    if (name === 'contactnumber') {
+      const phRegex = /^09\d{9}$/;
+
+      if (isEmpty) {
+        customError = 'This field is required';
+      } else if (!phRegex.test(value)) {
+        customError = 'Enter a valid number';
+      }
+    } 
+    // Validation for middlename minimum 2 characters
+    else if (name === 'middlename') {
+      if (isEmpty) {
+        customError = 'This field is required';
+      } else if (value.length < 2) {
+        customError = 'Middle name must be at least 2 characters';
+      }
+    } 
+     else if (isEmpty) {
+      customError = 'This field is required';
+    }
+
+    if (customError) {
       isValid = false;
       $input.addClass('is-invalid');
-
-      if ($input.next('.invalid-feedback').length === 0) {
-        $input.after('<div class="invalid-feedback">This field is required</div>');
-      }
+      $input.next('.invalid-feedback').remove();
+      $input.after(`<div class="invalid-feedback">${customError}</div>`);
     } else {
       $input.removeClass('is-invalid');
       $input.next('.invalid-feedback').remove();
@@ -126,4 +149,12 @@ $(document).ready(function () {
       $(this).prev('.otp-input').focus();
     }
   });
+});
+
+$(document).on('input', '#income', function () {
+  let value = $(this).val().replace(/,/g, ''); // remove commas
+  if (!isNaN(value) && value !== '') {
+    // format with commas for display
+    $(this).val(Number(value).toLocaleString());
+  }
 });
