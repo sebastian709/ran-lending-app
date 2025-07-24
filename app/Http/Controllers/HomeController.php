@@ -224,7 +224,7 @@ class HomeController extends Controller
 
             $data = [
                 'load_step' => $request->load_step,
-                'loan_status' => 2, // Pending
+                'loan_status' => 1, // Processing
                 'bank_name' => $request->bank_name,
                 'account_number' => $request->account_number,
                 'government_type_id' => $request->government_type_id,
