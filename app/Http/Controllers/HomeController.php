@@ -15,6 +15,8 @@ use Brevo\Client\Model\SendSmtpEmail;
 use Brevo\Client\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 
+
+
 class HomeController extends Controller
 {
     /**
@@ -37,6 +39,16 @@ class HomeController extends Controller
         $loanStatus = $this->getLoanStatus();
 
         return view('borrower.pages.home', compact('loanStatus'));
+    }
+
+    public function loanApply()
+    {
+        $government_type = DB::table('government_type')
+            ->where('status', 1)
+            ->get();
+
+        return view('borrower.pages.loan-apply', compact('government_type'));
+
     }
 
     public function fetchIncome($id)
@@ -140,7 +152,7 @@ class HomeController extends Controller
                     'updated_at' => now()
                 ]);
 
-            
+
 
             $loanId = $existing->id;
         } else {
@@ -166,7 +178,7 @@ class HomeController extends Controller
                 'updated_at' => now()
             ]);
 
-            
+
         }
 
         return response()->json([
@@ -282,10 +294,10 @@ class HomeController extends Controller
                 'to' => [['email' => $email]],
                 'htmlContent' => $htmlContent
             ]);
-            
+
             $apiInstance->sendTransacEmail($emailObj);
             //==============================================================
-                
+
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'

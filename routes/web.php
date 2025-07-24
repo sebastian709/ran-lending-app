@@ -71,9 +71,11 @@ Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauths
 Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->name('forgot.change.pass');
 
 // borrower routes
-Route::get('/apply-loan', function () {
-    return view('borrower.pages.loan-apply');
-})->name('loan.apply');
+// Route::get('/apply-loan', function () {
+//     return view('borrower.pages.loan-apply');
+// })->name('loan.apply');
+
+Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('loan.apply');
 
 # message pages
 Route::get('/loan-success', fn() => view('borrower.layouts.message'))->name('borrower.layouts.message');

@@ -325,14 +325,10 @@
                         <div class="mb-4">
                             <label class="form-label fw-medium">Government ID</label>
                             <select class="form-select mb-2 la_government_id">
-                            <option selected disabled>Select your ID</option>
-                            <option value="1">Driver’s License</option>
-                            <option value="2">PhilSys</option>
-                            <option value="3">Philippine Passport</option>
-                            <option value="4">Unified Multi-Purpose ID (UMID)</option>
-                            <option value="5">Postal ID</option>
-                            <option value="6">SSS (Social Security System) ID</option>
-                            <option value="7">Work ID</option>
+                                <option selected disabled>Select your ID</option>
+                                @foreach($government_type as $gov)
+                                    <option value="{{ $gov->id }}">{{ $gov->government_id_type }}</option>
+                                @endforeach
                             </select>
                             <div class="form-text text-muted mb-3 d-flex align-items-start gap-1">
                             <i class="ri-information-line mt-1"></i>
