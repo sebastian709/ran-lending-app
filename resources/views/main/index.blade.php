@@ -638,11 +638,18 @@
             let currentSlide = 0;
             let autoplayInterval;
             function showSlide(index) {
-                slides.forEach((slide) => (slide.style.opacity = "0"));
-                dots.forEach((dot) => dot.classList.remove("bg-white"));
-                dots.forEach((dot) => dot.classList.add("bg-white/50"));
+                slides.forEach((slide) => {
+                    slide.style.opacity = "0";
+                    slide.style.pointerEvents = "none"; // Disable clicks for hidden slides
+                });
+
+                dots.forEach((dot) => {
+                    dot.classList.remove("bg-white");
+                    dot.classList.add("bg-white/50");
+                });
 
                 slides[index].style.opacity = "1";
+                slides[index].style.pointerEvents = "auto"; // Enable clicks for the active slide
                 dots[index].classList.remove("bg-white/50");
                 dots[index].classList.add("bg-white");
 
