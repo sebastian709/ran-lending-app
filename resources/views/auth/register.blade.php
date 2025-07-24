@@ -119,7 +119,7 @@
                   <option value="0">Employment Status</option>
                   <option value="1">Employed</option>
                   <option value="2">Self employed</option>
-                  <option value="0">None</option>
+                  <option value="3">None</option>
                 </select>
               </div>
             </div>
