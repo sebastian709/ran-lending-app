@@ -310,6 +310,6 @@ class HomeController extends Controller
 
         return $loanApplication->loan_status ?? 999;
     }
-
+    // test
 }
 
