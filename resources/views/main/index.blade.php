@@ -110,7 +110,7 @@
                     <a href="#Blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
                     <button
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Get
+                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap" data-url="/lending">Get
                         Started</button>
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
