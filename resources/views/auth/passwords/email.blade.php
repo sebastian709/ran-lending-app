@@ -127,13 +127,13 @@
                             <div id="password-match-error" class="text-danger small mt-1 d-none">Passwords do not match.</div>
                         </div>
 
-                        <div class="mb-3 bg-light p-3 rounded">
+                        <div class="mt-3 bg-light p-3 rounded">
                             <p class="small fw-medium text-dark mb-2">Password must include:</p>
-                            <ul class="list-unstyled small text-muted password-criteria mb-0">
-                                <li id="length-check">Minimum 8 characters</li>
-                                <li id="case-check">Uppercase and lowercase letters</li>
-                                <li id="number-check">At least one number</li>
-                                <li id="special-check">At least one special character</li>
+                            <ul class="list-unstyled small password-criteria mt-2">
+                            <li data-rule="length" class="text-muted"></i>Minimum 8 characters</li>
+                            <li data-rule="case" class="text-muted"></i>Uppercase and lowercase letters</li>
+                            <li data-rule="number" class="text-muted"></i>At least one number</li>
+                            <li data-rule="special" class="text-muted"></i>At least one special character</li>
                             </ul>
                         </div>
 
@@ -176,9 +176,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
-  <script src="{{ asset('js/auth.js') }}"></script>
-  <script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+<script src="{{ asset('js/auth.js') }}"></script>
+<script>
 
 $(document).ready(function() {
     let timer;
