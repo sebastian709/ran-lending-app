@@ -1,6 +1,6 @@
 //LOGIN
 $(document).on('click', '.password-toggle', function () {
-    const input = $('#password');
+    const input = $(this).siblings('input'); // Get the input next to the toggle
     const icon = $(this).find('i');
 
     if (input.attr('type') === 'password') {
@@ -11,6 +11,7 @@ $(document).on('click', '.password-toggle', function () {
         icon.removeClass('ri-eye-off-line').addClass('ri-eye-line');
     }
 });
+
 
 //REGISTER
 function validateStep(n) {
@@ -79,7 +80,7 @@ $('#referral-source').on('change', function () {
 });
 
 //Create Email and Password
-$('.reg_password').on('input', function () {
+$('.reg_password, #new-password').on('input', function () {
   const password = $(this).val();
 
   const hasLength = password.length >= 8;
@@ -96,6 +97,7 @@ $('.reg_password').on('input', function () {
   // Disable/enable submit button
   const allValid = hasLength && hasUpper && hasLower && hasNumber && hasSpecial;
   $('#authreggen').prop('disabled', !allValid);
+  $('#changepass').prop('disabled', !allValid);
 });
 
 function toggleRule(rule, isValid) {
