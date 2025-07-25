@@ -43,7 +43,7 @@ class OtpVerificationController extends Controller
             ]
         );
         $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', env('BREVO_API_KEY'));
+        ->setApiKey('api-key', config('services.brevo.key'));
     
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
         
@@ -109,7 +109,7 @@ class OtpVerificationController extends Controller
             ]
         );
         $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', env('BREVO_API_KEY'));
+        ->setApiKey('api-key', config('services.brevo.key'));
     
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
         
