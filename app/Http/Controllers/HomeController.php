@@ -286,7 +286,7 @@ class HomeController extends Controller
             //send EMAIL CONFIRMATION ======================================
             $email = auth()->user()->email;
             $htmlContent = view('components.emails.state_email')->render();
-            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', env('BREVO_API_KEY'));
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
             $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
             $emailObj = new SendSmtpEmail([
                 'subject' => '✅ Your Loan Application is Now Being Processed',
