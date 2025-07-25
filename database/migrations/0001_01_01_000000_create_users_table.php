@@ -30,28 +30,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('user_details', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->index();
-            $table->string('house_no');
-            $table->string('street');
-            $table->string('barangay');
-            $table->string('city');
-            $table->string('province');
-            $table->integer('status')->default(1)->index();
-            $table->timestamps();
-        });
-
-        Schema::create('user_incomes', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->index();
-            $table->string('occupation');
-            $table->decimal('income');
-            $table->integer('employment_status');
-            $table->integer('status')->default(1)->index();
-            $table->timestamps();
-        });
-
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -74,8 +52,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('user_details');
-        Schema::dropIfExists('user_incomes');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
