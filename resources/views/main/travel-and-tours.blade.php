@@ -194,7 +194,8 @@
     </section>
 
     <!-- Booking Process -->
-    <section class="py-20 bg-white" id="about">
+    <!-- Booking Process -->
+    <section class="py-20 bg-white relative overflow-hidden" id="about">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Simple Booking Process</h2>
@@ -204,44 +205,66 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="text-center">
-                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
+                    <div
+                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
                         <i class="ri-search-line ri-2x"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800 mb-3">1. Choose Destination</h3>
-                    <p class="text-gray-600">Browse our curated destinations and select the perfect trip for your preferences.</p>
+                    <p class="text-gray-600">Browse our curated destinations and select the perfect trip for your
+                        preferences.</p>
                 </div>
                 <div class="text-center">
-                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
+                    <div
+                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
                         <i class="ri-calendar-line ri-2x"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800 mb-3">2. Select Dates</h3>
                     <p class="text-gray-600">Pick your preferred travel dates and customize your itinerary.</p>
                 </div>
                 <div class="text-center">
-                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
+                    <div
+                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
                         <i class="ri-secure-payment-line ri-2x"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800 mb-3">3. Secure Payment</h3>
-                    <p class="text-gray-600">Complete your booking with our secure payment system and flexible options.</p>
+                    <p class="text-gray-600">Complete your booking with our secure payment system and flexible options.
+                    </p>
                 </div>
                 <div class="text-center">
-                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
+                    <div
+                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
                         <i class="ri-flight-takeoff-line ri-2x"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800 mb-3">4. Start Your Journey</h3>
-                    <p class="text-gray-600">Receive your travel documents and embark on your unforgettable adventure.</p>
+                    <p class="text-gray-600">Receive your travel documents and embark on your unforgettable adventure.
+                    </p>
                 </div>
             </div>
             <div class="text-center mt-12">
-                <button 
-                    class="bg-gray-400 text-white px-8 py-3 rounded-button font-medium opacity-70 cursor-not-allowed" 
-                    title="Coming Soon"
-                    disabled>
+                <button
+                    class="bg-gray-400 text-white px-8 py-3 rounded-button font-medium opacity-70 cursor-not-allowed"
+                    title="Coming Soon" disabled>
                     Coming Soon
                 </button>
             </div>
         </div>
+
+        <!-- Overlay Stamp -->
+        <div
+            class="absolute inset-0 bg-white/0 z-10 flex flex-col items-center justify-center text-center px-4" style="backdrop-filter: blur(1.5px);">
+            <!-- STAMP -->
+            <div class="relative inline-block mb-10">
+                <!-- text-[#76689A] -->
+                <span
+                    class="text-5xl md:text-6xl lg:text-7xl font-black text-gray-700 uppercase tracking-widest opacity-90 rotate-[-10deg] block">
+                    Coming Soon
+                </span>
+                <span
+                    class="absolute inset-0 border-4 border-dashed border-[#76689A] rounded-full transform scale-110 opacity-20"></span>
+            </div>
+        </div>
     </section>
+
 
     <!-- Why Choose Us -->
     <section class="py-20 bg-[#e7e2e2]">
@@ -351,13 +374,17 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a data-url="/lending" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/lending"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Lending</a></li>
-                        <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/jewelry"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Jewelry</a></li>
-                        <li><a data-url="/travel-and-tours" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
+                        <li><a data-url="/travel-and-tours"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
                                 Serenity Travel & Tours</a></li>
-                        <li><a data-url="/hub" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/hub"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Hub</a></li>
                     </ul>
                 </div>
