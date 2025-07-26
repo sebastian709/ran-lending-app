@@ -620,9 +620,8 @@ $(function () {
                     confirmButtonText: 'OK'
                 }).then(() => {
                     if (response.logout) {
-                        $('#logout-form').submit(); // ✅ submit mo yung form na may POST method
+                        $('#logout-form').submit();
                     }
-
                 });
             },
             error: function (xhr) {
