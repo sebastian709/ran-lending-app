@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('middlename');
             $table->string('username')->nullable();
             $table->string('contactno');
+            $table->text('profile_src')->nullable();
             $table->integer('referral_source_id')->index();
             $table->integer('referral_id')->default(0)->index();
             $table->integer('status')->default(1)->index();
