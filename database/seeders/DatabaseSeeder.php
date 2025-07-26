@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             GovernmentTypeSeeder::class,
             LoanStatusSeeder::class,
+            EmploymentStatusSeeder::class,
+            ReferralSourceSeeder::class,
         ]);
     }
 }
