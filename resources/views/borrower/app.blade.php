@@ -78,6 +78,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
+
                                     <a class="dropdown-item"  href="#" data-url="/profile">
                                         <i class="ri-user-line me-2"></i>Profile
                                     </a>

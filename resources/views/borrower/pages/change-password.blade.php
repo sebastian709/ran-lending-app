@@ -96,8 +96,6 @@
                                         <button type="submit" class="btn btn-primary">Change Password</button>
                                     </div>
                                 </form>
-
-
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
