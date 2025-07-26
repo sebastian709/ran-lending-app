@@ -83,6 +83,10 @@ Route::get('/active-loan', function () {
     return view('borrower.pages.active-loan');
 })->name('loan.active');
 
+Route::get('/payment', function () {
+    return view('borrower.pages.payment');
+})->name('loan.payment');
+
 # loan application backend functions
 Route::get('/borrower/fetch-income/{id}', [HomeController::class, 'fetchIncome']);
 Route::post('/borrower/save-precheck', [HomeController::class, 'savePrecheck']);

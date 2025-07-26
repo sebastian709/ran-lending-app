@@ -2,10 +2,26 @@
 <div class="sidebar" id="sidebar">
     <div class="p-3">
         <ul class="sidebar-nav">
-            <li><a href="#" data-url="/home"><i class="ri-home-line"></i> Dashboard</a></li>
-            <li><a href="#"><i class="ri-money-dollar-circle-line"></i> My Loans</a></li>
-            <li><a href="#"><i class="ri-file-text-line"></i> Applications</a></li>
-            <li><a href="#"><i class="ri-calendar-line"></i> Payment Schedule</a></li>
+            <li>
+                <a href="{{ route('borrower.pages.home') }}" class="{{ request()->routeIs('borrower.pages.home') ? 'active' : '' }}">
+                    <i class="ri-home-line"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="" class="">
+                    <i class="ri-money-dollar-circle-line"></i> My Loans
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('loan.payment') }}" class="{{ request()->routeIs('loan.*') ? 'active' : '' }}">
+                    <i class="ri-calendar-line"></i> Payments
+                </a>
+            </li>
+            <li>
+                <a href="" class="">
+                    <i class="ri-file-text-line"></i> Applications
+                </a>
+            </li>
         </ul>
     </div>
 </div>
@@ -30,5 +46,6 @@
             sidebar.classList.remove('show');
         }
     });
+
 </script>
 @endsection
