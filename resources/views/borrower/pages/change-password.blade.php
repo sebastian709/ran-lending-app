@@ -28,8 +28,13 @@
                     <div class="col-md-6 col-lg-5">
                         <div class="card shadow-sm rounded-3">
                             <div class="card-body">
-                                <h4 class="mb-4 text-center text-primary">Change Password</h4>
-
+                                <div class="position-relative mb-4">
+                                    <button type="button" data-url="/profile"
+                                        class="btn small position-absolute start-0 top-50 translate-middle-y p-0">
+                                        <i class="ri-arrow-go-back-line"></i> Back
+                                    </button>
+                                    <h4 class="text-center text-primary m-0">Change Password</h4>
+                                </div>
                                 <form id="change-password-form" data-action="{{ route('borrower.change-password.update') }}"
                                     data-logout="{{ route('logout') }}">
                                     @csrf
@@ -92,7 +97,7 @@
                                     </div>
                                 </form>
 
-                                
+
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
