@@ -132,7 +132,11 @@
 .empty-state-icon {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, rgba(0, 86, 179, 0.1), rgba(255, 140, 0, 0.1));
+    background: linear-gradient(
+        135deg,
+        rgba(0, 86, 179, 0.1),
+        rgba(255, 140, 0, 0.1)
+    );
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -146,15 +150,25 @@
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    border-radius: 10%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
+}
+
+img.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 10%;
 }
 
 .dropdown-menu {
@@ -194,7 +208,11 @@
 .loading-spinner {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -313,4 +331,43 @@
 
 .btn-back-home {
     margin-top: 2rem;
+}
+
+.bg-pp-notif-warning {
+    background-color: rgba(255, 193, 7, 0.4);
+}
+
+.bg-pp-notif-danger {
+    background-color: rgba(255, 7, 7, 0.4);
+}
+
+.user-avatar-profile-view {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    border-radius: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 100px;
+}
+
+#password-criteria li {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+#password-criteria li.valid {
+    color: green;
+}
+
+#password-criteria li.valid i {
+    color: green;
 }

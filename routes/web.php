@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\Auth\OtpVerificationController;
 use App\Http\Controllers\Auth\RegisterController;
 
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
@@ -50,7 +52,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/update', [BlogPostController::class, 'update']);
         Route::post('/update-status', [BlogPostController::class, 'updateStatus']);
 
-        
+
     });
 });
 
@@ -61,7 +63,7 @@ Route::post('/upload', [BlogPostController::class, 'upload']);
 
 //AUTH
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('borrower.pages.home');
+Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
 //AJAX
@@ -70,24 +72,31 @@ Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthc
 Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauthsend'])->name('forgot.auth.send');
 Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->name('forgot.change.pass');
 
-// borrower routes
-// Route::get('/apply-loan', function () {
-//     return view('borrower.pages.loan-apply');
-// })->name('loan.apply');
-
+# borrower routes
 Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('loan.apply');
 
 # message pages
 Route::get('/loan-success', fn() => view('borrower.layouts.message'))->name('borrower.layouts.message');
 
+# active loan
 Route::get('/active-loan', function () {
     return view('borrower.pages.active-loan');
 })->name('loan.active');
 
 # loan application backend functions
-Route::get('/borrower/fetch-income/{id}', [App\Http\Controllers\HomeController::class, 'fetchIncome']);
-Route::post('/borrower/save-precheck', [App\Http\Controllers\HomeController::class, 'savePrecheck']);
-Route::post('/borrower/update-loan-details', [App\Http\Controllers\HomeController::class, 'updateLoanDetails']);
-Route::post('/borrower/final-submit', [App\Http\Controllers\HomeController::class, 'finalSubmit']);
+Route::get('/borrower/fetch-income/{id}', [HomeController::class, 'fetchIncome']);
+Route::post('/borrower/save-precheck', [HomeController::class, 'savePrecheck']);
+Route::post('/borrower/update-loan-details', [HomeController::class, 'updateLoanDetails']);
+Route::post('/borrower/final-submit', [HomeController::class, 'finalSubmit']);
 
 
+# profile page
+
+Route::get('/profile', [ProfileController::class, 'index'])->name('borrower.pages.profile');
+Route::post('/update-profile', [ProfileController::class, 'update'])->name('profile.update');
+
+# change password
+Route::middleware(['auth'])->prefix('borrower')->name('borrower.')->group(function () {
+    Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('change-password');
+    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('change-password.update');
+});

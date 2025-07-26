@@ -59,9 +59,15 @@
                         <div class="dropdown">
                             <button class="btn p-0 border-0 bg-transparent" type="button" data-bs-toggle="dropdown">
                                 <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-2">
-                                        {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
-                                    </div>
+                                    @if (Auth::user()->profile_src)
+                                        <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
+                                            class="user-avatar me-2 object-fit-cover" style="object-fit: cover;">
+                                    @else
+                                        <div class="user-avatar me-2">
+                                            {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
+                                        </div>
+                                    @endif
+
                                     <div class="d-none d-md-block text-start">
                                         <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
                                         </div>
@@ -71,10 +77,27 @@
                                 </div>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="ri-user-line me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="ri-settings-line me-2"></i>Settings</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="ri-question-line me-2"></i>Help &
-                                        Support</a></li>
+                                <li>
+                                    <a class="dropdown-item" data-url="/profile">
+                                        <i class="ri-user-line me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" data-url="/borrower/change-password">
+                                        <i class="ri-key-2-line"></i> Change Password
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="ri-settings-line me-2"></i>Settings
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="ri-question-line me-2"></i>
+                                        Help & Support
+                                    </a>
+                                </li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -104,6 +127,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
     <script src="{{ asset('js/index.js') }}"></script>
     <script src="{{ asset('js/borrower.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('scripts')
     @stack('sb-scripts')
     <script>
