@@ -350,4 +350,18 @@ img.user-avatar {
     font-size: 100px;
 }
 
+#password-criteria li {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+#password-criteria li.valid {
+    color: green;
+}
+
+#password-criteria li.valid i {
+    color: green;
+}
+
 

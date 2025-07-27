@@ -35,7 +35,8 @@ Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
 
-
+//AUTH
+Auth::routes();
 
 // admin routes
 Route::prefix('admin')->group(function () {
@@ -48,7 +49,11 @@ Route::prefix('admin')->group(function () {
     // admin profile
     Route::get('/profile', [ProfileController::class, 'adminIndex'])->name('admin.pages.profile.index');
     Route::post('/update-profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
-    
+
+    Route::middleware(['auth'])->prefix('profile')->group(function () {
+        Route::get('/change-password', [ProfileController::class, 'adminChangePassword'])->name('admin.pages.change-password');
+        Route::post('/change-password', [ProfileController::class, 'adminUpdatePassword'])->name('admin.pages.change-password.update');
+    });
 
     // blogpost
     Route::prefix('blogpost')->group(function () {
@@ -67,8 +72,7 @@ Route::prefix('admin')->group(function () {
 });
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
-//AUTH
-Auth::routes();
+
 
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
