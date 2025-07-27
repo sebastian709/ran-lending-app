@@ -47,7 +47,7 @@
                                 <div class="mt-3">
                                     <button class="btn btn-sm btn-outline-secondary w-100" id="edit-profile-btn"><i
                                             class="ri-edit-line me-1"></i> Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger w-100 mt-1" data-url="/borrower/change-password">
+                                    <button class="btn btn-sm btn-outline-danger w-100 mt-1" data-url="/admin/profile/change-password">
                                         <i class="ri-key-2-fill"></i> Change Password
                                     </button>
                                 </div>

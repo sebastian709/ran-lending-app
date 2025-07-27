@@ -221,6 +221,11 @@ class ProfileController extends Controller
         return view('borrower.pages.change-password');
     }
 
+    public function adminChangePassword()
+    {
+        return view('admin.pages.profile.change-password');
+    }
+
     public function updatePassword(Request $request)
     {
         $request->validate([
@@ -245,6 +250,29 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function adminUpdatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|confirmed|min:6',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Current password is incorrect.'
+            ], 422); // HTTP 422: Unprocessable Entity
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'message' => 'Your password has been successfully changed.',
+            'logout' => true
+        ]);
+    }
 
     public function loanList()
     {
