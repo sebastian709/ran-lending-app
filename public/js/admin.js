@@ -28,6 +28,7 @@ $(document).ready(function () {
 $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
   const url = $(this).data('url');
+  const isSidebar = $(this).data('is-sidebar');
 
   $.get(url, function (data) {
     const content = $(data).find('#content').html(); // ito yung @yield('content')
@@ -35,7 +36,11 @@ $(document).on('click', '[data-url]', function (e) {
     window.history.pushState({}, '', url);
 
     $('.sidebar .nav-link').removeClass('active');
-    $(`[data-url="${url}"]`).addClass('active');
+
+    if(parseInt(isSidebar) == 1){
+      $(`[data-url="${url}"]`).addClass('active');
+    }
+    
 
     updateBreadcrumb(url);
 
@@ -214,6 +219,127 @@ $(window).on('scroll', function () {
     $('.top-bar-icon').removeClass('scrolled');
     $('.toggle-btn').removeClass('scrolled');
   }
+});
+
+
+$(document).ready(function () { // profile page
+  let $form = $('#profile-form');
+  let $inputs = $form.find('input');
+  let $select = $form.find('select');
+  let $changePhoto = $('#change-picture-btn');
+  let $editBtn = $('#edit-profile-btn');
+  let $updateControls = $('#update-controls');
+  let $cancelBtn = $('#cancel-edit-btn');
+
+  // Enable edit
+  $editBtn.on('click', function () {
+    $inputs.prop('disabled', false);
+    $select.prop('disabled', false);
+    $updateControls.removeClass('d-none');
+    $changePhoto.removeAttr('hidden');
+  });
+
+  // Cancel edit
+  $cancelBtn.on('click', function () {
+    $inputs.each(function () {
+      this.value = this.defaultValue;
+    }).prop('disabled', true);
+    $select.each(function () {
+      const $el = $(this);
+      $el.find('option').each(function () {
+        if (this.defaultSelected) {
+          $el.val(this.value);
+        }
+      });
+    }).prop('disabled', true);
+    $changePhoto.attr('hidden', ' ');
+    $updateControls.addClass('d-none');
+  });
+
+  // handle submit
+  $form.on('submit', function (e) {
+    e.preventDefault();
+
+    $.confirm({
+      title: 'Confirm Update',
+      content: 'Are you sure you want to save these changes? They will be reflected on your account.',
+      buttons: {
+        cancel: function () { },
+        confirm: {
+          text: 'Save',
+          btnClass: 'btn-primary',
+          action: function () {
+            const formData = new FormData($form[0]); // include all form fields and file
+
+            $.ajax({
+              url: '/admin/update-profile',
+              method: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function (res) {
+                if (res.success) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: 'Profile updated successfully!',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    didClose: () => {
+                      location.reload();
+                    }
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Error updating profile.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                  });
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Server Error!',
+                  text: 'Something went wrong while saving.',
+                  timer: 2000,
+                  showConfirmButton: false,
+                  timerProgressBar: true
+                });
+              }
+            });
+          }
+        }
+      }
+    });
+  });
+
+
+  // Profile picture preview
+  $('#change-picture-btn').on('click', () => {
+    $('#profile-picture-input').click();
+  });
+
+  $('#profile-picture-input').on('change', function () {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      $('#profile-picture-preview').attr('src', e.target.result);
+    };
+    reader.readAsDataURL(this.files[0]);
+
+    $("#profile-picture-preview").removeAttr('hidden')
+    $(".user-avatar-profile-view").attr('hidden', ' ');
+  });
+
+  $('.close-profile-notif').on('click', function () {
+    $(this).closest('.row').fadeOut(300, function () {
+      $(this).remove();
+    });
+  });
 });
 
 

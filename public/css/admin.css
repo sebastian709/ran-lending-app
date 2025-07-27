@@ -1,3 +1,71 @@
+:root {
+    --primary-color: #0056b3;
+    --secondary-color: #ff8c00;
+}
+
+:where([class^="ri-"])::before {
+    content: "\f3c2";
+}
+
+.font-pacifico {
+    font-family: "Pacifico", cursive;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-secondary-custom {
+    background-color: var(--secondary-color) !important;
+}
+
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary-custom {
+    color: var(--secondary-color) !important;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 8px;
+    color: white;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: rgba(0, 86, 179, 0.9);
+    border-color: rgba(0, 86, 179, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+    color: white;
+}
+
+.btn-outline-primary-custom {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 8px;
+}
+
+.btn-outline-primary-custom:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.rounded-custom {
+    border-radius: 8px !important;
+}
+
+.navbar-custom {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white !important;
+}
+
 body {
   background-color: #f4f6f9;
   font-family: 'Segoe UI', sans-serif;
@@ -241,6 +309,45 @@ body {
     .btn {
         display: none !important;
     }
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    border-radius: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+img.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 10%;
+}
+
+.user-avatar-profile-view {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    border-radius: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 100px;
 }
 
 

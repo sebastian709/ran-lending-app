@@ -644,4 +644,44 @@ $(function () {
 });
 
 
+// Loan list modal
+$(document).ready(function () {
+    $('.view-loan-btn').on('click', function () {
+        const loanId = $(this).data('id');
+
+        $.confirm({
+            title: `<i class="bi bi-file-earmark-text me-2"></i> Loan Details`,
+            content: `
+                <div class="text-start fs-6">
+                    <div class="mb-2"><strong>Loan ID:</strong> ${loanId}</div>
+                    <div class="mb-2"><strong>Total Amount:</strong> <span class="text-success">₱50,000.00</span></div>
+                    <div class="mb-2"><strong>Loan Tenure:</strong> 12 months</div>
+                    <div class="mb-2"><strong>Date of Payment:</strong> July 30, 2025</div>
+                    <div class="mb-2"><strong>Monthly Amount Due:</strong> ₱4,500.00</div>
+                    <div class="mb-3"><strong>Penalty:</strong> ₱0.00</div>
+                    <hr class="my-2">
+                    <div class="mb-2"><strong>Total Payment:</strong> ₱54,000.00</div>
+                    <div class="mb-1"><strong>Breakdown:</strong></div>
+                    <ul class="ps-4">
+                        <li>Principal: ₱50,000.00</li>
+                        <li>Interest: ₱4,000.00</li>
+                        <li>Penalty: ₱0.00</li>
+                    </ul>
+                </div>
+            `,
+            type: 'blue',
+            columnClass: 'medium',
+            icon: 'bi bi-info-circle-fill',
+            buttons: {
+                close: {
+                    text: 'Close',
+                    btnClass: 'btn-secondary',
+                }
+            }
+        });
+    });
+});
+
+
+
 
