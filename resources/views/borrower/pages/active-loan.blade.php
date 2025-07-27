@@ -78,8 +78,10 @@
 
             <!-- Sample Table with status -->
             <div class="dashboard-card p-4 shadow-sm rounded bg-white">
-                <h4 class="mb-4 fw-bold">📅 Repayment Schedule</h4>
-                
+                <div class="d-flex align-items-center">
+                    <i class="ri-calendar-event-line" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0 fw-bold ms-2">Repayment Schedule</h4>
+                </div>
                 <div class="table-responsive">
                 <table class="table table-hover align-middle text-center">
                     <thead class="table-light">

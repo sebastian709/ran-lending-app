@@ -45,4 +45,6 @@
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
         <script src="{{ asset('js/components/confetti.js') }}"></script>
     @endpush
+@elseif ($loanStatus == 5)
+    @include('borrower.pages.active-loan')
 @endif
