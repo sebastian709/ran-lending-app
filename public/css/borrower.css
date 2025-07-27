@@ -371,3 +371,57 @@ img.user-avatar {
 #password-criteria li.valid i {
     color: green;
 }
+
+/* Loan List spacing */
+.loan-list {
+    margin-top: 1rem;
+}
+
+/* Card appearance */
+.loan-card {
+    background-color: #fff;
+    border-left: 4px solid #0d6efd;
+    border-radius: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.loan-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.08);
+}
+
+/* Badge tweak */
+.loan-card .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+    border-radius: 0.35rem;
+}
+
+/* Optional: dim disabled states if needed */
+.loan-card[disabled] {
+    opacity: 0.6;
+}
+
+/* No shadow, transparent bg (utility) */
+.bg-transparent {
+    background-color: transparent !important;
+}
+
+.no-shadow {
+    box-shadow: none !important;
+}
+
+/* Unified loan list appearance inside dashboard card */
+.loan-item {
+    border-radius: 0;
+    transition: background 0.2s ease;
+}
+
+.loan-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Optional if you want space below the last item */
+.loan-item:last-child {
+    border-bottom: none;
+}

@@ -33,11 +33,6 @@ class ProfileController extends Controller
                 'user_incomes.income',
                 'user_incomes.employment_status',
                 'users.referral_source_id',
-                // DB::raw('CONCAT(user_details.house_no, ", ", 
-                //                        user_details.street, ", ", 
-                //                        user_details.barangay, ", ",
-                //                        user_details.city, ", ",
-                //                        user_details.province) as complete_address')
                 'user_details.house_no',
                 'user_details.street',
                 'user_details.barangay',
@@ -51,6 +46,39 @@ class ProfileController extends Controller
 
 
         return view('borrower.pages.profile', compact('usersInformation'));
+    }
+
+    public function adminIndex()
+    {
+
+        $userId = auth()->id();
+        $usersInformation = DB::table('users')
+            ->join('user_incomes', 'users.id', '=', 'user_incomes.user_id')
+            ->join('user_details', 'users.id', '=', 'user_details.user_id')
+            ->select(
+                'users.firstname',
+                'users.lastname',
+                'users.middlename',
+                'users.username',
+                'users.contactno',
+                'users.email',
+                'user_incomes.occupation',
+                'user_incomes.income',
+                'user_incomes.employment_status',
+                'users.referral_source_id',
+                'user_details.house_no',
+                'user_details.street',
+                'user_details.barangay',
+                'user_details.city',
+                'user_details.province',
+                'users.profile_src',
+            )
+            ->where('users.status', 1)
+            ->where('users.id', $userId)
+            ->first();
+
+
+        return view('admin.pages.profile.index', compact('usersInformation'));
     }
 
     public function update(Request $request)
@@ -125,9 +153,71 @@ class ProfileController extends Controller
         }
     }
 
+    public function adminUpdate(Request $request)
+    {
+        $userId = auth()->id();
+
+        try {
+            // Start transaction
+            DB::beginTransaction();
+
+            // Update users table
+            DB::table('users')->where('id', $userId)->update([
+                'username' => $request->username,
+                'firstname' => $request->first_name,
+                'middlename' => $request->middle_name,
+                'lastname' => $request->last_name,
+                'updated_at' => now()
+            ]);
+
+            // Update user_details table
+            DB::table('user_details')->where('user_id', $userId)->update([
+                'house_no' => $request->house_no,
+                'street' => $request->street,
+                'barangay' => $request->barangay,
+                'city' => $request->city,
+                'province' => $request->province,
+                'updated_at' => now()
+            ]);
+            
+
+            if ($request->hasFile('profile_picture')) {
+                $file = $request->file('profile_picture');
+                $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Create folder if not exists
+                if (!Storage::disk('public')->exists('upload/profile_picture')) {
+                    Storage::disk('public')->makeDirectory('upload/profile_picture');
+                }
+
+                // Save the file
+                $path = $file->storeAs('upload/profile_picture', $filename, 'public');
+
+                // Save path in DB
+                DB::table('users')->where('id', $userId)->update([
+                    'profile_src' => $path,
+                    'updated_at' => now()
+                ]);
+            }
+
+
+
+            DB::commit();
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function changePassword()
     {
-
         return view('borrower.pages.change-password');
     }
 
@@ -153,6 +243,45 @@ class ProfileController extends Controller
             'message' => 'Your password has been successfully changed.',
             'logout' => true
         ]);
+    }
+
+
+    public function loanList()
+    {
+        $loans = collect([
+            (object) [
+                'id' => 'LN-0001',
+                'applied_at' => '2025-07-20',
+                'amount' => 50000,
+                'status' => 'For Interview',
+                'approved_at' => '2025-07-21',
+                'disbursed_at' => '2025-07-22',
+                'closed_at' => null,
+                'remarks' => 'Awaiting documents.'
+            ],
+            (object) [
+                'id' => 'LN-0002',
+                'applied_at' => '2025-07-18',
+                'amount' => 75000,
+                'status' => 'Pending',
+                'approved_at' => null,
+                'disbursed_at' => null,
+                'closed_at' => null,
+                'remarks' => 'Requires additional verification.'
+            ],
+            (object) [
+                'id' => 'LN-0003',
+                'applied_at' => '2025-07-15',
+                'amount' => 30000,
+                'status' => 'Transferred and Processed',
+                'approved_at' => '2025-07-16',
+                'disbursed_at' => '2025-07-17',
+                'closed_at' => '2025-07-25',
+                'remarks' => 'Successfully processed and completed.'
+            ]
+        ]);
+
+        return view('borrower.pages.loan-list', compact('loans'));
     }
 
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 
 // Route::get('/', [ChatTestController::class, 'login']);
@@ -31,14 +32,23 @@ Route::get('/travel-and-tours', [BlogPostController::class, 'landingTAT']);
 
 #index page routes - Lending website
 Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+
+
 
 // admin routes
 Route::prefix('admin')->group(function () {
     // dashboard
-    Route::get('/', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
+    Route::get('/', [AdminController::class, 'index'])->name('admin.pages.main.index');
 
     // testing only
-    Route::get('/blankpage', fn() => view('admin.testing-only.blankpage'))->name('admin.testing-only.blankpage');
+    Route::get('/blankpage', [AdminController::class, 'blankTesting'])->name('admin.testing-only.blankpage');
+
+    // admin profile
+    Route::get('/profile', [ProfileController::class, 'adminIndex'])->name('admin.pages.profile.index');
+    Route::post('/update-profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
+    
 
     // blogpost
     Route::prefix('blogpost')->group(function () {
@@ -55,14 +65,11 @@ Route::prefix('admin')->group(function () {
 
     });
 });
-
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
-
-
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
 //AUTH
 Auth::routes();
+
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
@@ -100,3 +107,5 @@ Route::middleware(['auth'])->prefix('borrower')->name('borrower.')->group(functi
     Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('change-password');
     Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('change-password.update');
 });
+
+Route::get('/loan-list', [ProfileController::class, 'loanList'])->name('borrower.pages.loan-list');
