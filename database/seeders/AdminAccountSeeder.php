@@ -28,6 +28,21 @@ class AdminAccountSeeder extends Seeder
             'updated_at' => now()
         ]);
 
+        $userId2 = DB::table('users')->insertGetId([
+            'firstname' => 'Sebastian',
+            'username' => 'sebastian709',
+            'lastname' => 'Jabson',
+            'middlename' => 'Cestona',
+            'contactno' => '099770224547',
+            'referral_source_id' => 0,
+            'referral_id' => 0,
+            'is_admin' => 0,
+            'email' => 'sebastianjabson07@gmail.com',
+            'password' => '$2y$12$TKmg0ooXNf0Z0z/BMPyS2u1KxHk2whC7ohFAzM3jdS3mUA5SBRZ1O',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
         DB::table('user_details')->insert([
             [
                 'user_id' => $userId,
@@ -38,6 +53,16 @@ class AdminAccountSeeder extends Seeder
                 'province' => 'please update',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'user_id' => $userId2,
+                'house_no' => '30',
+                'street' => 'senorita',
+                'barangay' => 'saguin',
+                'city' => 'san fernando',
+                'province' => 'pampanga',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
         DB::table('user_incomes')->insert([
@@ -45,6 +70,14 @@ class AdminAccountSeeder extends Seeder
                 'user_id' => $userId,
                 'occupation' => 'update if needed',
                 'income' => 100,
+                'employment_status' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'user_id' => $userId2,
+                'occupation' => 'dev',
+                'income' => 100.00,
                 'employment_status' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
