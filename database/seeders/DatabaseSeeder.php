@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             LoanStatusSeeder::class,
             EmploymentStatusSeeder::class,
             ReferralSourceSeeder::class,
+            AdminAccountSeeder::class
         ]);
     }
 }
