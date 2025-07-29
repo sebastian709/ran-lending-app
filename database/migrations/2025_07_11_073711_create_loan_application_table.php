@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('loan_status')->nullable();
             $table->integer('load_step')->nullable();
             $table->unsignedBigInteger('loan_applicant')->nullable(); // user_id
-            $table->string('purpose_of_loan')->nullable();
+            $table->text('purpose_of_loan')->nullable();
             $table->string('referral')->nullable(); // admin, friend, other
 
             $table->decimal('loan_amount', 15, 4)->nullable();
@@ -24,18 +24,19 @@ return new class extends Migration {
             $table->decimal('interest_rate', 5, 5)->nullable();
             $table->decimal('total_amount', 15, 4)->nullable();
 
-            $table->string('payslip_img')->nullable();
+            $table->text('payslip_img')->nullable();
             $table->string('bank_name')->nullable();
             $table->string('account_number')->nullable();
-            $table->string('upload_qr_code_img')->nullable();
+            $table->text('upload_qr_code_img')->nullable();
 
             $table->unsignedBigInteger('government_type_id')->nullable();
-            $table->string('government_id_img')->nullable();
-            $table->string('billing_statement_img')->nullable();
-            $table->string('signature_img')->nullable();
+            $table->text('government_id_img')->nullable();
+            $table->text('billing_statement_img')->nullable();
+            $table->text('signature_img')->nullable();
 
             $table->boolean('status')->default(1);
 
+            
             $table->timestamps();
         });
     }

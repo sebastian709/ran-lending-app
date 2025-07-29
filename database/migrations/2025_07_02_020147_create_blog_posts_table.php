@@ -12,17 +12,24 @@ return new class extends Migration {
     {
         Schema::create('blog_posts', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['draft', 'published'])->default('draft');
+
+            // originally 'user_id', now directly use 'added_by' for cleaner initial setup
+            $table->unsignedBigInteger('added_by');
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
+
+            $table->enum('status', ['draft', 'published', 'archived', 'deleted'])->default('draft');
             $table->string('title');
             $table->text('excerpt')->nullable();
             $table->longText('content')->nullable();
             $table->string('category')->nullable();
             $table->text('featured_image')->nullable();
             $table->json('tags_json')->nullable();
+
+            $table->softDeletes(); // adds deleted_at
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
