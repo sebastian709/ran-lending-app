@@ -95,6 +95,10 @@ Route::name('loan.')->group(function () {
     Route::get('/payment-success', function () {
         return view('borrower.layouts.payment_success');
     })->name('payment-success');
+
+    Route::get('/payment-history', function () {
+        return view('borrower.pages.payments.payment-history');
+    })->name('payment-history');
 });
 
 # loan application backend functions
