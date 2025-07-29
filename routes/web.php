@@ -82,9 +82,20 @@ Route::get('/active-loan', function () {
     return view('borrower.pages.active-loan');
 })->name('loan.active');
 
-Route::get('/payment', function () {
-    return view('borrower.pages.payment');
-})->name('loan.payment');
+//Payment
+Route::name('loan.')->group(function () {
+    Route::get('/payment', function () {
+        return view('borrower.pages.payments.payment');
+    })->name('payment');
+
+    Route::get('/confirm-payment', function () {
+        return view('borrower.pages.payments.confirm-payment');
+    })->name('payment-confirm');
+
+    Route::get('/payment-success', function () {
+        return view('borrower.layouts.payment_success');
+    })->name('payment-success');
+});
 
 # loan application backend functions
 Route::get('/borrower/fetch-income/{id}', [App\Http\Controllers\HomeController::class, 'fetchIncome']);

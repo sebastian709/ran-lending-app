@@ -23,3 +23,47 @@
     list-style: none;
     color: #828181;
 }
+ .payment-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.bank-logo {
+    height: 30px;
+    margin-right: 10px;
+}
+.form-note {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+.card {
+    border-radius: 20px;
+    box-shadow: 0 8px 56px rgba(0, 0, 0, 0.1) !important;
+}
+.payment-confirm-body {
+    padding: 60px;
+}
+ .zoom-in {
+    animation: zoomIn 0.3s ease-in-out;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+.dropzone {
+    border: 2px dashed #ccc;
+    background-color: #f9f9f9;
+    transition: border-color 0.2s ease-in-out;
+}
+.dropzone.border-primary {
+    border-color: #0d6efd !important;
+}
+.bg-divider{
+    background-color: #f9fafc;
+}
