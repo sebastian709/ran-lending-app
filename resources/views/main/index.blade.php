@@ -124,7 +124,7 @@
                     <a href="#business" class="text-white hover:text-white/80 font-medium">Business</a>
                     <a href="#About" class="text-white hover:text-white/80 font-medium">About</a>
                     <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
-                    <button
+                    <button data-url="/lending"
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Get
                         Started</button>
                 </div>
