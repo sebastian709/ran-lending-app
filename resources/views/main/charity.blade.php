@@ -429,8 +429,8 @@
 
             <!-- QR Code -->
             <div class="flex justify-center mb-6">
-                <img src="{{ asset('images/donation_qr.png') }}" alt="Donation QR Code"
-                    class="w-48 h-48 object-contain" />
+                <img src="{{ asset('images/donate_qr.jpg') }}" alt="Donation QR Code"
+                    class="w-[250px] h-[250px] " />
             </div>
 
             <!-- Bank Details -->
