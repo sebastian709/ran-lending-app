@@ -71,6 +71,11 @@ if (!window._signatureBoxInitialized) {
                                             <i class="bi bi-download fs-5"></i>
                                           </a>`);
                             $target.removeClass('signature-empty').addClass('signature-filled filled');
+
+
+                            if ($('.la_terms_checkbox').is(':checked')) {
+                                $('#submitFinalApplication').prop('disabled', false);
+                            }
                         }
                     }
                 },
