@@ -118,3 +118,59 @@ $(document).ready(function () {
     updateTotal();
 });
 
+let scale = 1;
+
+$('#zoomInBtn').on('click', function () {
+    scale += 0.1;
+    $('#qrImage').css('transform', 'scale(' + scale + ')');
+});
+
+$('#zoomOutBtn').on('click', function () {
+    scale = Math.max(0.5, scale - 0.1);
+    $('#qrImage').css('transform', 'scale(' + scale + ')');
+});
+
+$('#qrCodeModal').on('hidden.bs.modal', function () {
+    scale = 1;
+    $('#qrImage').css('transform', 'scale(1)');
+});
+
+function triggerUpload() {
+    document.getElementById('screenshot').click();
+}
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        previewImage(file);
+    }
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    document.getElementById('dropzone').classList.remove('border-primary');
+
+    const file = event.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        document.getElementById('screenshot').files = event.dataTransfer.files;
+        previewImage(file);
+    }
+}
+
+function previewImage(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('preview-image').src = e.target.result;
+        document.getElementById('preview').classList.remove('d-none');
+        document.getElementById('placeholder').classList.add('d-none');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    const input = document.getElementById('screenshot');
+    input.value = ''; // Clear input
+    document.getElementById('preview').classList.add('d-none');
+    document.getElementById('preview-image').src = '';
+    document.getElementById('placeholder').classList.remove('d-none');
+}

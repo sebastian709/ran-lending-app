@@ -16,17 +16,13 @@
     @include('borrower.layouts.sidebar')
 
     <div class="container container-payment">
-        
+        <!-- <button type="button" data-url="/profile" class="btn small  start-0 top-50 translate-middle-y p-0">
+            <i class="ri-home-line me-2"></i> Back to home
+        </button> -->
         <h2 class="header-title">Repayment</h2>
 
         <!-- PAYMENT TYPE -->
         <div class="card-section">
-            <!-- <label class="form-label">Payment Type</label>
-            <select id="paymentType" class="form-select mb-3">
-                <option value="monthly" selected>Monthly</option>
-                <option value="full">Fully Paid</option>
-            </select> -->
-
             <span class="section-title">Total Amount to Pay</span>
             <div class="amount-display" id="totalAmount">₱0.00</div>
         </div>
@@ -172,7 +168,7 @@
         </div>
 
         <!-- PAY NOW BUTTON -->
-        <button class="btn btn-primary w-100" id="payNowBtn">Pay Now</button>
+        <button class="btn btn-primary w-100"  id="payNowBtn" data-url="/confirm-payment">Pay Now</button>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

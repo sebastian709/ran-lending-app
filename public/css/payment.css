@@ -23,3 +23,125 @@
     list-style: none;
     color: #828181;
 }
+ .payment-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.bank-logo {
+    height: 30px;
+    margin-right: 10px;
+}
+.form-note {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+.card {
+    border-radius: 20px;
+    box-shadow: 0 8px 56px rgba(0, 0, 0, 0.1) !important;
+}
+.payment-confirm-body {
+    padding: 60px;
+}
+ .zoom-in {
+    animation: zoomIn 0.3s ease-in-out;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+.dropzone {
+    border: 2px dashed #ccc;
+    background-color: #f9f9f9;
+    transition: border-color 0.2s ease-in-out;
+}
+.dropzone.border-primary {
+    border-color: #0d6efd !important;
+}
+.bg-divider{
+    background-color: #f9fafc;
+}
+
+.payment-item {
+    border-bottom: 1px solid #e9ecef;
+    padding: 20px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    background-color: white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.payment-item:hover {
+    background-color: #f8f9fa;
+}
+
+.status-dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.status-success {
+    background-color: #28a745;
+}
+
+.status-failed {
+    background-color: #dc3545;
+}
+
+.status-revision {
+    background-color: #ffc107;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.rotate {
+    transform: rotate(90deg);
+}
+
+.payment-details {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.attachment-img {
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 5px;
+}
+
+.attachment-img:hover {
+    transform: scale(1.05);
+}
+
+.comment-box {
+    background: #fff;
+    border-left: 4px solid #dee2e6;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.comment-author {
+    font-weight: 600;
+}
+
+.form-comment textarea {
+    resize: none;
+}
