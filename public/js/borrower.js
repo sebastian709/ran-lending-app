@@ -281,10 +281,10 @@ $(function () {
 
         const totalAmount = loanAmount + (loanAmount * interestRate);
 
-        if (!loan_application_id) {
-            console.error('Missing loan_application_id', loan_application_id);
-            return;
-        }
+        // if (!loan_application_id) {
+        //     console.error('Missing loan_application_id', loan_application_id);
+        //     return;
+        // }
 
         $.ajax({
             url: '/borrower/update-loan-details',
@@ -302,6 +302,9 @@ $(function () {
             },
             success: function (res) {
                 if (res.success) {
+                    if (res.loan_application_id) {
+                        loan_application_id = res.loan_application_id; // store new one
+                    }
                     showStep('full-loan-application');
                 }
             },
@@ -313,12 +316,6 @@ $(function () {
 
 
     $(document).on('click', '.la_submit_final_application', function () {
-        console.log({
-            id: loan_application_id,
-            bank: $('.la_bank_name').val(),
-            signature: $('.signature-filled img').attr('src'),
-            payslip: $('#payslipInput')[0].files[0],
-        });
         const formData = new FormData();
 
         formData.append('loan_application_id', loan_application_id);
@@ -328,12 +325,12 @@ $(function () {
         formData.append('government_type_id', $('.la_government_id').val());
 
         // File inputs
-        formData.append('payslip_img', $('#payslipInput')[0].files[0]);
-        formData.append('qr_code_img', $('#qrInput')[0].files[0]);
-        formData.append('government_id_img', $('#govIdInput')[0].files[0]);
-        formData.append('billing_statement_img', $('#billingInput')[0].files[0]);
+        formData.append('payslip_img', $('#payslipInput')[0]?.files[0]);
+        formData.append('qr_code_img', $('#qrInput')[0]?.files[0]);
+        formData.append('government_id_img', $('#govIdInput')[0]?.files[0]);
+        formData.append('billing_statement_img', $('#billingInput')[0]?.files[0]);
 
-        // Signature (base64 from <img src>)
+        // Signature
         const signatureBase64 = $('.signature-filled img').attr('src');
         formData.append('signature_img', signatureBase64);
 
@@ -348,21 +345,81 @@ $(function () {
             },
             success: function (res) {
                 if (res.success) {
-                    window.location.href = "/loan-success";
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Submitted!',
+                        text: res.message || "Your application has been submitted.",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "/loan-success";
+                    });
                 } else {
-                    alert(res.message || "Submission failed.");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Submission Failed',
+                        text: res.message || "Something went wrong.",
+                    });
                 }
             },
             error: function (xhr) {
-                alert("Something went wrong during submission.");
-                console.log(xhr.responseText);
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    if (errors) {
+                        $('.is-invalid').removeClass('is-invalid');
+                        $('.invalid-feedback').remove();
+
+                        for (const field in errors) {
+                            const message = errors[field][0];
+                            const selector = getFieldSelector(field);
+                            const $input = $(selector);
+                            $input.addClass('is-invalid');
+                            $input.after(`<div class="invalid-feedback">${message}</div>`);
+                        }
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Validation Error',
+                            text: 'Please correct the highlighted fields.',
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'Something went wrong. Please try again later.',
+                    });
+                    console.error(xhr.responseText);
+                }
             }
         });
     });
 
+    function getFieldSelector(field) {
+        const map = {
+            bank_name: '.la_bank_name',
+            account_number: '.la_account_number',
+            government_type_id: '.la_government_id',
+            payslip_img: '#payslipInput',
+            qr_code_img: '#qrInput',
+            government_id_img: '#govIdInput',
+            billing_statement_img: '#billingInput',
+            signature_img: '.signature-filled img' // visual only
+        };
+        return map[field] || `[name="${field}"]`;
+    }
+
     // Terms checkbox
     $(document).on('change', '.la_terms_checkbox', function () {
-        $('#submitFinalApplication').prop('disabled', !$(this).prop('checked'));
+        const img_checker = $('.signature-wrapper img').attr('src');
+
+        if ($(this).is(':checked')) {
+            if (img_checker) {
+                $('#submitFinalApplication').prop('disabled', false);
+            }
+        } else {
+            $('#submitFinalApplication').prop('disabled', true);
+        }
     });
 
     function previewImage(inputId, previewContainerId) {
