@@ -105,8 +105,8 @@
 
             <div class="list-group advance-months" style="display: none;">
                 <!-- Month -->
-            @foreach($data['records']['loan'] as $record)
-                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option payment-option-advance">
+            @foreach($data['records']['loan'] as $index => $record)
+                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option payment-option-advance {{ $index > 2 ? 'extra-payment d-none' : '' }}">
                     <div class="d-flex align-items-center gap-3">
                         <input class="form-check-input flex-shrink-0 advance_payment_month" type="checkbox" data-tenure_id="{{ $record['tenure_id'] }}" data-amount="{{ $record['interest'] + $record['principal'] }}" data-principal="{{ $record['principal'] }}" data-interest="{{ $record['interest'] }}">
                         <div class="d-flex flex-column">
@@ -126,6 +126,12 @@
                         </div>
                     </div>
                 </label>
+                <!-- Show More Button -->
+                @if(count($data['records']['loan']) > 3)
+                <div class="text-center mt-2">
+                    <button class="btn btn-sm btn-primary" id="showMoreAdvance">Show More <i class="bi bi-chevron-down"></i></button>
+                </div>
+                @endif
             </div>
         </div>
 
@@ -134,21 +140,24 @@
         <div class="card-section">
             <span class="section-title">Payment Breakdown</span>
             <ul class="breakdown-list" id="breakdownBody">
-                <li class="d-flex justify-content-between">
-                    <span>Interest</span>
-                    <span class="payment-interest">₱ {{ number_format($data['loan_tenure_next_pay']->interest,2) }}</span>
+                <li class="breakdown-item d-flex align-items-center">
+                    <span class="label">Interest</span>
+                    <span class="flex-line mx-2"></span>
+                    <span class="amount">₱ {{ number_format($data['loan_tenure_next_pay']->interest, 2) }}</span>
                 </li>
-                <li class="d-flex justify-content-between">
-                    <span>Penalty</span>
-                    <span class="payment-penalty">₱ {{ number_format($data['loan_tenure_next_pay']->penalty,2) }}</span>
+                <li class="breakdown-item d-flex align-items-center">
+                    <span class="label">Penalty</span>
+                    <span class="flex-line mx-2"></span>
+                    <span class="amount">₱ {{ number_format($data['loan_tenure_next_pay']->penalty, 2) }}</span>
                 </li>
-                <li class="d-flex justify-content-between">
-                    <span>Principal</span>
-                    <span class="payment-principal">₱ {{ number_format($data['loan_tenure_next_pay']->principal,2) }}</span>
+                <li class="breakdown-item d-flex align-items-center">
+                    <span class="label">Principal</span>
+                    <span class="flex-line mx-2"></span>
+                    <span class="amount">₱ {{ number_format($data['loan_tenure_next_pay']->principal, 2) }}</span>
                 </li>
                 <li class="d-flex justify-content-between fw-bold border-top mt-2 pt-2 text-muted">
                     <span>Total</span>
-                    <span class="payment-total">₱ {{ number_format($data['loan_tenure_next_pay']->total,2) }}</span>
+                    <span>₱ {{ number_format($data['loan_tenure_next_pay']->total, 2) }}</span>
                 </li>
             </ul>
         </div>

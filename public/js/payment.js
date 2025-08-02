@@ -104,8 +104,15 @@ $(document).on('change', '#payAllCheck', function () {
 
 // Toggle Advance Payments section
 $('#toggleAdvance').on('click', function () {
+    $('.extra-payment').addClass('d-none');
+    $('#showMoreAdvance').show();
     $('.advance-months').slideToggle();
     $(this).find('i').toggleClass('bi-chevron-down bi-chevron-up');
+});
+
+$('#showMoreAdvance').on('click', function() {
+    $('.extra-payment').removeClass('d-none');
+    $(this).hide(); 
 });
 
 // Show Partial Payment Section
