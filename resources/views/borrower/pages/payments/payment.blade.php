@@ -24,7 +24,7 @@
         <!-- PAYMENT TYPE -->
         <div class="card-section">
             <span class="section-title">Total Amount to Pay</span>
-            <div class="amount-display" id="totalAmount">₱0.00</div>
+            <div class="amount-display" id="totalAmount">₱ {{ number_format($data['loan_tenure_next_pay']->total,2) }}</div>
         </div>
 
         <!-- NEXT PAYMENT -->
@@ -33,14 +33,14 @@
             <div class="list-group next_payment">
                 <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option position-relative">
                     <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-amount="5000" checked disabled>
+                        <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-amount="{{ $data['loan_tenure_next_pay']->total }}" checked disabled>
                         <div class="d-flex flex-column">
-                            <span class="fw-semibold">Due Date: 20 July 2025</span>
+                            <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse($data['loan_tenure_next_pay']->date)->format('F j, Y') }}</span>
                             <small class="text-muted">1/12 Repayment</small>
                         </div>
                     </div>
                      <div class="d-flex align-items-center gap-2">
-                        <div class="fw-bold text-success">₱5,000</div>
+                        <div class="fw-bold text-success">₱ {{ number_format($data['loan_tenure_next_pay']->total,2) }}</div>
                         <!-- <span class="badge bg-danger">Delay</span> -->
                     </div>
                 </label>
@@ -60,35 +60,35 @@
                 <!-- Interest -->
                 <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-partial partial-option">
                     <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" data-amount="55" data-category="Interest">
+                        <input class="form-check-input flex-shrink-0 partial-interest" type="checkbox" data-amount="{{ $data['loan_tenure_next_pay']->interest }}" data-category="Interest">
                         <div class="d-flex flex-column">
                             <span class="fw-semibold">Interest</span>
-                            <small class="text-muted">20 July 2025</small>
+                            <small class="text-muted">{{ \Carbon\Carbon::parse($data['loan_tenure_next_pay']->date)->format('F j, Y') }}</small>
                         </div>
                     </div>
-                    <div class="fw-bold text-success">₱55</div>
+                    <div class="fw-bold text-success">₱ {{ number_format($data['loan_tenure_next_pay']->interest,2) }}</div>
                 </label>
                 <!-- Penalty -->
                 <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-partial partial-option">
                     <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" data-amount="550" data-category="Penalty">
+                        <input class="form-check-input flex-shrink-0 partial-penalty" type="checkbox" data-amount="{{ $data['loan_tenure_next_pay']->penalty }}" data-category="Penalty">
                         <div class="d-flex flex-column">
                             <span class="fw-semibold">Penalty</span>
-                            <small class="text-muted">20 July 2025</small>
+                            <small class="text-muted">{{ \Carbon\Carbon::parse($data['loan_tenure_next_pay']->date)->format('F j, Y') }}</small>
                         </div>
                     </div>
-                    <div class="fw-bold text-success">₱550</div>
+                    <div class="fw-bold text-success">₱ {{ number_format($data['loan_tenure_next_pay']->penalty,2) }}</div>
                 </label>
                 <!-- Principal -->
                 <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-partial partial-option">
                     <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" data-amount="5000" data-category="Principal">
+                        <input class="form-check-input flex-shrink-0 partial-principal" type="checkbox" data-amount="{{ $data['loan_tenure_next_pay']->principal }}" data-category="Principal">
                         <div class="d-flex flex-column">
                             <span class="fw-semibold">Principal</span>
-                            <small class="text-muted">20 July 2025</small>
+                            <small class="text-muted">{{ \Carbon\Carbon::parse($data['loan_tenure_next_pay']->date)->format('F j, Y') }}</small>
                         </div>
                     </div>
-                    <div class="fw-bold text-success">₱5,000</div>
+                    <div class="fw-bold text-success">₱ {{ number_format($data['loan_tenure_next_pay']->principal,2) }}</div>
                 </label>
             </div>
         </div>
@@ -104,39 +104,19 @@
             </div>
 
             <div class="list-group advance-months" style="display: none;">
-                <!-- Month 1 -->
-                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option">
+                <!-- Month -->
+            @foreach($data['records']['loan'] as $record)
+                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option payment-option-advance">
                     <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" data-amount="5000">
+                        <input class="form-check-input flex-shrink-0 advance_payment_month" type="checkbox" data-tenure_id="{{ $record['tenure_id'] }}" data-amount="{{ $record['interest'] + $record['principal'] }}" data-principal="{{ $record['principal'] }}" data-interest="{{ $record['interest'] }}">
                         <div class="d-flex flex-column">
-                            <span class="fw-semibold">Due Date: 20 Aug 2025</span>
+                            <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse(is_array($record) ? $record['date'] : $record->date)->format('F j, Y') }}</span>
                             <small class="text-muted">2/12 Repayment</small>
                         </div>
                     </div>
-                    <div class="fw-bold text-success">₱5,000</div>
+                    <div class="fw-bold text-success">₱ {{ number_format($record['interest'] + $record['principal'],2) }}</div>
                 </label>
-                <!-- Month 2 -->
-                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option">
-                    <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" data-amount="5000">
-                        <div class="d-flex flex-column">
-                            <span class="fw-semibold">Due Date: 20 Sep 2025</span>
-                            <small class="text-muted">3/12 Repayment</small>
-                        </div>
-                    </div>
-                    <div class="fw-bold text-success">₱5,000</div>
-                </label>
-                <!-- Month 3 -->
-                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option">
-                    <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" data-amount="5000">
-                        <div class="d-flex flex-column">
-                            <span class="fw-semibold">Due Date: 20 Oct 2025</span>
-                            <small class="text-muted">4/12 Repayment</small>
-                        </div>
-                    </div>
-                    <div class="fw-bold text-success">₱5,000</div>
-                </label>
+                @endforeach
                 <!-- All -->
                 <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2">
                     <div class="d-flex align-items-center gap-3">
@@ -154,7 +134,22 @@
         <div class="card-section">
             <span class="section-title">Payment Breakdown</span>
             <ul class="breakdown-list" id="breakdownBody">
-                <li class="text-center text-muted">No data available</li>
+                <li class="d-flex justify-content-between">
+                    <span>Interest</span>
+                    <span class="payment-interest">₱ {{ number_format($data['loan_tenure_next_pay']->interest,2) }}</span>
+                </li>
+                <li class="d-flex justify-content-between">
+                    <span>Penalty</span>
+                    <span class="payment-penalty">₱ {{ number_format($data['loan_tenure_next_pay']->penalty,2) }}</span>
+                </li>
+                <li class="d-flex justify-content-between">
+                    <span>Principal</span>
+                    <span class="payment-principal">₱ {{ number_format($data['loan_tenure_next_pay']->principal,2) }}</span>
+                </li>
+                <li class="d-flex justify-content-between fw-bold border-top mt-2 pt-2 text-muted">
+                    <span>Total</span>
+                    <span class="payment-total">₱ {{ number_format($data['loan_tenure_next_pay']->total,2) }}</span>
+                </li>
             </ul>
         </div>
 
@@ -168,7 +163,7 @@
         </div>
 
         <!-- PAY NOW BUTTON -->
-        <button class="btn btn-primary w-100"  id="payNowBtn" data-url="/confirm-payment">Pay Now</button>
+        <button class="btn btn-primary w-100 loan_payment_confirm"  id="payNowBtn" data-urlssss="/confirm-payment">Pay Now</button>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

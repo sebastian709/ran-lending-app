@@ -6,7 +6,7 @@ use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\Auth\OtpVerificationController;
 use App\Http\Controllers\Auth\RegisterController;
-
+use App\Http\Controllers\Borrower\PaymentController;
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
@@ -84,9 +84,10 @@ Route::get('/active-loan', function () {
 
 //Payment
 Route::name('loan.')->group(function () {
-    Route::get('/payment', function () {
-        return view('borrower.pages.payments.payment');
-    })->name('payment');
+    // Route::get('/payment', function () {
+    //     return view('borrower.pages.payments.payment');
+    // })->name('payment');
+    Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
 
     Route::get('/confirm-payment', function () {
         return view('borrower.pages.payments.confirm-payment');
