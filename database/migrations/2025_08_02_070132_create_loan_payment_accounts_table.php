@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\loan\loan_tenure;
+use App\Models\loan\loan_payment_account;
 
 return new class extends Migration
 {
@@ -15,16 +15,19 @@ return new class extends Migration
         Schema::create('loan_payment_accounts', function (Blueprint $table) {
             $table->id();
             $table->text('account_number')->index();
-            $table->integer('account_name');
+            $table->text('account_name');
             $table->text('image');
-            $table->integer('status','1')->index();
+            $table->integer('status')->index();
             $table->timestamps();
         });
 
-        loan_tenure::create([
-            'account_number' => '8279258976',
-            'account_name' => 'Nida C. Lingat',
-            'image' => '/images/bpi.jpg',
+        loan_payment_account::insert([
+            [
+                'account_number' => '8279258976',
+                'account_name' => 'Nida C. Lingat',
+                'image' => '/images/bpi.jpg',
+                'status' => '1',
+            ]
         ]);
     }
 
