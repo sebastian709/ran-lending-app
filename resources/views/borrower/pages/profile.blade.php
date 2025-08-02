@@ -27,21 +27,17 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="dashboard-card bg-pp-notif-warning p-4 text-muted">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h3 class="h5 fw-bold mb-1 welcome-text">Your Account at risk</h3>
-                                    <p class="mb-0 small">You've missed some due dates. Stay on track by managing your loans
-                                        today.</p>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="text-end me-3">
-                                        <div class="small">Today</div>
-                                        <div class="fw-medium small" id="current-date"></div>
+                            <div class="position-relative">
+                                <div class="d-flex flex-column flex-md-row justify-content-between">
+                                    <!-- LEFT TEXT -->
+                                    <div class="pe-md-4">
+                                        <h3 class="h5 fw-bold mb-1 welcome-text">Your Account at risk</h3>
+                                        <p class="mb-0 small">You've missed some due dates. Stay on track by managing your loans today.</p>
                                     </div>
 
-                                    <div class="text-end">
-                                        <p style="cursor:pointer; pw-5" class="close-profile-notif"><i
-                                                class="ri-close-large-line"></i></p>
+                                    <!-- CLOSE BUTTON (positioned top-right) -->
+                                    <div class="position-absolute top-0 end-0 mt-2 me-2">
+                                        <p style="cursor:pointer;" class="close-profile-notif mb-0"><i class="ri-close-large-line"></i></p>
                                     </div>
                                 </div>
                             </div>
@@ -104,8 +100,12 @@
                                 </div>
                                 <!-- <hr> -->
                                 <div class="mt-5">
-                                    <button class="btn btn-sm btn-outline-secondary w-100" id="edit-profile-btn"><i
-                                            class="ri-edit-line me-1"></i> Edit</button>
+                                    <button class="btn btn-sm btn-outline-secondary w-100" id="edit-profile-btn">
+                                        <i class="ri-edit-line me-1"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary w-100 mt-1" data-url="/loan-list">
+                                        <i class="ri-file-list-line"></i> Loan List
+                                    </button>
                                     <button class="btn btn-sm btn-outline-danger w-100 mt-1" data-url="/borrower/change-password">
                                         <i class="ri-key-2-fill"></i> Change Password
                                     </button>

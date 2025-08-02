@@ -27,7 +27,6 @@
                     Go Home
                 </button>
                 <div class="d-flex align-items-center mb-4">
-                   
                     <div class="">
                         <h1 class="h3 fw-bold mb-1 text-primary-custom">Loan Application</h1>
                         <p class="text-muted mb-0">Complete your loan application in simple steps</p>

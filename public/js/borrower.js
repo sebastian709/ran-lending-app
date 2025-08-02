@@ -739,6 +739,112 @@ $(document).ready(function () {
     });
 });
 
+(function () {
+    const totalPages = 50;
+    let currentPage = 1;
+    const maxVisible = 5;
+
+    function updateEntriesInfo(start, end, total) {
+        $('.entries-info').text(`Showing ${start} to ${end} of ${total} entries`);
+    }
+
+    function createPageItem(text, page, disabled = false, active = false) {
+        const li = $('<li>').addClass('page-item');
+        if (disabled) li.addClass('disabled');
+        if (active) li.addClass('active');
+
+        const a = $('<a>')
+            .addClass('page-link')
+            .attr('href', '#')
+            .attr('data-page', page)
+            .html(text);
+
+        li.append(a);
+        return li;
+    }
+
+    function getVisiblePages(current, total, max) {
+        const pages = [];
+
+        if (total <= max + 2) {
+            for (let i = 1; i <= total; i++) pages.push(i);
+            return pages;
+        }
+
+        if (current <= max) {
+            for (let i = 1; i <= max; i++) pages.push(i);
+            pages.push('...');
+            pages.push(total);
+        } else if (current >= total - max + 1) {
+            pages.push(1);
+            pages.push('...');
+            for (let i = total - max + 1; i <= total; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            pages.push('...');
+            const middleStart = current - Math.floor(max / 2);
+            const middleEnd = current + Math.floor(max / 2);
+            for (let i = middleStart; i <= middleEnd; i++) pages.push(i);
+            pages.push('...');
+            pages.push(total);
+        }
+
+        return pages;
+    }
+
+    function renderPagination() {
+        const $pagination = $('.pagination');
+        $pagination.empty();
+
+        // Previous button
+        $pagination.append(createPageItem('&lt; Previous', 'prev', currentPage === 1));
+
+        // Page numbers
+        const pages = getVisiblePages(currentPage, totalPages, maxVisible);
+        pages.forEach(function (item) {
+            if (item === '...') {
+                const li = $('<li>').addClass('page-item disabled')
+                    .html('<span class="page-link">...</span>');
+                $pagination.append(li);
+            } else {
+                const li = createPageItem(item, item, false, item === currentPage);
+                $pagination.append(li);
+            }
+        });
+
+        // Next button
+        $pagination.append(createPageItem('Next &gt;', 'next', currentPage === totalPages));
+
+        // Update entry info
+        const start = (currentPage - 1) * 10 + 1;
+        const end = Math.min(start + 9, 412);
+        updateEntriesInfo(start, end, 412);
+    }
+
+    // Delegated event (your format)
+    $(document).on('click', '.pagination .page-link', function (e) {
+        e.preventDefault();
+        const $this = $(this);
+        const page = $this.data('page');
+
+        if ($this.parent().hasClass('disabled') || $this.parent().hasClass('active')) return;
+
+        if (page === 'prev') {
+            if (currentPage > 1) currentPage--;
+        } else if (page === 'next') {
+            if (currentPage < totalPages) currentPage++;
+        } else {
+            currentPage = parseInt(page);
+        }
+
+        renderPagination();
+    });
+
+    // Initialize pagination immediately
+    renderPagination();
+})();
+
+
 
 
 
