@@ -37,7 +37,7 @@
                 Our team will verify the transaction within <strong>1–2 business days</strong>.
             </p>
 
-            <a href="" class="btn btn-primary">
+            <a href="/payment-history" class="btn btn-primary">
                 <i class="ri-time-line me-1"></i> Go to Payment History
             </a>
             <p class="text-muted mt-4">
@@ -53,7 +53,7 @@
 <script>
     let seconds = 15;
     const countdownEl = document.getElementById('countdown');
-    const redirectUrl = "";
+    const redirectUrl = "/payment-history";
 
     const interval = setInterval(() => {
         seconds--;
