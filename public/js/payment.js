@@ -5,18 +5,17 @@ function updateTotal() {
     let total_interest = 0;
     let total_principal = 0;
     let total_penalty = 0;
-    let breakdownHTML = '';
 
     // Collect checked normal payments (Next Payment + Advance)
-    $('.payment-option-advance input[type="checkbox"]:checked').each(function () {
-        const amount = parseFloat($(this).attr('data-amount'));
-        const principal = parseFloat($(this).attr('data-principal'));
-        const interest = parseFloat($(this).attr('data-interest'));
+        const amount = parseFloat($('#totalAmount').find('span').text());
+        const principal = parseFloat($('.partial-principal').attr('data-amount'));
+        const interest = parseFloat($('.partial-interest').attr('data-amount'));
+        const penalty = parseFloat($('.partial-penalty').attr('data-amount'));
 
         total += amount;
         total_interest += interest;
+        total_penalty += penalty;
         total_principal += principal;
-    });
 
     if($('.payment-option-advance input[type="checkbox"]:checked').length > 0){ 
         total += parseFloat($('.due_payment').attr('data-amount'));
@@ -57,7 +56,6 @@ function updateTotal() {
         $('.payment-penalty').text('₱ ' + (partial_total_penalty).toFixed(2));
         $('.payment-total').text('₱ ' + (partial_total).toFixed(2));
         $('.payment-total').attr('data-partial',1);
-        console.log('end');
     }
 
 
@@ -212,11 +210,18 @@ function removeImage() {
 $(document).on('click', '.loan_payment_confirm', function () {
     console.log('click')
 
+    $('.payment_form_1').addClass('d-none');
+    $('.payment_form_2').removeClass('d-none');
+
+
+
+
+
     var is_partial = $('.payment-total').attr('data-partial');
-    var payment_total = $('.payment-total').text('₱ 0.00')
-    var payment_interest = $('.payment-interest').text('₱ 0.00')
-    var payment_principal = $('.payment-principal').text('₱ 0.00')
-    var payment_penalty = $('.payment-penalty').text('₱ 0.00')
+    var payment_total = $('.payment-total').text()
+    var payment_interest = $('.payment-interest').text()
+    var payment_principal = $('.payment-principal').text()
+    var payment_penalty = $('.payment-penalty').text()
 
     //IF ADVANCE PAYMENT
     var paymentData = [];
@@ -231,27 +236,25 @@ $(document).on('click', '.loan_payment_confirm', function () {
         });
     });
 
-    $.ajax({
-        url: '/borrower/save-precheck',
-        method: 'POST',
-        data: {
+    // $.ajax({
+    //     url: '/borrower/save-precheck',
+    //     method: 'POST',
+    //     data: {
 
-        },
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
-        },
-        beforeSend: function () {
-            proceedToEligibility();
-        },
-        success: function (r) {
-            loan_application_id = r.loan_application_id;
-            gb_refferal_type = r.referral_type;
+    //     },
+    //     headers: {
+    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
+    //     },
+    //     beforeSend: function () {
+    //     },
+    //     success: function (r) {
+    //     },
 
-            console.log(gb_refferal_type, loan_application_id);
-        },
-        error: function () {
-            console.error('Failed to save precheck data.');
-            proceedToEligibility(); // still continue even if saving failed
-        }
-    });
+    // });
 });
+
+$(document).on('click', '#payment_return', function () {
+    $('.payment_form_2').addClass('d-none');
+    $('.payment_form_1').removeClass('d-none');
+});
+

@@ -155,7 +155,7 @@
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
                     <a href="#blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
-                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')"
+                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button" 
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Donate</button>
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
@@ -168,7 +168,7 @@
                     <a href="#" class="text-white hover:text-white/80 font-medium">Home</a>
                     <a href="#about" class="text-white hover:text-white/80 font-medium">About</a>
                     <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
-                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')"
+                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button" 
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Donate</button>
                 </div>
             </div>

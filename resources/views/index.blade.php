@@ -103,7 +103,7 @@
                     <a href="#about"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
                     <!-- <a href="#Blog" class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a> -->
-                    <button data-url="/login"
+                    <button data-url="/login" type="button"
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Login</button>
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
@@ -116,7 +116,7 @@
                     <a href="#" class="text-white hover:text-white/80 font-medium">Home</a>
                     <a href="#about" class="text-white hover:text-white/80 font-medium">About</a>
                     <!-- <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a> -->
-                    <button
+                    <button data-url="/login" type="button" 
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Login</button>
                 </div>
             </div>
