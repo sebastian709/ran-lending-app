@@ -45,8 +45,10 @@ class PaymentController extends Controller
                 'lt.date',
                 'lt.principal',
                 'lti.interest',
+                'lt.count',
                 DB::raw('SUM(ltp.penalty) as penalty'),
-                DB::raw('(lt.principal + lti.interest + IFNULL(SUM(ltp.penalty), 0)) as total')
+                DB::raw('(lt.principal + lti.interest + IFNULL(SUM(ltp.penalty), 0)) as total'),
+                DB::raw('(SELECT count(count) FROM loan_tenure WHERE loan_id = lt.id ) as months')
 
             )
             ->join('loan_application as la', function ($join) {
@@ -67,7 +69,10 @@ class PaymentController extends Controller
                                 'la.interest_rate',
                                 'lt.date', 
                                 'lt.principal',                         
-                                'lti.interest')
+                                'lti.interest',
+                                'lt.count',
+                                'lt.id',
+                                'lt.loan_id')
             ->first();
 
 
@@ -87,7 +92,8 @@ class PaymentController extends Controller
                 'lti.id as interest_id',
                 'loan_tenure.date',
                 'loan_tenure.principal',
-                'lti.interest'
+                'lti.interest',
+                'loan_tenure.count'
             )
             ->get();
         

@@ -12,22 +12,36 @@ function updateTotal() {
         const interest = parseFloat($('.partial-interest').attr('data-amount'));
         const penalty = parseFloat($('.partial-penalty').attr('data-amount'));
 
-        total += amount;
-        total_interest += interest;
-        total_penalty += penalty;
-        total_principal += principal;
+        total = amount;
+        total_interest = interest;
+        total_penalty = penalty;
+        total_principal = principal;
+        
+        console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
 
     if($('.payment-option-advance input[type="checkbox"]:checked').length > 0){ 
-        total += parseFloat($('.due_payment').attr('data-amount'));
-        total_interest += parseFloat($('.partial-interest').attr('data-amount'));
-        total_principal += parseFloat($('.partial-principal').attr('data-amount'));
-        total_penalty += parseFloat($('.partial-penalty').attr('data-amount'));
+        $('.payment-option input[type="checkbox"]:checked').each(function () {
+            total += parseFloat($('.due_payment').attr('data-amount'));
+            total_interest += parseFloat($('.partial-interest').attr('data-amount'));
+            total_principal += parseFloat($('.partial-principal').attr('data-amount'));
+            total_penalty += parseFloat($('.partial-penalty').attr('data-amount'));
+            console.log(2,total,total_interest,total_interest,total_penalty,total_principal)
+        });
 
-        $('.payment-total').text('₱ ' + (total).toFixed(2))
-        $('.payment-interest').text('₱ ' + (total_interest).toFixed(2))
-        $('.payment-principal').text('₱ ' + (total_principal).toFixed(2))
-        $('.payment-penalty').text('₱ ' + (total_penalty).toFixed(2))
     }
+    console.log(3,total,total_interest,total_interest,total_penalty,total_principal)
+    
+    $('.payment-total').text('₱ ' + (total).toFixed(2))
+    $('.payment-interest').text('₱ ' + (total_interest).toFixed(2))
+    $('.payment-principal').text('₱ ' + (total_principal).toFixed(2))
+    $('.payment-penalty').text('₱ ' + (total_penalty).toFixed(2))
+
+    $('.payment-total').attr('data-amount',(total).toFixed(2))
+    $('.payment-interest').attr('data-amount',(total_interest).toFixed(2))
+    $('.payment-principal').attr('data-amount',(total_principal).toFixed(2))
+    $('.payment-penalty').attr('data-amount',(total_penalty).toFixed(2))
+    
+
     $('.payment-total').attr('data-partial',0);
     
     // Collect checked partial payments
@@ -55,9 +69,15 @@ function updateTotal() {
         $('.payment-principal').text('₱ ' + (partial_total_principal).toFixed(2));
         $('.payment-penalty').text('₱ ' + (partial_total_penalty).toFixed(2));
         $('.payment-total').text('₱ ' + (partial_total).toFixed(2));
+
+        $('.payment-interest').attr('data-amount',(partial_total_interest).toFixed(2));
+        $('.payment-principal').attr('data-amount',(partial_total_principal).toFixed(2));
+        $('.payment-penalty').attr('data-amount',(partial_total_penalty).toFixed(2));
+        $('.payment-total').attr('data-amount',(partial_total).toFixed(2));
+
         $('.payment-total').attr('data-partial',1);
     }
-
+    console.log(4,total,total_interest,total_interest,total_penalty,total_principal)
 
 }
 
@@ -66,6 +86,11 @@ function resetTotal(){
     $('.payment-interest').text('₱ 0.00')
     $('.payment-principal').text('₱ 0.00')
     $('.payment-penalty').text('₱ 0.00')
+
+    $('.payment-total').attr('data-amount','0.00')
+    $('.payment-interest').attr('data-amount','0.00')
+    $('.payment-principal').attr('data-amount','0.00')
+    $('.payment-penalty').attr('data-amount','0.00')
 }
 
 // Handle advance/next payment checkbox changes
@@ -117,7 +142,10 @@ $('#showMoreAdvance').on('click', function() {
 $(document).on('click', '.pay-partial-btn', function () {
     $('.partial_section').removeClass('d-none'); // Show Partial
     $('.advance_section').addClass('d-none'); // Hide Advance
-
+    
+    $('.pay-partial-btn').addClass('d-none');
+    $('.pay-partial-btn_close').removeClass('d-none');
+    
     // Uncheck all regular payment options
     $('.due_payment').prop('checked', false);
     $('.payment-option input[type="checkbox"]').prop('checked', false);
@@ -217,44 +245,31 @@ $(document).on('click', '.loan_payment_confirm', function () {
 
 
 
-    var is_partial = $('.payment-total').attr('data-partial');
-    var payment_total = $('.payment-total').text()
-    var payment_interest = $('.payment-interest').text()
-    var payment_principal = $('.payment-principal').text()
-    var payment_penalty = $('.payment-penalty').text()
+    // var is_partial = $('.payment-total').attr('data-partial');
+    // var payment_total = $('.payment-total').text()
+    // var payment_interest = $('.payment-interest').text()
+    // var payment_principal = $('.payment-principal').text()
+    // var payment_penalty = $('.payment-penalty').text()
 
-    //IF ADVANCE PAYMENT
-    var paymentData = [];
+    // //IF ADVANCE PAYMENT
+    // var paymentData = [];
     
-    $('.advance-payment-month:checked').each(function () {
-        var month = $(this).data('month');
-        var amount = $(this).data('amount');
+    // $('.advance-payment-month:checked').each(function () {
+    //     var month = $(this).data('month');
+    //     var amount = $(this).data('amount');
 
-        paymentData.push({
-            month: month,
-            amount: amount
-        });
-    });
-
-    // $.ajax({
-    //     url: '/borrower/save-precheck',
-    //     method: 'POST',
-    //     data: {
-
-    //     },
-    //     headers: {
-    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
-    //     },
-    //     beforeSend: function () {
-    //     },
-    //     success: function (r) {
-    //     },
-
+    //     paymentData.push({
+    //         month: month,
+    //         amount: amount
+    //     });
     // });
+
 });
 
 $(document).on('click', '#payment_return', function () {
     $('.payment_form_2').addClass('d-none');
     $('.payment_form_1').removeClass('d-none');
+
+    confirmTotal
 });
 

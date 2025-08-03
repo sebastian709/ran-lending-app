@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('loan_tenure', function (Blueprint $table) {
             $table->id();
             $table->integer('loan_id')->index();
+            $table->integer('count')->index();
             $table->dateTime('date');
             $table->float('principal');
             $table->integer('payment_status_id')->default('1')->index();

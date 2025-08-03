@@ -345,6 +345,7 @@ class HomeController extends Controller
                     'loan_id' => $data,
                     'date' => $date,
                     'principal' => $monthly,
+                    'order' => $i,
                     'payment_status_id' => 1,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

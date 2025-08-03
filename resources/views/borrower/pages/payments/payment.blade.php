@@ -31,12 +31,12 @@
         <div class="card-section">
             <span class="section-title">Next Payment Due</span>
             <div class="list-group next_payment">
-                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option position-relative">
+                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option-next position-relative">
                     <div class="d-flex align-items-center gap-3">
                         <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-amount="{{ $data['loan_tenure_next_pay']->total }}" checked disabled>
                         <div class="d-flex flex-column">
                             <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse($data['loan_tenure_next_pay']->date)->format('F j, Y') }}</span>
-                            <small class="text-muted">1/12 Repayment</small>
+                            <small class="text-muted">{{ $data['loan_tenure_next_pay']->count }}/{{ $data['loan_tenure_next_pay']->months }} Repayment</small>
                         </div>
                     </div>
                      <div class="d-flex align-items-center gap-2">
@@ -46,6 +46,7 @@
                 </label>
             </div>
             <button class="btn btn-sm btn-outline-primary pay-partial-btn">Pay Partial</button>
+            <button class="btn btn-sm btn-outline-secondary pay-partial-btn_close d-none">Close Partial</button>
         </div>
 
 
@@ -111,7 +112,7 @@
                         <input class="form-check-input flex-shrink-0 advance_payment_month" type="checkbox" data-tenure_id="{{ $record['tenure_id'] }}" data-amount="{{ $record['interest'] + $record['principal'] }}" data-principal="{{ $record['principal'] }}" data-interest="{{ $record['interest'] }}">
                         <div class="d-flex flex-column">
                             <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse(is_array($record) ? $record['date'] : $record->date)->format('F j, Y') }}</span>
-                            <small class="text-muted">2/12 Repayment</small>
+                            <small class="text-muted">{{ $record['count'] }}/{{ $data['loan_tenure_next_pay']->months }} Repayment</small>
                         </div>
                     </div>
                     <div class="fw-bold text-success">₱ {{ number_format($record['interest'] + $record['principal'],2) }}</div>
@@ -143,21 +144,21 @@
                 <li class="breakdown-item d-flex align-items-center">
                     <span class="label">Interest</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="amount">₱ {{ number_format($data['loan_tenure_next_pay']->interest, 2) }}</span>
+                    <span class="payment-interest">₱ {{ number_format($data['loan_tenure_next_pay']->interest, 2) }}</span>
                 </li>
                 <li class="breakdown-item d-flex align-items-center">
                     <span class="label">Penalty</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="amount">₱ {{ number_format($data['loan_tenure_next_pay']->penalty, 2) }}</span>
+                    <span class="payment-penalty">₱ {{ number_format($data['loan_tenure_next_pay']->penalty, 2) }}</span>
                 </li>
                 <li class="breakdown-item d-flex align-items-center">
                     <span class="label">Principal</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="amount">₱ {{ number_format($data['loan_tenure_next_pay']->principal, 2) }}</span>
+                    <span class="payment-principal">₱ {{ number_format($data['loan_tenure_next_pay']->principal, 2) }}</span>
                 </li>
                 <li class="d-flex justify-content-between fw-bold border-top mt-2 pt-2 text-muted">
                     <span>Total</span>
-                    <span>₱ {{ number_format($data['loan_tenure_next_pay']->total, 2) }}</span>
+                    <span class="payment-total">₱ {{ number_format($data['loan_tenure_next_pay']->total, 2) }}</span>
                 </li>
             </ul>
         </div>
@@ -191,7 +192,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <h6 class="text-muted">Total Amount</h6>
-                                <p class="fs-3 fw-bold text-success mb-0" id="confirmTotal">₱5,000</p>
+                                <p class="fs-3 fw-bold text-success mb-0" id="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option position-relative">₱5,000</p>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Payment Category</h6>
