@@ -14,7 +14,6 @@
 @section('content')
 <div class="d-flex">
     @include('borrower.layouts.sidebar')
-
     <div class="container container-payment payment_form_1">
         <!-- <button type="button" data-url="/profile" class="btn small  start-0 top-50 translate-middle-y p-0">
             <i class="ri-home-line me-2"></i> Back to home

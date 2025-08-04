@@ -12,6 +12,7 @@ use App\Models\loan\loan_tenure;
 use App\Models\loan\loan_tenure_interest;
 use App\Models\loan\loan_tenure_penalty;
 use App\Models\loan\loan_payment;
+use App\Http\Controllers\HomeController; 
 
 class PaymentController extends Controller
 {
@@ -21,15 +22,16 @@ class PaymentController extends Controller
     public function index()
     {
         $data = [];
-
+        $homeController = new HomeController();
+        $loanStatus = $homeController->getLoanStatus();
 
         $data['loan_application'] = loan_application::
             where('loan_applicant', auth()->id())
             ->where('status', 1)
             ->first();
 
-        if ($data['loan_application'] === null) {
-            return redirect('/apply-loan');
+        if ($loanStatus < 4) {
+            return view('borrower.layouts.payment-state', compact('loanStatus'));
         }
 
 
