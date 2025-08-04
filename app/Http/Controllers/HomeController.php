@@ -345,8 +345,9 @@ class HomeController extends Controller
                     'loan_id' => $data,
                     'date' => $date,
                     'principal' => $monthly,
-                    'order' => $i,
+                    'count' => $i,
                     'payment_status_id' => 1,
+                    'payment_id' => 0,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]
@@ -359,6 +360,7 @@ class HomeController extends Controller
                     'tenure_id' => $ids,
                     'interest' => $interest,
                     'payment_status_id' => 1,
+                    'payment_id' => 0,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]

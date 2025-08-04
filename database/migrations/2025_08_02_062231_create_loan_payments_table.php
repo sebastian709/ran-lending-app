@@ -13,9 +13,15 @@ return new class extends Migration
     {
         Schema::create('loan_payments', function (Blueprint $table) {
             $table->id();
-            $table->integer('tenure_id')->index();
-            $table->integer('loan_payment_type_id')->index();
+            $table->integer('loan_application_id')->index(); 
             $table->float('amount_sent');
+            $table->integer('payment_status_id')->index(); 
+            $table->integer('payment_type_id')->index(); 
+            $table->text('reference_code')->index();
+            $table->text('sent_to'); //account na sinendan 
+            $table->text('remarks')->nullable();
+            $table->text('attachment');
+            $table->integer('added_by')->index(); 
             $table->timestamps();
         });
     }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('tenure_id')->index();
             $table->float('interest');
             $table->integer('payment_status_id')->default('1')->index();
+            $table->integer('payment_id')->index()->nullable();
             $table->timestamps();
         });
     }

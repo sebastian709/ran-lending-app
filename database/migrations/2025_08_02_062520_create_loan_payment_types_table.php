@@ -18,12 +18,10 @@ return new class extends Migration
         });
         
         DB::table('loan_payment_types')->insert([
-            ['type' => 'principal'],
-            ['type' => 'interest'],
-            ['type' => 'penalty'],
-            ['type' => 'normal'],
-            ['type' => 'advanced'],
             ['type' => 'full'],
+            ['type' => 'partial'],
+            ['type' => 'advanced'],
+            ['type' => 'normal'],
         ]);
 
     }

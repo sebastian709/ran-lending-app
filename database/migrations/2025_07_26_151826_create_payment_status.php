@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB; // ✅ This is required for DB::table
 
 return new class extends Migration
 {
@@ -19,9 +20,11 @@ return new class extends Migration
 
         DB::table('payment_status')->insert([
             ['status' => 'active'],
-            ['status' => 'inactive'],
-            ['status' => 'partial'],
+            ['status' => 'processing'],
             ['status' => 'paid'],
+            ['status' => 'rebate'],
+            ['status' => 'inactive'],
+            ['status' => 'disabled'],
         ]);
     }
 

@@ -88,6 +88,7 @@ Route::name('loan.')->group(function () {
     //     return view('borrower.pages.payments.payment');
     // })->name('payment');
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+    Route::post('/payment/submit', [PaymentController::class, 'submit']);
 
     Route::get('/confirm-payment', function () {
         return view('borrower.pages.payments.confirm-payment');
@@ -100,6 +101,10 @@ Route::name('loan.')->group(function () {
     Route::get('/payment-history', function () {
         return view('borrower.pages.payments.payment-history');
     })->name('payment-history');
+
+    Route::get('/no_loan', function () {
+        return view('borrower.layouts.payment-state');
+    })->name('no_loan');
 });
 
 # loan application backend functions

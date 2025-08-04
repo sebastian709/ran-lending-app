@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamps();
         });
         
-        DB::table('loan_payment_types')->insert([
+        DB::table('loan_payment_statuses')->insert([
             ['type' => 'For Verification'],
             ['type' => 'For Correction'],
             ['type' => 'Verified'],
