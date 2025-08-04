@@ -107,6 +107,11 @@ Route::name('loan.')->group(function () {
     })->name('no_loan');
 });
 
+//My loans
+Route::get('/repayment-schedule', function () {
+    return view('borrower.pages.repayment-schedule');
+})->name('my-loan.repayment-schedule');
+
 # loan application backend functions
 Route::get('/borrower/fetch-income/{id}', [App\Http\Controllers\HomeController::class, 'fetchIncome']);
 Route::post('/borrower/save-precheck', [App\Http\Controllers\HomeController::class, 'savePrecheck']);

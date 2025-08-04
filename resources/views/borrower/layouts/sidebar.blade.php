@@ -8,7 +8,7 @@
                 </a>
             </li>
             <li>
-                <a href="" class="">
+                <a href="{{ route('my-loan.repayment-schedule') }}" class="{{ request()->routeIs('my-loan.*') ? 'active' : '' }}">
                     <i class="ri-money-dollar-circle-line"></i> My Loans
                 </a>
             </li>
