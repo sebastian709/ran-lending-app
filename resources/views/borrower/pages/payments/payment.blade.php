@@ -45,7 +45,7 @@
                 </label>
             </div>
             <button class="btn btn-sm btn-outline-primary pay-partial-btn">Pay Partial</button>
-            <button class="btn btn-sm btn-outline-secondary pay-partial-btn_close d-none">Close Partial</button>
+            <button class="btn btn-sm btn-outline-secondary pay-partial-btn_close close-partial d-none">Close Partial</button>
         </div>
 
 

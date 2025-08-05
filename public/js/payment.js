@@ -24,13 +24,13 @@ function updateTotal() {
         $('.payment-option input[type="checkbox"]:checked').each(function () {
             
             if (!$('#payAllCheck').is(':checked')) {
-                total += parseFloat($(this).attr('data-principal')) +  parseFloat($(this).attr('data-interest'));
-                total_interest += parseFloat($(this).attr('data-interest'));
+                total += parseFloat($(this).attr('data-principal')) + parseFloat($(this).attr('data-interest'));
             }else{
-                total += parseFloat($(this).attr('data-principal') + 0);
+                total += parseFloat($(this).attr('data-principal'));
             }
             total_rebate += parseFloat($(this).attr('data-interest'));
             
+            total_interest += parseFloat($(this).attr('data-interest'));
             total_principal += parseFloat($(this).attr('data-principal'));
             total_penalty += parseFloat($(this).attr('data-penalty'));
             console.log(2,total,total_interest,total_interest,total_penalty,total_principal)
@@ -43,7 +43,7 @@ function updateTotal() {
     $('.payment-interest').text('₱ ' + (total_interest).toFixed(2))
     $('.payment-principal').text('₱ ' + (total_principal).toFixed(2))
     $('.payment-penalty').text('₱ ' + (total_penalty).toFixed(2))
-    $('.payment-rebate').text('₱ ' + (total_rebate).toFixed(2))
+    $('.payment-rebate').text('-₱ ' + (total_rebate).toFixed(2))
 
     $('.payment-total').attr('data-amount',(total).toFixed(2))
     $('.payment-interest').attr('data-amount',(total_interest).toFixed(2))
@@ -106,7 +106,9 @@ function resetTotal(){
 // Handle advance/next payment checkbox changes
 $(document).on('change', '.payment-option input[type="checkbox"]', function () {
     const index = $('.payment-option input[type="checkbox"]').index(this);
-
+    $('#payAllCheck').prop('checked', false);
+    $('.rebate').addClass('d-none')
+    
     if ($(this).is(':checked')) {
         // Auto-check previous months if one is checked
         $('.payment-option input[type="checkbox"]').slice(0, index + 1).prop('checked', true);
@@ -169,12 +171,14 @@ $(document).on('click', '.pay-partial-btn', function () {
 $(document).on('click', '.close-partial', function () {
     $('.partial_section').addClass('d-none');
     $('.advance_section').removeClass('d-none');
+    $('.rebate').addClass('d-none')
 
     // Reset partial selections
     $('.partial-option input[type="checkbox"]').prop('checked', false);
 
     // Restore original next payment
     $('.due_payment').prop('checked', true);
+    $('#payAllCheck').prop('checked', false);
 
     updateTotal();
 });
@@ -380,20 +384,8 @@ $(document).on('click', '#submit_payment', function () {
             window.location.href = response.redirect;
         },
     });
-   
-   
-   
-   
-   
-   
-   
-
-    
 
 });
-
-
-
 
 $(document).on('click', '#payment_return', function () {
     $('.payment_form_2').addClass('d-none');
@@ -402,3 +394,8 @@ $(document).on('click', '#payment_return', function () {
     // confirmTotal
 });
 
+$(document).on('click', '.pay-partial-btn_close', function () {
+    $('.pay-partial-btn_close').addClass('d-none');
+    $('.pay-partial-btn').removeClass('d-none');
+
+});

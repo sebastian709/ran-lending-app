@@ -77,6 +77,7 @@
                     please check your loan history in <a href="{{ url('my-loan') }}">My Loan</a> page.
                 </p>
             </div>
+            
             @endif
 
         </div>

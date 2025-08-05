@@ -53,12 +53,12 @@ class PaymentController extends Controller
                 'lt.id',
                 'la.interest_rate',
                 'lt.date',
-                'lt.principal',
-                'lti.interest',
+                DB::raw('if(lt.payment_status_id != 1,0,lt.principal) as principal'),
+                DB::raw('if(lti.payment_status_id != 1,0,lti.interest) as interest'),
                 'lt.count',
                 DB::raw('SUM(ltp.penalty) as penalty'),
-                DB::raw('(lt.principal + lti.interest + IFNULL(SUM(ltp.penalty), 0)) as total'),
-                DB::raw('(SELECT count(count) FROM loan_tenure WHERE loan_id = lt.id ) as months')
+                DB::raw('(if(lt.payment_status_id != 1,0,lt.principal) + if(lti.payment_status_id != 1,0,lti.interest) + IFNULL(SUM(ltp.penalty), 0)) as total'),
+                DB::raw('(SELECT count(ls.count) FROM loan_tenure ls WHERE ls.loan_id = la.id ) as months')
 
             )
             ->join('loan_application as la', function ($join) {
@@ -67,14 +67,15 @@ class PaymentController extends Controller
             })
             ->join('loan_tenure_interest as lti', function ($join) {
                 $join->on('lti.tenure_id', '=', 'lt.id')
-                    ->where('lti.payment_status_id', 1);
+                ->where('lti.payment_status_id', 1);
             })
             ->leftJoin('loan_tenure_penalty as ltp', function ($join) {
                 $join->on('ltp.tenure_id', '=', 'lt.id')
-                    ->where('ltp.payment_status_id', 1);
+                ->where('ltp.payment_status_id', 1);
             })
             // ->whereBetween('lt.date', [now(), now()->addDays(7)])
             ->where('lt.payment_status_id','>',0 )
+
             ->where('la.loan_applicant',$data['loan_application']->id  )
             ->groupBy(  'la.id',
                                 'la.interest_rate',
@@ -83,12 +84,17 @@ class PaymentController extends Controller
                                 'lti.interest',
                                 'lt.count',
                                 'lt.id',
+                                'lt.payment_status_id',
+                                'lti.payment_status_id',
                                 'lt.loan_id')
             ->first();
+            // dd($data['loan_tenure_next_pay'] );
 
-
-        // dd($data['loan_tenure_next_pay']);
-
+            // IF HAS ACTIVE LOAN BUT NOTHING TO PAY (FOR NOW)
+            if ($data['loan_tenure_next_pay'] === null) {
+                $loanStatus = 3; 
+                return view('borrower.layouts.payment-state', compact('loanStatus'));
+            }
 
 
             $data['records']['loan'] = loan_tenure::join('loan_tenure_interest as lti', function ($join) {
@@ -128,8 +134,7 @@ class PaymentController extends Controller
      public function submit(Request $request){
          $data = $request->all();
         //  dd($data);
-
-
+        
         $Loan_payment = Loan_payment::insertGetId([
             'amount_sent'       => $request->total,
             'loan_application_id' => $request->id,
@@ -152,11 +157,49 @@ class PaymentController extends Controller
         // categoryType = 3;
         // categoryText = 'Normal Payment';
         // categoryType = 4;
-    
-    
+
 
         if($request->type == 1){
-            dd('1');
+
+            foreach ($request->paymentData as $key => $record) {
+                $loan_tenure = loan_tenure::selectRaw("
+                    CASE 
+                        WHEN date < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 2 MONTH), '%Y-%m-01 00:00:00')
+                        THEN '1' 
+                        ELSE '0' 
+                    END AS dates
+                ")
+                ->where('id', $record['id'])
+                ->first();
+
+                loan_tenure::where('id',  $record['id'])
+                ->update([
+                    'payment_id' => $Loan_payment,
+                    'payment_status_id' => 2,
+                ]);
+                loan_tenure_penalty::where('tenure_id',  $record['id'])
+                ->update([
+                    'payment_id' => $Loan_payment,
+                    'payment_status_id' => 2,
+                ]);
+                
+                //Current Month is not bound for Rebate
+                if($loan_tenure['dates'] == '1'){
+
+                    loan_tenure_interest::where('tenure_id',  $record['id'])
+                    ->update([
+                        'payment_id' => $Loan_payment,
+                        'payment_status_id' => 2,
+                    ]);
+                }else{
+                    //Month > current month is  bound for Rebate
+                    loan_tenure_interest::where('tenure_id',  $record['id'])
+                    ->update([
+                        'payment_id' => $Loan_payment,
+                        'payment_status_id' => 4,
+                    ]);
+                }
+            }
         }elseif ($request->type == 2) {
             $nextId = $request->next_id;
             $paymentId = $Loan_payment;
@@ -182,7 +225,6 @@ class PaymentController extends Controller
                 ]);
             }
 
-            dd('2');
         }elseif ($request->type == 3) {
             $nextId = $request->next_id;
             $paymentId = $Loan_payment;
@@ -234,6 +276,30 @@ class PaymentController extends Controller
         }else{
             dd('error');
         }
+
+        // //check if payment is loan is finished
+        // $loan_tenure = loan_tenure::selectRaw("
+        //             CASE 
+        //                 WHEN count(id) > 0 
+        //                 THEN '0' 
+        //                 ELSE '1' 
+        //             END AS is_finished
+        //         ")
+        //         ->where('loan_id', $request->id)
+        //         ->where('payment_status_id', 1)
+        //         ->first();
+            
+        // if ($loan_tenure['is_finished'] == 1) {
+        //     loan_application::where('id',  $request->id)
+        //         ->update([
+        //             'loan_status' => 6,//Loan Finished
+        //             'updated_at'  => now(),
+
+        //         ]);
+        // }    
+        
+
+
         
         return response()->json([
             'success' => true,
