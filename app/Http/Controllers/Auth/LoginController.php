@@ -29,7 +29,7 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         
-        return redirect($user->is_admin ? '/admin' : '/home');
+        return redirect($user->is_admin ? '/admin/dashboard' : '/home');
     }
 
     /**

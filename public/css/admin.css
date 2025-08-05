@@ -364,4 +364,28 @@ img.user-avatar {
     color: green;
 }
 
+.my-scroll-hidden {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
+.my-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+#suggestions {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-box {
+  position: absolute;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #ccc;
+  width: 100%; /* match input width */
+  max-height: 200px;
+  overflow-y: auto;
+  top:30px;
+}

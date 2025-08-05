@@ -41,7 +41,7 @@ Auth::routes();
 // admin routes
 Route::prefix('admin')->group(function () {
     // dashboard
-    Route::get('/', [AdminController::class, 'index'])->name('admin.pages.main.index');
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.pages.main.index');
 
     // testing only
     Route::get('/blankpage', [AdminController::class, 'blankTesting'])->name('admin.testing-only.blankpage');
@@ -66,9 +66,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/fetch/{id}', [BlogPostController::class, 'fetch']);
         Route::post('/update', [BlogPostController::class, 'update']);
         Route::post('/update-status', [BlogPostController::class, 'updateStatus']);
-
-
     });
+
+    Route::get('/settings', [AdminController::class, 'settings'])->name('admin.pages.settings.index');
+    Route::post('/update-loan-settings', [AdminController::class, 'updateLoanSettings']);
 });
 Route::post('/upload', [BlogPostController::class, 'upload']);
 

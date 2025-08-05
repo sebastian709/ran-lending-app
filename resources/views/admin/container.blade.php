@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/blogpost.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     @stack('sb-styles')
 </head>
 
@@ -21,7 +22,7 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <h4>RAN Serenity</h4>
-        <a href="#" class="nav-link active" data-is-sidebar="1" data-url="/admin/">
+        <a href="#" class="nav-link active" data-is-sidebar="1" data-url="/admin/dashboard">
             <i class="bi bi-columns-gap"></i> Dashboard
         </a>
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
@@ -108,7 +109,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/settings">
                                     <i class="ri-settings-line me-2"></i>Settings
                                 </a>
                             </li>
@@ -156,6 +157,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>

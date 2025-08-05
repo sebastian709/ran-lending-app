@@ -432,5 +432,153 @@ $(function () {
   });
 });
 
+$(document).on('keyup', '#admin-search-input', function () {
+  const query = $(this).val().toLowerCase();
+  const $dropdown = $('#admin-search-suggestions');
+  $dropdown.empty().addClass('d-none');
+
+  if (!query) return;
+
+  const matches = [];
+
+  // Hanap sa labels at smalls
+  $('#admin_settings_form label, #admin_settings_form small').each(function () {
+    const text = $(this).text().trim();
+    if (text.toLowerCase().includes(query)) {
+      matches.push({
+        text,
+        element: $(this)
+      });
+    }
+  });
+
+  // Display suggestions
+  if (matches.length > 0) {
+    matches.forEach(item => {
+      const $option = $('<button type="button">') // ← ADD THIS TYPE
+        .addClass('dropdown-item text-truncate')
+        .text(item.text)
+        .on('click', function (e) {
+          e.preventDefault(); // ← OPTIONAL SAFE GUARD
+          $('html, body, .my-scroll-hidden').animate({
+            scrollTop: item.element.offset().top - 100
+          }, 500);
+          $dropdown.addClass('d-none');
+        });
+
+      $dropdown.append($option);
+    });
+    $dropdown.removeClass('d-none');
+  }
+});
+
+// On search button click – direct search
+$(document).on('click', '#admin-search-btn', function () {
+  const query = $('#admin-search-input').val().toLowerCase();
+  if (!query) return;
+
+  let found = false;
+
+  $('#admin_settings_form label, #admin_settings_form small').each(function () {
+    const $el = $(this);
+    if ($el.text().trim().toLowerCase().includes(query)) {
+      $('.my-scroll-hidden').animate({
+        scrollTop: $el.offset().top - 100
+      }, 500);
+      found = true;
+      return false; // break loop
+    }
+  });
+
+  if (!found) {
+    alert('No matching section found.');
+  }
+});
+
+// Close suggestions if clicked outside
+$(document).on('click', function (e) {
+  if (!$(e.target).closest('#admin-search-input, #admin-search-suggestions').length) {
+    $('#admin-search-suggestions').addClass('d-none');
+  }
+});
+
+$(document).on('click', '.a-btn-cancel', function () {
+  $(this).attr('hidden', true);
+  $(this).closest('.g-btn-container').find('.a-btn-update').removeAttr('hidden');
+  $(this).closest('.g-btn-container').find('.a-btn-save').attr('hidden', true);
+
+  let form_id = $(this).closest('form').attr('id');
+  let form_obj = $(this).closest('form');
+
+  switch (form_id) {
+    case "as-loan-settings":
+      form_obj.find('.a-loan-interest').attr('disabled', true);
+      break;
+    default:
+  }
+});
+
+$(document).on('click', '.a-btn-update', function () {
+  $(this).attr('hidden', true);
+  $(this).closest('.g-btn-container').find('.a-btn-save').removeAttr('hidden');
+  $(this).closest('.g-btn-container').find('.a-btn-cancel').removeAttr('hidden');
+
+  let form_id = $(this).closest('form').attr('id');
+  let form_obj = $(this).closest('form');
+
+  switch (form_id) {
+    case "as-loan-settings":
+      form_obj.find('.a-loan-interest').removeAttr('disabled');
+      break;
+    default:
+  }
+});
+
+
+$(document).on('click', '.a-btn-save', function () {
+  const $btnSave = $(this);
+  $btnSave.attr('hidden', true);
+
+  const $container = $btnSave.closest('.g-btn-container');
+  $container.find('.a-btn-update').removeAttr('hidden');
+  $container.find('.a-btn-cancel').attr('hidden', true);
+
+  const $form = $btnSave.closest('form');
+  const form_id = $form.attr('id');
+
+  switch (form_id) {
+    case "as-loan-settings":
+      const formData = new FormData($form[0]);
+
+      console.log(formData)
+
+      $.ajax({
+        url: '/admin/update-loan-settings',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+          if (res.success) {
+            toastr.success(res.message || 'Updated successfully!');
+
+            $form.find('.a-loan-interest').attr('disabled', true);
+          } else {
+            toastr.error(res.message || 'Update failed.');
+          }
+        },
+        error: function (xhr) {
+          const response = xhr.responseJSON;
+          if (response && response.errors) {
+            Object.values(response.errors).forEach(msg => toastr.error(msg));
+          } else {
+            toastr.error('Something went wrong.');
+          }
+        }
+      });
+      break;
+  }
+});
+
 
 
