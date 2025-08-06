@@ -22,6 +22,7 @@ class AdminAccountSeeder extends Seeder
             'referral_source_id' => 0,
             'referral_id' => 0,
             'is_admin' => 1,
+            'is_super_admin' => 1,
             'email' => 'ranserenityhub@gmail.com',
             'password' => bcrypt('Ranserenity@25'),
             'created_at' => now(),
