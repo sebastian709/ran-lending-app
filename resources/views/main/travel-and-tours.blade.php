@@ -175,11 +175,11 @@
                     <p class="text-xl mb-8">Experience the world's most beautiful places with our expertly crafted
                         travel packages and personalized service.</p>
                     <div class="flex flex-wrap gap-4">
-                        <button
+                        <button data-url="https://www.facebook.com/nclicious"
                             class="bg-white text-primary px-8 py-3 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Explore
                             Packages</button>
                         <button
-                            class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-button font-medium hover:bg-white/10 transition-all whitespace-nowrap">Plan
+                            class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-button font-medium hover:bg-white/10 transition-all whitespace-nowrap hidden">Plan
                             Your Trip</button>
                     </div>
                 </div>
@@ -194,12 +194,14 @@
     </section>
 
     <!-- Booking Process -->
-    <section class="py-20 bg-white" id="about">
+    <!-- Booking Process -->
+    <section class="py-20 bg-white relative overflow-hidden" id="about">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Simple Booking Process</h2>
-                <p class="text-gray-600 max-w-3xl mx-auto">Book your dream vacation in just a few easy steps and start
-                    your adventure with confidence.</p>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Book your dream vacation in just a few easy steps and start your adventure with confidence.
+                </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="text-center">
@@ -240,11 +242,29 @@
             </div>
             <div class="text-center mt-12">
                 <button
-                    class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Start
-                    Booking</button>
+                    class="bg-gray-400 text-white px-8 py-3 rounded-button font-medium opacity-70 cursor-not-allowed"
+                    title="Coming Soon" disabled>
+                    Coming Soon
+                </button>
+            </div>
+        </div>
+
+        <!-- Overlay Stamp -->
+        <div
+            class="absolute inset-0 bg-white/0 z-10 flex flex-col items-center justify-center text-center px-4" style="backdrop-filter: blur(1.5px);">
+            <!-- STAMP -->
+            <div class="relative inline-block mb-10">
+                <!-- text-[#76689A] -->
+                <span
+                    class="text-5xl md:text-6xl lg:text-7xl font-black text-gray-700 uppercase tracking-widest opacity-90 rotate-[-10deg] block">
+                    Coming Soon
+                </span>
+                <span
+                    class="absolute inset-0 border-4 border-dashed border-[#76689A] rounded-full transform scale-110 opacity-20"></span>
             </div>
         </div>
     </section>
+
 
     <!-- Why Choose Us -->
     <section class="py-20 bg-[#e7e2e2]">
@@ -354,13 +374,17 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a data-url="/lending" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/lending"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Lending</a></li>
-                        <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/jewelry"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Jewelry</a></li>
-                        <li><a data-url="/travel-and-tours" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
+                        <li><a data-url="/travel-and-tours"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
                                 Serenity Travel & Tours</a></li>
-                        <li><a data-url="/hub" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/hub"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Hub</a></li>
                     </ul>
                 </div>

@@ -132,7 +132,11 @@
 .empty-state-icon {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, rgba(0, 86, 179, 0.1), rgba(255, 140, 0, 0.1));
+    background: linear-gradient(
+        135deg,
+        rgba(0, 86, 179, 0.1),
+        rgba(255, 140, 0, 0.1)
+    );
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -146,15 +150,25 @@
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    border-radius: 10%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
+}
+
+img.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 10%;
 }
 
 .dropdown-menu {
@@ -194,7 +208,11 @@
 .loading-spinner {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -313,4 +331,142 @@
 
 .btn-back-home {
     margin-top: 2rem;
+}
+
+.bg-pp-notif-warning {
+    background-color: rgba(255, 193, 7, 0.4);
+}
+
+.bg-pp-notif-danger {
+    background-color: rgba(255, 7, 7, 0.4);
+}
+
+.user-avatar-profile-view {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    border-radius: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 100px;
+}
+
+#password-criteria li {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+#password-criteria li.valid {
+    color: green;
+}
+
+#password-criteria li.valid i {
+    color: green;
+}
+
+/* Loan List spacing */
+.loan-list {
+    margin-top: 1rem;
+}
+
+/* Card appearance */
+.loan-card {
+    background-color: #fff;
+    border-left: 4px solid #0d6efd;
+    border-radius: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.loan-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.08);
+}
+
+/* Badge tweak */
+.loan-card .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+    border-radius: 0.35rem;
+}
+
+/* Optional: dim disabled states if needed */
+.loan-card[disabled] {
+    opacity: 0.6;
+}
+
+/* No shadow, transparent bg (utility) */
+.bg-transparent {
+    background-color: transparent !important;
+}
+
+.no-shadow {
+    box-shadow: none !important;
+}
+
+/* Unified loan list appearance inside dashboard card */
+.loan-item {
+    border-radius: 0;
+    transition: background 0.2s ease;
+}
+
+.loan-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Optional if you want space below the last item */
+.loan-item:last-child {
+    border-bottom: none;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.pagination {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 4px;
+}
+
+.pagination .page-item .page-link {
+    padding: 6px 10px;
+    border: 1px solid #dee2e6;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: background 0.2s;
+}
+
+.pagination .page-item.active .page-link,
+.pagination .page-item .page-link:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    pointer-events: none;
+    background: transparent;
+    color: #aaa;
+    border: none;
 }

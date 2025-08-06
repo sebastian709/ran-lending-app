@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('blog_posts', function (Blueprint $table) {
-            $table->enum('status', ['draft', 'published', 'archived'])->default('draft')->change();
+        Schema::create('employment_status', function (Blueprint $table) {
+            $table->id();
+            $table->string('employment_status');
+            $table->timestamps();
+            $table->boolean('status')->default(1);
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('blog_posts', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('employment_status');
     }
 };

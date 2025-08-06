@@ -15,6 +15,7 @@ use Brevo\Client\Model\SendSmtpEmail;
 use Brevo\Client\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
 {
@@ -38,6 +39,16 @@ class HomeController extends Controller
         $loanStatus = $this->getLoanStatus();
 
         return view('borrower.pages.home', compact('loanStatus'));
+    }
+
+    public function loanApply()
+    {
+        $government_type = DB::table('government_type')
+            ->where('status', 1)
+            ->get();
+
+        return view('borrower.pages.loan-apply', compact('government_type'));
+
     }
 
     public function fetchIncome($id)
@@ -141,7 +152,7 @@ class HomeController extends Controller
                     'updated_at' => now()
                 ]);
 
-            
+
 
             $loanId = $existing->id;
         } else {
@@ -167,7 +178,7 @@ class HomeController extends Controller
                 'updated_at' => now()
             ]);
 
-            
+
         }
 
         return response()->json([
@@ -180,8 +191,8 @@ class HomeController extends Controller
 
     public function updateLoanDetails(Request $request)
     {
+        $userId = auth()->id();
         $validated = $request->validate([
-            'loan_application_id' => 'required|integer',
             'load_step' => 'required|integer',
             'loan_amount' => 'required|numeric',
             'loan_tenure' => 'required|integer',
@@ -189,22 +200,45 @@ class HomeController extends Controller
             'total_amount' => 'required|numeric',
         ]);
 
-        // Update the loan_application record
-        $updated = DB::table('loan_application')
-            ->where('id', $validated['loan_application_id'])
-            ->update([
+        $loanApplicationId = $request->input('loan_application_id');
+
+        if ($loanApplicationId) {
+            // UPDATE flow
+            $updated = DB::table('loan_application')
+                ->where('id', $loanApplicationId)
+                ->update([
+                    'load_step' => $validated['load_step'],
+                    'loan_amount' => $validated['loan_amount'],
+                    'loan_tenure' => $validated['loan_tenure'],
+                    'interest_rate' => $validated['interest_rate'],
+                    'total_amount' => $validated['total_amount'],
+                    'updated_at' => now(),
+                ]);
+
+            return response()->json([
+                'success' => $updated > 0,
+                'message' => $updated ? 'Loan details updated successfully.' : 'No changes made.',
+            ]);
+        } else {
+            // CREATE flow
+            $newId = DB::table('loan_application')->insertGetId([
                 'load_step' => $validated['load_step'],
+                'loan_applicant' => $userId,
+                'loan_status' => 0,
                 'loan_amount' => $validated['loan_amount'],
                 'loan_tenure' => $validated['loan_tenure'],
                 'interest_rate' => $validated['interest_rate'],
                 'total_amount' => $validated['total_amount'],
+                'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-        return response()->json([
-            'success' => $updated > 0,
-            'message' => $updated ? 'Loan details updated successfully.' : 'No changes made.'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Loan application created successfully.',
+                'loan_application_id' => $newId, // ibalik sa frontend
+            ]);
+        }
     }
 
     public function finalSubmit(Request $request)
@@ -212,7 +246,7 @@ class HomeController extends Controller
         // $this->loan_approved_process($request->loan_application_id);
         // dd('tests');
         try {
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'loan_application_id' => 'required|integer',
                 'load_step' => 'required|integer',
                 'bank_name' => 'required|string',
@@ -225,16 +259,23 @@ class HomeController extends Controller
                 'signature_img' => 'required|string',
             ]);
 
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
             $data = [
                 'load_step' => $request->load_step,
-                'loan_status' => 5, // Pending
+                'loan_status' => 1, // Processing
                 'bank_name' => $request->bank_name,
                 'account_number' => $request->account_number,
                 'government_type_id' => $request->government_type_id,
                 'updated_at' => now(),
             ];
 
-            // Map the request field to the database column
+            // File handling
             $folderMap = [
                 'payslip_img' => ['folder' => 'payslip', 'db_field' => 'payslip_img'],
                 'qr_code_img' => ['folder' => 'qr_code', 'db_field' => 'upload_qr_code_img'],
@@ -251,7 +292,7 @@ class HomeController extends Controller
                 }
             }
 
-            // Handle base64 signature
+            // Signature base64 handling
             if ($request->filled('signature_img')) {
                 $base64 = $request->input('signature_img');
                 if (Str::startsWith($base64, 'data:image')) {
@@ -274,10 +315,10 @@ class HomeController extends Controller
                 ->where('id', $request->loan_application_id)
                 ->update(values: $data);
 
-            //send EMAIL CONFIRMATION ======================================
+            // Send confirmation email
             $email = auth()->user()->email;
             $htmlContent = view('components.emails.state_email')->render();
-            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', env('BREVO_API_KEY'));
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
             $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
             $emailObj = new SendSmtpEmail([
                 'subject' => '✅ Your Loan Application is Now Being Processed',
@@ -285,13 +326,10 @@ class HomeController extends Controller
                 'to' => [['email' => $email]],
                 'htmlContent' => $htmlContent
             ]);
-            
             $apiInstance->sendTransacEmail(sendSmtpEmail: $emailObj);
             //==============================================================
                 
             $this->loan_approved_process($request->loan_application_id);
-
-            
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'
@@ -316,8 +354,7 @@ class HomeController extends Controller
 
         return $loanApplication->loan_status ?? 999;
     }
-
-
+  
     public function loan_approved_process($data){
         // dd($data);
         
@@ -370,7 +407,6 @@ class HomeController extends Controller
 
         return 1;
     }
-
 
 }
 

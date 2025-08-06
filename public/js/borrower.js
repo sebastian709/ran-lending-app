@@ -285,10 +285,10 @@ $(function () {
 
         const totalAmount = loanAmount + (loanAmount * interestRate);
 
-        if (!loan_application_id) {
-            console.error('Missing loan_application_id', loan_application_id);
-            return;
-        }
+        // if (!loan_application_id) {
+        //     console.error('Missing loan_application_id', loan_application_id);
+        //     return;
+        // }
 
         $.ajax({
             url: '/borrower/update-loan-details',
@@ -306,6 +306,9 @@ $(function () {
             },
             success: function (res) {
                 if (res.success) {
+                    if (res.loan_application_id) {
+                        loan_application_id = res.loan_application_id; // store new one
+                    }
                     showStep('full-loan-application');
                 }
             },
@@ -317,12 +320,6 @@ $(function () {
 
 
     $(document).on('click', '.la_submit_final_application', function () {
-        console.log({
-            id: loan_application_id,
-            bank: $('.la_bank_name').val(),
-            signature: $('.signature-filled img').attr('src'),
-            payslip: $('#payslipInput')[0].files[0],
-        });
         const formData = new FormData();
 
         formData.append('loan_application_id', loan_application_id);
@@ -332,12 +329,12 @@ $(function () {
         formData.append('government_type_id', $('.la_government_id').val());
 
         // File inputs
-        formData.append('payslip_img', $('#payslipInput')[0].files[0]);
-        formData.append('qr_code_img', $('#qrInput')[0].files[0]);
-        formData.append('government_id_img', $('#govIdInput')[0].files[0]);
-        formData.append('billing_statement_img', $('#billingInput')[0].files[0]);
+        formData.append('payslip_img', $('#payslipInput')[0]?.files[0]);
+        formData.append('qr_code_img', $('#qrInput')[0]?.files[0]);
+        formData.append('government_id_img', $('#govIdInput')[0]?.files[0]);
+        formData.append('billing_statement_img', $('#billingInput')[0]?.files[0]);
 
-        // Signature (base64 from <img src>)
+        // Signature
         const signatureBase64 = $('.signature-filled img').attr('src');
         formData.append('signature_img', signatureBase64);
 
@@ -352,21 +349,81 @@ $(function () {
             },
             success: function (res) {
                 if (res.success) {
-                    window.location.href = "/loan-success";
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Submitted!',
+                        text: res.message || "Your application has been submitted.",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "/loan-success";
+                    });
                 } else {
-                    alert(res.message || "Submission failed.");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Submission Failed',
+                        text: res.message || "Something went wrong.",
+                    });
                 }
             },
             error: function (xhr) {
-                alert("Something went wrong during submission.");
-                console.log(xhr.responseText);
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    if (errors) {
+                        $('.is-invalid').removeClass('is-invalid');
+                        $('.invalid-feedback').remove();
+
+                        for (const field in errors) {
+                            const message = errors[field][0];
+                            const selector = getFieldSelector(field);
+                            const $input = $(selector);
+                            $input.addClass('is-invalid');
+                            $input.after(`<div class="invalid-feedback">${message}</div>`);
+                        }
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Validation Error',
+                            text: 'Please correct the highlighted fields.',
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'Something went wrong. Please try again later.',
+                    });
+                    console.error(xhr.responseText);
+                }
             }
         });
     });
 
+    function getFieldSelector(field) {
+        const map = {
+            bank_name: '.la_bank_name',
+            account_number: '.la_account_number',
+            government_type_id: '.la_government_id',
+            payslip_img: '#payslipInput',
+            qr_code_img: '#qrInput',
+            government_id_img: '#govIdInput',
+            billing_statement_img: '#billingInput',
+            signature_img: '.signature-filled img' // visual only
+        };
+        return map[field] || `[name="${field}"]`;
+    }
+
     // Terms checkbox
     $(document).on('change', '.la_terms_checkbox', function () {
-        $('#submitFinalApplication').prop('disabled', !$(this).prop('checked'));
+        const img_checker = $('.signature-wrapper img').attr('src');
+
+        if ($(this).is(':checked')) {
+            if (img_checker) {
+                $('#submitFinalApplication').prop('disabled', false);
+            }
+        } else {
+            $('#submitFinalApplication').prop('disabled', true);
+        }
     });
 
     function previewImage(inputId, previewContainerId) {
@@ -431,3 +488,367 @@ $(document).ready(function () {
     updateDateTime();
     setInterval(updateDateTime, 1000);
 });
+
+
+$(document).ready(function () { // profile page
+    let $form = $('#profile-form');
+    let $inputs = $form.find('input');
+    let $select = $form.find('select');
+    let $changePhoto = $('#change-picture-btn');
+    let $editBtn = $('#edit-profile-btn');
+    let $updateControls = $('#update-controls');
+    let $cancelBtn = $('#cancel-edit-btn');
+
+    // Enable edit
+    $editBtn.on('click', function () {
+        $inputs.prop('disabled', false);
+        $select.prop('disabled', false);
+        $updateControls.removeClass('d-none');
+        $changePhoto.removeAttr('hidden');
+    });
+
+    // Cancel edit
+    $cancelBtn.on('click', function () {
+        $inputs.each(function () {
+            this.value = this.defaultValue;
+        }).prop('disabled', true);
+        $select.each(function () {
+            const $el = $(this);
+            $el.find('option').each(function () {
+                if (this.defaultSelected) {
+                    $el.val(this.value);
+                }
+            });
+        }).prop('disabled', true);
+        $changePhoto.attr('hidden', ' ');
+        $updateControls.addClass('d-none');
+    });
+
+    // handle submit
+    $form.on('submit', function (e) {
+        e.preventDefault();
+
+        $.confirm({
+            title: 'Confirm Update',
+            content: 'Are you sure you want to save these changes? They will be reflected on your account.',
+            buttons: {
+                cancel: function () { },
+                confirm: {
+                    text: 'Save',
+                    btnClass: 'btn-primary',
+                    action: function () {
+                        const formData = new FormData($form[0]); // include all form fields and file
+
+                        $.ajax({
+                            url: '/update-profile',
+                            method: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (res) {
+                                if (res.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Updated!',
+                                        text: 'Profile updated successfully!',
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                        timerProgressBar: true,
+                                        didClose: () => {
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'Error updating profile.',
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                        timerProgressBar: true
+                                    });
+                                }
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Server Error!',
+                                    text: 'Something went wrong while saving.',
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    });
+
+
+    // Profile picture preview
+    $('#change-picture-btn').on('click', () => {
+        $('#profile-picture-input').click();
+    });
+
+    $('#profile-picture-input').on('change', function () {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#profile-picture-preview').attr('src', e.target.result);
+        };
+        reader.readAsDataURL(this.files[0]);
+
+        $("#profile-picture-preview").removeAttr('hidden')
+        $(".user-avatar-profile-view").attr('hidden', ' ');
+    });
+
+    $('.close-profile-notif').on('click', function () {
+        $(this).closest('.row').fadeOut(300, function () {
+            $(this).remove();
+        });
+    });
+});
+
+$(function () {
+    // Toggle password visibility
+    $('.toggle-password').on('click', function () {
+        const targetInput = $($(this).data('target'));
+        const icon = $(this).find('i');
+        const type = targetInput.attr('type') === 'password' ? 'text' : 'password';
+        targetInput.attr('type', type);
+        icon.toggleClass('ri-eye-line ri-eye-off-line');
+    });
+
+    // Live password validation
+    $('#new_password').on('input', function () {
+        const val = $(this).val();
+
+        const criteria = {
+            length: val.length >= 8,
+            upperlower: /[a-z]/.test(val) && /[A-Z]/.test(val),
+            number: /\d/.test(val),
+            special: /[\W_]/.test(val),
+        };
+
+        $('#password-criteria li').each(function () {
+            const key = $(this).data('criteria');
+            if (criteria[key]) {
+                $(this).addClass('valid').find('i')
+                    .removeClass('ri-checkbox-blank-circle-line')
+                    .addClass('ri-checkbox-circle-fill');
+            } else {
+                $(this).removeClass('valid').find('i')
+                    .removeClass('ri-checkbox-circle-fill')
+                    .addClass('ri-checkbox-blank-circle-line');
+            }
+        });
+    });
+
+    // Submit handler
+    // Submit handler
+    $(document).on('submit', '#change-password-form', function (e) {
+        e.preventDefault();
+
+        // Check if all criteria are marked as valid
+        const allValid = $('#password-criteria li').length === $('#password-criteria li.valid').length;
+
+        if (!allValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Weak Password',
+                text: 'Please meet all the password requirements before submitting.',
+            });
+            return; // ⛔ prevent submit
+        }
+
+        const form = $(this);
+        const actionUrl = form.data('action');
+        const logoutUrl = form.data('logout');
+
+        $.ajax({
+            url: actionUrl,
+            method: "POST",
+            data: form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Password Changed',
+                    text: response.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    if (response.logout) {
+                        $('#logout-form').submit();
+                    }
+                });
+            },
+            error: function (xhr) {
+                let errorMessage = "Something went wrong.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = xhr.responseJSON.errors;
+                    errorMessage = Object.values(errors).map(arr => arr.join(', ')).join('\n');
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: errorMessage
+                });
+            }
+        });
+    });
+});
+
+
+// Loan list modal
+$(document).ready(function () {
+    $('.view-loan-btn').on('click', function () {
+        const loanId = $(this).data('id');
+
+        $.confirm({
+            title: `<i class="bi bi-file-earmark-text me-2"></i> Loan Details`,
+            content: `
+                <div class="text-start fs-6">
+                    <div class="mb-2"><strong>Loan ID:</strong> ${loanId}</div>
+                    <div class="mb-2"><strong>Total Amount:</strong> <span class="text-success">₱50,000.00</span></div>
+                    <div class="mb-2"><strong>Loan Tenure:</strong> 12 months</div>
+                    <div class="mb-2"><strong>Date of Payment:</strong> July 30, 2025</div>
+                    <div class="mb-2"><strong>Monthly Amount Due:</strong> ₱4,500.00</div>
+                    <div class="mb-3"><strong>Penalty:</strong> ₱0.00</div>
+                    <hr class="my-2">
+                    <div class="mb-2"><strong>Total Payment:</strong> ₱54,000.00</div>
+                    <div class="mb-1"><strong>Breakdown:</strong></div>
+                    <ul class="ps-4">
+                        <li>Principal: ₱50,000.00</li>
+                        <li>Interest: ₱4,000.00</li>
+                        <li>Penalty: ₱0.00</li>
+                    </ul>
+                </div>
+            `,
+            type: 'blue',
+            columnClass: 'medium',
+            icon: 'bi bi-info-circle-fill',
+            buttons: {
+                close: {
+                    text: 'Close',
+                    btnClass: 'btn-secondary',
+                }
+            }
+        });
+    });
+});
+
+(function () {
+    const totalPages = 50;
+    let currentPage = 1;
+    const maxVisible = 5;
+
+    function updateEntriesInfo(start, end, total) {
+        $('.entries-info').text(`Showing ${start} to ${end} of ${total} entries`);
+    }
+
+    function createPageItem(text, page, disabled = false, active = false) {
+        const li = $('<li>').addClass('page-item');
+        if (disabled) li.addClass('disabled');
+        if (active) li.addClass('active');
+
+        const a = $('<a>')
+            .addClass('page-link')
+            .attr('href', '#')
+            .attr('data-page', page)
+            .html(text);
+
+        li.append(a);
+        return li;
+    }
+
+    function getVisiblePages(current, total, max) {
+        const pages = [];
+
+        if (total <= max + 2) {
+            for (let i = 1; i <= total; i++) pages.push(i);
+            return pages;
+        }
+
+        if (current <= max) {
+            for (let i = 1; i <= max; i++) pages.push(i);
+            pages.push('...');
+            pages.push(total);
+        } else if (current >= total - max + 1) {
+            pages.push(1);
+            pages.push('...');
+            for (let i = total - max + 1; i <= total; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            pages.push('...');
+            const middleStart = current - Math.floor(max / 2);
+            const middleEnd = current + Math.floor(max / 2);
+            for (let i = middleStart; i <= middleEnd; i++) pages.push(i);
+            pages.push('...');
+            pages.push(total);
+        }
+
+        return pages;
+    }
+
+    function renderPagination() {
+        const $pagination = $('.pagination');
+        $pagination.empty();
+
+        // Previous button
+        $pagination.append(createPageItem('&lt; Previous', 'prev', currentPage === 1));
+
+        // Page numbers
+        const pages = getVisiblePages(currentPage, totalPages, maxVisible);
+        pages.forEach(function (item) {
+            if (item === '...') {
+                const li = $('<li>').addClass('page-item disabled')
+                    .html('<span class="page-link">...</span>');
+                $pagination.append(li);
+            } else {
+                const li = createPageItem(item, item, false, item === currentPage);
+                $pagination.append(li);
+            }
+        });
+
+        // Next button
+        $pagination.append(createPageItem('Next &gt;', 'next', currentPage === totalPages));
+
+        // Update entry info
+        const start = (currentPage - 1) * 10 + 1;
+        const end = Math.min(start + 9, 412);
+        updateEntriesInfo(start, end, 412);
+    }
+
+    // Delegated event (your format)
+    $(document).on('click', '.pagination .page-link', function (e) {
+        e.preventDefault();
+        const $this = $(this);
+        const page = $this.data('page');
+
+        if ($this.parent().hasClass('disabled') || $this.parent().hasClass('active')) return;
+
+        if (page === 'prev') {
+            if (currentPage > 1) currentPage--;
+        } else if (page === 'next') {
+            if (currentPage < totalPages) currentPage++;
+        } else {
+            currentPage = parseInt(page);
+        }
+
+        renderPagination();
+    });
+
+    // Initialize pagination immediately
+    renderPagination();
+})();
+
+
+
+
+

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('middlename');
             $table->string('username')->nullable();
             $table->string('contactno');
+            $table->text('profile_src')->nullable();
             $table->integer('referral_source_id')->index();
             $table->integer('referral_id')->default(0)->index();
             $table->integer('status')->default(1)->index();
@@ -27,28 +28,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->timestamps();
-        });
-
-        Schema::create('user_details', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->index();
-            $table->string('house_no');
-            $table->string('street');
-            $table->string('barangay');
-            $table->string('city');
-            $table->string('province');
-            $table->integer('status')->default(1)->index();
-            $table->timestamps();
-        });
-
-        Schema::create('user_incomes', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->index();
-            $table->string('occupation');
-            $table->decimal('income');
-            $table->integer('employment_status');
-            $table->integer('status')->default(1)->index();
             $table->timestamps();
         });
 
@@ -74,8 +53,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('user_details');
-        Schema::dropIfExists('user_incomes');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }

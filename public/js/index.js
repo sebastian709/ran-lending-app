@@ -1,6 +1,21 @@
+$(document).ready(function () {
+    const currentUrl = window.location.pathname;
+
+    $('.sidebar-nav a').each(function () {
+        const url = $(this).data('url');
+        if (url && url === currentUrl) {
+            $(this).addClass('active');
+        }
+    });
+});
+
 $(document).on('click', '[data-url]', function (e) {
     e.preventDefault();
     const url = $(this).data('url');
+
+    if (url === '/home'){
+        $(this).addClass('active')
+    }
     window.location.href = url;
 });
 
