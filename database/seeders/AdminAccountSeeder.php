@@ -44,6 +44,16 @@ class AdminAccountSeeder extends Seeder
             'updated_at' => now()
         ]);
 
+
+        DB::table('admin_loan_request_access')->insertGetId([
+            'user_id' => $userId,
+            'pending' => '1',
+            'for_interview' => '1',
+            'for_revision' => '1',
+            'waiting' => '1',
+            'created_at' => now()
+        ]);
+
         DB::table('user_details')->insert([
             [
                 'user_id' => $userId,
