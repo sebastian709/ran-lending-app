@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="{{ asset('css/blogpost.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- Lightbox2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+
     @stack('sb-styles')
 </head>
 
@@ -25,6 +28,31 @@
         <a href="#" class="nav-link active" data-is-sidebar="1" data-url="/admin/dashboard">
             <i class="bi bi-columns-gap"></i> Dashboard
         </a>
+       <ul class="nav flex-column list-unstyled">
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#loanSubNav" aria-expanded="false" aria-controls="loanSubNav">
+                    <i class="bi bi-table me-2"></i> Loan Request
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul class="collapse nav flex-column ps-4 list-unstyled" id="loanSubNav">
+                    <li class="nav-item">
+                        <a href="/admin/loan-request" data-url="/admin/loan-request" class="nav-link">All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/loan-request/assigned-status" class="nav-link">Pending</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/loan-request/assigned-status" class="nav-link">For Interview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/loan-request/assigned-status" class="nav-link">For revision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/loan-request/assigned-status" class="nav-link">Waiting</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>

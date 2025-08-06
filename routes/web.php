@@ -70,6 +70,10 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.pages.settings.index');
     Route::post('/update-loan-settings', [AdminController::class, 'updateLoanSettings']);
+
+    //request loan page
+    Route::get('/loan-request', function () {return view('admin.pages.loanrequest.index');})->name('admin.pages.loanrequest.index');
+
 });
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
