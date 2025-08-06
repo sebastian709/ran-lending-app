@@ -76,67 +76,31 @@
                 </div>
             </div>
 
-            <!-- Sample Table with status -->
-            <div class="dashboard-card p-4 shadow-sm rounded bg-white">
-                <div class="d-flex align-items-center">
-                    <i class="ri-calendar-event-line" style="font-size: 2rem;"></i>
-                    <h4 class="mb-0 fw-bold ms-2">Repayment Schedule</h4>
+           <!-- Upcoming Payment Box -->
+            <div class="dashboard-card shadow-sm rounded bg-white mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap p-4">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <!-- <i class="ri-alarm-warning-line text-primary" style="font-size: 2rem;"></i> -->
+                        <div class="ms-3">
+                            <h5 class="fw-bold mb-0">
+                                Next Payment:
+                                <h4 class="fw-bold text-primary mb-1">₱8,500</h4>
+                            </h5>
+                            <small class="text-muted">Due on <strong>August 1, 2025</strong></small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <a href="/payment" class="btn btn-primary btn-md">
+                            <i class="ri-wallet-line me-1"></i> Pay Now
+                        </a>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                <table class="table table-hover align-middle text-center">
-                    <thead class="table-light">
-                    <tr>
-                        <th scope="col">Due Date</th>
-                        <th scope="col">Amount Due</th>
-                        <th scope="col">Payment Status</th>
-                        <th scope="col">Paid Date</th>
-                        <th scope="col">Late Fee</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>08/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-info text-dark">Upcoming</span></td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td><a href="payment.html" class="btn btn-sm btn-outline-primary">Pay</a></td>
-                    </tr>
-                    <tr>
-                        <td>07/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-danger">Late</span></td>
-                        <td>07/08/2025</td>
-                        <td>₱50</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>06/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-success">Paid</span></td>
-                        <td>06/01/2025</td>
-                        <td>₱0</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>05/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-warning text-dark">Overdue</span></td>
-                        <td>-</td>
-                        <td>₱50</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>04/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-secondary">At Risk</span></td>
-                        <td>-</td>
-                        <td>₱50</td>
-                        <td>-</td>
-                    </tr>
-                    </tbody>
-                </table>
+
+                <!-- Repayment Schedule Button -->
+                <div class="mt-3 text-center bg-light p-2">
+                    <a href="/repayment-schedule" class="btn rep_btn">
+                        <i class="ri-calendar-schedule-line me-1"></i>Repayment Schedule<i class="ri-arrow-right-line ms-1"></i>
+                    </a>
                 </div>
             </div>
         </div>

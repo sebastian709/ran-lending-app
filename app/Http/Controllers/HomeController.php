@@ -14,9 +14,8 @@ use Brevo\Client\Api\TransactionalEmailsApi;
 use Brevo\Client\Model\SendSmtpEmail;
 use Brevo\Client\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
-
-
 
 class HomeController extends Controller
 {
@@ -244,6 +243,8 @@ class HomeController extends Controller
 
     public function finalSubmit(Request $request)
     {
+        // $this->loan_approved_process($request->loan_application_id);
+        // dd('tests');
         try {
             $validator = Validator::make($request->all(), [
                 'loan_application_id' => 'required|integer',
@@ -312,7 +313,7 @@ class HomeController extends Controller
 
             DB::table('loan_application')
                 ->where('id', $request->loan_application_id)
-                ->update($data);
+                ->update(values: $data);
 
             // Send confirmation email
             $email = auth()->user()->email;
@@ -325,9 +326,10 @@ class HomeController extends Controller
                 'to' => [['email' => $email]],
                 'htmlContent' => $htmlContent
             ]);
-
-            $apiInstance->sendTransacEmail($emailObj);
-
+            $apiInstance->sendTransacEmail(sendSmtpEmail: $emailObj);
+            //==============================================================
+                
+            $this->loan_approved_process($request->loan_application_id);
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'
@@ -352,6 +354,59 @@ class HomeController extends Controller
 
         return $loanApplication->loan_status ?? 999;
     }
-    // test again
+  
+    public function loan_approved_process($data){
+        // dd($data);
+        
+        //PROCESS APPROVED LOAN 
+        $loanApplications = DB::table('loan_application')
+            ->where('id', $data)
+            ->first();
+        // dd($loanApplications);
+
+        $monthly = $loanApplications->loan_amount / $loanApplications->loan_tenure;
+        $interest = $loanApplications->loan_amount * $loanApplications->interest_rate;
+        
+        // dd($monthly);
+        for ($i = 1; $i <= $loanApplications->loan_tenure ; $i++) {
+            
+            //TENURE
+            $date = Carbon::now('Asia/Manila') // current PH time
+            ->subDay()
+            ->addMonths($i)
+            ->endOfDay();  
+
+            $ids = DB::table('loan_tenure')
+            ->insertGetId(
+                [
+                    'loan_id' => $data,
+                    'date' => $date,
+                    'principal' => $monthly,
+                    'count' => $i,
+                    'payment_status_id' => 1,
+                    'payment_id' => 0,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            );
+
+            //INTEREST
+            $idss = DB::table('loan_tenure_interest')
+            ->insertGetId(
+                [
+                    'tenure_id' => $ids,
+                    'interest' => $interest,
+                    'payment_status_id' => 1,
+                    'payment_id' => 0,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            );
+
+        }
+
+        return 1;
+    }
+
 }
 

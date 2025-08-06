@@ -173,7 +173,10 @@ $(function () {
     function updateLoanSummary() {
         const amount = formData.loanAmount;
         const tenure = parseInt($('#standardTenure').val());
-        const total = amount * 1.05;
+        const month = amount * 1.05;
+        const interest = month - amount;
+        const total_interest = interest * tenure;
+        const total = total_interest + amount;
         $('#summary-amount').text(amount.toLocaleString());
         $('#summary-tenure').text(tenure);
         $('#summary-total').text(Math.round(total).toLocaleString());
@@ -183,7 +186,8 @@ $(function () {
     function updateAdminLoanSummary() {
         const amount = parseInt($('#customAmount').val()) || 0;
         const tenure = parseInt($('#adminTenure').val());
-        const total = amount * 1.05;
+        const month = amount * 1.05;
+        const total = month * tenure;
         $('#admin-summary-amount').text(amount.toLocaleString());
         $('#admin-summary-tenure').text(tenure);
         $('#admin-summary-total').text(Math.round(total).toLocaleString());

@@ -145,3 +145,20 @@
 .form-comment textarea {
     resize: none;
 }
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+.label, .amount {
+    white-space: nowrap;
+}
+
+.flex-line {
+    flex-grow: 1;
+    border-top: 1px dashed #999;
+    height: 1px;
+}

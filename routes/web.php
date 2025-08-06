@@ -5,7 +5,7 @@ use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\Auth\OtpVerificationController;
 use App\Http\Controllers\Auth\RegisterController;
-
+use App\Http\Controllers\Borrower\PaymentController;
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
@@ -97,9 +97,11 @@ Route::get('/active-loan', function () {
 
 //Payment
 Route::name('loan.')->group(function () {
-    Route::get('/payment', function () {
-        return view('borrower.pages.payments.payment');
-    })->name('payment');
+    // Route::get('/payment', function () {
+    //     return view('borrower.pages.payments.payment');
+    // })->name('payment');
+    Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+    Route::post('/payment/submit', [PaymentController::class, 'submit']);
 
     Route::get('/confirm-payment', function () {
         return view('borrower.pages.payments.confirm-payment');
@@ -112,7 +114,16 @@ Route::name('loan.')->group(function () {
     Route::get('/payment-history', function () {
         return view('borrower.pages.payments.payment-history');
     })->name('payment-history');
+
+    Route::get('/no_loan', function () {
+        return view('borrower.layouts.payment-state');
+    })->name('no_loan');
 });
+
+//My loans
+Route::get('/repayment-schedule', function () {
+    return view('borrower.pages.repayment-schedule');
+})->name('my-loan.repayment-schedule');
 
 # loan application backend functions
 Route::get('/borrower/fetch-income/{id}', [HomeController::class, 'fetchIncome']);
