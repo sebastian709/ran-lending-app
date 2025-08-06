@@ -17,8 +17,8 @@
                                     <input type="text" id="admin-search-input" class="form-control border"
                                         placeholder="Search..." aria-label="Search">
                                     <!-- <button id="admin-search-btn" class="btn btn-outline-secondary" type="button">
-                                                                <i class="ri-search-line"></i>
-                                                            </button> -->
+                                                                    <i class="ri-search-line"></i>
+                                                                </button> -->
                                     <div id="admin-search-suggestions" class="dropdown-menu show d-none suggestion-box">
                                     </div>
                                 </div>
@@ -60,7 +60,9 @@
                                     <div class="d-flex flex-column mx-3">
                                         <label>Loan Interest</label>
                                         <div class="d-flex">
-                                            <input type="text" name="loan_interest" value="{{ $result['loan_interest'] ?? 0 }}" class="w-lg-25 border-0 border-bottom rounded-0 shadow-none a-loan-interest"
+                                            <input type="text" name="loan_interest"
+                                                value="{{ $result['loan_interest'] ?? 0 }}"
+                                                class="w-lg-25 border-0 border-bottom rounded-0 shadow-none a-loan-interest"
                                                 disabled>
                                             <span>%</span>
                                         </div>
@@ -73,6 +75,24 @@
                                         <button type="button" class="btn btn-primary btn-sm a-btn-save" hidden>Save</button>
                                         <button type="button" class="btn btn-light btn-sm a-btn-cancel"
                                             hidden>Cancel</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <hr class="my-3">
+                        </div>
+                        <div class="row mt-4" {{ Auth::user()->is_super_admin == 1 ? '' : 'hidden' }}>
+                            <div class="col-lg-12">
+                                <label class="fw-bold">Loan Request Access</label><br>
+                                <small class="text-muted">Grant access to the admins.</small>
+                            </div>
+                            <hr class="my-3">
+                            <form id="as-loan-request-access">
+                                <div class="col-lg-12">
+                                    <div class="d-flex flex-column mx-3">
+                                        <label>Test</label>
+                                        <div class="d-flex">
+                                            
+                                        </div>
                                     </div>
                                 </div>
                             </form>
