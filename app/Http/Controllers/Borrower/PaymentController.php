@@ -30,7 +30,9 @@ class PaymentController extends Controller
             ->where('status', 1)
             ->first();
 
-        if ($loanStatus < 4) {
+        // dd($loanStatus)
+
+        if ($loanStatus < 4 || $loanStatus == 999) {
             return view('borrower.layouts.payment-state', compact('loanStatus'));
         }
 
@@ -48,11 +50,13 @@ class PaymentController extends Controller
         // ])->first();
 
 
+
         $data['loan_tenure_next_pay'] = DB::table('loan_tenure as lt')
             ->select(
                 'lt.id',
                 'la.interest_rate',
                 'lt.date',
+                'lti.id',
                 DB::raw('if(lt.payment_status_id != 1,0,lt.principal) as principal'),
                 DB::raw('if(lti.payment_status_id != 1,0,lti.interest) as interest'),
                 'lt.count',
@@ -66,16 +70,13 @@ class PaymentController extends Controller
                     ->where('la.status', 1);
             })
             ->join('loan_tenure_interest as lti', function ($join) {
-                $join->on('lti.tenure_id', '=', 'lt.id')
-                ->where('lti.payment_status_id', 1);
+                $join->on('lti.tenure_id', '=', 'lt.id');
             })
             ->leftJoin('loan_tenure_penalty as ltp', function ($join) {
-                $join->on('ltp.tenure_id', '=', 'lt.id')
-                ->where('ltp.payment_status_id', 1);
+                $join->on('ltp.tenure_id', '=', 'lt.id');
             })
-            // ->whereBetween('lt.date', [now(), now()->addDays(7)])
             ->where('lt.payment_status_id','>',0 )
-
+            ->where(function ($query) {$query->where('lt.payment_status_id', '<=', 1)->orWhere('lti.payment_status_id', '<=', 1);})
             ->where('la.loan_applicant',$data['loan_application']->id  )
             ->groupBy(  'la.id',
                                 'la.interest_rate',
@@ -84,6 +85,7 @@ class PaymentController extends Controller
                                 'lti.interest',
                                 'lt.count',
                                 'lt.id',
+                                'lti.id',
                                 'lt.payment_status_id',
                                 'lti.payment_status_id',
                                 'lt.loan_id')
@@ -160,6 +162,7 @@ class PaymentController extends Controller
 
 
         if($request->type == 1){
+            // dd('1');
 
             foreach ($request->paymentData as $key => $record) {
                 $loan_tenure = loan_tenure::selectRaw("
@@ -201,70 +204,81 @@ class PaymentController extends Controller
                 }
             }
         }elseif ($request->type == 2) {
+            // dd('2');
+
             $nextId = $request->next_id;
             $paymentId = $Loan_payment;
 
             if ($this->isValidAmount($request->partial_principal)) {
-                loan_tenure::where('id', $nextId)->update([
+                loan_tenure::where('id', $nextId)
+                ->where('payment_status_id', 1)
+                ->update([
                     'payment_id' => $paymentId,
                     'payment_status_id' => 2,
                 ]);
             }
 
             if ($this->isValidAmount($request->partial_interest)) {
-                loan_tenure_interest::where('tenure_id', $nextId)->update([
+                loan_tenure_interest::where('tenure_id', $nextId)
+                ->where('payment_status_id', 1)
+                ->update([
                     'payment_id' => $paymentId,
                     'payment_status_id' => 2,
                 ]);
             }
 
             if ($this->isValidAmount($request->partial_penalty)) {
-                loan_tenure_penalty::where('tenure_id', $nextId)->update([
+                loan_tenure_penalty::where('tenure_id', $nextId)
+                ->where('payment_status_id', 1)
+                ->update([
                     'payment_id' => $paymentId,
                     'payment_status_id' => 2,
                 ]);
             }
 
         }elseif ($request->type == 3) {
-            $nextId = $request->next_id;
-            $paymentId = $Loan_payment;
+            // dd('3');
 
-            if ($this->isValidAmount($request->partial_principal)) {
-                loan_tenure::where('id', $nextId)->update([
-                    'payment_id' => $paymentId,
+            foreach ($request->paymentData as $key => $record) {
+                loan_tenure::where('id',  $record['id'])
+                ->where('payment_status_id', 1)
+                ->update([
+                    'payment_id' => $Loan_payment,
                     'payment_status_id' => 2,
                 ]);
-            }
-
-            if ($this->isValidAmount($request->partial_interest)) {
-                loan_tenure_interest::where('tenure_id', $nextId)->update([
-                    'payment_id' => $paymentId,
+                loan_tenure_penalty::where('tenure_id',  $record['id'])
+                ->where('payment_status_id', 1)
+                ->update([
+                    'payment_id' => $Loan_payment,
                     'payment_status_id' => 2,
                 ]);
-            }
-
-            if ($this->isValidAmount($request->partial_penalty)) {
-                loan_tenure_penalty::where('tenure_id', $nextId)->update([
-                    'payment_id' => $paymentId,
+                loan_tenure_interest::where('tenure_id',  $record['id'])
+                ->where('payment_status_id', 1)
+                ->update([
+                    'payment_id' => $Loan_payment,
                     'payment_status_id' => 2,
                 ]);
             }
 
             dd('3');
         }elseif ($request->type == 4) {
+            // dd('4');
 
             foreach ($request->paymentData as $key => $record) {
                 loan_tenure::where('id',  $record['id'])
+                ->where('payment_status_id', 1)
                 ->update([
                     'payment_id' => $Loan_payment,
                     'payment_status_id' => 2,
                 ]);
                 loan_tenure_interest::where('tenure_id',  $record['id'])
+                ->where('payment_status_id', 1)
                 ->update([
                     'payment_id' => $Loan_payment,
                     'payment_status_id' => 2,
                 ]);
                 loan_tenure_penalty::where('tenure_id',  $record['id'])
+                ->where('payment_status_id', 1)
                 ->update([
                     'payment_id' => $Loan_payment,
                     'payment_status_id' => 2,
@@ -276,30 +290,6 @@ class PaymentController extends Controller
         }else{
             dd('error');
         }
-
-        // //check if payment is loan is finished
-        // $loan_tenure = loan_tenure::selectRaw("
-        //             CASE 
-        //                 WHEN count(id) > 0 
-        //                 THEN '0' 
-        //                 ELSE '1' 
-        //             END AS is_finished
-        //         ")
-        //         ->where('loan_id', $request->id)
-        //         ->where('payment_status_id', 1)
-        //         ->first();
-            
-        // if ($loan_tenure['is_finished'] == 1) {
-        //     loan_application::where('id',  $request->id)
-        //         ->update([
-        //             'loan_status' => 6,//Loan Finished
-        //             'updated_at'  => now(),
-
-        //         ]);
-        // }    
-        
-
-
         
         return response()->json([
             'success' => true,

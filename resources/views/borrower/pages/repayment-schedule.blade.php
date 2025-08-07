@@ -52,15 +52,33 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>08/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-info text-dark">Upcoming</span></td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td><a href="payment" class="btn btn-sm btn-outline-primary">Pay</a></td>
-                    </tr>
-                    <tr>
+                    @php $shownPayLink = false; @endphp
+                    @foreach($results as $index => $data)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($data->date)->format('F j, Y') }}</td>
+                            <td>₱ {{ number_format($data->total,2) }}</td>
+                            <td>@if($data->payment_status == 1)
+                                    <span class="badge bg-success">Paid</span>
+                                @elseif($data->payment_status == 2)
+                                    <span class="badge bg-info text-dark">Upcoming</span>
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td>{{ $data->paid_date }}</td>
+                            <td>₱ {{ number_format($data->penalty,2) }}</td>
+                            <td>
+                                @if($data->payment_status == 2  && !$shownPayLink)
+                                    <a href="payment" class="btn btn-sm btn-outline-primary">Pay</a>
+                                    @php $shownPayLink = true; @endphp
+                                @endif
+                                
+                            </td>
+                        </tr>
+                    @endforeach
+
+
+                    <!-- <tr>
                         <td>07/01/2025</td>
                         <td>₱8,500</td>
                         <td><span class="badge bg-danger">Late</span></td>
@@ -90,7 +108,7 @@
                         <td><span class="badge bg-secondary">At Risk</span></td>
                         <td>-</td>
                         <td>₱50</td>
-                        <td>-</td>
+                        <td>-</td> -->
                     </tr>
                     </tbody>
                 </table>

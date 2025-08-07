@@ -23,7 +23,7 @@
         <!-- PAYMENT TYPE -->
         <div class="card-section">
             <span class="section-title">Total Amount to Pay</span>
-            <div class="amount-display" id="totalAmount">₱ <span>{{ number_format($data['loan_tenure_next_pay']->total,2) }}</span></div>
+            <div class="amount-display" id="totalAmount" data-amount="{{ $data['loan_tenure_next_pay']->total }}">₱ <span>{{ number_format($data['loan_tenure_next_pay']->total,2) }}</span></div>
         </div>
 
         <!-- NEXT PAYMENT -->

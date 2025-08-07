@@ -8,7 +8,7 @@ function updateTotal() {
     let total_penalty = 0;
 
     // Collect checked normal payments (Next Payment + Advance)
-        const amount = parseFloat($('#totalAmount').find('span').text());
+        const amount = parseFloat($('#totalAmount').attr('data-amount'));
         const principal = parseFloat($('.partial-principal').attr('data-amount'));
         const interest = parseFloat($('.partial-interest').attr('data-amount'));
         const penalty = parseFloat($('.partial-penalty').attr('data-amount'));
@@ -18,7 +18,7 @@ function updateTotal() {
         total_penalty = penalty;
         total_principal = principal;
         
-        console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
+        // console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
 
     if($('.payment-option-advance input[type="checkbox"]:checked').length > 0){ 
         $('.payment-option input[type="checkbox"]:checked').each(function () {
@@ -33,17 +33,18 @@ function updateTotal() {
             total_interest += parseFloat($(this).attr('data-interest'));
             total_principal += parseFloat($(this).attr('data-principal'));
             total_penalty += parseFloat($(this).attr('data-penalty'));
-            console.log(2,total,total_interest,total_interest,total_penalty,total_principal)
+            // console.log(2,total,total_interest,total_interest,total_penalty,total_principal)
         });
 
     }
-    console.log(3,total,total_interest,total_interest,total_penalty,total_principal)
+    // console.log(3,total,total_interest,total_interest,total_penalty,total_principal)
     
-    $('.payment-total').text('₱ ' + (total).toFixed(2))
-    $('.payment-interest').text('₱ ' + (total_interest).toFixed(2))
-    $('.payment-principal').text('₱ ' + (total_principal).toFixed(2))
-    $('.payment-penalty').text('₱ ' + (total_penalty).toFixed(2))
-    $('.payment-rebate').text('-₱ ' + (total_rebate).toFixed(2))
+    $('.payment-total').text('₱ ' + Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+    $('.payment-interest').text('₱ ' + Number(total_interest).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+    $('.payment-principal').text('₱ ' + Number(total_principal).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+    $('.payment-penalty').text('₱ ' + Number(total_penalty).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+    $('.payment-rebate').text('-₱ ' + Number(total_rebate).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+    
 
     $('.payment-total').attr('data-amount',(total).toFixed(2))
     $('.payment-interest').attr('data-amount',(total_interest).toFixed(2))
@@ -75,10 +76,10 @@ function updateTotal() {
 
         partial_total = partial_total_interest + partial_total_principal + partial_total_penalty;
         
-        $('.payment-interest').text('₱ ' + (partial_total_interest).toFixed(2));
-        $('.payment-principal').text('₱ ' + (partial_total_principal).toFixed(2));
-        $('.payment-penalty').text('₱ ' + (partial_total_penalty).toFixed(2));
-        $('.payment-total').text('₱ ' + (partial_total).toFixed(2));
+        $('.payment-interest').text('₱ ' + Number(partial_total_interest).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+        $('.payment-principal').text('₱ ' + Number(partial_total_principal).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+        $('.payment-penalty').text('₱ ' + Number(partial_total_penalty).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+        $('.payment-total').text('₱ ' + Number(partial_total).toLocaleString('en-US', { minimumFractionDigits: 2 }));
 
         $('.payment-interest').attr('data-amount',(partial_total_interest).toFixed(2));
         $('.payment-principal').attr('data-amount',(partial_total_principal).toFixed(2));
@@ -87,7 +88,7 @@ function updateTotal() {
 
         $('.payment-total').attr('data-partial',1);
     }
-    console.log(4,total,total_interest,total_interest,total_penalty,total_principal)
+    // console.log(4,total,total_interest,total_interest,total_penalty,total_principal)
 
 }
 

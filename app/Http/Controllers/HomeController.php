@@ -36,9 +36,100 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $loanStatus = $this->getLoanStatus();
 
-        return view('borrower.pages.home', compact('loanStatus'));
+        $userId = auth()->id();
+        $loanApplication = DB::table('loan_application')
+            ->where('loan_applicant', $userId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        
+        $loanStatus = $loanApplication->loan_status ?? 999;
+
+        DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
+        $data = DB::table('loan_application as la')
+            ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
+            ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
+            ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+            ->where(function ($query) {
+                $query->where('lt.payment_status_id', '<=', 1)
+                    ->orWhere('lti.payment_status_id', '<=', 1);
+            })
+            ->select([
+                DB::raw('(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) AS current_payment'),
+                'lt.date',
+                DB::raw('IF(lt.payment_status_id != 1, 0, lt.principal) AS principal'),
+                DB::raw('IF(lti.payment_status_id != 1, 0, lti.interest) AS interest'),
+        
+                DB::raw('SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) AS total_principal'),
+                DB::raw('SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) AS total_interest'),
+                DB::raw('SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0)) AS total_penalty'),
+        
+                DB::raw('
+                    (SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) + 
+                    SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) + 
+                    SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0))
+                    ) AS total_all
+                '),
+                DB::raw('(SELECT count(ls.count) FROM loan_tenure ls WHERE ls.loan_id = la.id ) as months'),
+                DB::raw('(SUM(lt.principal) + SUM(lti.interest) + IFNULL(SUM(ltp.penalty), 0)) AS total_all_raw'),
+                DB::raw('SUM(lt.principal) AS total_principal_raw'),
+                DB::raw('IFNULL(SUM(lti.interest), 0) AS total_interest_raw'),
+                DB::raw('IFNULL(SUM(ltp.penalty), 0) AS total_penalty_raw'),
+            ])
+            ->first();
+                
+        // dd($loanStatus,$data);
+        return view('borrower.pages.home', compact('loanStatus','data'));
+    }
+
+    public function repayment_schedule()
+    {
+        $results = DB::table('loan_application as la')
+            ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
+            ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
+            ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+            ->select([
+                'lt.date',
+                DB::raw("
+                    IF(
+                        (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
+                        (select DATE_FORMAT(updated_at, '%M %e, %Y') from loan_payments where id = if(lt.payment_id > lti.payment_id,lt.payment_id,lti.payment_id)),0)
+                         AS paid_date
+                "),
+                DB::raw("
+                    IF(
+                        (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
+                        1,
+                        IF(
+                            lt.date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY),
+                            2,
+                            0
+                        )
+                    ) AS payment_status
+                "),
+                DB::raw("(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) AS total"),
+                DB::raw("IF(lt.payment_status_id != 1, 0, lt.principal) AS principal"),
+                DB::raw("IF(lti.payment_status_id != 1, 0, lti.interest) AS interest"),
+                DB::raw("IFNULL(IF(ltp.payment_status_id != 1, 0, ltp.penalty), 0) AS penalty"),
+            ])
+            ->groupBy(
+                'la.id',
+                'lt.date',
+                'lt.payment_status_id',
+                'lt.principal',
+                'lt.payment_id',
+                'lti.payment_status_id',
+                'lti.interest',
+                'lti.payment_id',
+                'ltp.payment_status_id',
+                'ltp.penalty'
+            )
+            ->get();
+
+    //    dd($results);
+
+        return view('borrower.pages.repayment-schedule', compact('results'));
+
     }
 
     public function loanApply()
@@ -351,7 +442,6 @@ class HomeController extends Controller
             ->where('loan_applicant', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
-
         return $loanApplication->loan_status ?? 999;
     }
   
