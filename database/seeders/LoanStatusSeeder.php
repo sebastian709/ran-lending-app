@@ -14,10 +14,13 @@ class LoanStatusSeeder extends Seeder
     public function run(): void
     {
         DB::table('loan_status')->insert([
-            ['loan_status' => 'Processing ', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['loan_status' => 'Pending', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['loan_status' => 'Reject', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['loan_status' => 'Approved', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Pending for Approval ', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'For Interview', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'For Revision', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Waiting for disbursement', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Transferred and Processed', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Rejected', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Closed', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

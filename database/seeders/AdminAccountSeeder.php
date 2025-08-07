@@ -24,7 +24,7 @@ class AdminAccountSeeder extends Seeder
             'is_admin' => 1,
             'is_super_admin' => 1,
             'email' => 'ranserenityhub@gmail.com',
-            'password' => bcrypt('Ranserenity@25'),
+            'password' => bcrypt('asdf'),
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -39,7 +39,7 @@ class AdminAccountSeeder extends Seeder
             'referral_id' => 0,
             'is_admin' => 1,
             'is_super_admin' => 0,
-            'email' => 'almira@gmail.com',
+            'email' => 'almiramint0830@gmail.com',
             'password' => bcrypt('asdf'),
             'created_at' => now(),
             'updated_at' => now()
@@ -71,7 +71,7 @@ class AdminAccountSeeder extends Seeder
             'referral_id' => 0,
             'is_admin' => 1,
             'is_super_admin' => 0,
-            'email' => 'riki@gmail.com',
+            'email' => 'rikivillaranda@gmail.com',
             'password' => bcrypt('asdf'),
             'created_at' => now(),
             'updated_at' => now()
@@ -87,7 +87,7 @@ class AdminAccountSeeder extends Seeder
             'referral_id' => 0,
             'is_admin' => 0,
             'email' => 'sebastianjabson07@gmail.com',
-            'password' => '$2y$12$TKmg0ooXNf0Z0z/BMPyS2u1KxHk2whC7ohFAzM3jdS3mUA5SBRZ1O',
+            'password' => bcrypt('asdf'),
             'created_at' => now(),
             'updated_at' => now()
         ]);

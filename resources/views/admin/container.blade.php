@@ -1,3 +1,16 @@
+@php
+    $loanStatusAccess = Auth::user()->load('loanAccess');
+
+    $total_active = 0;
+
+    $total_active += $loanStatusAccess->loanAccess->pending;
+    $total_active += $loanStatusAccess->loanAccess->for_interview;
+    $total_active += $loanStatusAccess->loanAccess->for_revision;
+    $total_active += $loanStatusAccess->loanAccess->waiting;
+
+
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -36,19 +49,19 @@
                 </a>
                 <ul class="collapse nav flex-column ps-4 list-unstyled" id="loanSubNav">
                     <li class="nav-item">
-                        <a href="/admin/loan-request" data-url="/admin/loan-request" class="nav-link">All</a>
+                        <a href="/admin/loan-request" data-url="/admin/loan-request" class="nav-link" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/admin/loan-request/assigned-status" class="nav-link">Pending</a>
+                        <a href="/admin/loan-request/assigned-status" class="nav-link" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }} > Pending</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/admin/loan-request/assigned-status" class="nav-link">For Interview</a>
+                        <a href="/admin/loan-request/assigned-status" class="nav-link" {{ $loanStatusAccess->loanAccess->for_interview == 0 ? 'hidden' : '' }} >For Interview</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/admin/loan-request/assigned-status" class="nav-link">For revision</a>
+                        <a href="/admin/loan-request/assigned-status" class="nav-link" {{ $loanStatusAccess->loanAccess->for_revision == 0 ? 'hidden' : '' }} >For revision</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/admin/loan-request/assigned-status" class="nav-link">Waiting</a>
+                        <a href="/admin/loan-request/assigned-status" class="nav-link" {{ $loanStatusAccess->loanAccess->waiting == 0 ? 'hidden' : '' }} > Waiting</a>
                     </li>
                 </ul>
             </li>

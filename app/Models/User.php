@@ -54,4 +54,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function loanAccess()
+    {
+        return $this->hasOne(AdminLoanRequestAccess::class, 'user_id', 'id');
+    }
 }
