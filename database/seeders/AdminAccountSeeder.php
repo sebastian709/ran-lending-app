@@ -100,6 +100,9 @@ class AdminAccountSeeder extends Seeder
                 'for_interview' => '1',
                 'for_revision' => '1',
                 'waiting' => '1',
+                'rejected' => '1',
+                'transferred_and_processed' => '1',
+                'closed' => '0',
                 'created_at' => now()
             ],
             [
@@ -108,6 +111,9 @@ class AdminAccountSeeder extends Seeder
                 'for_interview' => '1',
                 'for_revision' => '1',
                 'waiting' => '0',
+                'rejected' => '1',
+                'transferred_and_processed' => '1',
+                'closed' => '0',
                 'created_at' => now()
             ],
             [
@@ -116,6 +122,9 @@ class AdminAccountSeeder extends Seeder
                 'for_interview' => '0',
                 'for_revision' => '0',
                 'waiting' => '1', // waiting for disbursement
+                'rejected' => '1',
+                'transferred_and_processed' => '1',
+                'closed' => '0',
                 'created_at' => now()
             ],
             [
@@ -124,6 +133,9 @@ class AdminAccountSeeder extends Seeder
                 'for_interview' => '0',
                 'for_revision' => '0',
                 'waiting' => '0',
+                'rejected' => '1',
+                'transferred_and_processed' => '1',
+                'closed' => '0',
                 'created_at' => now()
             ]
         ]);

@@ -18,6 +18,9 @@ return new class extends Migration
             $table->integer('for_interview')->default(0)->index();
             $table->integer('for_revision')->default(0)->index();
             $table->integer('waiting')->default(0)->index();
+            $table->integer('rejected')->default(0)->index();
+            $table->integer('transferred_and_processed')->default(0)->index();
+            $table->integer('closed')->default(0)->index();
             $table->integer('status')->default(1)->index();
             $table->timestamps();
         });
