@@ -52,4 +52,67 @@ class AdminController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Loan interest setting updated successfully.']);
     }
+
+
+    public function viewLoanRequest()
+    {
+        // $loanApplication = DB::table('loan_application')
+        //     ->get();
+
+
+        // $result = array(
+        //     "loan_interest" => $loanApplication
+        // );
+
+        // , compact('result')
+
+        return view('admin.pages.loanrequest.index');
+    }
+
+    public function getLoanRequests()
+    {
+        $loanApplication = DB::table('loan_application')
+            ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
+            ->join('loan_status', 'loan_application.loan_status', '=', 'loan_status.id')
+            ->select(
+                'loan_application.id',
+                DB::raw("CONCAT(users.firstname, ' ', users.lastname) as loan_applicant"),
+                'loan_application.loan_amount',
+                'loan_application.loan_tenure',
+                'loan_application.interest_rate',
+                DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
+                'loan_application.referral',
+                'loan_application.loan_status as loan_status',
+                'loan_status.loan_status as loan_status_name'
+            )
+            ->get();
+
+        return response()->json($loanApplication);
+    }
+
+    public function getBorrowersApplication(Request $request){
+        $loan_id = $request->loan_id;
+
+        $loanApplication = DB::table('loan_application')
+            ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
+            ->join('loan_status', 'loan_application.loan_status', '=', 'loan_status.id')
+            ->select(
+                'loan_application.id',
+                'users.id as user_id',
+                DB::raw("CONCAT(users.firstname, ' ', users.lastname) as loan_applicant"),
+                'loan_application.loan_amount',
+                'loan_application.loan_tenure',
+                'loan_application.interest_rate',
+                DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
+                DB::raw("DATE_FORMAT(loan_application.updated_at, '%b %d, %Y') as updated_at"),
+                'loan_application.referral',
+                'loan_application.loan_status as loan_status',
+                'loan_status.loan_status as loan_status_name',
+                'loan_application.purpose_of_loan'
+            )
+            ->where('loan_application.id', $loan_id)
+            ->first();
+
+        return response()->json($loanApplication);
+    }
 }

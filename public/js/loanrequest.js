@@ -1,32 +1,20 @@
 $(document).ready(function () {
-    const loanData = [
-        { loan_id: 'LN-001', borrower_name: 'Juan Dela Cruz', loan_amount: 50000, loan_tenure: 12, interest_rate: 5.0, request_date: '2025-08-01', referral: 'Mark Santos', status: 'Pending Approval' },
-        { loan_id: 'LN-002', borrower_name: 'Maria Clara', loan_amount: 100000, loan_tenure: 24, interest_rate: 6.5, request_date: '2025-07-15', referral: 'John Doe', status: 'For Interview' },
-        { loan_id: 'LN-003', borrower_name: 'Andres Bonifacio', loan_amount: 75000, loan_tenure: 18, interest_rate: 4.5, request_date: '2025-07-20', referral: '', status: 'Waiting for Disbursement' },
-        { loan_id: 'LN-004', borrower_name: 'Emilio Aguinaldo', loan_amount: 60000, loan_tenure: 6, interest_rate: 3.0, request_date: '2025-06-28', referral: 'Jose Rizal', status: 'Processed' },
-        { loan_id: 'LN-005', borrower_name: 'Melchora Aquino', loan_amount: 80000, loan_tenure: 9, interest_rate: 5.5, request_date: '2025-08-02', referral: 'Heneral Luna', status: 'Rejected' },
-        { loan_id: 'LN-006', borrower_name: 'Apolinario Mabini', loan_amount: 120000, loan_tenure: 24, interest_rate: 6.0, request_date: '2025-08-03', referral: '', status: 'For Revision' },
-        { loan_id: 'LN-007', borrower_name: 'Gregoria De Jesus', loan_amount: 45000, loan_tenure: 12, interest_rate: 4.2, request_date: '2025-07-10', referral: 'Diego Silang', status: 'Pending Approval' },
-        { loan_id: 'LN-008', borrower_name: 'Manuel Quezon', loan_amount: 90000, loan_tenure: 18, interest_rate: 5.8, request_date: '2025-06-12', referral: 'Antonio Luna', status: 'For Interview' },
-        { loan_id: 'LN-009', borrower_name: 'Sergio Osmeña', loan_amount: 110000, loan_tenure: 24, interest_rate: 7.0, request_date: '2025-05-22', referral: 'Jose Abad Santos', status: 'Waiting for Disbursement' },
-        { loan_id: 'LN-010', borrower_name: 'Josefa Llanes Escoda', loan_amount: 65000, loan_tenure: 10, interest_rate: 4.9, request_date: '2025-08-05', referral: '', status: 'Processed' }
-    ];
-
+    let loanData = [];
     const itemsPerPage = 10;
     let currentPage = 1;
-    let filteredData = [...loanData];
+    let filteredData = [];
 
-    function renderStatusBadge(status) {
+    function renderStatusBadge(status, status_name) {
         const classMap = {
-            'Pending Approval': 'secondary',
-            'For Interview': 'primary',
-            'For Revision': 'warning',
-            'Waiting for Disbursement': 'info',
-            'Processed': 'success',
-            'Rejected': 'danger'
+            '1' : 'secondary',
+            '2' : 'primary',
+            '3' : 'warning',
+            '4' : 'info',
+            '5' : 'success',
+            '6' : 'danger'
         };
         const badgeClass = classMap[status] || 'light';
-        return `<span class="badge bg-${badgeClass}">${status}</span>`;
+        return `<span class="badge bg-${badgeClass}">${status_name}</span>`;
     }
 
     function renderTable() {
@@ -43,15 +31,15 @@ $(document).ready(function () {
             $('#emptyState').hide();
             $.each(currentItems, function (_, item) {
                 const row = `
-                    <tr>
-                        <td>${item.loan_id}</td>
-                        <td>${item.borrower_name}</td>
+                    <tr data-loan_id="${item.id}">
+                        <td>${'LN-'+String(item.id).padStart(5, '0')}</td>
+                        <td>${item.loan_applicant}</td>
                         <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
                         <td>${item.loan_tenure} months</td>
-                        <td>${item.interest_rate}%</td>
-                        <td>${item.request_date}</td>
+                        <td>${item.interest_rate * 100}%</td>
+                        <td>${item.created_at}</td>
                         <td>${item.referral || '-'}</td>
-                        <td>${renderStatusBadge(item.status)}</td>
+                        <td>${renderStatusBadge(item.loan_status,item.loan_status_name)}</td>
                     </tr>
                 `;
                 $tbody.append(row);
@@ -94,7 +82,21 @@ $(document).ready(function () {
         renderTable();
     });
 
-    renderTable();
+    // ====== Load data from Laravel backend ======
+    $.ajax({
+        url: '/admin/loan-request/data',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            loanData = data;
+            filteredData = [...loanData];
+            renderTable();
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching data:', error);
+            $('#emptyState').show();
+        }
+    });
 });
 
 $(document).ready(function () {
@@ -105,6 +107,46 @@ $(document).ready(function () {
         $('#loanStatusCustom').val('Pending');
         $('#customLoanPopup').removeClass('d-none');
         $('#loanTabs button:first').tab('show'); // activate first tab
+
+        let loan_id = $(this).attr('data-loan_id');
+        let complete_loan_id = 'LN-'+String(loan_id).padStart(5, '0');
+
+        $('.alr_loan_id').text(complete_loan_id);
+
+        $.ajax({
+        url: '/admin/loan-request/get-loan-data',
+        method: 'POST',
+        data : {
+            "loan_id" : loan_id
+        },
+        dataType: 'json',
+        success: function (r) {
+            let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <strong>Amount:</strong> ₱${parseFloat(r.loan_amount).toFixed(2)}<br>
+                                                    <strong>Loan Term:</strong> ${parseInt(r.loan_tenure)} months<br>
+                                                    <strong>Interest:</strong> ${r.interest_rate * 100}%
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Purpose:</strong> ${r.purpose_of_loan}<br>
+                                                    <strong>Request Date:</strong> ${r.created_at}<br>
+                                                    <strong>Last Updated:</strong> ${r.purpose_of_loan}<br>
+                                                    <strong>Referral:</strong> Code
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <strong>Status:</strong> Pending Approval
+                                            </div>
+                                        </div>`;
+
+            $('.alr_loan_details_content').empty().append(loan_detail_content);
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching data:', error);
+            $('#emptyState').show();
+        }
+    });
     });
 
 

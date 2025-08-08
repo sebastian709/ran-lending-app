@@ -53,10 +53,10 @@
 <div id="customLoanPopup" class="custom-popup d-none">
     <div class="popup-content">
         <button class="btn-close" id="closePopup"></button>
-        <h4 class="mb-3">Loan Request: <span>LN-001</span></h4>
+        <h4 class="mb-3">Loan Request: <span class="alr_loan_id"></span></h4>
 
         <div id="editNotice" class="alert alert-warning py-2 px-3 mb-4 rounded">
-            You are editing this as <strong>Almira</strong>
+            You are editing this as <strong class="alr_edit_as_name">{{ Auth::user()->firstname. ' ' . Auth::user()->lastname }}</strong>
         </div>
 
         <!-- Tabs -->
@@ -78,25 +78,8 @@
         <!-- Tab Content -->
         <div class="tab-content">
             <!-- Loan Details -->
-            <div class="tab-pane fade show active" id="detailsTab">
-                <div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <strong>Amount:</strong> ₱50,000<br>
-                            <strong>Loan Term:</strong> 12 months<br>
-                            <strong>Interest:</strong> 5%
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Purpose:</strong> Business expansion<br>
-                            <strong>Request Date:</strong> 2025-08-01<br>
-                            <strong>Last Updated:</strong> 2025-08-05<br>
-                            <strong>Referral:</strong> Code
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <strong>Status:</strong> Pending Approval
-                    </div>
-                </div>
+            <div class="tab-pane fade show active alr_loan_details_content" id="detailsTab">
+                <!-- Content Here -->
             </div>
 
             <!-- Uploaded Documents -->
