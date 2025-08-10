@@ -13,6 +13,8 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->timestamp('availability')->nullable();
             $table->integer('created_by')->nullable();
+            $table->integer('used_by_loan_id')->nullable();
+            $table->tinyInteger('is_active')->default(1);
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

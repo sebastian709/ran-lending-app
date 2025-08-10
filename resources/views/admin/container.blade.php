@@ -30,6 +30,10 @@
     <!-- Lightbox2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
 
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Optional Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
     @stack('sb-styles')
 </head>
 
@@ -41,9 +45,10 @@
         <a href="#" class="nav-link active" data-is-sidebar="1" data-url="/admin/dashboard">
             <i class="bi bi-columns-gap"></i> Dashboard
         </a>
-       <ul class="nav flex-column list-unstyled">
+        <ul class="nav flex-column list-unstyled">
             <li class="nav-item">
-                <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#loanSubNav" aria-expanded="false" aria-controls="loanSubNav">
+                <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#loanSubNav"
+                    aria-expanded="false" aria-controls="loanSubNav">
                     <i class="bi bi-table me-2"></i> Loan Request
                     <i class="bi bi-chevron-down ms-auto"></i>
                 </a>
@@ -52,29 +57,33 @@
                         <a href="" data-url="/admin/loan-request" class="nav-link py-1 m-0" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }} > Pending</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }}> Pending</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_interview == 0 ? 'hidden' : '' }} >For Interview</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_interview == 0 ? 'hidden' : '' }}>For Interview</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_revision == 0 ? 'hidden' : '' }} >For revision</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_revision == 0 ? 'hidden' : '' }}>For revision</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->waiting == 0 ? 'hidden' : '' }} > Waiting</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->waiting == 0 ? 'hidden' : '' }}> Waiting</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->rejected == 0 ? 'hidden' : '' }} > Rejected</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->rejected == 0 ? 'hidden' : '' }}> Rejected</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->transferred_and_processed == 0 ? 'hidden' : '' }} > Transferred</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->transferred_and_processed == 0 ? 'hidden' : '' }}>
+                            Transferred</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->closed == 0 ? 'hidden' : '' }} > Closed</a>
+                        <a href="" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->closed == 0 ? 'hidden' : '' }}> Closed</a>
                     </li>
                 </ul>
             </li>
         </ul>
+        <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/referral-management">
+            <i class="ri-coupon-3-line"></i> Referral Code
+        </a>
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>
@@ -208,6 +217,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/short-unique-id@latest/dist/short-unique-id.min.js"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
