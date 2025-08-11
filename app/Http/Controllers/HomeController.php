@@ -253,7 +253,7 @@ class HomeController extends Controller
                 'account_number' => 'required|string',
                 'government_type_id' => 'required|integer',
                 'payslip_img' => 'required|file|mimes:jpg,jpeg,png,pdf',
-                'qr_code_img' => 'required|file|mimes:jpg,jpeg,png',
+                // 'qr_code_img' => 'file|mimes:jpg,jpeg,png',
                 'government_id_img' => 'required|file|mimes:jpg,jpeg,png',
                 'billing_statement_img' => 'required|file|mimes:jpg,jpeg,png,pdf',
                 'signature_img' => 'required|string',
