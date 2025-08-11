@@ -1,7 +1,7 @@
 let currentView = window.innerWidth <= 768 ? 'card' : 'list';
 $(document).ready(function () {
   let currentPath = window.location.pathname;
-  
+
 
   $('.sidebar .nav-link').each(function () {
     const url = $(this).data('url');
@@ -39,6 +39,8 @@ $(document).on('click', '[data-url]', function (e) {
   const isSidebar = $(this).data('is-sidebar');
   currentPath = window.location.pathname;
 
+
+
   $.get(url, function (data) {
     const content = $(data).find('#content').html(); // ito yung @yield('content')
     $('#content').html(content); // i-inject sa layout
@@ -50,7 +52,10 @@ $(document).on('click', '[data-url]', function (e) {
       $(`[data-url="${url}"]`).addClass('active');
     }
 
-
+    if (url == "/home") {
+      window.location.reload();
+    }
+    
     updateBreadcrumb(url);
 
     // Call plugins safely
@@ -488,7 +493,7 @@ $(document).on('keyup', '#admin-search-input', function () {
 // On search button click – direct search
 $(document).on('click', '#admin-search-btn', function () {
   const query = $('#admin-search-input').val().toLowerCase();
-  
+
   if (!query) return;
 
   let found = false;
@@ -499,10 +504,10 @@ $(document).on('click', '#admin-search-btn', function () {
       $('.my-scroll-hidden').animate({
         scrollTop: $el.offset().top - 100
       }, 500);
-      
+
       found = true;
 
-      
+
       return false; // break loop
     }
   });

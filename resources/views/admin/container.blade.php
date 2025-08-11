@@ -162,7 +162,11 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-
+                                <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/home">
+                                    <i class="ri-loop-left-line me-2"></i>Switch Borrower Mode
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/profile">
                                     <i class="ri-user-line me-2"></i>Profile
                                 </a>
