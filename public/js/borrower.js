@@ -405,7 +405,7 @@ $(function () {
             account_number: '.la_account_number',
             government_type_id: '.la_government_id',
             payslip_img: '#payslipInput',
-            qr_code_img: '#qrInput',
+            // qr_code_img: '#qrInput',
             government_id_img: '#govIdInput',
             billing_statement_img: '#billingInput',
             signature_img: '.signature-filled img' // visual only
