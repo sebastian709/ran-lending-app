@@ -17,6 +17,12 @@ $(document).on('click', '[data-url]', function (e) {
         $(this).addClass('active')
     }
     window.location.href = url;
+
+    if (url === '/admin/dashboard'){
+        window.location.reload();
+
+        window.location.href = url;
+    }
 });
 
  document.addEventListener("DOMContentLoaded", function () {

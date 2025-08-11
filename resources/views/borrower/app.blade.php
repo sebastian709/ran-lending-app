@@ -78,16 +78,20 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-
-                                    <a class="dropdown-item"  href="#" data-url="/profile">
+                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/dashboard">
+                                        <i class="ri-loop-left-line me-2"></i>Switch Borrower Mode
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-url="/profile">
                                         <i class="ri-user-line me-2"></i>Profile
                                     </a>
                                 </li>
                                 <!-- <li>
-                                    <a class="dropdown-item"  href="#" data-url="/borrower/change-password">
-                                        <i class="ri-key-2-line"></i> Change Password
-                                    </a>
-                                </li> -->
+                                        <a class="dropdown-item"  href="#" data-url="/borrower/change-password">
+                                            <i class="ri-key-2-line"></i> Change Password
+                                        </a>
+                                    </li> -->
                                 <li>
                                     <a class="dropdown-item" href="#">
                                         <i class="ri-settings-line me-2"></i>Settings
