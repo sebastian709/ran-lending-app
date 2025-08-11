@@ -26,6 +26,7 @@ class User extends Authenticatable
         'contactno',
         'referral_source_id',
         'is_admin',
+        'is_super_admin',
         'is_referral',
         'email',
         'password',
@@ -52,5 +53,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function loanAccess()
+    {
+        return $this->hasOne(AdminLoanRequestAccess::class, 'user_id', 'id');
     }
 }

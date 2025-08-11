@@ -10,6 +10,8 @@ use App\Http\Controllers\Borrower\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReferralCodeController;
+use App\Http\Controllers\LimitLoanSettingsController;
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
@@ -70,6 +72,32 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.pages.settings.index');
     Route::post('/update-loan-settings', [AdminController::class, 'updateLoanSettings']);
+
+    Route::prefix('settings')->group(function () {
+        Route::get('/loan-limit-settings', [LimitLoanSettingsController::class, 'index']);
+    });
+
+    // page loader
+    Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
+
+    // get datas
+    Route::prefix('loan-request')->group(function () {
+        Route::get('data', [AdminController::class, 'getLoanRequests']);
+        Route::post('get-loan-data', [AdminController::class, 'getBorrowersApplication']);
+    });
+
+    // referral management
+    Route::get('/referral-management', [ReferralCodeController::class, 'index']);
+
+    Route::prefix('referral-code')->group(function () {
+        Route::post('save', [ReferralCodeController::class, 'store']);
+
+        // table 
+        Route::get('list', [ReferralCodeController::class, 'list']);
+        Route::post('update-status', [ReferralCodeController::class, 'updateStatus']);
+        Route::post('delete', [ReferralCodeController::class, 'delete']);
+    });
+    
 });
 Route::post('/upload', [BlogPostController::class, 'upload']);
 

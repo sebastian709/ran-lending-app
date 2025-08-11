@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('referral_id')->default(0)->index();
             $table->integer('status')->default(1)->index();
             $table->integer('is_admin')->default(0)->index();
+            $table->integer('is_super_admin')->default(0)->index();
             $table->integer('is_referral')->default(0)->index();
             $table->string('email')->unique()->index();
             $table->timestamp('email_verified_at')->nullable();

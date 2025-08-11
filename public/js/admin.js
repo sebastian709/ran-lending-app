@@ -1,5 +1,7 @@
+let currentView = window.innerWidth <= 768 ? 'card' : 'list';
 $(document).ready(function () {
-  const currentPath = window.location.pathname;
+  let currentPath = window.location.pathname;
+  
 
   $('.sidebar .nav-link').each(function () {
     const url = $(this).data('url');
@@ -15,6 +17,7 @@ $(document).ready(function () {
   initCKEditor();
   initBlogImageUpload();
   createBPTagify();
+  updateBreadcrumb(currentPath);
 
   // ✅ CSRF setup - FIXED closing
   $.ajaxSetup({
@@ -22,13 +25,19 @@ $(document).ready(function () {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
   });
-});
 
+
+  if (currentPath === '/admin/referral-management') {
+    updateView(currentView);
+    fetchReferralTable(currentPage);
+  }
+});
 
 $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
   const url = $(this).data('url');
   const isSidebar = $(this).data('is-sidebar');
+  currentPath = window.location.pathname;
 
   $.get(url, function (data) {
     const content = $(data).find('#content').html(); // ito yung @yield('content')
@@ -52,6 +61,11 @@ $(document).on('click', '[data-url]', function (e) {
     // 🟢 Call loadBlogPostList IF present
     if ($('#blogPostList').length) {
       loadBlogPostList(); // default: all
+    }
+
+    if (url === '/admin/referral-management') {
+      updateView(currentView);
+      fetchReferralTable(currentPage);
     }
   });
 });
@@ -162,10 +176,11 @@ function updateBreadcrumb(url) {
   filteredSegments.forEach((segment, index) => {
     path += '/' + segment;
 
-    // Convert camelCase or PascalCase to 'Title Case'
+    // Convert kebab-case, camelCase, PascalCase to Title Case
     const label = segment
-      .replace(/([A-Z])/g, ' $1')         // insert space before capital letters
-      .replace(/^./, str => str.toUpperCase()) // capitalize first character
+      .replace(/-/g, ' ')                     // replace dash with space
+      .replace(/([A-Z])/g, ' $1')              // insert space before capital letters
+      .replace(/^./, str => str.toUpperCase()) // capitalize first letter
       .trim();
 
     if (index === filteredSegments.length - 1) {
@@ -441,8 +456,7 @@ $(document).on('keyup', '#admin-search-input', function () {
 
   const matches = [];
 
-  // Hanap sa labels at smalls
-  $('#admin_settings_form label, #admin_settings_form small').each(function () {
+  $('.admin_settings_container label, .admin_settings_container small').each(function () {
     const text = $(this).text().trim();
     if (text.toLowerCase().includes(query)) {
       matches.push({
@@ -452,7 +466,6 @@ $(document).on('keyup', '#admin-search-input', function () {
     }
   });
 
-  // Display suggestions
   if (matches.length > 0) {
     matches.forEach(item => {
       const $option = $('<button type="button">') // ← ADD THIS TYPE
@@ -475,6 +488,7 @@ $(document).on('keyup', '#admin-search-input', function () {
 // On search button click – direct search
 $(document).on('click', '#admin-search-btn', function () {
   const query = $('#admin-search-input').val().toLowerCase();
+  
   if (!query) return;
 
   let found = false;
@@ -485,7 +499,10 @@ $(document).on('click', '#admin-search-btn', function () {
       $('.my-scroll-hidden').animate({
         scrollTop: $el.offset().top - 100
       }, 500);
+      
       found = true;
+
+      
       return false; // break loop
     }
   });
@@ -580,5 +597,506 @@ $(document).on('click', '.a-btn-save', function () {
   }
 });
 
+// referral management
 
+$(document).on('click', '.create-referral-code', function () {
+
+  $.confirm({
+    title: '<h4 class="mb-0">Create Referral Code</h4>',
+    content: `
+            <form id="referralForm" class="form-modern">
+                <div class="form-group mb-3">
+                    <label class="fw-bold d-flex justify-content-between align-items-center">
+                        <span>Code Name <span class="text-danger">*</span></span>
+                        <a href="javascript:void(0);" class="generate-referral-code text-primary small">Generate Code</a>
+                    </label>
+                    <input type="text" name="referral_code" class="form-control" placeholder="Enter code">
+                    <div class="invalid-feedback">Enter a code minimum of 3 letters or numbers</div>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Optional, max 1000 characters"></textarea>
+                    <div class="invalid-feedback">Only letters and numbers allowed (max 1000 characters)</div>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold">Availability <span class="text-danger">*</span></label>
+                    <input type="text" name="availability" class="form-control datetimepicker" placeholder="mm/dd/yyyy | hh:mm AM/PM">
+                    <div class="invalid-feedback">Please select a valid date and time</div>
+                </div>
+            </form>
+        `,
+    columnClass: 'medium',
+    onContentReady: function () {
+      // Date + Time Picker initialization
+      $('.datetimepicker').flatpickr({
+        enableTime: true,
+        dateFormat: "m/d/Y h:i K", // Example: 08/09/2025 03:30 PM
+        minuteIncrement: 1,
+        time_24hr: false
+      });
+
+      // Realtime validation
+      $('#referralForm').on('input change', 'input, textarea', function () {
+        validateField($(this));
+      });
+    },
+    buttons: {
+      cancel: {
+        text: 'Cancel',
+        btnClass: 'btn-secondary'
+      },
+      save: {
+        text: 'Save',
+        btnClass: 'btn-primary',
+        action: function () {
+          let jc = this;
+          let form = $('#referralForm');
+          let valid = validateForm(form);
+
+          if (!valid) {
+            return false; // stop $.confirm close
+          }
+
+          let data = form.serializeArray();
+          let availability = form.find('[name="availability"]').val();
+
+          Swal.fire({
+            title: "Are you sure?",
+            text: `Are you sure you want to save this code until ${availability}?`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $.post('/admin/referral-code/save', data, function (res) {
+                Swal.fire({
+                  title: "Success!",
+                  text: "Referral code saved successfully.",
+                  icon: "success",
+                  timer: 1000,
+                  timerProgressBar: true,
+                  showConfirmButton: false,
+                  didOpen: () => {
+                    Swal.showLoading();
+                  }
+                });
+
+                fetchReferralTable();
+                jc.close();
+              }).fail(function (xhr) {
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.field) {
+                  let fieldName = xhr.responseJSON.field;
+                  let fieldMessage = xhr.responseJSON.message;
+                  let $field = $(`[name="${fieldName}"]`);
+
+                  $field.addClass('is-invalid').removeClass('is-valid');
+                  $field.siblings('.invalid-feedback').text(fieldMessage).show();
+                } else {
+                  Swal.fire({
+                    title: "Error!",
+                    text: "Something went wrong while saving.",
+                    icon: "error"
+                  });
+                }
+              });
+            }
+          });
+
+          return false;
+        }
+      }
+    },
+    onContentReady: function () {
+      $('.datetimepicker').flatpickr({
+        enableTime: true,
+        dateFormat: "m/d/Y h:i K"
+      });
+
+      // Realtime validation
+      $('#referralForm').on('input change', 'input, textarea', function () {
+        validateField($(this));
+      });
+      fetchReferralTable();
+    }
+  });
+
+  function validateForm(form) {
+    let allValid = true;
+    form.find('input, textarea').each(function () {
+      if (!validateField($(this))) {
+        allValid = false;
+      }
+    });
+    return allValid;
+  }
+
+  function validateField($field) {
+    let name = $field.attr('name');
+    let value = $field.val().trim();
+    let valid = true;
+    let message = '';
+
+    // Remove special success-on-error class so validation controls the visual state
+    $field.removeClass('input-success-error');
+
+    if (name === 'referral_code') {
+      // Empty
+      if (value.length === 0) {
+        valid = false;
+        message = 'Enter a code minimum of 3 letters or numbers';
+      }
+      // Too short
+      else if (value.length < 3) {
+        valid = false;
+        message = 'Enter a code minimum of 3 letters or numbers';
+      }
+      // Too long
+      else if (value.length > 20) {
+        valid = false;
+        message = 'Maximum of 20 characters allowed';
+      }
+      // Contains invalid chars (only allow letters and digits)
+      else if (!/^[A-Za-z0-9]+$/.test(value)) {
+        valid = false;
+        message = 'Only letters and numbers are allowed';
+      }
+      // Must contain at least one letter AND at least one digit
+      else if (!/(?=.*[A-Za-z])/.test(value) || !/(?=.*\d)/.test(value)) {
+        valid = false;
+        message = 'Code must contain at least one letter and one number';
+      } else {
+        valid = true;
+      }
+    }
+
+    if (name === 'description') {
+      if (value.length > 1000) {
+        valid = false;
+        message = 'Maximum of 1000 characters allowed';
+      } else if (value.length > 0 && !/^[a-zA-Z0-9\s]*$/.test(value)) {
+        valid = false;
+        message = 'Description may only contain letters, numbers and spaces';
+      } else {
+        valid = true;
+      }
+    }
+
+    if (name === 'availability') {
+      if (value.length === 0) {
+        valid = false;
+        message = 'Please select a valid date and time';
+      } else {
+        valid = true;
+      }
+    }
+
+    // Find the correct invalid-feedback element in the same .form-group
+    let $feedback = $field.closest('.form-group').find('.invalid-feedback');
+
+    if (!valid) {
+      $field.addClass('is-invalid').removeClass('is-valid');
+      if ($feedback.length) {
+        $feedback.text(message).show();
+      }
+    } else {
+      $field.removeClass('is-invalid').addClass('is-valid');
+      if ($feedback.length) {
+        $feedback.hide();
+      }
+    }
+
+    return valid;
+  }
+
+});
+
+
+// Trigger events for search and filter
+$(document).on('input', '#searchReferral', function () {
+  fetchReferralTable();
+});
+
+$(document).on('change', '#filterReferral', function () {
+  fetchReferralTable();
+});
+
+// Click events for is_active toggle
+$(document).on('click', '.code-status', function () {
+  let id = $(this).data('id');
+  let isActive = $(this).data('active');
+  let availability = $(this).data('availability');
+
+  if (isActive == 0) {
+    // Inactive confirmation
+    Swal.fire({
+      title: "This code is expired.",
+      text: "Please edit the code details to activate.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Activate",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateCodeStatus(id, 1); // activate
+      }
+    });
+  } else {
+    // Active confirmation
+    Swal.fire({
+      title: "Disable this code?",
+      text: `This code is available until ${availability}. Are you sure you want to disable this code?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Deactivate",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateCodeStatus(id, 0); // deactivate
+      }
+    });
+  }
+});
+
+// Click event for delete
+$(document).on('click', '.delete-code', function () {
+  let id = $(this).data('id');
+  Swal.fire({
+    title: "Are you sure?",
+    text: "Are you sure you want to delete this code?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Delete",
+    cancelButtonText: "Cancel"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteReferralCode(id);
+    }
+  });
+});
+
+// Fetch table data
+let currentPage = 1;
+let perPage = 10;
+
+function fetchReferralTable(page = 1) {
+  let search = $('#searchReferral').val();
+  let filter = $('#filterReferral').val();
+
+  $.get('/admin/referral-code/list', { search, filter, page, per_page: perPage }, function (res) {
+    currentPage = res.current_page; // ✅ i-sync sa response
+    renderReferralTable(res.data);
+    renderPagination(res.total, res.current_page, res.per_page);
+  });
+}
+
+function renderPagination(total, current, perPage) {
+  let totalPages = Math.ceil(total / perPage);
+  let $pagination = $('#pagination');
+  let $info = $('#tableInfo');
+
+  // Table info
+  let start = (current - 1) * perPage + 1;
+  let end = Math.min(start + perPage - 1, total);
+  $info.text(`${start} - ${end} of ${total} entries`);
+
+  $pagination.empty();
+
+  // Previous
+  $pagination.append(`
+        <li class="page-item ${current === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${current - 1}">Previous</a>
+        </li>
+    `);
+
+  // Page numbers logic
+  let pageNumbers = [];
+
+  if (totalPages <= 5) {
+    for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+  } else {
+    if (current <= 3) {
+      pageNumbers = [1, 2, 3, 4, 5, '...', totalPages];
+    } else if (current >= totalPages - 2) {
+      pageNumbers = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    } else {
+      pageNumbers = [1, '...', current - 1, current, current + 1, '...', totalPages];
+    }
+  }
+
+  pageNumbers.forEach(num => {
+    if (num === '...') {
+      $pagination.append(`<li class="page-item disabled"><span class="page-link">...</span></li>`);
+    } else {
+      $pagination.append(`
+                <li class="page-item ${parseInt(num) === parseInt(current) ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${num}">${num}</a>
+                </li>
+            `);
+    }
+  });
+
+  // Next
+  $pagination.append(`
+        <li class="page-item ${current === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${current + 1}">Next</a>
+        </li>
+    `);
+}
+
+// Pagination click event
+$(document).on('click', '#pagination a.page-link', function (e) {
+  e.preventDefault();
+  let page = parseInt($(this).data('page'));
+  if (!isNaN(page) && page > 0) {
+    currentPage = page;
+    fetchReferralTable(page);
+  }
+});
+
+
+// Initial view setup on page load
+$(document).ready(function () {
+  updateView(currentView);
+  fetchReferralTable(currentPage);
+});
+
+// View toggle button click handlers
+$(document).on('click', '#listViewBtn', function () {
+  if (currentView !== 'list') {
+    currentView = 'list';
+    updateView(currentView);
+    fetchReferralTable(currentPage);
+  }
+});
+
+$(document).on('click', '#cardViewBtn', function () {
+  if (currentView !== 'card') {
+    currentView = 'card';
+    updateView(currentView);
+    fetchReferralTable(currentPage);
+  }
+});
+
+function updateView(view) {
+  if (view === 'list') {
+    $('#referralTable').show();
+    $('#referralCardContainer').hide();
+    $('#listViewBtn').addClass('active');
+    $('#cardViewBtn').removeClass('active');
+  } else {
+    $('#referralTable').hide();
+    $('#referralCardContainer').show();
+    $('#listViewBtn').removeClass('active');
+    $('#cardViewBtn').addClass('active');
+  }
+}
+
+
+// Modify your renderReferralTable to render cards if card view is active
+function renderReferralTable(data) {
+  let $tbody = $('#referralTable tbody');
+  let $cardContainer = $('#referralCardContainer');
+
+  $tbody.empty();
+  $cardContainer.empty();
+
+  if (data.length === 0) {
+    let emptyHtml = `
+      <tr>
+        <td colspan="7" class="text-center py-5">
+          <label class="fw-bold">No referral code available</label>
+          <p class="mb-4">There is currently no code to display. Click the button below to create.</p>
+          <button class="btn btn-sm btn-primary create-referral-code"><i class="ri-coupon-3-line"></i> Create Referral Code</button>
+        </td>
+      </tr>`;
+    $tbody.append(emptyHtml);
+    $cardContainer.append(`
+      <div class="text-center py-5 w-100">
+        <h4>No referral code available</h4>
+        <p>There is currently no code to display. Click the button below to create.</p>
+        <button class="btn btn-primary create-referral-code"><i class="ri-coupon-3-line"></i> Create Referral Code</button>
+      </div>
+    `);
+    return;
+  }
+
+  if (currentView === 'list') {
+    data.forEach(row => {
+      let statusLabel = row.is_active == 1
+        ? `<span class="badge bg-success code-status" style="cursor:pointer" data-id="${row.id}" data-active="1" data-availability="${row.availability}">Active</span>`
+        : `<span class="badge bg-secondary code-status" style="cursor:pointer" data-id="${row.id}" data-active="0" data-availability="${row.availability}">Inactive</span>`;
+
+      let tr = `
+        <tr>
+          <td>${row.referral_code}</td>
+          <td>${row.description || ''}</td>
+          <td>${row.availability || ''}</td>
+          <td>${row.created_at}</td>
+          <td>${row.firstname || ''} ${row.lastname || ''}</td>
+          <td>${statusLabel}</td>
+          <td>
+            <button class="btn btn-danger btn-sm delete-code" data-id="${row.id}"><i class="ri-delete-bin-line"></i> Delete</button>
+          </td>
+        </tr>`;
+
+
+      $tbody.append(tr);
+    });
+  } else if (currentView === 'card') {
+    // Card view rendering
+    data.forEach(row => {
+      let statusLabel = row.is_active == 1
+        ? `<span class="badge bg-success code-status" style="cursor:pointer" data-id="${row.id}" data-active="1" data-availability="${row.availability}">Active</span>`
+        : `<span class="badge bg-secondary code-status" style="cursor:pointer" data-id="${row.id}" data-active="0" data-availability="${row.availability}">Inactive</span>`;
+
+      let card = `<div class="col-12 col-lg-4">
+                    <div class="card" data-id="${row.id}">
+                      <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <h5 class="card-title text-truncate">${row.referral_code}</h5>
+                          <div>${statusLabel}</div>
+                        </div>
+                        <p class="card-text"><strong>Description:</strong> ${row.description || 'N/A'}</p>
+                        <p class="card-text"><strong>Availability:</strong> ${row.availability || 'N/A'}</p>
+                        <p class="card-text"><strong>Date Created:</strong> ${row.created_at}</p>
+                        <p class="card-text mb-3"><strong>Created by:</strong> ${row.firstname || ''} ${row.lastname || ''}</p>
+                        <button class="btn btn-outline-danger btn-sm delete-code" data-id="${row.id}">
+                          <i class="ri-delete-bin-line me-1"></i> Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>`;
+
+      $('#referralCardContainer').removeClass('d-none').append(card);
+    });
+  }
+}
+
+
+
+// Update active/inactive
+function updateCodeStatus(id, status) {
+  $.post('/admin/referral-code/update-status', { id, status }, function () {
+    fetchReferralTable();
+  });
+}
+
+// Delete referral code
+function deleteReferralCode(id) {
+  $.post('/admin/referral-code/delete', { id }, function () {
+    fetchReferralTable();
+  });
+}
+
+function generateReadableCode() {
+  const uid = new ShortUniqueId({ length: 6, dictionary: 'alpha_upper' });
+  let number = Math.floor(10 + Math.random() * 90);
+  return uid.rnd() + number; // e.g. 'QWERTY99'
+}
+
+$(document).on('click', '.generate-referral-code', function () {
+  const code = generateReadableCode();
+  $('input[name="referral_code"]').val(code).trigger('input'); // set value + trigger validation
+});
 
