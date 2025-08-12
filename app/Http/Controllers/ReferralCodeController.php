@@ -121,4 +121,27 @@ class ReferralCodeController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function checkReferralCode(Request $request)
+    {
+        $query = DB::table('referral_code')
+            ->where('referral_code.status', 1)
+            ->where('referral_code', $request->referral_code)
+            ->where('is_active', 1)
+            ->first();
+
+        $is_found_code = 0;
+        $referral_code_id = null; // default kapag walang nahanap
+
+        if (!empty($query)) {
+            $is_found_code = 1;
+            $referral_code_id = $query->id;
+        }
+
+        return response()->json([
+            "referral_code_id" => $referral_code_id,
+            "is_found_code" => $is_found_code
+        ]);
+    }
+
 }

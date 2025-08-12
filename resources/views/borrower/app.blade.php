@@ -79,7 +79,7 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/dashboard">
-                                        <i class="ri-loop-left-line me-2"></i>Switch Borrower Mode
+                                        <i class="ri-loop-left-line me-2"></i>Admin Mode
                                     </a>
                                 </li>
                                 <li>
