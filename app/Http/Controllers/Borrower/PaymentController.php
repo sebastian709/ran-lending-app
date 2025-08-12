@@ -43,14 +43,6 @@ class PaymentController extends Controller
         ->where('payment_status_id', 1)
         ->get();
 
-        //Payable/Deadline wthinin 7 days
-        // $data['loan_tenure_next_pay'] = loan_tenure::whereBetween('date', [
-        //     now(),
-        //     now()->addDays(7)
-        // ])->first();
-
-
-
         $data['loan_tenure_next_pay'] = DB::table('loan_tenure as lt')
             ->select(
                 'lt.id',
@@ -62,7 +54,9 @@ class PaymentController extends Controller
                 'lt.count',
                 DB::raw('SUM(ltp.penalty) as penalty'),
                 DB::raw('(if(lt.payment_status_id != 1,0,lt.principal) + if(lti.payment_status_id != 1,0,lti.interest) + IFNULL(SUM(ltp.penalty), 0)) as total'),
-                DB::raw('(SELECT count(ls.count) FROM loan_tenure ls WHERE ls.loan_id = la.id ) as months')
+                DB::raw('(SELECT count(ls.count) FROM loan_tenure ls WHERE ls.loan_id = la.id ) as months'),
+                DB::raw('IF((lt.payment_status_id > 1 || lti.payment_status_id > 1),1,0) partial')
+                
 
             )
             ->join('loan_application as la', function ($join) {
@@ -78,6 +72,7 @@ class PaymentController extends Controller
             ->where('lt.payment_status_id','>',0 )
             ->where(function ($query) {$query->where('lt.payment_status_id', '<=', 1)->orWhere('lti.payment_status_id', '<=', 1);})
             ->where('la.loan_applicant',$data['loan_application']->id  )
+            ->where('lt.date', '<=', Carbon::today()->endOfDay())
             ->groupBy(  'la.id',
                                 'la.interest_rate',
                                 'lt.date', 
@@ -90,7 +85,51 @@ class PaymentController extends Controller
                                 'lti.payment_status_id',
                                 'lt.loan_id')
             ->first();
-            // dd($data['loan_tenure_next_pay'] );
+
+            $data['to_pay'] = DB::table('loan_tenure as lt')
+            ->select(
+                'lt.id',
+                'la.interest_rate',
+                'lt.date',
+                'lti.id',
+                DB::raw('if(lt.payment_status_id != 1,0,lt.principal) as principal'),
+                DB::raw('if(lti.payment_status_id != 1,0,lti.interest) as interest'),
+                'lt.count',
+                DB::raw('SUM(ltp.penalty) as penalty'),
+                DB::raw('(if(lt.payment_status_id != 1,0,lt.principal) + if(lti.payment_status_id != 1,0,lti.interest) + IFNULL(SUM(ltp.penalty), 0)) as total'),
+                DB::raw('(SELECT count(ls.count) FROM loan_tenure ls WHERE ls.loan_id = la.id ) as months'),
+                DB::raw('IF((lt.payment_status_id > 1 || lti.payment_status_id > 1),1,0) partial')
+                
+
+            )
+            ->join('loan_application as la', function ($join) {
+                $join->on('la.id', '=', 'lt.loan_id')
+                    ->where('la.status', 1);
+            })
+            ->join('loan_tenure_interest as lti', function ($join) {
+                $join->on('lti.tenure_id', '=', 'lt.id');
+            })
+            ->leftJoin('loan_tenure_penalty as ltp', function ($join) {
+                $join->on('ltp.tenure_id', '=', 'lt.id');
+            })
+            ->where('lt.payment_status_id','>',0 )
+            ->where(function ($query) {$query->where('lt.payment_status_id', '<=', 1)->orWhere('lti.payment_status_id', '<=', 1);})
+            ->where('la.loan_applicant',$data['loan_application']->id  )
+            ->where('lt.date', '<=', Carbon::today()->endOfDay())
+            ->groupBy(  'la.id',
+                                'la.interest_rate',
+                                'lt.date', 
+                                'lt.principal',                         
+                                'lti.interest',
+                                'lt.count',
+                                'lt.id',
+                                'lti.id',
+                                'lt.payment_status_id',
+                                'lti.payment_status_id',
+                                'lt.loan_id')
+            ->get();
+
+            $ids = $data['to_pay']->pluck('id')->toArray();      
 
             // IF HAS ACTIVE LOAN BUT NOTHING TO PAY (FOR NOW)
             if ($data['loan_tenure_next_pay'] === null) {
@@ -105,7 +144,7 @@ class PaymentController extends Controller
             })
             ->where('loan_tenure.payment_status_id', 1)
             ->where('loan_tenure.loan_id', $data['loan_application']->id)
-            ->where('loan_tenure.id','!=', $data['loan_tenure_next_pay']->id)
+            ->whereNotIn('loan_tenure.id', $ids)
             ->select(
                 'loan_tenure.id as tenure_id',
                 'lti.id as interest_id',
@@ -135,7 +174,7 @@ class PaymentController extends Controller
 
      public function submit(Request $request){
          $data = $request->all();
-        //  dd($data);
+         dd($data);
         
         $Loan_payment = Loan_payment::insertGetId([
             'amount_sent'       => $request->total,
@@ -260,7 +299,7 @@ class PaymentController extends Controller
                 ]);
             }
 
-            dd('3');
+            // dd('3');
         }elseif ($request->type == 4) {
             // dd('4');
 

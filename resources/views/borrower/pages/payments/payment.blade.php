@@ -25,29 +25,31 @@
             <span class="section-title">Total Amount to Pay</span>
             <div class="amount-display" id="totalAmount" data-amount="{{ $data['loan_tenure_next_pay']->total }}">₱ <span>{{ number_format($data['loan_tenure_next_pay']->total,2) }}</span></div>
         </div>
-
+        
         <!-- NEXT PAYMENT -->
         <div class="card-section">
             <span class="section-title">Next Payment Due</span>
             <div class="list-group next_payment">
-                <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option-next position-relative">
-                    <div class="d-flex align-items-center gap-3">
-                        <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-tenure_count="{{ $data['loan_tenure_next_pay']->count }}" data-id="{{ $data['loan_tenure_next_pay']->id }}" data-amount="{{ $data['loan_tenure_next_pay']->total }}" checked disabled>
-                        <div class="d-flex flex-column">
-                            <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse($data['loan_tenure_next_pay']->date)->format('F j, Y') }}</span>
-                            <small class="text-muted">{{ $data['loan_tenure_next_pay']->count }}/{{ $data['loan_tenure_next_pay']->months }} Repayment</small>
-                        </div>
-                    </div>
-                     <div class="d-flex align-items-center gap-2">
-                        <div class="fw-bold text-success">₱ {{ number_format($data['loan_tenure_next_pay']->total,2) }}</div>
-                        <!-- <span class="badge bg-danger">Delay</span> -->
-                    </div>
-                </label>
-            </div>
-            <button class="btn btn-sm btn-outline-primary pay-partial-btn">Pay Partial</button>
-            <button class="btn btn-sm btn-outline-secondary pay-partial-btn_close close-partial d-none">Close Partial</button>
-        </div>
 
+            @foreach($data['to_pay'] as $index => $to_pay)
+                    <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option-next position-relative">
+                        <div class="d-flex align-items-center gap-3">
+                            <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-tenure_count="{{ $to_pay->count }}" data-id="{{ $to_pay->id }}" data-amount="{{ $to_pay->total }}" data-principal="{{ $to_pay->principal }}" data-interest="{{ $to_pay->interest }}" data-penalty="{{ $to_pay->penalty }}" checked disabled>
+                            <div class="d-flex flex-column">
+                                <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse($to_pay->date)->format('F j, Y') }}</span>
+                                <small class="text-muted">{{ $to_pay->count }}/{{ $to_pay->months }} Repayment</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="fw-bold text-success">₱ {{ number_format($to_pay->total,2) }}</div>
+                        </div>
+                    </label>
+                    @endforeach
+
+                </div>
+                <button class="btn btn-sm btn-outline-primary pay-partial-btn">Pay Partial</button>
+                <button class="btn btn-sm btn-outline-secondary pay-partial-btn_close close-partial d-none">Close Partial</button>
+            </div>       
 
         <!-- PARTIAL PAYMENT -->
         <div class="card-section partial_section d-none">

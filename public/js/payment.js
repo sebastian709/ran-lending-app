@@ -8,16 +8,18 @@ function updateTotal() {
     let total_penalty = 0;
 
     // Collect checked normal payments (Next Payment + Advance)
-        const amount = parseFloat($('#totalAmount').attr('data-amount'));
-        const principal = parseFloat($('.partial-principal').attr('data-amount'));
-        const interest = parseFloat($('.partial-interest').attr('data-amount'));
-        const penalty = parseFloat($('.partial-penalty').attr('data-amount'));
+        // const amount = parseFloat($('#totalAmount').attr('data-amount'));
+        // const principal = parseFloat($('.partial-principal').attr('data-amount'));
+        // const interest = parseFloat($('.partial-interest').attr('data-amount'));
+        // const penalty = parseFloat($('.partial-penalty').attr('data-amount'));
+        $('.payment-option-next input[type="checkbox"]:checked').each(function () {
+            
+            total += (parseFloat($(this).attr('data-interest')) || 0) + (parseFloat($(this).attr('data-principal')) || 0)+ (parseFloat($(this).attr('data-penalty')) || 0);
+            total_interest += parseFloat($(this).attr('data-interest')) || 0;
+            total_principal += parseFloat($(this).attr('data-principal')) || 0;
+            total_penalty += parseFloat($(this).attr('data-penalty')) || 0;
 
-        total = amount;
-        total_interest = interest;
-        total_penalty = penalty;
-        total_principal = principal;
-        
+        });
         // console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
 
     if($('.payment-option-advance input[type="checkbox"]:checked').length > 0){ 
@@ -314,12 +316,6 @@ $(document).on('click', '.loan_payment_confirm', function () {
 
 
 $(document).on('click', '#submit_payment', function () {
-    // var is_partial = $('.payment-total').attr('data-partial');
-    // var payment_total = $('.payment-total').text()
-    // var payment_interest = $('.payment-interest').text()
-    // var payment_principal = $('.payment-principal').text()
-    // var payment_penalty = $('.payment-penalty').text()
-
 
     let referenceCode = $('#referenceCode').val().trim();
     if (referenceCode == null) {
@@ -350,13 +346,22 @@ $(document).on('click', '#submit_payment', function () {
     
     //IF ADVANCE PAYMENT
     var paymentData = [];
-    paymentData.push({
-        id : next_id,
+    // paymentData.push({
+    //     id : next_id,
+    // });
+    $($('.payment-option-next input[type="checkbox"]:checked')).each(function () {
+        var id = $(this).attr('data-tenure_id');
+        paymentData.push({
+            id : id,
+            type : '1',
+        });
     });
+
     $($('.payment-option-advance input[type="checkbox"]:checked')).each(function () {
         var id = $(this).attr('data-tenure_id');
         paymentData.push({
             id : id,
+            type : '2',
         });
     });
     // console.log(paymentData);

@@ -61,7 +61,7 @@
                         <div class="text-warning mb-2">
                             <i class="ri-wallet-3-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">₱ {{ number_format($data->current_payment,2) }}</div>
+                        <div class="h4 fw-bold mb-1">₱ {{ number_format($data->raw_total,2) }}</div>
                         <div class="small text-muted">Monthly Due Amount</div>
                     </div>
                 </div>

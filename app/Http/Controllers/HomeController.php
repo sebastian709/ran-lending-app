@@ -59,6 +59,10 @@ class HomeController extends Controller
                 'lt.date',
                 DB::raw('IF(lt.payment_status_id != 1, 0, lt.principal) AS principal'),
                 DB::raw('IF(lti.payment_status_id != 1, 0, lti.interest) AS interest'),
+
+                DB::raw('lt.principal AS raw_principal'),
+                DB::raw('lti.interest AS raw_interest'),
+                DB::raw('(lti.interest + lt.principal) AS raw_total'),
         
                 DB::raw('SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) AS total_principal'),
                 DB::raw('SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) AS total_interest'),
@@ -77,6 +81,8 @@ class HomeController extends Controller
                 DB::raw('IFNULL(SUM(ltp.penalty), 0) AS total_penalty_raw'),
             ])
             ->first();
+
+        
                 
         // dd($loanStatus,$data);
         return view('borrower.pages.home', compact('loanStatus','data'));
