@@ -96,7 +96,7 @@
                                     <!-- Referral Code Input (hidden by default) -->
                                     <div id="referral-code-section" class="mt-3" style="display: none;">
                                         <label for="referralCode" class="form-label fw-medium">Referral Code</label>
-                                        <input type="text" class="form-control" id="referralCode" placeholder="Enter referral code provided by admin">
+                                        <input type="text" class="form-control" data-is_valid="0" data-referral_code_id="0" id="referralCode" placeholder="Enter referral code provided by admin">
                                     </div>
                                 </div>
 

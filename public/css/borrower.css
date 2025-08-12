@@ -470,3 +470,10 @@ img.user-avatar {
     color: #aaa;
     border: none;
 }
+
+.is-valid {
+    border-color: #28a745 !important;
+}
+.is-invalid {
+    border-color: #dc3545 !important;
+}

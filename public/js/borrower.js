@@ -35,6 +35,15 @@ $(function () {
                         formData.loanAmount = parseFloat(res.loan_amount);
                     }
 
+                    if(res.referral_code_id){
+                        $('#referral-code-section').show();
+                        $('#referralCode').val(res.referral_code);
+
+                        $('#referralCode').addClass('is-valid');
+                        $('#referralCode').after('<div class="referral-feedback text-success small mt-1">✓ Valid referral code</div>');
+
+                    }
+
                     if (res.loan_tenure) $('#standardTenure').val(res.loan_tenure);
 
                     if (res.interest_rate) {
@@ -215,6 +224,7 @@ $(function () {
         const userId = $('#gb_user_id').val();
         const purpose = $('#la_purpose').val();
         const referral = $('input[name="referralType"]:checked').val() || null;
+        const referral_code_id = $('#referralCode').attr('data-referral_code_id') == 0 ? null : $('#referralCode').attr('data-referral_code_id');
         const occupation = $('#occupation').val();
         const income = $('#income').val();
         const employmentStatus = $('input[name="employmentStatus"]:checked').val();
@@ -232,6 +242,7 @@ $(function () {
                 user_id: userId,
                 purpose_of_loan: purpose,
                 referral: referral,
+                referral_code_id : referral_code_id,
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
@@ -847,6 +858,48 @@ $(document).ready(function () {
     // Initialize pagination immediately
     renderPagination();
 })();
+
+$(document).on('keyup', '#referralCode', function () {
+    let $input = $(this);
+    let this_value = $input.val();
+
+    console.log(this_value);
+
+    $.ajax({
+        url: '/check-referral-code',
+        method: 'POST',
+        data: {
+            referral_code: this_value,
+        },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (r) {
+            // tanggalin muna mga dating error/valid message
+            $input.removeClass('is-invalid is-valid');
+            $input.next('.referral-feedback').remove();
+
+            // set attributes
+            $input.attr('data-is_valid', r.is_found_code);
+            $input.attr('data-referral_code_id', r.referral_code_id || '');
+
+            if (r.is_found_code == 1) {
+                // valid
+                $input.addClass('is-valid');
+                $input.after('<div class="referral-feedback text-success small mt-1">✓ Valid referral code</div>');
+            } else {
+                // invalid
+                $input.addClass('is-invalid');
+                $input.after('<div class="referral-feedback text-danger small mt-1">✗ Invalid referral code</div>');
+            }
+        },
+        error: function () {
+            console.error('Failed to check referral code.');
+        }
+    });
+});
+
+
 
 
 

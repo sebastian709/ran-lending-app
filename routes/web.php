@@ -99,6 +99,8 @@ Route::prefix('admin')->group(function () {
     });
     
 });
+Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferralCode']);
+
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
 

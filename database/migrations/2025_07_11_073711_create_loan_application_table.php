@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('loan_applicant')->nullable(); // user_id
             $table->text('purpose_of_loan')->nullable();
             $table->string('referral')->nullable(); // admin, friend, other
+            $table->unsignedBigInteger('referral_code_id')->nullable();
 
             $table->decimal('loan_amount', 15, 4)->nullable();
             $table->integer('loan_tenure')->nullable(); // in months or years
