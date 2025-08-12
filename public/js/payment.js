@@ -106,7 +106,65 @@ function resetTotal(){
     $('.payment-penalty').attr('data-amount','0.00')
 }
 
-// Handle advance/next payment checkbox changes
+$(document).on('change', '.partialy-pay', function () {
+    const $changedPartial = $(this);
+
+    // Find the index of the .partial-months container this checkbox belongs to
+    const $partialMonths = $('.partial-months');
+    let currentMonthIndex = -1;
+
+    $partialMonths.each(function (index) {
+        if ($(this).find($changedPartial).length > 0) {
+            currentMonthIndex = index; // zero-based index of the month
+            return false; // break loop
+        }
+    });
+
+    let monthsWithCheckedPartialPay = [];
+    $partialMonths.each(function (index) {
+        if ($(this).find('.partialy-pay:checked').length > 0) {
+            monthsWithCheckedPartialPay.push(index);
+        }
+    });
+
+    if (monthsWithCheckedPartialPay.length > 0) {
+    
+        const maxCheckedMonth = Math.max(...monthsWithCheckedPartialPay);
+
+        $('.due_payment').each(function (index) {
+            if (index < maxCheckedMonth) {
+                $(this).prop('checked', true);
+            } else {
+                $(this).prop('checked', false);
+            }
+        });
+    } else {
+        $('.due_payment').prop('checked', false);
+    }
+
+    updateTotal();
+});
+
+
+
+
+
+$(document).on('change', '.due_payment', function () {
+    const index = $('.due_payment').index(this);
+    // $('#payAllCheck').prop('checked', false);
+    // $('.rebate').addClass('d-none')
+    
+    if ($(this).is(':checked')) {
+        // Auto-check previous months if one is checked
+        $('.due_payment').slice(0, index + 1).prop('checked', true);
+    } else {
+        // Uncheck future months if unchecked
+        $('.due_payment').slice(index + 1).prop('checked', false);
+        $('.payment-option input[type="checkbox"]').prop('checked', false);
+    }
+
+    updateTotal();
+});
 $(document).on('change', '.payment-option input[type="checkbox"]', function () {
     const index = $('.payment-option input[type="checkbox"]').index(this);
     $('#payAllCheck').prop('checked', false);
@@ -115,6 +173,7 @@ $(document).on('change', '.payment-option input[type="checkbox"]', function () {
     if ($(this).is(':checked')) {
         // Auto-check previous months if one is checked
         $('.payment-option input[type="checkbox"]').slice(0, index + 1).prop('checked', true);
+        $('.due_payment').prop('checked', true);
     } else {
         // Uncheck future months if unchecked
         $('.payment-option input[type="checkbox"]').slice(index + 1).prop('checked', false);
@@ -127,6 +186,7 @@ $(document).on('change', '.payment-option input[type="checkbox"]', function () {
 $(document).on('change', '#payAllCheck', function () {
      if ($(this).is(':checked')) {
         $('.payment-option input[type="checkbox"]').prop('checked', true);
+        $('.due_payment').prop('checked', true);
         $('.rebate').removeClass('d-none')
     } else {
         $('.payment-option input[type="checkbox"]').prop('checked', false);
@@ -405,3 +465,23 @@ $(document).on('click', '.pay-partial-btn_close', function () {
     $('.pay-partial-btn').removeClass('d-none');
 
 });
+
+$(document).ready(function () {
+  $('.togglePartials').on('click', function (e) {
+    e.preventDefault();
+
+    const $btn = $(this);
+    const $partialMonths = $btn.closest('label.payment-option-next').next('.partial-months');
+    const $icon = $btn.find('i.bi');
+
+    $partialMonths.slideToggle(200, function () {
+      // Update icon based on visibility after animation ends
+      if ($partialMonths.is(':visible')) {
+        $icon.removeClass('bi-chevron-down').addClass('bi-chevron-up');
+      } else {
+        $icon.removeClass('bi-chevron-up').addClass('bi-chevron-down');
+      }
+    });
+  });
+});
+

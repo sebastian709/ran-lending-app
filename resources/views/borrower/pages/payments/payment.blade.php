@@ -34,7 +34,7 @@
             @foreach($data['to_pay'] as $index => $to_pay)
                     <label class="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 payment-option-next position-relative">
                         <div class="d-flex align-items-center gap-3">
-                            <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-tenure_count="{{ $to_pay->count }}" data-id="{{ $to_pay->id }}" data-amount="{{ $to_pay->total }}" data-principal="{{ $to_pay->principal }}" data-interest="{{ $to_pay->interest }}" data-penalty="{{ $to_pay->penalty }}" checked disabled>
+                            <input class="form-check-input flex-shrink-0 due_payment" type="checkbox" data-tenure_count="{{ $to_pay->count }}" data-id="{{ $to_pay->id }}" data-amount="{{ $to_pay->total }}" data-principal="{{ $to_pay->principal }}" data-interest="{{ $to_pay->interest }}" data-penalty="{{ $to_pay->penalty }}" >
                             <div class="d-flex flex-column">
                                 <span class="fw-semibold">Due Date: {{ \Carbon\Carbon::parse($to_pay->date)->format('F j, Y') }}</span>
                                 <small class="text-muted">{{ $to_pay->count }}/{{ $to_pay->months }} Repayment</small>
@@ -42,12 +42,56 @@
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <div class="fw-bold text-success">₱ {{ number_format($to_pay->total,2) }}</div>
+                            <button class="togglePartials btn btn-outline-primary btn-sm" aria-label="Toggle partial payments">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
                         </div>
                     </label>
+
+                     <div class="list-group partial-months mb-4 p-4 px-4  border rounded bg-light shadow-sm" style="display: none;">
+                        <!-- Interest -->
+                        <label class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <input class="form-check-input partialy-pay partial-interest" type="checkbox"
+                            data-amount="{{ $data['loan_tenure_next_pay']->interest }}" data-category="Interest">
+                            <div class="d-flex flex-column">
+                            <span class="fw-semibold mb-0">Interest</span>
+                            <small class="text-muted">Accrued interest amount</small>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-success fs-6">₱ {{ number_format($data['loan_tenure_next_pay']->interest, 2) }}</div>
+                        </label>
+
+                        <!-- Penalty -->
+                        <label class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <input class="form-check-input partialy-pay partial-penalty" type="checkbox"
+                            data-amount="{{ $data['loan_tenure_next_pay']->penalty ?? 0 }}" data-category="Penalty">
+                            <div class="d-flex flex-column">
+                            <span class="fw-semibold mb-0">Penalty</span>
+                            <small class="text-muted">Late payment charges</small>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-success fs-6">₱ {{ number_format($data['loan_tenure_next_pay']->penalty ?? 0, 2) }}</div>
+                        </label>
+
+                        <!-- Principal -->
+                        <label class="d-flex align-items-center justify-content-between gap-3 mb-0">
+                        <div class="d-flex align-items-center gap-3">
+                            <input class="form-check-input partialy-pay partial-principal" type="checkbox"
+                            data-amount="{{ $data['loan_tenure_next_pay']->principal }}" data-category="Principal">
+                            <div class="d-flex flex-column">
+                            <span class="fw-semibold mb-0">Principal</span>
+                            <small class="text-muted">Remaining loan balance</small>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-success fs-6">₱ {{ number_format($data['loan_tenure_next_pay']->principal, 2) }}</div>
+                        </label>
+                    </div>
                     @endforeach
 
                 </div>
-                <button class="btn btn-sm btn-outline-primary pay-partial-btn">Pay Partial</button>
+                <button class="btn btn-sm btn-outline-primary pay-partial-btn d-none">Pay Partial</button>
                 <button class="btn btn-sm btn-outline-secondary pay-partial-btn_close close-partial d-none">Close Partial</button>
             </div>       
 
