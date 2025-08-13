@@ -40,7 +40,7 @@ $(function () {
                         $('#referralCode').val(res.referral_code);
 
                         $('#referralCode').addClass('is-valid');
-                        $('#referralCode').after('<div class="referral-feedback text-success small mt-1">✓ Valid referral code</div>');
+                        $('#referralCode').after('<div class="referral-feedback text-success small mt-1">✓ This referral code is already linked to your account</div>');
 
                     }
 
