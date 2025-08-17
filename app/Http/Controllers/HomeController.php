@@ -42,7 +42,7 @@ class HomeController extends Controller
             ->where('loan_applicant', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
-        
+        // dd($loanApplication);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
         DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
@@ -50,10 +50,12 @@ class HomeController extends Controller
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
-            ->where(function ($query) {
-                $query->where('lt.payment_status_id', '<=', 1)
-                    ->orWhere('lti.payment_status_id', '<=', 1);
-            })
+            ->where('loan_id', $loanApplication->id )
+
+            // ->where(function ($query) {
+            //     $query->where('lt.payment_status_id', '<=', 1)
+            //         ->orWhere('lti.payment_status_id', '<=', 1);
+            // })
             ->select([
                 DB::raw('(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) AS current_payment'),
                 'lt.date',
@@ -81,19 +83,54 @@ class HomeController extends Controller
                 DB::raw('IFNULL(SUM(ltp.penalty), 0) AS total_penalty_raw'),
             ])
             ->first();
+            
+            
+            $nextPayment = DB::table('loan_tenure as lt')
+            ->select(
+                'lt.loan_id',
+                'lt.date',
+                'lt.principal',
+                'lti.interest',
+                DB::raw('
+                    (
+                        SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) +
+                        SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) +
+                        SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0))
+                    ) AS total_all
+                ')
+            )
+            ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
+            ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+            ->where('lt.loan_id', $loanApplication->id)
+            ->where('lt.date', '<=', Carbon::now()->endOfMonth()->endOfDay())
+            ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
+            ->first();
 
-        
-                
-        // dd($loanStatus,$data);
-        return view('borrower.pages.home', compact('loanStatus','data'));
+
+
+            if ($data->months === 0) {
+                $loanStatus = 0;
+                return view('borrower.layouts.payment-state', compact('loanStatus'));
+            }
+            
+            
+            // dd($loanStatus,$data,$datas);
+            
+        return view('borrower.pages.home', compact('loanStatus','data','nextPayment'));
     }
 
     public function repayment_schedule()
     {
+        $loanApplication = DB::table('loan_application')
+            ->where('loan_applicant', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->first();
+            
         $results = DB::table('loan_application as la')
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+            ->where('la.id',$loanApplication->id)
             ->select([
                 'lt.date',
                 DB::raw("
@@ -225,8 +262,9 @@ class HomeController extends Controller
 
         $existing = DB::table('loan_application')
             ->where('loan_applicant', $userId)
-            ->where('loan_status', 0)
+            ->where('loan_application_id', 0)
             ->first();
+        dd($existing);
 
         if ($existing) {
             // Update user income

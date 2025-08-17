@@ -1,6 +1,5 @@
 // Function to update total and breakdown
 function updateTotal() {
-    console.log('update_total')
     let total = 0;
     let total_interest = 0;
     let total_rebate = 0;
@@ -8,19 +7,13 @@ function updateTotal() {
     let total_penalty = 0;
 
     // Collect checked normal payments (Next Payment + Advance)
-        // const amount = parseFloat($('#totalAmount').attr('data-amount'));
-        // const principal = parseFloat($('.partial-principal').attr('data-amount'));
-        // const interest = parseFloat($('.partial-interest').attr('data-amount'));
-        // const penalty = parseFloat($('.partial-penalty').attr('data-amount'));
         $('.payment-option-next input[type="checkbox"]:checked').each(function () {
-            
             total += (parseFloat($(this).attr('data-interest')) || 0) + (parseFloat($(this).attr('data-principal')) || 0)+ (parseFloat($(this).attr('data-penalty')) || 0);
             total_interest += parseFloat($(this).attr('data-interest')) || 0;
             total_principal += parseFloat($(this).attr('data-principal')) || 0;
             total_penalty += parseFloat($(this).attr('data-penalty')) || 0;
-
         });
-        // console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
+        console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
 
     if($('.payment-option-advance input[type="checkbox"]:checked').length > 0){ 
         $('.payment-option input[type="checkbox"]:checked').each(function () {
@@ -31,66 +24,52 @@ function updateTotal() {
                 total += parseFloat($(this).attr('data-principal'));
             }
             total_rebate += parseFloat($(this).attr('data-interest'));
-            
             total_interest += parseFloat($(this).attr('data-interest'));
             total_principal += parseFloat($(this).attr('data-principal'));
             total_penalty += parseFloat($(this).attr('data-penalty'));
-            // console.log(2,total,total_interest,total_interest,total_penalty,total_principal)
         });
-
+        $('.payment-total').attr('data-partial',0);
     }
-    // console.log(3,total,total_interest,total_interest,total_penalty,total_principal)
+    console.log(3,total,total_interest,total_interest,total_penalty,total_principal)
+
+    // Collect checked partial payments
+    if ($('.partially-pay[type="checkbox"]:checked').length > 0) {
+        $('.payment-total').attr('data-partial',1);
+        console.log('partially-pay')
+        $('.payment-option-advance input[type="checkbox"]:checked').prop('checked', false);
+        resetTotal()
+
+        $('.next_par').each(function () {
+            var dis = $(this).find('.partial-months');
+            total_interest += parseFloat(dis.find('.partial-interest[type="checkbox"]:checked').attr('data-amount')) || 0;
+            total_principal += parseFloat(dis.find('.partial-principal[type="checkbox"]:checked').attr('data-amount')) || 0;
+            total_penalty += parseFloat(dis.find('.partial-penalty[type="checkbox"]:checked').attr('data-amount')) || 0;
+            total =  total_interest +  total_principal +  total_penalty;
+            console.log(4, total_interest, total_interest, total_penalty, total_principal)
+        });
     
-    $('.payment-total').text('₱ ' + Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 }));
+        console.log(5,total,total_interest,total_interest,total_penalty,total_principal)
+    }
+
+    
+    $('.payment-total,#totalAmount').text('₱ ' + Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-interest').text('₱ ' + Number(total_interest).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-principal').text('₱ ' + Number(total_principal).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-penalty').text('₱ ' + Number(total_penalty).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-rebate').text('-₱ ' + Number(total_rebate).toLocaleString('en-US', { minimumFractionDigits: 2 }));
-    
 
-    $('.payment-total').attr('data-amount',(total).toFixed(2))
+    $('.payment-total,#totalAmount').attr('data-amount',(total).toFixed(2))
     $('.payment-interest').attr('data-amount',(total_interest).toFixed(2))
     $('.payment-principal').attr('data-amount',(total_principal).toFixed(2))
     $('.payment-penalty').attr('data-amount',(total_penalty).toFixed(2))
     $('.payment-rebate').attr('data-amount',(total_rebate).toFixed(2))
-    
 
-    $('.payment-total').attr('data-partial',0);
-    
-    // Collect checked partial payments
-    if ($('.partial-option input[type="checkbox"]:checked').length > 0) {
-        $('.payment-option-advance input[type="checkbox"]:checked').prop('checked', false);
-        resetTotal()
 
-        var partial_total = 0;
 
-        var partial_total_interest = $('.partial-interest').is(':checked') 
-            ? parseFloat($('.partial-interest').attr('data-amount')) || 0
-            : 0;
 
-        var partial_total_principal = $('.partial-principal').is(':checked') 
-            ? parseFloat($('.partial-principal').attr('data-amount')) || 0
-            : 0;
 
-        var partial_total_penalty = $('.partial-penalty').is(':checked') 
-            ? parseFloat($('.partial-penalty').attr('data-amount')) || 0
-            : 0;
 
-        partial_total = partial_total_interest + partial_total_principal + partial_total_penalty;
-        
-        $('.payment-interest').text('₱ ' + Number(partial_total_interest).toLocaleString('en-US', { minimumFractionDigits: 2 }));
-        $('.payment-principal').text('₱ ' + Number(partial_total_principal).toLocaleString('en-US', { minimumFractionDigits: 2 }));
-        $('.payment-penalty').text('₱ ' + Number(partial_total_penalty).toLocaleString('en-US', { minimumFractionDigits: 2 }));
-        $('.payment-total').text('₱ ' + Number(partial_total).toLocaleString('en-US', { minimumFractionDigits: 2 }));
 
-        $('.payment-interest').attr('data-amount',(partial_total_interest).toFixed(2));
-        $('.payment-principal').attr('data-amount',(partial_total_principal).toFixed(2));
-        $('.payment-penalty').attr('data-amount',(partial_total_penalty).toFixed(2));
-        $('.payment-total').attr('data-amount',(partial_total).toFixed(2));
-
-        $('.payment-total').attr('data-partial',1);
-    }
-    // console.log(4,total,total_interest,total_interest,total_penalty,total_principal)
 
 }
 
@@ -106,9 +85,11 @@ function resetTotal(){
     $('.payment-penalty').attr('data-amount','0.00')
 }
 
-$(document).on('change', '.partialy-pay', function () {
+$(document).on('change', '.partially-pay', function () {
     const $changedPartial = $(this);
-
+    $('#payAllCheck').prop('checked', false);
+    const tenure = $(this).closest('.next_par').find('.due_payment').attr('data-tenure_id');
+    // console.log(tenure)
     // Find the index of the .partial-months container this checkbox belongs to
     const $partialMonths = $('.partial-months');
     let currentMonthIndex = -1;
@@ -122,7 +103,7 @@ $(document).on('change', '.partialy-pay', function () {
 
     let monthsWithCheckedPartialPay = [];
     $partialMonths.each(function (index) {
-        if ($(this).find('.partialy-pay:checked').length > 0) {
+        if ($(this).find('.partially-pay:checked').length > 0) {
             monthsWithCheckedPartialPay.push(index);
         }
     });
@@ -130,7 +111,7 @@ $(document).on('change', '.partialy-pay', function () {
     if (monthsWithCheckedPartialPay.length > 0) {
     
         const maxCheckedMonth = Math.max(...monthsWithCheckedPartialPay);
-
+        console.log('test')
         $('.due_payment').each(function (index) {
             if (index < maxCheckedMonth) {
                 $(this).prop('checked', true);
@@ -139,33 +120,70 @@ $(document).on('change', '.partialy-pay', function () {
             }
         });
     } else {
-        $('.due_payment').prop('checked', false);
+        // $('.due_payment').prop('checked', false);
+        $('.due_payment').each(function (index) {
+            let tenureId = parseInt($(this).attr('data-tenure_id'), 10) || 0;
+            if (tenureId > tenure) {
+                $(this).prop('checked', false);
+            }else{
+            }
+            
+        });
+
     }
 
     updateTotal();
 });
-
-
-
-
 
 $(document).on('change', '.due_payment', function () {
-    const index = $('.due_payment').index(this);
-    // $('#payAllCheck').prop('checked', false);
-    // $('.rebate').addClass('d-none')
-    
-    if ($(this).is(':checked')) {
-        // Auto-check previous months if one is checked
-        $('.due_payment').slice(0, index + 1).prop('checked', true);
+    const $all = $('.due_payment');
+    const $self = $(this);
+    const index = $all.index(this);
+    const $allToggle = $('.togglePartials');
+
+    // Reset UI
+    $('.partial-months').slideUp(200);
+    $allToggle.find('i.bi').removeClass('bi-chevron-up').addClass('bi-chevron-down');
+    $allToggle.removeClass('d-none');
+    $all.slice(0, index + 1).closest('.next_par').find('.partially-pay').prop('checked', false);
+
+    if ($self.is(':checked')) {
+        // Show only self's toggle
+        $allToggle.addClass('d-none');
+        $all.eq(index).closest('.next_par').find('.togglePartials').removeClass('d-none');
+        $all.slice(0, index + 1).prop('checked', true);
     } else {
-        // Uncheck future months if unchecked
-        $('.due_payment').slice(index + 1).prop('checked', false);
+        // Uncheck future months
+        $all.slice(index + 1).prop('checked', false);
         $('.payment-option input[type="checkbox"]').prop('checked', false);
+
+        // Show only previous toggle if it exists
+        $allToggle.addClass('d-none');
+        if (index > 0) {
+            $all.eq(index - 1).closest('.next_par').find('.togglePartials').removeClass('d-none');
+        }
     }
 
     updateTotal();
 });
-$(document).on('change', '.payment-option input[type="checkbox"]', function () {
+
+$(document).on('change', '.payment-option-advance input[type="checkbox"]', function () {
+
+    const $all = $('.due_payment');
+    const $self = $(this);
+    const indexz = $all.index(this);
+    const $allToggle = $('.togglePartials');
+
+    //uncheck all partial 
+    $('.partially-pay').prop('checked', false);
+
+
+    // Reset UI
+    $('.partial-months').slideUp(200);
+    $allToggle.find('i.bi').removeClass('bi-chevron-up').addClass('bi-chevron-down');
+    $allToggle.removeClass('d-none');
+    $all.slice(0, indexz + 1).closest('.next_par').find('.partially-pay').prop('checked', false);
+
     const index = $('.payment-option input[type="checkbox"]').index(this);
     $('#payAllCheck').prop('checked', false);
     $('.rebate').addClass('d-none')
@@ -184,6 +202,22 @@ $(document).on('change', '.payment-option input[type="checkbox"]', function () {
 
 // Handle Payment Type dropdown (Monthly or Full)
 $(document).on('change', '#payAllCheck', function () {
+    const $all = $('.due_payment');
+    const $self = $(this);
+    const indexz = $all.index(this);
+    const $allToggle = $('.togglePartials');
+
+    //uncheck all partial 
+    $('.partially-pay').prop('checked', false);
+
+
+    // Reset UI
+    $('.partial-months').slideUp(200);
+    $allToggle.find('i.bi').removeClass('bi-chevron-up').addClass('bi-chevron-down');
+    $allToggle.removeClass('d-none');
+    $all.slice(0, indexz + 1).closest('.next_par').find('.partially-pay').prop('checked', false);
+
+    
      if ($(this).is(':checked')) {
         $('.payment-option input[type="checkbox"]').prop('checked', true);
         $('.due_payment').prop('checked', true);
@@ -313,32 +347,19 @@ function removeImage() {
     document.getElementById('placeholder').classList.remove('d-none');
 }
 
-
-// $(document).on('click', '.loan_payment_confirm', function () {
-    //     console.log('click')
-
-    //     $('.payment_form_1').addClass('d-none');
-    //     $('.payment_form_2').removeClass('d-none');
-        
-    //     $('.total_amount_summary').text($('.payment-total').text());
-
-    //     //Payment Type
-    //     if($('#payAllCheck[type="checkbox"]:checked').length > 0){
-    //         $('#confirmCategory').text('Full Payment');
-    //         $('#confirmCategory').attr('data-type',1);
-    //     }else if($('.payment-total').attr('data-partial') == 1){
-    //         $('#confirmCategory').text('Partial Payment');
-    //         $('#confirmCategory').attr('data-type',2);
-    //     }else if($('.payment-option-advance input[type="checkbox"]:checked').length > 0 && $('.payment-option-advance input[type="checkbox"]:checked').length != $('.payment-option-advance input[type="checkbox"]').length){
-    //         $('#confirmCategory').text('Advanced Payment');
-    //         $('#confirmCategory').attr('data-type',3);
-    //     }else{
-    //         $('#confirmCategory').text('Normal Payment');
-    //         $('#confirmCategory').attr('data-type',4);
-    //     }
-// });
 $(document).on('click', '.loan_payment_confirm', function () {
     console.log('click');
+
+
+    if ($('.payment-total').attr('data-amount') == 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Amount Cannot be ₱0.00',
+          });
+          return false;
+    }
+
 
     // Toggle payment form visibility
     $('.payment_form_1').addClass('d-none');
@@ -350,11 +371,12 @@ $(document).on('click', '.loan_payment_confirm', function () {
 
     // Determine payment type
     const $payAllCheck = $('#payAllCheck[type="checkbox"]');
-    const isPartial = $('.payment-total').data('partial') == 1;
+    const isPartial = $('.payment-total').attr('data-partial') == 1;
     const $advanceChecks = $('.payment-option-advance input[type="checkbox"]');
     const advanceChecked = $advanceChecks.filter(':checked').length;
     const allAdvanceChecked = advanceChecked === $advanceChecks.length;
 
+    console.log(isPartial + 'tetest')
     let categoryText = 'Normal Payment';
     let categoryType = 4;
 
@@ -394,53 +416,75 @@ $(document).on('click', '#submit_payment', function () {
     let total = parseFloat($('.total_amount_summary').text().replace(/[^\d.]/g, ''));
    
    //gather data based on type
-    var id = $(this).attr('data-id');
-    var type = $('#confirmCategory').attr('data-type');
-    var next_id = $('.due_payment').attr('data-id');
     var reference_code = $('#referenceCode').val().trim();
     var remarks = $('#remarks').val().trim();
-    //Partial Data
-    var partial_principal = parseFloat($('.partial-principal:checked').attr('data-amount'));
-    var partial_interest = parseFloat($('.partial-interest:checked').attr('data-amount'));
-    var partial_penalty = parseFloat($('.partial-penalty:checked').attr('data-amount')); 
-    
-    //IF ADVANCE PAYMENT
+    var id = $(this).attr('data-id');
+    var fullpayment = 0;
+
+    var paymentDue = [];
+    var paymentPar = [];
     var paymentData = [];
-    // paymentData.push({
-    //     id : next_id,
-    // });
+
+    if ($('#payAllCheck').is(':checked')) {
+        fullpayment = 1;
+    }
+
+    // GET DUE FULL PAYMENT
     $($('.payment-option-next input[type="checkbox"]:checked')).each(function () {
         var id = $(this).attr('data-tenure_id');
-        paymentData.push({
+        paymentDue.push({
             id : id,
-            type : '1',
         });
     });
+    console.log(paymentDue)
 
+    // GET DUE PARTIAL
+    $('.next_par').each(function () {
+        const $nextPar = $(this);
+        const checked = $nextPar.find('.partially-pay:checked');
+    
+        // Only process if there’s at least one checked partial
+        if (checked.length) {
+            const tenureId = $nextPar.find('.due_payment').data('tenure_id');
+            const data = { id: tenureId };
+    
+            // Add interest if checked
+            const $interest = $nextPar.find('.partial-interest:checked');
+            if ($interest.length) {
+                data.interest = parseFloat($interest.data('amount')) || 0;
+            }
+    
+            // Add principal if checked
+            const $principal = $nextPar.find('.partial-principal:checked');
+            if ($principal.length) {
+                data.principal = parseFloat($principal.data('amount')) || 0;
+            }
+    
+            paymentPar.push(data);
+        }
+    });
+    console.log(paymentPar);
+    
     $($('.payment-option-advance input[type="checkbox"]:checked')).each(function () {
         var id = $(this).attr('data-tenure_id');
         paymentData.push({
             id : id,
-            type : '2',
         });
     });
-    // console.log(paymentData);
+    console.log(paymentData);
 
     $.ajax({
         url: '/payment/submit',
         method: 'POST',
         data: {
-            id:id,
-            next_id : next_id,
+            id : id,
             total : total,
+            paymentDue : paymentDue,
+            paymentPar : paymentPar,
             paymentData : paymentData,
-            partial_principal : partial_principal,
-            partial_interest : partial_interest,
-            partial_penalty : partial_penalty,
-            type : type,
-
             reference_code : reference_code,
             remarks : remarks,
+            fullpayment : fullpayment,
             
         },
         headers: {
@@ -485,3 +529,19 @@ $(document).ready(function () {
   });
 });
 
+$(document).on('change', '.partial-months .partially-pay', function () {
+    const $container = $(this).closest('.partial-months');
+    const total = $container.find('.partially-pay').length;
+    const checked = $container.find('.partially-pay:checked').length;
+
+    $('.advance-months').slideUp();
+    $('#toggleAdvance').find('i').toggleClass('bi-chevron-up bi-chevron-down');
+
+    if (total === checked) {
+        $(this).closest('.next_par').find('.due_payment').prop('checked', true);
+        $(this).closest('.next_par').find('.partially-pay').prop('checked', false);
+        console.log('All checkboxes in this .partial-months are checked!');
+        $('.payment-total').attr('data-partial',0);
+
+    }
+});
