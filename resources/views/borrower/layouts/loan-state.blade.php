@@ -28,11 +28,13 @@
 @elseif ($loanStatus == 3)
     {{-- Rejected --}}
     <div class="empty-state-icon">
-        <i class="ri-close-circle-line text-danger"></i>
+        <i class="ri-error-warning-fill text-danger"></i>
     </div>
-    <h2 class="h3 fw-bold mb-3 text-danger">We're Sorry, Your Loan Was Not Approved</h2>
-    <p class="text-muted fs-5">Unfortunately, your loan was declined. Call us at <strong>(+63) 912 345 6789</strong>.</p>
-
+    <h2 class="h3 fw-bold mb-3 text-danger">We’ve reviewed the loan request and found missing or unclear information.</h2>
+    <p class="text-muted fs-5">Please review the request and make the necessary updates before resubmitting for approval</strong>.</p>
+    <button type="button" class="btn btn-primary px-4 py-2 mt-2" id="viewApplicationBtn">
+         View Application
+    </button>
 @elseif ($loanStatus == 4)
     {{-- Approved --}}
     <div class="empty-state-icon">
@@ -47,4 +49,13 @@
     @endpush
 @elseif ($loanStatus == 5)
     @include('borrower.pages.active-loan')
+
+@elseif ($loanStatus == 6)
+    {{-- Rejected --}}
+    <div class="empty-state-icon">
+        <i class="ri-close-circle-line text-danger"></i>
+    </div>
+    <h2 class="h3 fw-bold mb-3 text-danger">We're Sorry, Your Loan Was Not Approved</h2>
+    <p class="text-muted fs-5">Unfortunately, your loan was declined. Call us at <strong>(+63) 912 345 6789</strong>.</p>
+
 @endif

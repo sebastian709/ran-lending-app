@@ -408,5 +408,93 @@ class HomeController extends Controller
         return 1;
     }
 
+   public function updateInformation()
+    {   
+        $userId = auth()->id();
+
+        $loan_id = DB::table('loan_application')
+            ->where('loan_applicant', $userId) 
+            ->where('loan_status', '<>', 7)     
+            ->value('id');                        
+
+        $rejected_fields = DB::table('loan_rejected_fields')
+            ->where('loan_id', $loan_id)
+            ->get();
+
+        $first_amount = intval($rejected_fields->first()->amount_suggested ?? 100);
+        $max_amount = $first_amount;
+        $summary_total = $max_amount + ($max_amount * 0.05);
+        $loan_amount_rejected = $rejected_fields->first()->loan_amount;
+
+        $payslip_img = $rejected_fields->first()->payslip_img;
+        $upload_qr_code_img = $rejected_fields->first()->upload_qr_code_img;
+        $government_id_img = $rejected_fields->first()->government_id_img;
+        $billing_statement_img = $rejected_fields->first()->billing_statement_img;
+        
+        if (
+            $loan_amount_rejected == 1 &&
+            (!$payslip_img && !$upload_qr_code_img && !$government_id_img && !$billing_statement_img)
+        ) {
+            $step = 1; // only loan amount rejected
+        } elseif (
+            $loan_amount_rejected == 0 &&
+            ($payslip_img || $upload_qr_code_img || $government_id_img || $billing_statement_img)
+        ) {
+            $step = 2; // only documents rejected
+        } elseif (
+            $loan_amount_rejected == 1 &&
+            ($payslip_img || $upload_qr_code_img || $government_id_img || $billing_statement_img)
+        ) {
+            $step = 3; // both loan amount and some documents rejected
+        } else {
+            $step = 0; // none rejected
+        }
+    
+        return view(
+            'borrower.pages.update-information', 
+            compact('rejected_fields', 'first_amount', 'max_amount', 'summary_total', 'loan_amount_rejected', 'loan_id','step')
+        );
+    }
+
+    public function resubmitLoanInfo(Request $request)
+    {
+
+        // dd(1);
+        $userId = auth()->id();
+        $validated = $request->validate([
+            'loan_amount' => 'required|numeric',
+            'loan_tenure' => 'required|integer',
+            'interest_rate' => 'required|numeric',
+            'total_amount' => 'required|numeric',
+        ]);
+
+        $loanApplicationId = $request->input('loan_application_id');
+
+        if ($loanApplicationId) {
+            // UPDATE flow
+            $updated = DB::table('loan_application')
+                ->where('id', $loanApplicationId)
+                ->update([
+                    'loan_amount' => $validated['loan_amount'],
+                    'loan_tenure' => $validated['loan_tenure'],
+                    'interest_rate' => $validated['interest_rate'],
+                    'total_amount' => $validated['total_amount'],
+                    'updated_at' => now(),
+                ]);
+            
+            $update_reject_field = DB::table('loan_rejected_fields')
+                ->where('loan_id', $loanApplicationId)
+                ->update([
+                    'loan_amount' => 0,
+                    // 'updated_at '=> now(),
+                ]);
+
+
+            return response()->json([
+                'success' => $updated > 0,
+                'message' => $updated ? 'Loan details updated successfully.' : 'No changes made.',
+            ]);
+        } 
+    }
 }
 
