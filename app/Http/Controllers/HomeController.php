@@ -16,6 +16,7 @@ use Brevo\Client\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\ActivityLogger;
 
 class HomeController extends Controller
 {
@@ -431,6 +432,16 @@ class HomeController extends Controller
         $government_id_img = $rejected_fields->first()->government_id_img;
         $billing_statement_img = $rejected_fields->first()->billing_statement_img;
         
+        $loan_images = DB::table('loan_application')
+            ->where('id', $loan_id)
+            ->first();
+
+        $loan_payslip_image = $loan_images->payslip_img;
+        $loan_qr_image = $loan_images->upload_qr_code_img;
+        $loan_id_image = $loan_images->government_id_img;
+        $loan_billing_image = $loan_images->billing_statement_img;
+        
+
         if (
             $loan_amount_rejected == 1 &&
             (!$payslip_img && !$upload_qr_code_img && !$government_id_img && !$billing_statement_img)
@@ -449,10 +460,27 @@ class HomeController extends Controller
         } else {
             $step = 0; // none rejected
         }
+
+
     
         return view(
             'borrower.pages.update-information', 
-            compact('rejected_fields', 'first_amount', 'max_amount', 'summary_total', 'loan_amount_rejected', 'loan_id','step')
+            compact(
+            'rejected_fields', 
+            'first_amount', 
+            'max_amount', 
+            'summary_total', 
+            'loan_amount_rejected', 
+            'loan_id',
+            'step', 
+            'loan_payslip_image',
+            'loan_qr_image',
+            'loan_id_image',
+            'loan_billing_image',
+            'payslip_img',
+            'upload_qr_code_img',
+            'government_id_img',
+            'billing_statement_img')
         );
     }
 
@@ -489,12 +517,137 @@ class HomeController extends Controller
                     // 'updated_at '=> now(),
                 ]);
 
+            $check_fields_updated = DB::table('loan_rejected_fields')
+                ->where('loan_id', $loanApplicationId)
+                ->first(); 
+            
+            if ($check_fields_updated) {
+                // Check if all the specific fields are 0
+                if (
+                    $check_fields_updated->loan_amount == 0 &&
+                    $check_fields_updated->payslip_img == 0 &&
+                    $check_fields_updated->upload_qr_code_img == 0 &&
+                    $check_fields_updated->government_id_img == 0 &&
+                    $check_fields_updated->billing_statement_img == 0
+                ) {
+                    // Update loan_application status to 1 (proccess)
+                    DB::table('loan_application')
+                        ->where('id', $loanApplicationId)
+                        ->update(['loan_status' => 1]);
+                }
+            }
+
+            ActivityLogger::log('Accept Loan', 'Updated loan amount to ' . $validated['loan_amount'], $userId);
 
             return response()->json([
                 'success' => $updated > 0,
                 'message' => $updated ? 'Loan details updated successfully.' : 'No changes made.',
             ]);
         } 
+    }
+
+    public function resubmitLoanDocuments(Request $request)
+    {
+        try {
+            $loanId = $request->loan_id;
+
+            if (!$loanId) {
+                return response()->json(['status' => 'error', 'message' => 'Loan ID is missing'], 400);
+            }
+
+            // Map inputs to folders and DB columns
+            $folderMap = [
+                'payslip_img' => ['folder' => 'payslip', 'db_field' => 'payslip_img'],
+                'qr_code_img' => ['folder' => 'qr_code', 'db_field' => 'upload_qr_code_img'],
+                'government_id_img' => ['folder' => 'government_id', 'db_field' => 'government_id_img'],
+                'billing_statement_img' => ['folder' => 'billing_statement', 'db_field' => 'billing_statement_img'],
+            ];
+
+            $updateData = [];
+
+            foreach ($folderMap as $requestField => $info) {
+                if ($request->hasFile($requestField)) {
+                    $file = $request->file($requestField);
+
+                    // Generate unique filename
+                    $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+                    // Ensure folder exists
+                    $directory = public_path("storage/uploads/{$info['folder']}");
+                    if (!file_exists($directory)) {
+                        mkdir($directory, 0775, true);
+                    }
+
+                    // Move file to storage
+                    $file->move($directory, $filename);
+
+                    // Save relative path to DB
+                    $updateData[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
+                }
+            }
+
+            $update_reject_field = DB::table('loan_rejected_fields')
+                ->where('loan_id', $loanId)
+                ->update([
+                    'payslip_img' => 0,
+                    'upload_qr_code_img' => 0,
+                    'government_id_img' => 0,
+                    'billing_statement_img' => 0
+                ]);
+
+            $check_fields_updated = DB::table('loan_rejected_fields')
+                ->where('loan_id', $loanId)
+                ->first(); 
+            
+            if ($check_fields_updated) {
+                // Check if all the specific fields are 0
+                if (
+                    $check_fields_updated->loan_amount == 0 &&
+                    $check_fields_updated->payslip_img == 0 &&
+                    $check_fields_updated->upload_qr_code_img == 0 &&
+                    $check_fields_updated->government_id_img == 0 &&
+                    $check_fields_updated->billing_statement_img == 0
+                ) {
+                    // Update loan_application status to 1 (proccess)
+                    DB::table('loan_application')
+                        ->where('id', $loanId)
+                        ->update(['loan_status' => 1]);
+                }
+            }
+
+            $userId = auth()->id();
+            ActivityLogger::log('Resubmit', 'Resubmit documents', $userId);
+
+            if (!empty($updateData)) {
+                $updated = DB::table('loan_application')
+                    ->where('id', $loanId)
+                    ->update($updateData);
+
+                if ($updated) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Documents updated successfully!',
+                        'data' => $updateData
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Failed to update loan application.'
+                    ], 500);
+                }
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No files uploaded.'
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Update Documents Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
 

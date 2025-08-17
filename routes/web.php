@@ -159,3 +159,4 @@ Route::middleware(['auth'])->prefix('borrower')->name('borrower.')->group(functi
 Route::get('/loan-list', [ProfileController::class, 'loanList'])->name('borrower.pages.loan-list');
 Route::get('/update-application-info', [App\Http\Controllers\HomeController::class, 'updateInformation'])->name('update-information');
 Route::post('/borrower/resubmit-loan-info', [HomeController::class, 'resubmitLoanInfo']);
+Route::post('/borrower/resubmit-loan-documents', [HomeController::class, 'resubmitLoanDocuments']);

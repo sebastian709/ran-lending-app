@@ -32,7 +32,7 @@
     </div>
     <h2 class="h3 fw-bold mb-3 text-danger">We’ve reviewed the loan request and found missing or unclear information.</h2>
     <p class="text-muted fs-5">Please review the request and make the necessary updates before resubmitting for approval</strong>.</p>
-    <button type="button" class="btn btn-primary px-4 py-2 mt-2" id="viewApplicationBtn">
+    <button data-url="/update-application-info" type="button" class="btn btn-primary px-4 py-2 mt-2" id="viewApplicationBtn">
          View Application
     </button>
 @elseif ($loanStatus == 4)

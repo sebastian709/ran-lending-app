@@ -119,62 +119,45 @@
                         </div>
                     </div>
                 </div>
-               
+
                 <div id="full-loan-application-step" class="step-cntent document_step {{ $step == 2 ? '' : 'd-none' }}" >
                     <div class="dashboard-card border rounded shadow-sm overflow-hidden">
-                        <div class="card-header bg-primary-custom text-white rounded-top p-2">
-                        <h4 class="mb-0 d-flex align-items-center gap-2">
-                            <i class="ri-edit-box-line"></i>
-                            Full Loan Application
-                        </h4>
+                        <div class="card-header bg-primary-custom text-white rounded-top p-3">
+                            <h4 class="mb-0 d-flex align-items-center gap-2">
+                                <i class="ri-refresh-line"></i>
+                                Update Documents
+                            </h4>
+                            
                         </div>
 
                         <div class="card-body p-4">
 
                         <!-- Proof of Income -->
-                        <div class="mb-4">
+                        <div class="mb-4 {{ $payslip_img == 1 ? '' : 'd-none' }}">
                             <label class="form-label fw-medium">Upload your payslip from the last 30 days</label>
                             <input type="file" class="form-control la_payslip_img" accept="image/*,application/pdf" id="payslipInput">
-                            <div id="payslipPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
-                            No preview
+                            <div id="payslipPreview" class="mt-2 border border-danger rounded p-3 bg-light text-center text-muted preview-container">
+                            <img src="{{ asset('storage/' . $loan_payslip_image) }}" class="h-32 w-auto object-contain mx-auto rounded-md shadow">
                             </div>
                         </div>
 
                         <!-- Bank Info & QR Code -->
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                            <label class="form-label fw-medium">Bank Name</label>
-                            <input type="text" class="form-control la_bank_name">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                            <label class="form-label fw-medium">Account Number</label>
-                            <input type="text" class="form-control la_account_number">
-                            </div>
+                        <div class="row mb-4 {{ $upload_qr_code_img == 1 ? '' : 'd-none' }}">
                             <div class="col-12">
                             <label class="form-label fw-medium">Upload QR Code (GCash/Bank)</label>
                             <input type="file" class="form-control la_qr_code" accept="image/*" id="qrInput">
-                            <div id="qrPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
-                                No preview
+                            <div id="qrPreview" class="mt-2 border border-danger rounded p-3 bg-light text-center text-muted preview-container">
+                            <img src="{{ asset('storage/' . $loan_qr_image) }}" class="h-32 w-auto object-contain mx-auto rounded-md shadow">
                             </div>
                             </div>
                         </div>
 
                         <!-- Government ID -->
-                        <div class="mb-4">
-                            <label class="form-label fw-medium">Government ID</label>
-                            <select class="form-select mb-2 la_government_id">
-                                <option selected disabled>Select your ID</option>
-                            
-                            </select>
-                            <div class="form-text text-muted mb-3 d-flex align-items-start gap-1">
-                            <i class="ri-information-line mt-1"></i>
-                            <span>Upload an ID that includes both your photo and signature.</span>
-                            </div>
-
-                            <label class="form-label fw-medium">Upload ID Image</label>
+                        <div class="mb-4 {{ $government_id_img == 1 ? '' : 'd-none' }}">
+                            <label class="form-label fw-medium">Upload Government ID</label>
                             <input type="file" class="form-control mb-2 la_government_id_img" accept="image/*" id="govIdInput">
-                            <div id="govIdPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
-                            No preview
+                            <div id="govIdPreview" class="mt-2 border border-danger rounded p-3 bg-light text-center text-muted preview-container">
+                            <img src="{{ asset('storage/' . $loan_id_image) }}" class="h-32 w-auto object-contain mx-auto rounded-md shadow">
                             </div>
                             <div class="form-text">
                             Upload a clear photo of yourself holding your ID for verification.
@@ -182,39 +165,17 @@
                         </div>
 
                         <!-- Billing Statement -->
-                        <div class="mb-4">
+                        <div class="mb-4 {{ $billing_statement_img == 1 ? '' : 'd-none' }}">
                             <label class="form-label fw-medium">Billing Statement</label>
                             <input type="file" class="form-control la_billing_statement" accept="application/pdf,image/*" id="billingInput">
-                            <div id="billingPreview" class="mt-2 border border-dashed rounded p-3 bg-light text-center text-muted preview-container">
-                            No preview
+                            <div id="billingPreview" class="mt-2 border border-danger rounded p-3 bg-light text-center text-muted preview-container">
+                           <img src="{{ asset('storage/' . $loan_billing_image) }}" class="h-32 w-auto object-contain mx-auto rounded-md shadow">
                             </div>
-                        </div>
-
-                        <!-- Terms & Conditions -->
-                        <div class="form-check mb-4">
-                            <input class="form-check-input la_terms_checkbox" type="checkbox" id="termsCheckbox">
-                            <label class="form-check-label" for="termsCheckbox">
-                            I agree to the <a href="#">Terms and Conditions</a>
-                            </label>
-                        </div>
-
-                        <!-- Signature Section -->
-                        <div class="mb-4">
-                            <label class="form-label fw-medium">Signature</label>
-                            <p class="text-muted">Click the button below to sign or upload your handwritten signature.</p>
-                            <div class="w-100" style="max-width: 300px;">
-                            <!-- @include('components.signature-box', [
-                                'nameClass' => 'c-applicant-name-1',
-                                'positionClass' => 'c-applicant-position-1'
-                                
-                            ]) -->
-                            </div>
-                            <!-- 'customWidth' => '500px' -->
                         </div>
 
                         <!-- Submit Button -->
-                        <button class="btn btn-primary-custom w-100 la_submit_final_application" id="submitFinalApplication" disabled>
-                            Submit Application
+                        <button class="btn btn-primary-custom w-100 resubmit_documents" data-loan_id="{{ $loan_id }}" id="resubmit_documents">
+                            Update Documents
                         </button>
                     </div>
                 </div>

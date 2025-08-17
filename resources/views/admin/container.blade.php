@@ -49,7 +49,7 @@
                 </a>
                 <ul class="collapse nav flex-column ps-4 list-unstyled" id="loanSubNav">
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/all" class="nav-link py-1 m-0 active" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
+                        <a href="#" data-url="/admin/loan-request/" class="nav-link py-1 m-0 active" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
                     </li>
                     <li class="nav-item p-0 m-0">
                         <a href="#" data-url="/admin/loan-request/pending" data-loan_status="1" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }} > Pending</a>
