@@ -1105,3 +1105,42 @@ $(document).on('click', '.generate-referral-code', function () {
   $('input[name="referral_code"]').val(code).trigger('input'); // set value + trigger validation
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Prevent dropdown from closing on specific elements
+    document.querySelectorAll(".dropdown-no-close").forEach(function (el) {
+        el.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Clicked:", e.target.textContent.trim());
+        });
+    });
+});
+
+
+$(document).on('click', '.cTestTriggerNotif button', function () {
+    const table_id      = $('.cTestTriggerNotif .table_id').val();
+    const target_type   = $('.cTestTriggerNotif .target_type').val();
+    const level_id      = $('.cTestTriggerNotif .level_id').val();
+    const user_id       = $('.cTestTriggerNotif .user_id').val();
+    const group_user_id = $('.cTestTriggerNotif .group_user_id').val();
+    const icon          = $('.cTestTriggerNotif .icon').val();
+    const message       = $('.cTestTriggerNotif .message').val();
+    const data_url      = $('.cTestTriggerNotif .data_url').val();
+
+    if (typeof window.triggerNotif === "function") {
+        window.triggerNotif(
+            table_id,
+            target_type,
+            level_id,
+            user_id,
+            group_user_id,
+            icon,
+            message,
+            data_url
+        );
+    } else {
+        console.warn("⚠️ window.triggerNotif is not defined.");
+    }
+});
+
+

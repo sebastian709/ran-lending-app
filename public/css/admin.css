@@ -620,3 +620,38 @@ img.user-avatar {
     transition: background-color 0.5s ease;
 }
 
+/* Hover effect for dropdown links */
+.dropdown-menu .notification-items .items:hover,
+.notif-page .notification-items .items:hover {
+    background-color: #dbdbdb !important;
+    color: #0d6efd; /* Bootstrap primary color */
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Hover for notification read */
+.dropdown-menu .notification-items .items.read, 
+.notif-page .notification-items .items.read{
+    background-color: #f5f5f5; 
+    cursor: pointer;
+}
+
+/* Hover for notification read */
+.dropdown-menu .notification-items .items.unread,
+.notif-page .notification-items .items.unread  {
+    background-color: #f2edff; 
+    cursor: pointer;
+}
+
+.dropdown-no-close,
+.dropdown-menu .px-3.py-2,
+.notif-page .px-3.py-2 {
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown > .ri-more-2-fill,
+.notif-page > .ri-more-2-fill {
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+

@@ -899,6 +899,17 @@ $(document).on('keyup', '#referralCode', function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Prevent dropdown from closing on specific elements
+    document.querySelectorAll(".dropdown-no-close").forEach(function (el) {
+        el.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Clicked:", e.target.textContent.trim());
+        });
+    });
+});
+
 
 
 

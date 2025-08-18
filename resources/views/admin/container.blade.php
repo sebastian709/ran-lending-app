@@ -38,6 +38,9 @@
 </head>
 
 <body>
+    <input type="hidden" id="getAuthID" value="{{ Auth::user()->id }}" />
+    <audio id="notifSound" src="{{ asset('sound/Default.mp3') }}" preload="auto"></audio>
+
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -117,25 +120,149 @@
                 <div class="dropdown">
                     <button class="btn position-relative text-white p-0" type="button" id="notifDropdown"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell-fill fs-5 top-bar-icon"></i>
+                        <i class="ri-notification-3-fill fs-5 top-bar-icon"></i>
                         <span class="position-absolute top-0 start-100 translate-middle-y badge rounded-pill bg-danger"
                             style="font-size: 0.65rem; transform: translate(-40%, -40%) !important;">
                             3
                         </span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notifDropdown"
-                        style="min-width: 280px;">
-                        <li>
-                            <h6 class="dropdown-header">Notifications</h6>
-                        </li>
-                        <li><a class="dropdown-item" href="#">📦 New order received</a></li>
-                        <li><a class="dropdown-item" href="#">✅ Task completed</a></li>
-                        <li><a class="dropdown-item" href="#">📩 2 new messages</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-center text-primary" href="#">View all</a></li>
-                    </ul>
+
+                    <!-- Dropdown -->
+                    <div class="dropdown-menu dropdown-menu-end shadow p-0" aria-labelledby="notifDropdown"
+                        style="min-width: 400px;">
+
+                        <!-- Header Row -->
+                        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                            <h6 class="mb-0 fw-bold">Notifications</h6>
+                            <a href="#" class="small text-primary" data-url="/admin/notification-page"
+                                style="cursor:pointer;">See all</a>
+                        </div>
+
+                        <!-- Tabs Row -->
+                        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                            <div>
+                                <a href="#" class="me-3 fw-semibold text-dark dropdown-no-close">All</a>
+                                <a href="#" class="fw-light text-muted dropdown-no-close">Unread</a>
+                            </div>
+                            <a href="#" class="small text-primary dropdown-no-close">Mark all as read</a>
+                        </div>
+
+                        <!-- Notification Items -->
+                        <div style="max-height: 400px; overflow-y: auto;" class="notification-items">
+
+                            <!-- Notification 1 -->
+                            <div class="px-3 py-2 border-bottom items unread position-relative">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex align-items-start">
+                                        <i class="ri-mail-unread-line text-primary fs-5 me-2"></i>
+                                        <div>
+                                            <p class="mb-1 small">You have 2 new messages</p>
+                                            <small class="text-muted">1m ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative">
+                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore1"
+                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore1">
+                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notification 2 -->
+                            <div class="px-3 py-2 border-bottom items read position-relative">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex align-items-start">
+                                        <i class="ri-shopping-bag-3-line text-success fs-5 me-2"></i>
+                                        <div>
+                                            <p class="mb-1 small">New order received</p>
+                                            <small class="text-muted">15m ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative">
+                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore2"
+                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore2">
+                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notification 3 -->
+                            <div class="px-3 py-2 border-bottom items unread position-relative">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex align-items-start">
+                                        <i class="ri-checkbox-circle-line text-warning fs-5 me-2"></i>
+                                        <div>
+                                            <p class="mb-1 small">Task completed successfully</p>
+                                            <small class="text-muted">1h ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative">
+                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore3"
+                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore3">
+                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notification 4 -->
+                            <div class="px-3 py-2 border-bottom items unread position-relative">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex align-items-start">
+                                        <i class="ri-user-follow-line text-info fs-5 me-2"></i>
+                                        <div>
+                                            <p class="mb-1 small">New follower: John Doe</p>
+                                            <small class="text-muted">1d ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative">
+                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore4"
+                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore4">
+                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notification 5 -->
+                            <div class="px-3 py-2 border-bottom items read position-relative">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex align-items-start">
+                                        <i class="ri-star-smile-line text-danger fs-5 me-2"></i>
+                                        <div>
+                                            <p class="mb-1 small">You earned a new badge</p>
+                                            <small class="text-muted">2w ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative">
+                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore5"
+                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore5">
+                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="text-center py-2">
+                            <a href="#" class="text-primary small fw-semibold dropdown-no-close">See more
+                                notifications</a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 👤 Profile Image -->
@@ -206,6 +333,9 @@
         <div id="content" class="my-4 mx-2">
             @yield('content')
         </div>
+
+
+
     </div>
 
 
@@ -224,11 +354,61 @@
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/short-unique-id@latest/dist/short-unique-id.min.js"></script>
+    <script src="{{ asset('js/components/global-notification.js') }}"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
     @stack('sb-scripts')
 
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getDatabase, ref, query, orderByChild, startAt, onChildAdded }
+            from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI5V6np4Xstxl01DbS9j2PCV3tFmttbHw",
+            authDomain: "ran-realtime.firebaseapp.com",
+            databaseURL: "https://ran-realtime-default-rtdb.firebaseio.com",
+            projectId: "ran-realtime",
+            storageBucket: "ran-realtime.firebasestorage.app",
+            messagingSenderId: "678506273903",
+            appId: "1:678506273903:web:f7979289e002145776c19a",
+            measurementId: "G-THBZK5DGGR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // === TIMESTAMP MARKER (oras ng pag-load ng page) ===
+        const pageLoadTimestamp = Math.floor(Date.now() / 1000);
+
+        // === LISTENER SETUP ===
+        const table_id = "notifications";
+        const notifRef = query(
+            ref(database, table_id),
+            orderByChild("timestamp"),
+            startAt(pageLoadTimestamp) // 👉 kuha lang ng >= timestamp
+        );
+
+        // Listen for new child (na >= pageLoadTimestamp)
+        onChildAdded(notifRef, (snapshot) => {
+            const AuthID = parseInt($('#getAuthID').val());
+            const notif = snapshot.val();
+
+            if (notif.user_ids.includes(AuthID)) {
+                console.log("🔥 New notification:", notif.user_ids, "at", notif.timestamp);
+
+                let sound = document.getElementById("notifSound");
+                sound.currentTime = 0;
+                sound.play().catch(err => {
+                    console.warn("Sound play blocked by browser:", err);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
