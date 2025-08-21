@@ -81,6 +81,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/loan/{id}/approve', [AdminController::class, 'approve'])->name('loan.approve');
         Route::post('/loan/{id}/reject', [AdminController::class, 'reject'])->name('loan.reject');
         Route::post('/loan/{id}/reject-field', [AdminController::class, 'rejectField'])->name('loan.rejectField');
+        Route::post('/update-loan-status', [AdminController::class, 'updateLoanStatus'])->name('loan.updateStatus');
+        Route::post('/get-bank-details', [AdminController::class, 'getBankDetails'])->name('loan.getBankDetails');
+        Route::post('/transfer-money', [AdminController::class, 'transferMoeny'])->name('loan.transferMoney');
     });
 });
 Route::post('/upload', [BlogPostController::class, 'upload']);

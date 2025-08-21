@@ -446,3 +446,22 @@ img.user-avatar {
   font-size: 12px;
   text-align: center;
 }
+
+#activityLogCustom{
+  max-height: 300px; 
+  overflow-y: auto;
+}
+
+#bankTab .card{
+  background-color: #fbfbfb;
+  border: dashed 5px red;
+}
+
+#transferTab .card{
+  background-color: #fbfbfb;
+  border: dashed 5px red;
+}
+
+.is-invalid {
+    border: 1px solid red !important;
+}

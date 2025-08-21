@@ -5,6 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ActivityLogger;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use Brevo\Client\Api\TransactionalEmailsApi;
+use Brevo\Client\Model\SendSmtpEmail;
+use Brevo\Client\Configuration;
+use GuzzleHttp\Client as GuzzleClient;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -149,12 +156,19 @@ class AdminController extends Controller
                 ->value('disapproved_by_admins');
 
             $disapproved_admins_array = explode(',', $disapproved_admins);
+            
+            $loan_status =  DB::table('loan_status')
+                ->select('id','loan_status')
+                ->where('status', 1)
+                ->get();
+
 
             return response()->json([
                 "data" => $loanApplication,
                 "logs" => $logs,
                 "approved_by" => $approved_admins_array,
-                "disapproved_by" => $disapproved_admins_array
+                "disapproved_by" => $disapproved_admins_array,
+                "loan_status" => $loan_status
             ]);
     }
 
@@ -301,11 +315,192 @@ class AdminController extends Controller
             $data
         );
 
+
+        $loan_applicant = DB::table('loan_application')
+            ->where('id', $id)
+            ->value('loan_applicant');
+
+        if (!$loan_applicant) {
+            return response()->json(['error' => 'Loan applicant not found'], 404);
+        }
+
+        $email = DB::table('users')
+            ->where('id', $loan_applicant)
+            ->where('status', 1)
+            ->value('email');
+
+        if (!$email) {
+            return response()->json(['error' => 'Valid user email not found'], 404);
+        }
+
+        $htmlContent = view('components.emails.for_revision_email')->render();
+
+        $config = Configuration::getDefaultConfiguration()
+        ->setApiKey('api-key', config('services.brevo.key'));
+
+        $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
+        $emailObj = new SendSmtpEmail([
+            'subject'     => 'Loan Request Review – Additional Information Needed',
+            'sender'      => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'to'          => [['email' => $email]],
+            'htmlContent' => $htmlContent
+        ]);
+
+        try {
+            $apiInstance->sendTransacEmail($emailObj);
+            return response()->json(1);
+        } catch (\Exception $e) {
+            return back()->withErrors(['email' => 'Failed to send email: ' . $e->getMessage()]);
+        }
+
         return response()->json([
-            'message' => 'Loan application rejected successfully.',
+            'message' => $email,
         ]);
     }
 
+   public function updateLoanStatus(Request $request)
+    {
+        $request->validate([
+            'loan_id'   => 'required|integer|exists:loan_application,id',
+            'status_id' => 'required|integer|exists:loan_status,id',
+        ]);
 
+        try {
+           
+            DB::table('loan_application')
+                ->where('id', $request->loan_id)
+                ->update([
+                    'loan_status' => $request->status_id,
+                    'updated_at'  => now()
+                ]);
+
+            $updated_to = DB::table('loan_status')
+                ->where('id', $request->status_id)
+                ->value('loan_status'); 
+
+            
+            ActivityLogger::log(
+                'Update Status',
+                "Update Status to <b>{$updated_to}</b>",
+                $request->loan_id
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Loan status updated successfully',
+                'new_status' => $updated_to
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update loan status',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getBankDetails(Request $request)
+    {
+        $loan_id = $request->loan_id;
+
+        // Get bank details
+        $bank_details = DB::table('loan_application')
+            ->select(
+                'bank_name',
+                'account_number',
+                DB::raw("CONCAT('" . asset('storage') . "/', upload_qr_code_img) as upload_qr_code_img")
+            )
+            ->where('id', $loan_id)
+            ->where('status', 1)
+            ->first();
+
+        $user = auth()->user();
+
+        // processed_by )
+        if ($bank_details) {
+            $bank_details->processed_by = $user->firstname . ' ' . $user->lastname;
+        }
+
+        return response()->json($bank_details);
+    }
+
+    public function transferMoeny(Request $request)
+    {
+        $path = $request->file('screenshot')->store('uploads/money_transfer', 'public');
+
+        $userId = auth()->id();
+        
+        // Insert into DB
+        DB::table('admin_money_transfer')->insert([
+            'loan_id'          => $request->loan_id,
+            'reference_number' => $request->ref_number,
+            'proof_of_transfer'       => $path, // stored path
+            'remarks'          => $request->remarks,
+            'processed_by'     => $userId,
+            'transfer_date'    => now(),
+            'created_at'       => now(),
+            'updated_at'       => now(),
+        ]);
+
+        //PROCESS APPROVED LOAN 
+         // Get loan application
+        $loanApplications = DB::table('loan_application')
+            ->where('id', $request->loan_id)
+            ->first();
+
+        if (!$loanApplications) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Loan application not found.',
+            ], 404);
+        }
+
+        // Compute monthly principal + interest
+        $monthly  = $loanApplications->loan_amount / $loanApplications->loan_tenure;
+        $interest = $loanApplications->loan_amount * $loanApplications->interest_rate;
+
+        // Insert schedule
+        for ($i = 1; $i <= $loanApplications->loan_tenure; $i++) {
+
+            // Due date calculation (based on monthly_due_date instead of static now)
+            $dueDate = Carbon::parse($request->monthly_due_date)
+                ->addMonths($i - 1) // start from given due date
+                ->endOfDay();
+
+            // Insert into loan_tenure
+            $tenureId = DB::table('loan_tenure')->insertGetId([
+                'loan_id'           => $request->loan_id,
+                'date'              => $dueDate,
+                'principal'         => $monthly,
+                'count'             => $i,
+                'payment_status_id' => 1,
+                'payment_id'        => 0,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+
+            // Insert corresponding interest
+            DB::table('loan_tenure_interest')->insert([
+                'tenure_id'         => $tenureId,
+                'interest'          => $interest,
+                'payment_status_id' => 1,
+                'payment_id'        => 0,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        }
+
+         DB::table('loan_application')
+            ->where('id', $request->loan_id)
+            ->update([
+                'loan_status' => 5, 
+                'updated_at'  => now(),
+            ]);
+
+         return response()->json([
+            'success' => true,
+            'message' => 'Transfer successful!',
+        ]);
+    }
 
 }
