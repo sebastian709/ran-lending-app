@@ -81,9 +81,12 @@ class HomeController extends Controller
                 ->where('loan_status', 0)
                 ->first();
 
-            $ref_code = DB::table('referral_code')
-                ->where('id', $loan->id)
-                ->first();
+            $ref_code = null;
+            if ($loan && $loan->referral_code_id) {
+                $ref_code = DB::table('referral_code')
+                    ->where('id', $loan->referral_code_id) // <-- baka dapat referral_code_id instead of loan->id
+                    ->first();
+            }
 
             return response()->json([
                 'loan_application_id' => $loan->id ?? '',
@@ -429,14 +432,14 @@ class HomeController extends Controller
         return 1;
     }
 
-   public function updateInformation()
-    {   
+    public function updateInformation()
+    {
         $userId = auth()->id();
 
         $loan_id = DB::table('loan_application')
-            ->where('loan_applicant', $userId) 
-            ->where('loan_status', '<>', 7)     
-            ->value('id');                        
+            ->where('loan_applicant', $userId)
+            ->where('loan_status', '<>', 7)
+            ->value('id');
 
         $rejected_fields = DB::table('loan_rejected_fields')
             ->where('loan_id', $loan_id)
@@ -451,7 +454,7 @@ class HomeController extends Controller
         $upload_qr_code_img = $rejected_fields->first()->upload_qr_code_img;
         $government_id_img = $rejected_fields->first()->government_id_img;
         $billing_statement_img = $rejected_fields->first()->billing_statement_img;
-        
+
         $loan_images = DB::table('loan_application')
             ->where('id', $loan_id)
             ->first();
@@ -460,7 +463,7 @@ class HomeController extends Controller
         $loan_qr_image = $loan_images->upload_qr_code_img;
         $loan_id_image = $loan_images->government_id_img;
         $loan_billing_image = $loan_images->billing_statement_img;
-        
+
 
         if (
             $loan_amount_rejected == 1 &&
@@ -482,25 +485,26 @@ class HomeController extends Controller
         }
 
 
-    
+
         return view(
-            'borrower.pages.update-information', 
+            'borrower.pages.update-information',
             compact(
-            'rejected_fields', 
-            'first_amount', 
-            'max_amount', 
-            'summary_total', 
-            'loan_amount_rejected', 
-            'loan_id',
-            'step', 
-            'loan_payslip_image',
-            'loan_qr_image',
-            'loan_id_image',
-            'loan_billing_image',
-            'payslip_img',
-            'upload_qr_code_img',
-            'government_id_img',
-            'billing_statement_img')
+                'rejected_fields',
+                'first_amount',
+                'max_amount',
+                'summary_total',
+                'loan_amount_rejected',
+                'loan_id',
+                'step',
+                'loan_payslip_image',
+                'loan_qr_image',
+                'loan_id_image',
+                'loan_billing_image',
+                'payslip_img',
+                'upload_qr_code_img',
+                'government_id_img',
+                'billing_statement_img'
+            )
         );
     }
 
@@ -529,7 +533,7 @@ class HomeController extends Controller
                     'total_amount' => $validated['total_amount'],
                     'updated_at' => now(),
                 ]);
-            
+
             $update_reject_field = DB::table('loan_rejected_fields')
                 ->where('loan_id', $loanApplicationId)
                 ->update([
@@ -539,8 +543,8 @@ class HomeController extends Controller
 
             $check_fields_updated = DB::table('loan_rejected_fields')
                 ->where('loan_id', $loanApplicationId)
-                ->first(); 
-            
+                ->first();
+
             if ($check_fields_updated) {
                 // Check if all the specific fields are 0
                 if (
@@ -563,7 +567,7 @@ class HomeController extends Controller
                 'success' => $updated > 0,
                 'message' => $updated ? 'Loan details updated successfully.' : 'No changes made.',
             ]);
-        } 
+        }
     }
 
     public function resubmitLoanDocuments(Request $request)
@@ -617,8 +621,8 @@ class HomeController extends Controller
 
             $check_fields_updated = DB::table('loan_rejected_fields')
                 ->where('loan_id', $loanId)
-                ->first(); 
-            
+                ->first();
+
             if ($check_fields_updated) {
                 // Check if all the specific fields are 0
                 if (

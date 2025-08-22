@@ -179,8 +179,8 @@
     @stack('sb-scripts')
 
     <script type="module">
-        // const authUser = @json(Auth::user());
-        // console.log(authUser);
+        const authUser = @json(Auth::user());
+        console.log(authUser);
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import { getDatabase, ref, query, orderByChild, startAt, onChildAdded }
