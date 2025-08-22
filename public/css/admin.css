@@ -441,6 +441,31 @@ img.user-avatar {
     color: white;
     border-radius: 5px 5px 0 0;
 }
+.status_approval{
+  font-size: 12px;
+  text-align: center;
+}
+
+#activityLogCustom{
+  max-height: 300px; 
+  overflow-y: auto;
+}
+
+#bankTab .card{
+  background-color: #fbfbfb;
+  border: dashed 5px red;
+}
+
+#transferTab .card{
+  background-color: #fbfbfb;
+  border: dashed 5px red;
+}
+
+
+
+.is-invalid {
+    border: 1px solid red !important;
+}
 
 .form-modern .form-control {
     border-radius: 0.5rem;
@@ -659,4 +684,3 @@ img.user-avatar {
     font-size: 30px;
     margin-right: 10px;
 }
-

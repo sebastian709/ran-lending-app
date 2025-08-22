@@ -65,7 +65,7 @@
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#detailsTab" type="button">Loan Details</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documentsTab" type="button">Uploaded Documents</button>
+                <button class="nav-link viewdocuments" data-bs-toggle="tab" data-bs-target="#documentsTab" type="button">Uploaded Documents</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#historyTab" type="button">Loan History</button>
@@ -84,82 +84,17 @@
 
             <!-- Uploaded Documents -->
             <div class="tab-pane fade" id="documentsTab">
-                <div class="mt-3">
-                    <p class="text-center fw-bold mb-4">Borrower name's Documents.</p>
-
-                    <!-- Document Tabs -->
-                    <ul class="nav nav-tabs justify-content-center mb-3" id="docTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#incomeTab" type="button" role="tab">Proof of Income</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qrTab" type="button" role="tab">QR Code</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#idTab" type="button" role="tab">Government ID</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#supportTab" type="button" role="tab">Supporting Docs</button>
-                        </li>
-                    </ul>
-
-                    <!-- Tab Content -->
-                    <div class="tab-content text-center">
-                        <div class="tab-pane fade show active" id="incomeTab" role="tabpanel">
-                            <img src="https://templatelab.com/wp-content/uploads/2018/03/income-verification-letter-01.jpg" alt="Proof of Income" class="img-fluid border rounded" style="max-height: 300px;">
-                        </div>
-                        <div class="tab-pane fade" id="qrTab" role="tabpanel">
-                            <img src="https://www.researchgate.net/profile/Vinod-Shukla/publication/340398294/figure/fig3/AS:876175308103681@1585907880294/Sample-Figure-of-QR-Code-QR-code-works-in-a-simple-way-It-all-starts-of-by-feeding-in_Q320.jpg" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
-                        </div>
-                        <div class="tab-pane fade" id="idTab" role="tabpanel">
-                            <img src="" alt="Government ID" class="img-fluid border rounded" style="max-height: 300px;">
-                        </div>
-                        <div class="tab-pane fade" id="supportTab" role="tabpanel">
-                            <img src="https://st.depositphotos.com/1186248/2751/i/450/depositphotos_27516565-stock-photo-free-sample.jpg" alt="Supporting Documents" class="img-fluid border rounded" style="max-height: 300px;">
-                        </div>
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Loan History -->
             <div class="tab-pane fade" id="historyTab" role="tabpanel">
-                <div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
-                    <h5 class="mb-4">
-                        <i class="bi bi-journal-text me-2"></i> Loan History
-                    </h5>
-
-                    <ul class="list-unstyled">
-                        <li class="mb-3">
-                            <ul class="list-unstyled ms-3">
-                                <li><strong>Total Loans Taken:</strong> 3</li>
-                                <li><strong>Total Loan Amount:</strong> ₱250,000</li>
-                                <li><strong>Date of First Loan:</strong> January 15, 2024</li>
-                                <li><strong>Referral:</strong> Maria Santos</li>
-                                <br>
-                                <li><strong>Violations:</strong> 1
-                                    <div class="text-muted small ms-3">→ 3 consecutive months of no payment = 1 violation</div>
-                                </li>
-                                <li><strong>Penalties:</strong> 3
-                                    <div class="text-muted small ms-3">→ Every 7 days after monthly due date = 1 penalty</div>
-                                </li>
-
-                                <li><strong>Last Loan Date: </strong>July 15, 2025</li><br>
-                                <li><strong>Remarks:</strong> <span class="badge bg-success">Excellent</span></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div class="text-center mt-4">
-                        <a href="/admin/customer/123" class="btn btn-primary px-4">See More</a>
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Activity Log -->
             <div class="tab-pane fade" id="activityTab">
-                <ul id="activityLogCustom" class="list-group mt-3">
-                    <li class="list-group-item">2025-08-01: [Admin] change the status to [status]</li>
-                    <li class="list-group-item">2025-08-05: [Admin] rejected [field name] from application ID</li>
-                </ul>
+                
             </div>
 
             <!-- Approval Tracking -->
@@ -185,8 +120,8 @@
    <!-- Approval Section (Right Aligned) -->
     <div class="mt-4 border-top pt-3 d-flex justify-content-between align-items-center">
         <div>
-            <button class="btn btn-primary" id="approveBtn">
-                Approve
+            <button class="btn btn-primary" id="approveBtn" admin_id="{{ Auth::user()->id }}">
+                Action
             </button>
         </div>
         <div class="text-end">
@@ -195,19 +130,21 @@
                 <span class="badge bg-secondary ms-2" id="approvalCounter">0/3</span>
             </h6>
 
-            <div class="d-flex gap-3 justify-content-end">
-                <div class="form-check">
-                    <input class="form-check-input admin-approval" type="checkbox" id="admin1">
-                    <label class="form-check-label" for="admin1">Admin 1</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input admin-approval" type="checkbox" id="admin2">
-                    <label class="form-check-label" for="admin2">Admin 2</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input admin-approval" type="checkbox" id="admin3">
-                    <label class="form-check-label" for="admin3">Admin 3</label>
-                </div>
+           <div class="d-flex gap-3 justify-content-end">
+                @foreach ($admins as $admin)
+                    <div class="form-check">
+                        <input class="form-check-input admin-approval"  
+                            admin_id="{{ Auth::user()->id }}"
+                            type="checkbox" 
+                            id="admin{{ $admin->id }}" 
+                            value="{{ $admin->id }}"
+                            @if ($admin->id !== Auth::user()->id) disabled @endif>
+                        <label class="form-check-label" for="admin{{ $admin->id }}">
+                            {{ $admin->full_name }}
+                        </label>
+                        <p class="text-success status_approval"></p>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>

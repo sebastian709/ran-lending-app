@@ -867,6 +867,156 @@ $(document).ready(function () {
     renderPagination();
 })();
 
+
+$(document).ready(function() {
+    let slider = $('.new_slider');
+    var max_loan = slider.attr('max');
+    slider.val(max_loan); 
+    slider.trigger('input');
+});
+
+$(document).on('click', '.la_proceed_loan_update_new', function () {
+
+        let loan_id = $(this).attr('data-loan_id');
+        let loan_amount = $('#summary-amount').text();
+        loan_amount = loan_amount.replace(/,/g, '');
+        var new_amount = parseFloat(loan_amount);
+        
+        var loan_tenure = $('#standardTenure').val();
+        var interest = $('.la_loan_interest').text().trim();
+        var interestRate = parseFloat(interest.replace('%', '')) / 100;
+        var  totalAmount = new_amount + (new_amount * interestRate);
+        
+        let step = $('.steps_val').val();
+
+        $.ajax({
+            url: '/borrower/resubmit-loan-info',
+            method: 'POST',
+            data: {
+                loan_application_id: loan_id,
+                loan_amount: new_amount.toFixed(2),
+                loan_tenure: loan_tenure,
+                interest_rate: interestRate.toFixed(3),
+                total_amount: totalAmount.toFixed(2)
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (res) {
+                if (step == 1) {
+                    $('#standard-result').addClass('d-none');
+                    $('.step-contents').removeClass('d-none');
+
+                    setTimeout(function() {
+                    window.location.href = '/home';
+                    }, 3000);
+
+                }else if (step == 3) {
+                    $('#standard-result').addClass('d-none');
+                
+                    $('.step-contents').removeClass('d-none');
+
+                    // Hide it after 3 seconds
+                    setTimeout(function() {
+                        $('.step-contents').addClass('d-none');
+                        $('.document_step').removeClass('d-none');
+                    }, 3000);
+                }
+            },
+            error: function () {
+                alert('Failed to update loan details.');
+            }
+        });
+    });
+
+$(document).ready(function() {
+    // Payslip
+    $('#payslipInput').on('change', function() {
+        $('#payslipPreview').removeClass('border-danger');
+    });
+
+    // QR Code
+    $('#qrInput').on('change', function() {
+        $('#qrPreview').removeClass('border-danger');
+    });
+
+    // Government ID
+    $('#govIdInput').on('change', function() {
+        $('#govIdPreview').removeClass('border-danger');
+    });
+
+    // Billing Statement
+    $('#billingInput').on('change', function() {
+        $('#billingPreview').removeClass('border-danger');
+    });
+});
+
+$('#resubmit_documents').on('click', function(e) {
+    e.preventDefault();
+    let formData = new FormData();
+    let valid = true;
+    let loan_id = $(this).attr('data-loan_id');
+    const inputsMap = {
+        'payslip_img': '#payslipInput',
+        'qr_code_img': '#qrInput',
+        'government_id_img': '#govIdInput',
+        'billing_statement_img': '#billingInput'
+    };
+
+    $.each(inputsMap, function(key, selector) {
+        let $input = $(selector);
+        if ($input.closest('.mb-4, .row').is(':visible')) {
+            if ($input.get(0).files.length === 0) {
+                $('#' + key + 'Preview').addClass('border-danger');
+                valid = false;
+            } else {
+                formData.append(key, $input.get(0).files[0]);
+            }
+        }
+    });
+
+    if (!valid) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Documents',
+            text: 'Please upload all required documents before submitting.'
+        });
+        return false;
+    }
+
+    // Append loan ID
+    formData.append('loan_id', loan_id);
+
+    $.ajax({
+       url: '/borrower/resubmit-loan-documents',
+        method: 'POST',
+        data: formData,
+        processData: false,      // Important!
+        contentType: false,      // Important!
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(res) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Documents Updated',
+                text: res.message
+            });
+            
+           setTimeout(function() {
+            window.location.href = '/home';
+            }, 3000);
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again.'
+            });
+        }
+    });
+});
+
 $(document).on('keyup', '#referralCode', function () {
     let $input = $(this);
     let this_value = $input.val();
@@ -937,8 +1087,6 @@ $(document).on('click', '.clearAllNotif', function(){
   window.clear_all_notifications();
   return false;
 });
-
-
 
 
 

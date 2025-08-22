@@ -95,6 +95,12 @@ Route::prefix('admin')->group(function () {
     Route::prefix('loan-request')->group(function () {
         Route::get('data', [AdminController::class, 'getLoanRequests']);
         Route::post('get-loan-data', [AdminController::class, 'getBorrowersApplication']);
+        Route::post('/loan/{id}/approve', [AdminController::class, 'approve'])->name('loan.approve');
+        Route::post('/loan/{id}/reject', [AdminController::class, 'reject'])->name('loan.reject');
+        Route::post('/loan/{id}/reject-field', [AdminController::class, 'rejectField'])->name('loan.rejectField');
+        Route::post('/update-loan-status', [AdminController::class, 'updateLoanStatus'])->name('loan.updateStatus');
+        Route::post('/get-bank-details', [AdminController::class, 'getBankDetails'])->name('loan.getBankDetails');
+        Route::post('/transfer-money', [AdminController::class, 'transferMoeny'])->name('loan.transferMoney');
     });
 
     // referral management
@@ -129,6 +135,7 @@ Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgo
 
 # borrower routes
 Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('loan.apply');
+
 
 # message pages
 Route::get('/loan-success', fn() => view('borrower.layouts.message'))->name('borrower.layouts.message');
@@ -188,3 +195,6 @@ Route::middleware(['auth'])->prefix('borrower')->name('borrower.')->group(functi
 });
 
 Route::get('/loan-list', [ProfileController::class, 'loanList'])->name('borrower.pages.loan-list');
+Route::get('/update-application-info', [App\Http\Controllers\HomeController::class, 'updateInformation'])->name('update-information');
+Route::post('/borrower/resubmit-loan-info', [HomeController::class, 'resubmitLoanInfo']);
+Route::post('/borrower/resubmit-loan-documents', [HomeController::class, 'resubmitLoanDocuments']);
