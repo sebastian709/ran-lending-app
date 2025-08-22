@@ -81,6 +81,10 @@ class HomeController extends Controller
                 ->where('loan_status', 0)
                 ->first();
 
+            $ref_code = DB::table('referral_code')
+                ->where('id', $loan->id)
+                ->first();
+
             return response()->json([
                 'loan_application_id' => $loan->id ?? '',
                 'fullname' => $income->fullname ?? '',
@@ -89,6 +93,8 @@ class HomeController extends Controller
                 'employment_status' => $income->employment_status ?? '',
                 'purpose_of_loan' => $loan->purpose_of_loan ?? '',
                 'referral' => $loan->referral ?? '',
+                'referral_code_id' => $loan->referral_code_id ?? '',
+                'referral_code' => $ref_code->referral_code ?? '',
                 'loan_amount' => $loan->loan_amount ?? '',
                 'loan_tenure' => $loan->loan_tenure ?? '',
                 'interest_rate' => $loan->interest_rate ?? '',
@@ -122,6 +128,7 @@ class HomeController extends Controller
             'load_step' => 'required|integer',
             'purpose_of_loan' => 'nullable|string',
             'referral' => 'nullable|string',
+            'referral_code_id' => 'nullable|integer',
             'occupation' => 'required|string',
             'income' => 'required|numeric',
             'employmentStatus' => 'required|integer',
@@ -149,6 +156,7 @@ class HomeController extends Controller
                 ->update([
                     'purpose_of_loan' => $validated['purpose_of_loan'],
                     'referral' => $validated['referral'],
+                    'referral_code_id' => $validated['referral_code_id'],
                     'load_step' => $validated['load_step'],
                     'updated_at' => now()
                 ]);
@@ -174,12 +182,23 @@ class HomeController extends Controller
                 'loan_applicant' => $userId,
                 'purpose_of_loan' => $validated['purpose_of_loan'],
                 'referral' => $validated['referral'],
+                'referral_code_id' => $validated['referral_code_id'],
                 'loan_status' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
 
 
+        }
+
+        if ($validated['referral_code_id']) {
+            DB::table('referral_code')
+                ->where('id', $validated['referral_code_id'])
+                ->update([
+                    'loan_id_claimant' => $loanId,
+                    'is_active' => 0,
+                    'updated_at' => now()
+                ]);
         }
 
         return response()->json([
@@ -254,7 +273,7 @@ class HomeController extends Controller
                 'account_number' => 'required|string',
                 'government_type_id' => 'required|integer',
                 'payslip_img' => 'required|file|mimes:jpg,jpeg,png,pdf',
-                'qr_code_img' => 'required|file|mimes:jpg,jpeg,png',
+                // 'qr_code_img' => 'file|mimes:jpg,jpeg,png',
                 'government_id_img' => 'required|file|mimes:jpg,jpeg,png',
                 'billing_statement_img' => 'required|file|mimes:jpg,jpeg,png,pdf',
                 'signature_img' => 'required|string',
@@ -329,7 +348,7 @@ class HomeController extends Controller
             ]);
             $apiInstance->sendTransacEmail(sendSmtpEmail: $emailObj);
             //==============================================================
-                
+
             $this->loan_approved_process($request->loan_application_id);
             return response()->json([
                 'success' => true,
@@ -355,10 +374,11 @@ class HomeController extends Controller
 
         return $loanApplication->loan_status ?? 999;
     }
-  
-    public function loan_approved_process($data){
+
+    public function loan_approved_process($data)
+    {
         // dd($data);
-        
+
         //PROCESS APPROVED LOAN 
         $loanApplications = DB::table('loan_application')
             ->where('id', $data)
@@ -367,42 +387,42 @@ class HomeController extends Controller
 
         $monthly = $loanApplications->loan_amount / $loanApplications->loan_tenure;
         $interest = $loanApplications->loan_amount * $loanApplications->interest_rate;
-        
+
         // dd($monthly);
-        for ($i = 1; $i <= $loanApplications->loan_tenure ; $i++) {
-            
+        for ($i = 1; $i <= $loanApplications->loan_tenure; $i++) {
+
             //TENURE
             $date = Carbon::now('Asia/Manila') // current PH time
-            ->subDay()
-            ->addMonths($i)
-            ->endOfDay();  
+                ->subDay()
+                ->addMonths($i)
+                ->endOfDay();
 
             $ids = DB::table('loan_tenure')
-            ->insertGetId(
-                [
-                    'loan_id' => $data,
-                    'date' => $date,
-                    'principal' => $monthly,
-                    'count' => $i,
-                    'payment_status_id' => 1,
-                    'payment_id' => 0,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ]
-            );
+                ->insertGetId(
+                    [
+                        'loan_id' => $data,
+                        'date' => $date,
+                        'principal' => $monthly,
+                        'count' => $i,
+                        'payment_status_id' => 1,
+                        'payment_id' => 0,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]
+                );
 
             //INTEREST
             $idss = DB::table('loan_tenure_interest')
-            ->insertGetId(
-                [
-                    'tenure_id' => $ids,
-                    'interest' => $interest,
-                    'payment_status_id' => 1,
-                    'payment_id' => 0,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ]
-            );
+                ->insertGetId(
+                    [
+                        'tenure_id' => $ids,
+                        'interest' => $interest,
+                        'payment_status_id' => 1,
+                        'payment_id' => 0,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]
+                );
 
         }
 

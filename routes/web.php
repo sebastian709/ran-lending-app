@@ -10,10 +10,23 @@ use App\Http\Controllers\Borrower\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReferralCodeController;
+use App\Http\Controllers\LimitLoanSettingsController;
+use App\Http\Controllers\NotificationController;
+
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
 Route::post('/test-broadcast', [ChatTestController::class, 'broadcast']);
+
+Route::get('/testingNotif', [NotificationController::class, 'testNotif']);
+Route::post('/send-notification', [NotificationController::class, 'send']);
+Route::get('/get-notification-data', [NotificationController::class, 'getNotificationData']);
+Route::post('/mark-all-read', [NotificationController::class, 'markAllRead']);
+Route::post('/clear-all-notifications', [NotificationController::class, 'clearAllNotifications']);
+
+
+
 
 
 Route::get('/test-broadcast', function () {
@@ -71,6 +84,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.pages.settings.index');
     Route::post('/update-loan-settings', [AdminController::class, 'updateLoanSettings']);
 
+    Route::prefix('settings')->group(function () {
+        Route::get('/loan-limit-settings', [LimitLoanSettingsController::class, 'index']);
+    });
+
     // page loader
     Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
 
@@ -85,7 +102,24 @@ Route::prefix('admin')->group(function () {
         Route::post('/get-bank-details', [AdminController::class, 'getBankDetails'])->name('loan.getBankDetails');
         Route::post('/transfer-money', [AdminController::class, 'transferMoeny'])->name('loan.transferMoney');
     });
+
+    // referral management
+    Route::get('/referral-management', [ReferralCodeController::class, 'index']);
+
+    Route::prefix('referral-code')->group(function () {
+        Route::post('save', [ReferralCodeController::class, 'store']);
+
+        // table 
+        Route::get('list', [ReferralCodeController::class, 'list']);
+        Route::post('update-status', [ReferralCodeController::class, 'updateStatus']);
+        Route::post('delete', [ReferralCodeController::class, 'delete']);
+    });
+
+    Route::get('/notification-page', [NotificationController::class, 'AdminViewPage']);
+    
 });
+Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferralCode']);
+
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
 
@@ -146,6 +180,7 @@ Route::get('/borrower/fetch-income/{id}', [HomeController::class, 'fetchIncome']
 Route::post('/borrower/save-precheck', [HomeController::class, 'savePrecheck']);
 Route::post('/borrower/update-loan-details', [HomeController::class, 'updateLoanDetails']);
 Route::post('/borrower/final-submit', [HomeController::class, 'finalSubmit']);
+Route::get('/notification-page', [NotificationController::class, 'BorrowerViewPage']);
 
 
 # profile page

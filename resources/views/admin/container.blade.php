@@ -30,10 +30,17 @@
     <!-- Lightbox2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
 
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Optional Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
     @stack('sb-styles')
 </head>
 
 <body>
+    <input type="hidden" id="getAuthID" value="{{ Auth::user()->id }}" />
+    <audio id="notifSound" src="{{ asset('sound/Default.mp3') }}" preload="auto"></audio>
+
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
@@ -41,9 +48,10 @@
         <a href="#" class="nav-link active" data-is-sidebar="1" data-url="/admin/dashboard">
             <i class="bi bi-columns-gap"></i> Dashboard
         </a>
-       <ul class="nav flex-column list-unstyled">
+        <ul class="nav flex-column list-unstyled">
             <li class="nav-item">
-                <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#loanSubNav" aria-expanded="false" aria-controls="loanSubNav">
+                <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#loanSubNav"
+                    aria-expanded="false" aria-controls="loanSubNav">
                     <i class="bi bi-table me-2"></i> Loan Request
                     <i class="bi bi-chevron-down ms-auto"></i>
                 </a>
@@ -52,6 +60,7 @@
                         <a href="#" data-url="/admin/loan-request/" class="nav-link py-1 m-0 active" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
                     </li>
                     <li class="nav-item p-0 m-0">
+
                         <a href="#" data-url="/admin/loan-request/pending" data-loan_status="1" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }} > Pending</a>
                     </li>
                     <li class="nav-item p-0 m-0">
@@ -71,10 +80,14 @@
                     </li>
                     <li class="nav-item p-0 m-0">
                         <a href="#" data-url="/admin/loan-request/closed" data-loan_status="7" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->closed == 0 ? 'hidden' : '' }} > Closed</a>
+
                     </li>
                 </ul>
             </li>
         </ul>
+        <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/referral-management">
+            <i class="ri-coupon-3-line"></i> Referral Code
+        </a>
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>
@@ -107,26 +120,70 @@
                 <!-- 🔔 Notification Bell -->
                 <div class="dropdown">
                     <button class="btn position-relative text-white p-0" type="button" id="notifDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell-fill fs-5 top-bar-icon"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle-y badge rounded-pill bg-danger"
-                            style="font-size: 0.65rem; transform: translate(-40%, -40%) !important;">
-                            3
+                        data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                        <i class="ri-notification-3-fill fs-5 top-bar-icon"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle-y badge rounded-pill bg-danger d-none"
+                            style="font-size: 0.65rem; transform: translate(-40%, -40%) !important;"
+                            id="general_notification_count">
+                            0
                         </span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notifDropdown"
-                        style="min-width: 280px;">
-                        <li>
-                            <h6 class="dropdown-header">Notifications</h6>
-                        </li>
-                        <li><a class="dropdown-item" href="#">📦 New order received</a></li>
-                        <li><a class="dropdown-item" href="#">✅ Task completed</a></li>
-                        <li><a class="dropdown-item" href="#">📩 2 new messages</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-center text-primary" href="#">View all</a></li>
-                    </ul>
+
+                    <!-- Dropdown -->
+                    <div class="dropdown-menu dropdown-menu-end shadow p-0" aria-labelledby="notifDropdown"
+                        style="min-width: 400px;">
+
+                        <!-- Header Row -->
+                        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                            <h6 class="mb-0 fw-bold">Notifications</h6>
+                            <!-- <a href="#" class="small text-primary" data-url="/admin/notification-page"
+                                style="cursor:pointer;">See all</a> -->
+                        </div>
+
+                        <!-- Tabs Row -->
+                        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                            <a href="#" class="small text-primary dropdown-no-close markAllAsRead">Mark all as read</a>
+                            <div>
+                                <!-- <a href="#" class="me-3 fw-semibold text-dark dropdown-no-close">All</a>
+                                <a href="#" class="fw-light text-muted dropdown-no-close">Unread</a> -->
+                                <a href="#" class="small text-primary" data-url="/admin/notification-page"
+                                style="cursor:pointer;">See all</a>
+                            </div>
+                            
+                        </div>
+
+                        <!-- Notification Items -->
+                        <div style="max-height: 400px; overflow-y: auto;" class="notification-items">
+                            <!-- Notification 1 -->
+                            <!-- <div class="px-3 py-2 border-bottom items unread position-relative">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="d-flex align-items-start">
+                                        <i class="ri-mail-unread-line text-primary fs-5 me-2"></i>
+                                        <div>
+                                            <p class="mb-1 small">You have 2 new messages</p>
+                                            <small class="text-muted">1m ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative">
+                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore1"
+                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore1">
+                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <p class="text-center">No notifications</p>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="text-center py-2">
+                            <a href="#" class="text-primary small fw-semibold dropdown-no-close seeMoreNotif">See more
+                                notifications</a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 👤 Profile Image -->
@@ -153,7 +210,11 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-
+                                <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/home">
+                                    <i class="ri-loop-left-line me-2"></i>Borrower Mode
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/profile">
                                     <i class="ri-user-line me-2"></i>Profile
                                 </a>
@@ -193,6 +254,9 @@
         <div id="content" class="my-4 mx-2">
             @yield('content')
         </div>
+
+
+
     </div>
 
 
@@ -208,11 +272,70 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/short-unique-id@latest/dist/short-unique-id.min.js"></script>
+    <script src="{{ asset('js/components/global-notification.js') }}"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
     @stack('sb-scripts')
 
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getDatabase, ref, query, orderByChild, startAt, onChildAdded }
+            from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI5V6np4Xstxl01DbS9j2PCV3tFmttbHw",
+            authDomain: "ran-realtime.firebaseapp.com",
+            databaseURL: "https://ran-realtime-default-rtdb.firebaseio.com",
+            projectId: "ran-realtime",
+            storageBucket: "ran-realtime.firebasestorage.app",
+            messagingSenderId: "678506273903",
+            appId: "1:678506273903:web:f7979289e002145776c19a",
+            measurementId: "G-THBZK5DGGR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // === TIMESTAMP MARKER (oras ng pag-load ng page) ===
+        const pageLoadTimestamp = Math.floor(Date.now() / 1000);
+
+        // === LISTENER SETUP ===
+        const table_id = "notifications";
+        const notifRef = query(
+            ref(database, table_id),
+            orderByChild("timestamp"),
+            startAt(pageLoadTimestamp) // 👉 kuha lang ng >= timestamp
+        );
+
+        // Listen for new child (na >= pageLoadTimestamp)
+        onChildAdded(notifRef, (snapshot) => {
+            const AuthID = parseInt($('#getAuthID').val());
+            const notif = snapshot.val();
+
+            if (notif.user_ids.includes(AuthID)) {
+                // console.log("🔥 New notification:", notif.user_ids, "at", notif.timestamp);
+
+                let sound = document.getElementById("notifSound");
+                sound.currentTime = 0;
+                sound.play().catch(err => {
+                    console.warn("Sound play blocked by browser:", err);
+                });
+                window.general_notification_count();
+                window.general_notification_data(10, 0, false);
+            }
+        });
+
+        $(document).ready(function(){
+            window.general_notification_count();
+        });
+    </script>
 </body>
 
 </html>
