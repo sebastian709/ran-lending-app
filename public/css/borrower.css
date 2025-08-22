@@ -513,3 +513,8 @@ img.user-avatar {
     cursor: pointer;
     font-size: 1.1rem;
 }
+
+.notification-items i{
+    font-size: 30px;
+    margin-right: 10px;
+}

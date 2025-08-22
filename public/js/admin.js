@@ -19,6 +19,7 @@ $(document).ready(function () {
   createBPTagify();
   updateBreadcrumb(currentPath);
 
+
   // ✅ CSRF setup - FIXED closing
   $.ajaxSetup({
     headers: {
@@ -30,6 +31,10 @@ $(document).ready(function () {
   if (currentPath === '/admin/referral-management') {
     updateView(currentView);
     fetchReferralTable(currentPage);
+  }
+
+  if (currentPath === '/admin/notification-page') {
+    window.general_notification_data(10, 0, false);
   }
 });
 
@@ -55,7 +60,7 @@ $(document).on('click', '[data-url]', function (e) {
     if (url == "/home") {
       window.location.reload();
     }
-    
+
     updateBreadcrumb(url);
 
     // Call plugins safely
@@ -1105,42 +1110,65 @@ $(document).on('click', '.generate-referral-code', function () {
   $('input[name="referral_code"]').val(code).trigger('input'); // set value + trigger validation
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Prevent dropdown from closing on specific elements
-    document.querySelectorAll(".dropdown-no-close").forEach(function (el) {
-        el.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Clicked:", e.target.textContent.trim());
-        });
-    });
-});
+
 
 
 $(document).on('click', '.cTestTriggerNotif button', function () {
-    const table_id      = $('.cTestTriggerNotif .table_id').val();
-    const target_type   = $('.cTestTriggerNotif .target_type').val();
-    const level_id      = $('.cTestTriggerNotif .level_id').val();
-    const user_id       = $('.cTestTriggerNotif .user_id').val();
-    const group_user_id = $('.cTestTriggerNotif .group_user_id').val();
-    const icon          = $('.cTestTriggerNotif .icon').val();
-    const message       = $('.cTestTriggerNotif .message').val();
-    const data_url      = $('.cTestTriggerNotif .data_url').val();
+  const table_id = $('.cTestTriggerNotif .table_id').val();
+  const target_type = $('.cTestTriggerNotif .target_type').val();
+  const level_id = $('.cTestTriggerNotif .level_id').val();
+  const user_id = $('.cTestTriggerNotif .user_id').val();
+  const group_user_id = $('.cTestTriggerNotif .group_user_id').val();
+  const icon = $('.cTestTriggerNotif .icon').val();
+  const message = $('.cTestTriggerNotif .message').val();
+  const data_url = $('.cTestTriggerNotif .data_url').val();
 
-    if (typeof window.triggerNotif === "function") {
-        window.triggerNotif(
-            table_id,
-            target_type,
-            level_id,
-            user_id,
-            group_user_id,
-            icon,
-            message,
-            data_url
-        );
-    } else {
-        console.warn("⚠️ window.triggerNotif is not defined.");
-    }
+  if (typeof window.triggerNotif === "function") {
+    window.triggerNotif(
+      table_id,
+      target_type,
+      level_id,
+      user_id,
+      group_user_id,
+      icon,
+      message,
+      data_url
+    );
+  } else {
+    console.warn("⚠️ window.triggerNotif is not defined.");
+  }
 });
 
+
+
+$(document).on('click', '#notifDropdown', function (e) {
+  e.preventDefault();
+  window.general_notification_data(10, 0, false);
+});
+
+
+let notifLimit = 10;
+let notifOffset = 0;
+
+// trigger sa "See more notifications"
+$(document).on("click", ".seeMoreNotif", function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  // dagdag offset
+  notifOffset += notifLimit;
+
+  // call append mode
+  window.general_notification_data(notifLimit, notifOffset, true);
+  return false;
+});
+
+$(document).on('click', '.markAllAsRead', function () {
+  window.mark_all_as_read();
+  return false;
+});
+
+$(document).on('click', '.clearAllNotif', function(){
+  window.clear_all_notifications();
+  return false;
+});
 

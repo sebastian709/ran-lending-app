@@ -21,7 +21,9 @@ Route::post('/test-broadcast', [ChatTestController::class, 'broadcast']);
 
 Route::get('/testingNotif', [NotificationController::class, 'testNotif']);
 Route::post('/send-notification', [NotificationController::class, 'send']);
-
+Route::get('/get-notification-data', [NotificationController::class, 'getNotificationData']);
+Route::post('/mark-all-read', [NotificationController::class, 'markAllRead']);
+Route::post('/clear-all-notifications', [NotificationController::class, 'clearAllNotifications']);
 
 
 

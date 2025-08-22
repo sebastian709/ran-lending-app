@@ -1,3 +1,11 @@
+$(document).ready(function () {
+    let currentPath = window.location.pathname;
+
+    if (currentPath === '/notification-page') {
+        window.general_notification_data(10, 0, false);
+    }
+});
+
 $(function () {
     let current_routes = window.location.pathname;
     const userId = $('#gb_user_id').val();
@@ -35,7 +43,7 @@ $(function () {
                         formData.loanAmount = parseFloat(res.loan_amount);
                     }
 
-                    if(res.referral_code_id){
+                    if (res.referral_code_id) {
                         $('#referral-code-section').show();
                         $('#referralCode').val(res.referral_code);
 
@@ -242,7 +250,7 @@ $(function () {
                 user_id: userId,
                 purpose_of_loan: purpose,
                 referral: referral,
-                referral_code_id : referral_code_id,
+                referral_code_id: referral_code_id,
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
@@ -899,15 +907,35 @@ $(document).on('keyup', '#referralCode', function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Prevent dropdown from closing on specific elements
-    document.querySelectorAll(".dropdown-no-close").forEach(function (el) {
-        el.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Clicked:", e.target.textContent.trim());
-        });
-    });
+$(document).on('click', '#notifDropdown', function (e) {
+    e.preventDefault();
+    window.general_notification_data(10, 0, false);
+});
+
+
+let notifLimit = 10;
+let notifOffset = 0;
+
+// trigger sa "See more notifications"
+$(document).on("click", ".seeMoreNotif", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // dagdag offset
+    notifOffset += notifLimit;
+
+    // call append mode
+    window.general_notification_data(notifLimit, notifOffset, true);
+    return false;
+});
+
+$(document).on('click', '.markAllAsRead', function () {
+  window.mark_all_as_read();
+  return false;
+});
+
+$(document).on('click', '.clearAllNotif', function(){
+  window.clear_all_notifications();
+  return false;
 });
 
 
