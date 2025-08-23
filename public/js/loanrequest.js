@@ -833,3 +833,23 @@ $(document).on("click", ".transfer_money", function () {
         }
     });
 });
+
+// $(document).ready(function () {
+//     // get loan_id from query param
+//     const urlParams = new URLSearchParams(window.location.search);
+//     const loan_id = urlParams.get('loan_id');
+
+//     if (loan_id) {
+//         // find the matching row and trigger click
+//         $(`#loanBody tr[data-loan_id="${loan_id}"]`).trigger('click');
+//     }
+// });
+
+
+$(document).on('click', '.document_notifs', function () {
+
+    let loan_id = $(this).attr('value');
+
+    window.location.href = '/admin/loan-request';
+});
+
