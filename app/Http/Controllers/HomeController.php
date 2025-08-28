@@ -107,7 +107,7 @@ class HomeController extends Controller
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
             ->where('lt.loan_id', $loanApplication->id)
-            ->where('lt.date', '<=', Carbon::now()->endOfMonth(1)->endOfDay())
+            ->where('lt.date', '<=', Carbon::now()->endOfMonth()->endOfDay())
             ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
             ->first();
 
