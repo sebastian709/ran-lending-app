@@ -22,6 +22,7 @@ return new class extends Migration
             ['type' => 'partial'],
             ['type' => 'advanced'],
             ['type' => 'normal'],
+            ['type' => 'rebate'],
         ]);
 
     }

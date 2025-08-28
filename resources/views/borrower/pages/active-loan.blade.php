@@ -43,7 +43,7 @@
                         <div class="text-primary-custom mb-2">
                             <i class="ri-bank-card-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">₱0</div>
+                        <div class="h4 fw-bold mb-1">₱ {{ number_format($data->total_all_raw,2) }}</div>
                         <div class="small text-muted">Loan Amount</div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                         <div class="text-success mb-2">
                             <i class="ri-calendar-schedule-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">12 Months</div>
+                        <div class="h4 fw-bold mb-1">{{ $data->months }} Months</div>
                         <div class="small text-muted">Loan Tenure</div>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                         <div class="text-warning mb-2">
                             <i class="ri-wallet-3-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">₱8,500</div>
+                        <div class="h4 fw-bold mb-1">₱ {{ number_format($data->raw_total,2) }}</div>
                         <div class="small text-muted">Monthly Due Amount</div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                         <div class="text-info mb-2">
                             <i class="ri-calendar-event-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">Every 1st of the month</div>
+                        <div class="h4 fw-bold mb-1">Every {{ \Carbon\Carbon::parse($data->date)->day . (\Carbon\Carbon::parse($data->date)->day % 100 >= 11 && \Carbon\Carbon::parse($data->date)->day % 100 <= 13 ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][\Carbon\Carbon::parse($data->date)->day % 10]) }}                         of the month</div>
                         <div class="small text-muted">Monthly Due Date</div>
                     </div>
                 </div>
@@ -84,14 +84,25 @@
                         <div class="ms-3">
                             <h5 class="fw-bold mb-0">
                                 Next Payment:
-                                <h4 class="fw-bold text-primary mb-1">₱8,500</h4>
+                                <h4 class="fw-bold text-primary mb-1">
+                                @if($nextPayment->total_all == 0)
+                                    Current Month is Already Paid
+                                @else
+                                    ₱ {{ number_format($nextPayment->total_all, 2) }}
+                                @endif
+                                </h4>
                             </h5>
-                            <small class="text-muted">Due on <strong>August 1, 2025</strong></small>
+                            <small class="text-muted">Due on <strong>{{ \Carbon\Carbon::parse($nextPayment->date)->format('F j, Y') }}</strong></small>
                         </div>
                     </div>
                     <div class="text-end">
                         <a href="/payment" class="btn btn-primary btn-md">
-                            <i class="ri-wallet-line me-1"></i> Pay Now
+                            <i class="ri-wallet-line me-1"></i> 
+                            @if($nextPayment->total_all == 0)
+                                Pay Advanced
+                            @else
+                                Pay Now
+                            @endif
                         </a>
                     </div>
                 </div>
