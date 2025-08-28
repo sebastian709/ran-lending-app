@@ -131,6 +131,14 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
             
+        $loanStatus = $loanApplication->loan_status ?? 999;
+
+        if ($loanStatus < 4 || $loanStatus == 999) {
+            return view('borrower.pages.home', compact('loanStatus'));
+        }
+
+
+    
         $results = DB::table('loan_application as la')
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
