@@ -85,20 +85,22 @@
                             <h5 class="fw-bold mb-0">
                                 Next Payment:
                                 <h4 class="fw-bold text-primary mb-1">
-                                @if($nextPayment->total_all == 0)
+                                @if(!$nextPayment)
                                     Current Month is Already Paid
                                 @else
                                     ₱ {{ number_format($nextPayment->total_all, 2) }}
                                 @endif
                                 </h4>
                             </h5>
+                            @if($nextPayment)
                             <small class="text-muted">Due on <strong>{{ \Carbon\Carbon::parse($nextPayment->date)->format('F j, Y') }}</strong></small>
-                        </div>
+                            @endif
+                            </div>
                     </div>
                     <div class="text-end">
                         <a href="/payment" class="btn btn-primary btn-md">
                             <i class="ri-wallet-line me-1"></i> 
-                            @if($nextPayment->total_all == 0)
+                                @if(!$nextPayment)
                                 Pay Advanced
                             @else
                                 Pay Now

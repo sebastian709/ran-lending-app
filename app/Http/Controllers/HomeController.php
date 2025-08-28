@@ -107,19 +107,39 @@ class HomeController extends Controller
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
             ->where('lt.loan_id', $loanApplication->id)
-            ->where('lt.date', '<=', Carbon::now()->endOfMonth()->endOfDay())
+            ->where('lt.date', '<=', Carbon::now()->endOfMonth(1)->endOfDay())
             ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
             ->first();
 
-
-
+            // if (!$nextPayment) {
+            //     $nextPayment = DB::table('loan_tenure as lt')
+            //         ->select(
+            //             'lt.loan_id',
+            //             'lt.date',
+            //             'lt.principal',
+            //             'lti.interest',
+            //             DB::raw('
+            //                 (
+            //                     SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) +
+            //                     SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) +
+            //                     SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0))
+            //                 ) AS total_all
+            //             ')
+            //         )
+            //         ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
+            //         ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+            //         ->where('lt.loan_id', $loanApplication->id)
+            //         ->where('lt.date', '<=', Carbon::now()->addMonthNoOverflow()->endOfMonth()->endOfDay())
+            //         ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
+            //         ->first();
+            // }
             if ($data->months === 0) {
                 $loanStatus = 0;
                 return view('borrower.layouts.payment-state', compact('loanStatus'));
             }
             
             
-            // dd($loanStatus,$data,$datas);
+            // dd($loanStatus,$data,$nextPayment);
             
         return view('borrower.pages.home', compact('loanStatus','data','nextPayment'));
     }
