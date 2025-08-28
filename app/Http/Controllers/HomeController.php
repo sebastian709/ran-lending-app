@@ -47,7 +47,7 @@ class HomeController extends Controller
         $loanStatus = $loanApplication->loan_status ?? 999;
 
         if ($loanStatus < 4 || $loanStatus == 999) {
-            return view('borrower.layouts.payment-state', compact('loanStatus'));
+            return view('borrower.pages.home', compact('loanStatus'));
         }
 
         DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
