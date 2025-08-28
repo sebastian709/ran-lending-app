@@ -46,6 +46,10 @@ class HomeController extends Controller
         // dd($loanApplication);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
+        if ($loanStatus < 4 || $loanStatus == 999) {
+            return view('borrower.layouts.payment-state', compact('loanStatus'));
+        }
+
         DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
         $data = DB::table('loan_application as la')
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
