@@ -118,7 +118,7 @@
                                 </div>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
+                                <li {{ Auth::user()->is_admin == 0 ? 'hidden' : '' }}>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/dashboard">
                                         <i class="ri-loop-left-line me-2"></i>Admin Mode
                                     </a>
