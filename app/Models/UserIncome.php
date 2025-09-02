@@ -11,5 +11,6 @@ class UserIncome extends Model
         'occupation',
         'income',
         'employment_status',
+        'specified_others'
     ];
 }

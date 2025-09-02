@@ -155,11 +155,12 @@
                                         {{-- Employment Status dropdown --}}
                                         <div class="col-lg-6">
                                             <label class="form-label">Employment Status</label>
-                                            <select class="form-select profile-input" name="employment_status" disabled>
+                                            <select class="form-select profile-input pEmploymentStatus" name="employment_status" disabled>
                                                 <option value="0" {{ $usersInformation->employment_status == 0 ? 'selected' : '' }}>Employment Status</option>
                                                 <option value="1" {{ $usersInformation->employment_status == 1 ? 'selected' : '' }}>Employed</option>
                                                 <option value="2" {{ $usersInformation->employment_status == 2 ? 'selected' : '' }}>Self employed</option>
                                                 <option value="3" {{ $usersInformation->employment_status == 3 ? 'selected' : '' }}>None</option>
+                                                <option value="4" {{ $usersInformation->employment_status == 4 ? 'selected' : '' }}>Others</option>
                                             </select>
                                         </div>
                                         {{-- Employment Status dropdown --}}
@@ -170,6 +171,11 @@
                                                 <option value="1" {{ $usersInformation->referral_source_id == 1 ? 'selected' : '' }}>Social Media</option>
                                                 <option value="2" {{ $usersInformation->referral_source_id == 2 ? 'selected' : '' }}>Referral</option>
                                             </select>
+                                        </div>
+
+                                        <div class="col-lg-12 form-group" {{ $usersInformation->employment_status == 4 ? '' : 'hidden' }}>
+                                            <label for="">if Others, Please specify</label>
+                                            <input type="text" name="specify_others" value="{{ $usersInformation->specified_others }}" class="form-control specifyOthers" disabled>
                                         </div>
                                     </div>
                                     <input type="file" id="profile-picture-input" name="profile_picture" hidden>

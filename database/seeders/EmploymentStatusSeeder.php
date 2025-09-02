@@ -17,6 +17,7 @@ class EmploymentStatusSeeder extends Seeder
             "Employed",
             "Self Employed",
             "None",
+            "Others"
         ];
 
         foreach ($idTypes as $type) {

@@ -115,12 +115,17 @@
 
               </div>
               <div class="col-md-6">
-                <select class="form-select" name="employment_status" required>
+                <select class="form-select empStatusLis" name="employment_status" required>
                   <option value="0">Employment Status</option>
                   <option value="1">Employed</option>
                   <option value="2">Self employed</option>
                   <option value="3">None</option>
+                  <option value="4">Others</option>
                 </select>
+              </div>
+              <div class="col-lg-12 form-group" hidden>
+                <label for="">if Others, Please specify</label>
+                <input type="text" name="specify_others" class="form-control specifyOthers">
               </div>
             </div>
             <hr class="my-4">

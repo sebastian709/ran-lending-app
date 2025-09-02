@@ -32,6 +32,7 @@ class ProfileController extends Controller
                 'user_incomes.occupation',
                 'user_incomes.income',
                 'user_incomes.employment_status',
+                'user_incomes.specified_others',
                 'users.referral_source_id',
                 'user_details.house_no',
                 'user_details.street',
@@ -115,6 +116,7 @@ class ProfileController extends Controller
                 'occupation' => $request->occupation,
                 'income' => $income,
                 'employment_status' => $request->employment_status,
+                'specified_others' => $request->specify_others,
                 'updated_at' => now()
             ]);
 

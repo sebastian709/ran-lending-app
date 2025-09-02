@@ -1115,6 +1115,19 @@ $(document).on('click', '.clearAllNotif', function(){
 });
 
 
+$(document).on('change', '.pEmploymentStatus', function(){
+  let $this = $(this);
+  let status_val = $this.val();
+
+  if(parseInt(status_val) == 4){
+    $('.specifyOthers').closest('div.form-group').removeAttr('hidden');
+    $('.specifyOthers').attr('required', 'true')
+  } else {
+    $('.specifyOthers').closest('div.form-group').attr('hidden', 'true');
+    $('.specifyOthers').removeAttr('required')
+  }
+});
+
 
 
 

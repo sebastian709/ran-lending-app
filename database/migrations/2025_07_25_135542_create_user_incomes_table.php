@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('occupation');
             $table->decimal('income', 15, 2);
             $table->integer('employment_status');
+            $table->string('specified_others')->nullable();
             $table->integer('status')->default(1)->index();
             $table->timestamps();
         });

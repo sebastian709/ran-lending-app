@@ -58,6 +58,7 @@ class RegisterController extends Controller
             'occupation'        => $request->occupation,
             'income'            => $request->income,
             'employment_status' => $request->employment_status,
+            'specified_others' => $request->specify_others
         ]);
 
         
