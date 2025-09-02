@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->index();
             $table->string('occupation');
-            $table->decimal('income');
+            $table->decimal('income', 15, 2);
             $table->integer('employment_status');
             $table->integer('status')->default(1)->index();
             $table->timestamps();
