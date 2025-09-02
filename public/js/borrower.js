@@ -963,6 +963,16 @@ $('#resubmit_documents').on('click', function(e) {
         'billing_statement_img': '#billingInput'
     };
 
+
+    const table_id = 'notifications';
+    const target_type = 1;
+    const level_id = 1;
+    const user_id = 0;
+    const group_user_id = 0;
+    const icon = '<i class="ri-file-text-line"></i>';
+    const message = `<p class="mb-1 small document_notifs" value="${loan_id}">Resubmit Document for <b>LN-${String(loan_id).padStart(5, '0')}</b></p>`;
+    const data_url = '';
+
     $.each(inputsMap, function(key, selector) {
         let $input = $(selector);
         if ($input.closest('.mb-4, .row').is(':visible')) {
@@ -1002,6 +1012,22 @@ $('#resubmit_documents').on('click', function(e) {
                 title: 'Documents Updated',
                 text: res.message
             });
+        
+            
+        if (typeof window.triggerNotif === "function") {
+            window.triggerNotif(
+            table_id,
+            target_type,
+            level_id,
+            user_id,
+            group_user_id,
+            icon,
+            message,
+            data_url
+            );
+        } else {
+            console.warn("⚠️ window.triggerNotif is not defined.");
+        }
             
            setTimeout(function() {
             window.location.href = '/home';
