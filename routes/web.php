@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReferralCodeController;
 use App\Http\Controllers\LimitLoanSettingsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NoAuthController;
 
 
 // Route::get('/', [ChatTestController::class, 'login']);
@@ -38,10 +39,10 @@ Route::get('/test-broadcast', function () {
 Route::get('/lending', fn() => view('index'))->name('index');
 
 # multi-purpose website
-Route::get('/', [BlogPostController::class, 'landingView']);
-Route::get('/jewelry', [BlogPostController::class, 'landingJewelry']);
-Route::get('/hub', [BlogPostController::class, 'landingHub']);
-Route::get('/travel-and-tours', [BlogPostController::class, 'landingTAT']);
+Route::get('/', [NoAuthController::class, 'landingView']);
+Route::get('/jewelry', [NoAuthController::class, 'landingJewelry']);
+Route::get('/hub', [NoAuthController::class, 'landingHub']);
+Route::get('/travel-and-tours', [NoAuthController::class, 'landingTAT']);
 
 #index page routes - Lending website
 Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
