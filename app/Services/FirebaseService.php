@@ -26,4 +26,24 @@ class FirebaseService
                 'timestamp' => now()->timestamp,
             ]);
     }
+    public function clearOldNotifications()
+    {
+        $ref = $this->database->getReference('notifications');
+
+        // Kunin lahat ng notifications
+        $notifications = $ref->getValue();
+
+        if (!$notifications) {
+            return; // walang data
+        }
+
+        $fiveMinutesAgo = now()->subMinutes(5)->timestamp;
+
+        foreach ($notifications as $key => $data) {
+            if (isset($data['timestamp']) && $data['timestamp'] <= $fiveMinutesAgo) {
+                // Burahin specific child
+                $this->database->getReference("notifications/{$key}")->remove();
+            }
+        }
+    }
 }
