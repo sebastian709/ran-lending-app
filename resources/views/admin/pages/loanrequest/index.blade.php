@@ -153,9 +153,9 @@
 
 <!-- sample data muna -->
 <!-- Lightbox2 JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="{{ asset('js/loanrequest.js') }}"></script>
+<script src="{{ asset('js/loanrequest.js') }}"></script> -->
 
 @endsection
 

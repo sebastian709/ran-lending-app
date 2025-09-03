@@ -501,7 +501,7 @@ $(document).ready(function () {
     });
 
 
-    $('#closePopup').on('click', function () {
+    $(document).on('click', '#closePopup', function () {
         $('#customLoanPopup').addClass('d-none');
         $('.topbar').css('z-index', 2);
     });
