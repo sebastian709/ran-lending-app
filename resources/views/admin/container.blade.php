@@ -89,9 +89,9 @@
                 </ul>
             </li>
         </ul>
-        <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/referral-management">
+        <!-- <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/profile/referral-management">
             <i class="ri-coupon-3-line"></i> Referral Code
-        </a>
+        </a> -->
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>

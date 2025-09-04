@@ -28,7 +28,7 @@ $(document).ready(function () {
   });
 
 
-  if (currentPath === '/admin/referral-management') {
+  if (currentPath === '/admin/profile/referral-management') {
     updateView(currentView);
     fetchReferralTable(currentPage);
   }
@@ -73,7 +73,7 @@ $(document).on('click', '[data-url]', function (e) {
       loadBlogPostList(); // default: all
     }
 
-    if (url === '/admin/referral-management') {
+    if (url === '/admin/profile/referral-management') {
       updateView(currentView);
       fetchReferralTable(currentPage);
     }
