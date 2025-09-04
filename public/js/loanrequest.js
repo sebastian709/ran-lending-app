@@ -705,8 +705,27 @@ $(document).on('click', '.rejectData', function() {
 
 
 $(document).on("click", "#updateStatus", function () {
+    let approvalText = $("#approvalCounter").text().trim(); // e.g. "1/3"
+    let parts = approvalText.split("/");
+
+    let current = parseInt(parts[0], 10);
+    let total = parseInt(parts[1], 10);
+
     $("#loan_status_admin").prop("disabled", false).focus();
+
+    if (current === total && total === 3) {
+        $("#loan_status_admin").find('option[value="2"]').removeAttr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="4"]').removeAttr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="5"]').removeAttr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="8"]').removeAttr('disabled', 'true');
+    } else {
+        $("#loan_status_admin").find('option[value="2"]').attr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="4"]').attr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="5"]').attr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="8"]').attr('disabled', 'true');
+    }
 });
+
 
 $(document).on("change", "#loan_status_admin", function () {
     let originalStatus = $('#updateStatus').attr("data-original_status");
