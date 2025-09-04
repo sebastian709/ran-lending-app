@@ -180,7 +180,7 @@
                                                 <span class="fw-medium">₱<span id="admin-summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Interest Rate:</span>
+                                                <span>Monthly Interest:</span>
                                                 <span class="fw-medium la_ad_loan_interest">5%</span>
                                             </div>
                                         </div>
@@ -254,7 +254,7 @@
                                                 <span class="fw-medium">₱<span id="summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Interest Rate:</span>
+                                                <span>Monthly Interest:</span>
                                                 <span class="fw-medium la_loan_interest">5%</span>
                                             </div>
                                         </div>
