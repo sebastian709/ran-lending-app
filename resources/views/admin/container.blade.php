@@ -8,6 +8,10 @@
     $total_active += $loanStatusAccess->loanAccess->for_revision;
     $total_active += $loanStatusAccess->loanAccess->waiting;
 
+    $total_active += $loanStatusAccess->loanAccess->rejected;
+    $total_active += $loanStatusAccess->loanAccess->transferred_and_processed;
+    $total_active += $loanStatusAccess->loanAccess->closed;
+
 
 @endphp
 
