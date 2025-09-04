@@ -27,7 +27,7 @@ $(function () {
                     loan_application_id = res.loan_application_id;
                     // auto loads
                     $('#occupation').val(res.occupation);
-                    $('#income').val(res.income);
+                    $('#income').val(parseInt(res.income, 10).toLocaleString());
                     $(`input[name="employmentStatus"][value="${res.employment_status}"]`).prop('checked', true).prop('disabled', false);
                     $('.c-applicant-name-1').text(res.fullname);
                     $('.c-applicant-position-1').text(res.occupation);
@@ -133,6 +133,18 @@ $(function () {
             });
         }
     }
+
+    $(document).on('input', '#income', function () {
+        let value = $(this).val().replace(/,/g, ''); // tanggalin muna lahat ng comma
+
+        if (value === '' || isNaN(value)) {
+            $(this).val('');
+            return;
+        }
+
+        // lagyan ng comma every 3 digits
+        $(this).val(value.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    });
 
     // la_go_home
     $(document).on('click', '.la_back_step', function () {

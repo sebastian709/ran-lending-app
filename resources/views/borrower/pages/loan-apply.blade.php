@@ -52,7 +52,7 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="income" class="form-label fw-medium">Current Income (₱)</label>
-                                        <input type="number" class="form-control" id="income">
+                                        <input type="text" class="form-control" id="income">
                                         
                                     </div>
                                 </div>
