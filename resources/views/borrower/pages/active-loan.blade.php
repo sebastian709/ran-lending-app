@@ -119,5 +119,36 @@
         </div>
     </div>
 </div>
-@endsection
 
+<!-- Congrats Modal -->
+<div class="modal fade" id="congratsModal" tabindex="-1" aria-labelledby="congratsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content text-center p-5" style="border-radius:20px;">
+      <div class="modal-body">
+        <h1 class="mb-4" style="color:#28a745; font-weight:bold; font-size:2.5rem;">
+            Congratulations!
+        </h1>
+        <p class="mb-4" style="font-size:1.3rem; font-weight:500;">
+          Your loan has been successfully transferred.
+        </p>
+        <p class="mb-4" style="font-size:1.1rem;">
+        Having any trouble? 
+        <a href="javascript:void(0)" id="makeAppealBtn" class="fw-bold text-primary">Make an appeal</a>.
+        </p>
+
+        <!-- Do not show again checkbox -->
+        <div class="form-check mb-4 d-flex justify-content-center">
+          <input class="form-check-input me-2" type="checkbox" value="" id="dontShowCongrats">
+          <label class="form-check-label" for="dontShowCongrats" style="font-size:1rem;">
+            Do not show this again
+          </label>
+        </div>
+
+        <button type="button" class="btn btn-success btn-lg px-5 appeal_close" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+@endsection
