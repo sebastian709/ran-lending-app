@@ -464,6 +464,7 @@ class AdminController extends Controller
 
             // Due date calculation (based on monthly_due_date instead of static now)
             $dueDate = Carbon::parse($request->monthly_due_date)
+                ->subDay()
                 ->addMonths($i - 1) // start from given due date
                 ->endOfDay();
 

@@ -433,7 +433,6 @@ class HomeController extends Controller
 
     public function finalSubmit(Request $request)
     {
-        // $this->loan_approved_process($request->loan_application_id);
         // dd('tests');
         try {
             $validator = Validator::make($request->all(), [
@@ -519,7 +518,6 @@ class HomeController extends Controller
             $apiInstance->sendTransacEmail(sendSmtpEmail: $emailObj);
             //==============================================================
 
-            $this->loan_approved_process($request->loan_application_id);
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'

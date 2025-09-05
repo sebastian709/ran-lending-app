@@ -44,7 +44,7 @@
                             <i class="ri-bank-card-line" style="font-size: 2rem;"></i>
                         </div>
                         <div class="h4 fw-bold mb-1">₱ {{ number_format($data->total_all_raw,2) }}</div>
-                        <div class="small text-muted">Loan Amount</div>
+                        <div class="small text-muted">Total Loan Amount</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
