@@ -386,7 +386,7 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <button class="btn btn-primary-custom w-100 la_submit_final_application" id="submitFinalApplication" disabled>
+                        <button class="btn btn-secondary w-100 la_submit_final_application" id="submitFinalApplication" disabled>
                             Submit Application
                         </button>
                         </div>

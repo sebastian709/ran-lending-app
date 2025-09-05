@@ -75,6 +75,7 @@ if (!window._signatureBoxInitialized) {
 
                             if ($('.la_terms_checkbox').is(':checked')) {
                                 $('#submitFinalApplication').prop('disabled', false);
+                                $('#submitFinalApplication').removeClass('btn-secondary').addClass('btn-primary');
                             }
                         }
                     }

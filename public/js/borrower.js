@@ -257,7 +257,7 @@ $(function () {
         const income = $('#income').val();
         const employmentStatus = $('input[name="employmentStatus"]:checked').val();
         let specify_others = null;
-        if(employmentStatus == 4){
+        if (employmentStatus == 4) {
             specify_others = $('#otherEmploymentStat').val();
         }
         // Optional: you can skip AJAX if both purpose and referral are empty
@@ -277,7 +277,7 @@ $(function () {
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
-                specify_others : specify_others,
+                specify_others: specify_others,
                 load_step: 1
             },
             headers: {
@@ -371,7 +371,44 @@ $(function () {
     });
 
 
-    $(document).on('click', '.la_submit_final_application', function () {
+    // 🔹 Live validation for Account Number (Min 9, Max 16)
+    $(document).on('keyup', '.la_account_number', function () {
+        let $this = $(this);
+        let value = $this.val().trim();
+        let length = value.length;
+        let $error = $this.next('.acc-error');
+
+        if (length < 9 || length > 16) {
+            $this.removeClass('is-valid');
+            if ($error.length === 0) {
+                $this.after('<small class="text-danger acc-error">Min 9 Max of 16.</small>');
+            }
+        } else {
+            $this.addClass('is-valid');
+            $error.remove();
+        }
+    });
+
+    $(document).on('click', '.la_submit_final_application', function (e) {
+        const $accountInput = $('.la_account_number');
+        let accVal = $accountInput.val().trim();
+        let accLen = accVal.length;
+
+        // 🔹 Extra check before submit
+        if (accLen < 9 || accLen > 16) {
+            e.preventDefault();
+            $accountInput.removeClass('is-valid');
+            if ($accountInput.next('.acc-error').length === 0) {
+                $accountInput.after('<small class="text-danger acc-error">Min 9 Max of 16.</small>');
+            }
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error',
+                text: 'Please enter a valid account number before submitting.',
+            });
+            return; // stop AJAX if invalid
+        }
+
         const formData = new FormData();
 
         formData.append('loan_application_id', loan_application_id);
@@ -465,6 +502,7 @@ $(function () {
         return map[field] || `[name="${field}"]`;
     }
 
+
     // Terms checkbox
     $(document).on('change', '.la_terms_checkbox', function () {
         const img_checker = $('.signature-wrapper img').attr('src');
@@ -472,9 +510,11 @@ $(function () {
         if ($(this).is(':checked')) {
             if (img_checker) {
                 $('#submitFinalApplication').prop('disabled', false);
+                $('#submitFinalApplication').removeClass('btn-secondary').addClass('btn-primary');
             }
         } else {
             $('#submitFinalApplication').prop('disabled', true);
+            $('#submitFinalApplication').removeClass('btn-primary').addClass('btn-secondary');
         }
     });
 
