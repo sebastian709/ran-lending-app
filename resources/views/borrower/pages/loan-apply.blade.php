@@ -71,6 +71,16 @@
                                         <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="3">
                                         <label class="form-check-label" for="none">None</label>
                                     </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="es-others" value="4">
+                                        <label class="form-check-label" for="none">Others</label>
+                                    </div>
+
+                                    <!-- Others Input (hidden by default) -->
+                                    <div id="employment-status-section" class="mt-3" style="display: none;">
+                                        <label for="employement" class="form-label fw-medium">If Others, Please specify:</label>
+                                        <input type="text" class="form-control" data-employement-status="0" id="otherEmploymentStat" placeholder="Enter other employment status">
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
