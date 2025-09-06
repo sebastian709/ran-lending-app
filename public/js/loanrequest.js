@@ -37,8 +37,9 @@ $(document).ready(function () {
                         <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
                         <td>${item.loan_tenure} months</td>
                         <td>${item.interest_rate * 100}%</td>
+                        <td>${item.purpose_of_loan}</td>
                         <td>${item.created_at}</td>
-                        <td>${item.referral || '-'}</td>
+                        <td>${item.referral || 'None'}</td>
                         <td>${renderStatusBadge(item.loan_status, item.loan_status_name)}</td>
                     </tr>
                 `;
@@ -351,7 +352,7 @@ $(document).ready(function () {
                     let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
                                                     <div class="row g-3">
                                                         <div class="col-md-6">
-                                                            <strong>Amount:</strong> ₱${parseFloat(loan.loan_amount).toFixed(2)}<i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
+                                                            <strong>Amount:</strong> ₱<span class="changeEditLR">${loan.loan_amount && Math.floor(loan.loan_amount).toLocaleString('en-US')}</span> <i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
                                                             <strong>Loan Term:</strong> ${parseInt(loan.loan_tenure)} months<br>
                                                             <strong>Interest:</strong> ${loan.interest_rate * 100}%
                                                         </div>
@@ -507,6 +508,13 @@ $(document).ready(function () {
     });
 });
 
+$(document).on('keyup', '#suggestedAmount', function () {
+    let val = $(this).val().replace(/,/g, ''); // tanggalin muna lahat ng comma
+    if (val !== "" && !isNaN(val)) {
+        $(this).val(val.replace(/\B(?=(\d{3})+(?!\d))/g, ",")); 
+    }
+});
+
 $(document).on('click', '#approveBtn', function () {
    
     let loan_id = $('#customLoanPopup').attr('data-loan_id');
@@ -631,7 +639,7 @@ $(document).on('click', '.rejectData', function() {
                 return '' +
                     '<div>' +
                     '<label><strong>Suggested Loan Amount</strong></label>' +
-                    '<input type="number" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
+                    '<input type="text" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
                     '</div>';
             }
             return 'Are you sure you want to reject this field?';
@@ -661,7 +669,9 @@ $(document).on('click', '.rejectData', function() {
                                     text: 'Yes, Save',
                                     btnClass: 'btn-success',
                                     action: function () {
-                                        dataToSend.suggested_amount = suggestedAmount;
+                                        dataToSend.suggested_amount = suggestedAmount.replace(/,/g, '');
+                                        // $('.changeEditLR').text(suggestedAmount);
+                                        $('#loan_status_admin').val('3');
                                         saveRejection(dataToSend);
                                         jc.close();
                                     }
