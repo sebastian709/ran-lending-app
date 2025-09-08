@@ -27,10 +27,18 @@ $(function () {
                     loan_application_id = res.loan_application_id;
                     // auto loads
                     $('#occupation').val(res.occupation);
-                    $('#income').val(res.income);
+                    $('#income').val(parseInt(res.income, 10).toLocaleString());
                     $(`input[name="employmentStatus"][value="${res.employment_status}"]`).prop('checked', true).prop('disabled', false);
                     $('.c-applicant-name-1').text(res.fullname);
                     $('.c-applicant-position-1').text(res.occupation);
+
+                    if (res.employment_status == 4) {
+                        $('#employment-status-section').slideDown();
+                        $('#otherEmploymentStat').val(res.specified_others).attr('data-employement-status', res.employment_status);
+                    } else {
+                        $('#employment-status-section').slideUp();
+                        $('#otherEmploymentStat').val('').attr('data-employement-status', 0);
+                    }
 
                     // 1st step
                     if (res.purpose_of_loan) $('#la_purpose').val(res.purpose_of_loan);
@@ -134,6 +142,18 @@ $(function () {
         }
     }
 
+    $(document).on('input', '#income', function () {
+        let value = $(this).val().replace(/,/g, ''); // tanggalin muna lahat ng comma
+
+        if (value === '' || isNaN(value)) {
+            $(this).val('');
+            return;
+        }
+
+        // lagyan ng comma every 3 digits
+        $(this).val(value.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    });
+
     // la_go_home
     $(document).on('click', '.la_back_step', function () {
         if (currentStep === "eligibility") {
@@ -236,7 +256,10 @@ $(function () {
         const occupation = $('#occupation').val();
         const income = $('#income').val();
         const employmentStatus = $('input[name="employmentStatus"]:checked').val();
-
+        let specify_others = null;
+        if (employmentStatus == 4) {
+            specify_others = $('#otherEmploymentStat').val();
+        }
         // Optional: you can skip AJAX if both purpose and referral are empty
         if (!purpose && !referral) {
             proceedToEligibility();
@@ -254,6 +277,7 @@ $(function () {
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
+                specify_others: specify_others,
                 load_step: 1
             },
             headers: {
@@ -274,6 +298,15 @@ $(function () {
             }
         });
     });
+
+    $(document).on('click', 'input[name="employmentStatus"]', function () {
+        if ($(this).attr('id') === 'es-others') {
+            $('#employment-status-section').slideDown(); // lilitaw yung input
+        } else {
+            $('#employment-status-section').slideUp();
+        }
+    });
+
 
     function proceedToEligibility() {
         showStep('loading');
@@ -338,7 +371,44 @@ $(function () {
     });
 
 
-    $(document).on('click', '.la_submit_final_application', function () {
+    // 🔹 Live validation for Account Number (Min 9, Max 16)
+    $(document).on('keyup', '.la_account_number', function () {
+        let $this = $(this);
+        let value = $this.val().trim();
+        let length = value.length;
+        let $error = $this.next('.acc-error');
+
+        if (length < 9 || length > 16) {
+            $this.removeClass('is-valid');
+            if ($error.length === 0) {
+                $this.after('<small class="text-danger acc-error">Min 9 Max of 16.</small>');
+            }
+        } else {
+            $this.addClass('is-valid');
+            $error.remove();
+        }
+    });
+
+    $(document).on('click', '.la_submit_final_application', function (e) {
+        const $accountInput = $('.la_account_number');
+        let accVal = $accountInput.val().trim();
+        let accLen = accVal.length;
+
+        // 🔹 Extra check before submit
+        if (accLen < 9 || accLen > 16) {
+            e.preventDefault();
+            $accountInput.removeClass('is-valid');
+            if ($accountInput.next('.acc-error').length === 0) {
+                $accountInput.after('<small class="text-danger acc-error">Min 9 Max of 16.</small>');
+            }
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error',
+                text: 'Please enter a valid account number before submitting.',
+            });
+            return; // stop AJAX if invalid
+        }
+
         const formData = new FormData();
 
         formData.append('loan_application_id', loan_application_id);
@@ -432,6 +502,7 @@ $(function () {
         return map[field] || `[name="${field}"]`;
     }
 
+
     // Terms checkbox
     $(document).on('change', '.la_terms_checkbox', function () {
         const img_checker = $('.signature-wrapper img').attr('src');
@@ -439,9 +510,11 @@ $(function () {
         if ($(this).is(':checked')) {
             if (img_checker) {
                 $('#submitFinalApplication').prop('disabled', false);
+                $('#submitFinalApplication').removeClass('btn-secondary').addClass('btn-primary');
             }
         } else {
             $('#submitFinalApplication').prop('disabled', true);
+            $('#submitFinalApplication').removeClass('btn-primary').addClass('btn-secondary');
         }
     });
 
@@ -868,90 +941,90 @@ $(document).ready(function () {
 })();
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     let slider = $('.new_slider');
     var max_loan = slider.attr('max');
-    slider.val(max_loan); 
+    slider.val(max_loan);
     slider.trigger('input');
 });
 
 $(document).on('click', '.la_proceed_loan_update_new', function () {
 
-        let loan_id = $(this).attr('data-loan_id');
-        let loan_amount = $('#summary-amount').text();
-        loan_amount = loan_amount.replace(/,/g, '');
-        var new_amount = parseFloat(loan_amount);
-        
-        var loan_tenure = $('#standardTenure').val();
-        var interest = $('.la_loan_interest').text().trim();
-        var interestRate = parseFloat(interest.replace('%', '')) / 100;
-        var  totalAmount = new_amount + (new_amount * interestRate);
-        
-        let step = $('.steps_val').val();
+    let loan_id = $(this).attr('data-loan_id');
+    let loan_amount = $('#summary-amount').text();
+    loan_amount = loan_amount.replace(/,/g, '');
+    var new_amount = parseFloat(loan_amount);
 
-        $.ajax({
-            url: '/borrower/resubmit-loan-info',
-            method: 'POST',
-            data: {
-                loan_application_id: loan_id,
-                loan_amount: new_amount.toFixed(2),
-                loan_tenure: loan_tenure,
-                interest_rate: interestRate.toFixed(3),
-                total_amount: totalAmount.toFixed(2)
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (res) {
-                if (step == 1) {
-                    $('#standard-result').addClass('d-none');
-                    $('.step-contents').removeClass('d-none');
+    var loan_tenure = $('#standardTenure').val();
+    var interest = $('.la_loan_interest').text().trim();
+    var interestRate = parseFloat(interest.replace('%', '')) / 100;
+    var totalAmount = new_amount + (new_amount * interestRate);
 
-                    setTimeout(function() {
+    let step = $('.steps_val').val();
+
+    $.ajax({
+        url: '/borrower/resubmit-loan-info',
+        method: 'POST',
+        data: {
+            loan_application_id: loan_id,
+            loan_amount: new_amount.toFixed(2),
+            loan_tenure: loan_tenure,
+            interest_rate: interestRate.toFixed(3),
+            total_amount: totalAmount.toFixed(2)
+        },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (res) {
+            if (step == 1) {
+                $('#standard-result').addClass('d-none');
+                $('.step-contents').removeClass('d-none');
+
+                setTimeout(function () {
                     window.location.href = '/home';
-                    }, 3000);
+                }, 3000);
 
-                }else if (step == 3) {
-                    $('#standard-result').addClass('d-none');
-                
-                    $('.step-contents').removeClass('d-none');
+            } else if (step == 3) {
+                $('#standard-result').addClass('d-none');
 
-                    // Hide it after 3 seconds
-                    setTimeout(function() {
-                        $('.step-contents').addClass('d-none');
-                        $('.document_step').removeClass('d-none');
-                    }, 3000);
-                }
-            },
-            error: function () {
-                alert('Failed to update loan details.');
+                $('.step-contents').removeClass('d-none');
+
+                // Hide it after 3 seconds
+                setTimeout(function () {
+                    $('.step-contents').addClass('d-none');
+                    $('.document_step').removeClass('d-none');
+                }, 3000);
             }
-        });
+        },
+        error: function () {
+            alert('Failed to update loan details.');
+        }
     });
+});
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Payslip
-    $('#payslipInput').on('change', function() {
+    $('#payslipInput').on('change', function () {
         $('#payslipPreview').removeClass('border-danger');
     });
 
     // QR Code
-    $('#qrInput').on('change', function() {
+    $('#qrInput').on('change', function () {
         $('#qrPreview').removeClass('border-danger');
     });
 
     // Government ID
-    $('#govIdInput').on('change', function() {
+    $('#govIdInput').on('change', function () {
         $('#govIdPreview').removeClass('border-danger');
     });
 
     // Billing Statement
-    $('#billingInput').on('change', function() {
+    $('#billingInput').on('change', function () {
         $('#billingPreview').removeClass('border-danger');
     });
 });
 
-$('#resubmit_documents').on('click', function(e) {
+$('#resubmit_documents').on('click', function (e) {
     e.preventDefault();
     let formData = new FormData();
     let valid = true;
@@ -973,7 +1046,7 @@ $('#resubmit_documents').on('click', function(e) {
     const message = `<p class="mb-1 small document_notifs" value="${loan_id}">Resubmit Document for <b>LN-${String(loan_id).padStart(5, '0')}</b></p>`;
     const data_url = '';
 
-    $.each(inputsMap, function(key, selector) {
+    $.each(inputsMap, function (key, selector) {
         let $input = $(selector);
         if ($input.closest('.mb-4, .row').is(':visible')) {
             if ($input.get(0).files.length === 0) {
@@ -998,7 +1071,7 @@ $('#resubmit_documents').on('click', function(e) {
     formData.append('loan_id', loan_id);
 
     $.ajax({
-       url: '/borrower/resubmit-loan-documents',
+        url: '/borrower/resubmit-loan-documents',
         method: 'POST',
         data: formData,
         processData: false,      // Important!
@@ -1006,34 +1079,34 @@ $('#resubmit_documents').on('click', function(e) {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(res) {
+        success: function (res) {
             Swal.fire({
                 icon: 'success',
                 title: 'Documents Updated',
                 text: res.message
             });
-        
-            
-        if (typeof window.triggerNotif === "function") {
-            window.triggerNotif(
-            table_id,
-            target_type,
-            level_id,
-            user_id,
-            group_user_id,
-            icon,
-            message,
-            data_url
-            );
-        } else {
-            console.warn("⚠️ window.triggerNotif is not defined.");
-        }
-            
-           setTimeout(function() {
-            window.location.href = '/home';
+
+
+            if (typeof window.triggerNotif === "function") {
+                window.triggerNotif(
+                    table_id,
+                    target_type,
+                    level_id,
+                    user_id,
+                    group_user_id,
+                    icon,
+                    message,
+                    data_url
+                );
+            } else {
+                console.warn("⚠️ window.triggerNotif is not defined.");
+            }
+
+            setTimeout(function () {
+                window.location.href = '/home';
             }, 3000);
         },
-        error: function(xhr) {
+        error: function (xhr) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -1105,13 +1178,13 @@ $(document).on("click", ".seeMoreNotif", function (e) {
 });
 
 $(document).on('click', '.markAllAsRead', function () {
-  window.mark_all_as_read();
-  return false;
+    window.mark_all_as_read();
+    return false;
 });
 
-$(document).on('click', '.clearAllNotif', function(){
-  window.clear_all_notifications();
-  return false;
+$(document).on('click', '.clearAllNotif', function () {
+    window.clear_all_notifications();
+    return false;
 });
 
 $(document).ready(function() {
@@ -1189,17 +1262,17 @@ $(document).on("click", ".appeal_close", function () {
     }
 });
 
-$(document).on('change', '.pEmploymentStatus', function(){
-  let $this = $(this);
-  let status_val = $this.val();
+$(document).on('change', '.pEmploymentStatus', function () {
+    let $this = $(this);
+    let status_val = $this.val();
 
-  if(parseInt(status_val) == 4){
-    $('.specifyOthers').closest('div.form-group').removeAttr('hidden');
-    $('.specifyOthers').attr('required', 'true')
-  } else {
-    $('.specifyOthers').closest('div.form-group').attr('hidden', 'true');
-    $('.specifyOthers').removeAttr('required')
-  }
+    if (parseInt(status_val) == 4) {
+        $('.specifyOthers').closest('div.form-group').removeAttr('hidden');
+        $('.specifyOthers').attr('required', 'true')
+    } else {
+        $('.specifyOthers').closest('div.form-group').attr('hidden', 'true');
+        $('.specifyOthers').removeAttr('required')
+    }
 });
 
 

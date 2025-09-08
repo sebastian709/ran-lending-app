@@ -55,7 +55,7 @@ class HomeController extends Controller
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
-            ->where('loan_id', $loanApplication->id )
+            ->where('loan_id', $loanApplication->id)
 
             // ->where(function ($query) {
             //     $query->where('lt.payment_status_id', '<=', 1)
@@ -70,11 +70,11 @@ class HomeController extends Controller
                 DB::raw('lt.principal AS raw_principal'),
                 DB::raw('lti.interest AS raw_interest'),
                 DB::raw('(lti.interest + lt.principal) AS raw_total'),
-        
+
                 DB::raw('SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) AS total_principal'),
                 DB::raw('SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) AS total_interest'),
                 DB::raw('SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0)) AS total_penalty'),
-        
+
                 DB::raw('
                     (SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) + 
                     SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) + 
@@ -88,9 +88,9 @@ class HomeController extends Controller
                 DB::raw('IFNULL(SUM(ltp.penalty), 0) AS total_penalty_raw'),
             ])
             ->first();
-            
-            
-            $nextPayment = DB::table('loan_tenure as lt')
+
+
+        $nextPayment = DB::table('loan_tenure as lt')
             ->select(
                 'lt.loan_id',
                 'lt.date',
@@ -111,37 +111,37 @@ class HomeController extends Controller
             ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
             ->first();
 
-            // if (!$nextPayment) {
-            //     $nextPayment = DB::table('loan_tenure as lt')
-            //         ->select(
-            //             'lt.loan_id',
-            //             'lt.date',
-            //             'lt.principal',
-            //             'lti.interest',
-            //             DB::raw('
-            //                 (
-            //                     SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) +
-            //                     SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) +
-            //                     SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0))
-            //                 ) AS total_all
-            //             ')
-            //         )
-            //         ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
-            //         ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
-            //         ->where('lt.loan_id', $loanApplication->id)
-            //         ->where('lt.date', '<=', Carbon::now()->addMonthNoOverflow()->endOfMonth()->endOfDay())
-            //         ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
-            //         ->first();
-            // }
-            if ($data->months === 0) {
-                $loanStatus = 0;
-                return view('borrower.layouts.payment-state', compact('loanStatus'));
-            }
-            
-            
-            // dd($loanStatus,$data,$nextPayment);
-            
-        return view('borrower.pages.home', compact('loanStatus','data','nextPayment'));
+        // if (!$nextPayment) {
+        //     $nextPayment = DB::table('loan_tenure as lt')
+        //         ->select(
+        //             'lt.loan_id',
+        //             'lt.date',
+        //             'lt.principal',
+        //             'lti.interest',
+        //             DB::raw('
+        //                 (
+        //                     SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) +
+        //                     SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) +
+        //                     SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0))
+        //                 ) AS total_all
+        //             ')
+        //         )
+        //         ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
+        //         ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+        //         ->where('lt.loan_id', $loanApplication->id)
+        //         ->where('lt.date', '<=', Carbon::now()->addMonthNoOverflow()->endOfMonth()->endOfDay())
+        //         ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
+        //         ->first();
+        // }
+        if ($data->months === 0) {
+            $loanStatus = 0;
+            return view('borrower.layouts.payment-state', compact('loanStatus'));
+        }
+
+
+        // dd($loanStatus,$data,$nextPayment);
+
+        return view('borrower.pages.home', compact('loanStatus', 'data', 'nextPayment'));
     }
 
     public function repayment_schedule()
@@ -150,7 +150,7 @@ class HomeController extends Controller
             ->where('loan_applicant', auth()->id())
             ->orderBy('created_at', 'desc')
             ->first();
-            
+
         $loanStatus = $loanApplication->loan_status ?? 999;
 
         if ($loanStatus < 4 || $loanStatus == 999) {
@@ -158,12 +158,12 @@ class HomeController extends Controller
         }
 
 
-    
+
         $results = DB::table('loan_application as la')
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
-            ->where('la.id',$loanApplication->id)
+            ->where('la.id', $loanApplication->id)
             ->select([
                 'lt.date',
                 DB::raw("
@@ -202,7 +202,7 @@ class HomeController extends Controller
             )
             ->get();
 
-    //    dd($results);
+        //    dd($results);
 
         return view('borrower.pages.repayment-schedule', compact('results'));
 
@@ -228,6 +228,7 @@ class HomeController extends Controller
                     'user_incomes.occupation',
                     'user_incomes.income',
                     'user_incomes.employment_status',
+                    'user_incomes.specified_others',
                     DB::raw('CONCAT(users.firstname, " ", users.lastname) as fullname')
                 )
                 ->where('user_incomes.user_id', $id)
@@ -258,6 +259,7 @@ class HomeController extends Controller
                 'loan_application_id' => $loan->id ?? '',
                 'fullname' => $income->fullname ?? '',
                 'occupation' => $income->occupation ?? '',
+                'specified_others' => $income->specified_others ?? '',
                 'income' => $income->income ?? '',
                 'employment_status' => $income->employment_status ?? '',
                 'purpose_of_loan' => $loan->purpose_of_loan ?? '',
@@ -293,9 +295,15 @@ class HomeController extends Controller
     {
         $userId = auth()->id();
 
+        // Clean numeric fields
+        $request->merge([
+            'income' => str_replace(',', '', $request->income),
+        ]);
+
         $validated = $request->validate([
             'load_step' => 'required|integer',
             'purpose_of_loan' => 'nullable|string',
+            'specify_others' => 'nullable|string',
             'referral' => 'nullable|string',
             'referral_code_id' => 'nullable|integer',
             'occupation' => 'required|string',
@@ -305,9 +313,9 @@ class HomeController extends Controller
 
         $existing = DB::table('loan_application')
             ->where('loan_applicant', $userId)
-            ->where('loan_application_id', 0)
+            ->where('loan_status', 0)
             ->first();
-        dd($existing);
+        // dd($existing);
 
         if ($existing) {
             // Update user income
@@ -317,6 +325,7 @@ class HomeController extends Controller
                     'occupation' => $validated['occupation'],
                     'income' => $validated['income'],
                     'employment_status' => $validated['employmentStatus'],
+                    'specified_others' => $validated['specify_others'],
                     'updated_at' => now()
                 ]);
 
@@ -343,6 +352,7 @@ class HomeController extends Controller
                         'occupation' => $validated['occupation'],
                         'income' => $validated['income'],
                         'employment_status' => $validated['employmentStatus'],
+                        'specified_others' => $validated['specify_others'],
                         'updated_at' => now()
                     ]
                 );
@@ -433,7 +443,6 @@ class HomeController extends Controller
 
     public function finalSubmit(Request $request)
     {
-        // $this->loan_approved_process($request->loan_application_id);
         // dd('tests');
         try {
             $validator = Validator::make($request->all(), [
@@ -519,7 +528,6 @@ class HomeController extends Controller
             $apiInstance->sendTransacEmail(sendSmtpEmail: $emailObj);
             //==============================================================
 
-            $this->loan_approved_process($request->loan_application_id);
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'

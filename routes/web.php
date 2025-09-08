@@ -67,6 +67,10 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth'])->prefix('profile')->group(function () {
         Route::get('/change-password', [ProfileController::class, 'adminChangePassword'])->name('admin.pages.change-password');
         Route::post('/change-password', [ProfileController::class, 'adminUpdatePassword'])->name('admin.pages.change-password.update');
+    
+    
+        // referral management
+        Route::get('/referral-management', [ReferralCodeController::class, 'index']);
     });
 
     // blogpost
@@ -104,8 +108,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/transfer-money', [AdminController::class, 'transferMoeny'])->name('loan.transferMoney');
     });
 
-    // referral management
-    Route::get('/referral-management', [ReferralCodeController::class, 'index']);
+    
 
     Route::prefix('referral-code')->group(function () {
         Route::post('save', [ReferralCodeController::class, 'store']);
