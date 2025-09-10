@@ -147,6 +147,18 @@ $(document).ready(function () {
                 dataType: 'json',
                 success: function (ress) {
                     console.log(ress);
+
+                    let rqrCode = ress.upload_qr_code_img;
+
+                    let rqrContent = rqrCode && rqrCode.trim() !== ""
+                        ? `
+                            <div>
+                                <div class="p-1 border rounded-3 bg-light d-inline-block shadow-sm">
+                                    <img src="${rqrCode}" alt="Bank QR Code" width="160" height="160">
+                                </div>
+                            </div>
+                        `
+                        : ``;
                     let content = ` 
                         <!-- Tabs -->
                         <ul class="nav nav-tabs" id="simpleTabs" role="tablist">
@@ -173,11 +185,7 @@ $(document).ready(function () {
                                             <label class="form-label fw-semibold d-block text-muted">Bank Name</label>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div class="p-1 border rounded-3 bg-light d-inline-block shadow-sm">
-                                            <img src="${ress.upload_qr_code_img}" alt="Bank QR Code" width="160" height="160">
-                                        </div>
-                                    </div>
+                                    ${rqrContent}
                                     <div class="justify-content-center gap-5 mt-4 flex-wrap">
                                         <div>
                                             <p class="fs-5 mb-0">${ress.account_number}</p>
@@ -410,6 +418,23 @@ $(document).ready(function () {
 
                     $('.alr_loan_details_content').empty().append(loan_detail_content);
 
+                    let qrCodess = loan.upload_qr_code_img;
+
+                    let qrContent = qrCodess && qrCodess.trim() !== ""
+                        ? `
+                            <img src="${qrCodess}" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
+                            <div>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-outline-danger rejectData ms-2 mt-4" 
+                                    id="rejectQRcode" 
+                                    title="Reject this field">
+                                    <i class="ri-pencil-fill"></i> Reject
+                                </button>
+                            </div>
+                        `
+                        : `<p>No QR Available</p>`;
+
                     let loan_documents_content = `<div class="mt-3">
                                                         <p class="text-center fw-bold mb-4">${loan.loan_applicant}'s Documents.</p>
                                                         <ul class="nav nav-tabs justify-content-center mb-3" id="docTabs" role="tablist">
@@ -443,16 +468,7 @@ $(document).ready(function () {
                                                             </div>
                                                             
                                                             <div class="tab-pane fade" id="qrTab" role="tabpanel">
-                                                                <img src="${loan.upload_qr_code_img}" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
-                                                                <div>
-                                                                    <button 
-                                                                        type="button" 
-                                                                        class="btn btn-sm btn-outline-danger rejectData ms-2 mt-4" 
-                                                                        id="rejectQRcode" 
-                                                                        title="Reject this field">
-                                                                        <i class="ri-pencil-fill"></i> Reject
-                                                                    </button>
-                                                                </div>
+                                                                ${qrContent}
                                                             </div>
                                                             <div class="tab-pane fade" id="idTab" role="tabpanel">
                                                                 <img src="${loan.government_id_img}" alt="Government ID" class="img-fluid border rounded" style="max-height: 300px;">
