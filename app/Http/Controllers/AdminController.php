@@ -163,13 +163,18 @@ class AdminController extends Controller
                 ->select('id','loan_status')
                 ->where('status', 1)
                 ->get();
-
+            
+            $user = auth()->user();
+            $loan_request_access = DB::table('admin_loan_request_access')
+                ->where('user_id', $user->id)
+                ->get();
 
             return response()->json([
                 "data" => $loanApplication,
                 "logs" => $logs,
                 "approved_by" => $approved_admins_array,
                 "disapproved_by" => $disapproved_admins_array,
+                "loan_request_access" => $loan_request_access,
                 "loan_status" => $loan_status
             ]);
     }

@@ -128,14 +128,14 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
- 
+
 
     $(document).on('click', '#loanBody tr', function () {
 
         let loan_status = $('#loanBody tr').attr('data-loan-status');
         $('.topbar').css('z-index', 0);
         let loan_id = $(this).attr('data-loan_id');
-        let complete_loan_id = 'LN-'+String(loan_id).padStart(5, '0');
+        let complete_loan_id = 'LN-' + String(loan_id).padStart(5, '0');
 
         if (loan_status == 4) {
             $.ajax({
@@ -245,7 +245,7 @@ $(document).ready(function () {
                             </div>
                             </div>
                         </div>`;
-                    
+
                     // Show confirm dialog with content
                     $.confirm({
                         title: complete_loan_id,
@@ -292,14 +292,14 @@ $(document).ready(function () {
                     });
                 }
             });
-        }else{
+        } else {
             $('#loanStatusCustom').val('Pending');
             $('#customLoanPopup').removeClass('d-none');
             let firstTabEl = document.querySelector('#loanTabs button:first-child');
             let firstTab = new bootstrap.Tab(firstTabEl);
             firstTab.show();
 
-            $('#customLoanPopup').attr('data-loan_id',loan_id);
+            $('#customLoanPopup').attr('data-loan_id', loan_id);
             $('.alr_loan_id').text(complete_loan_id);
 
             $.ajaxSetup({
@@ -310,33 +310,34 @@ $(document).ready(function () {
             $.ajax({
                 url: '/admin/loan-request/get-loan-data',
                 method: 'POST',
-                data : {
-                    "loan_id" : loan_id
+                data: {
+                    "loan_id": loan_id
                 },
                 dataType: 'json',
                 success: function (r) {
-                    
+
                     let loan = r.data;
                     let logs = r.logs;
                     let admins = r.admins;
                     let loan_status = r.loan_status;
+                    let loan_stat_access = r.loan_request_access[0];
 
-                    let approvedAdmins = r.approved_by;    
-                    let disapprovedAdmins = r.disapproved_by; 
+                    let approvedAdmins = r.approved_by;
+                    let disapprovedAdmins = r.disapproved_by;
 
                     $('#approvalCounter').text(`${approvedAdmins.length}/3`);
-                    $('.form-check-input.admin-approval').each(function() {
+                    $('.form-check-input.admin-approval').each(function () {
                         let adminId = $(this).val();
                         let $status = $(this).closest('.form-check').find('.status_approval');
 
                         if (approvedAdmins.includes(adminId)) {
                             $(this).prop('checked', true);
                             $status.text('Approved').removeClass().addClass('text-success status_approval');
-                        } 
+                        }
                         else if (disapprovedAdmins.includes(adminId)) {
                             $(this).prop('checked', false);
                             $status.text('Rejected').removeClass().addClass('text-danger status_approval');
-                        } 
+                        }
                         else {
                             $(this).prop('checked', false);
                             $status.text('Pending').removeClass().addClass('text-secondary status_approval');
@@ -345,8 +346,39 @@ $(document).ready(function () {
 
                     let loanStatusDropdowns = "";
                     $.each(loan_status, function (index, status) {
-                        loanStatusDropdowns += 
-                                `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""}>${status.loan_status}</option>`;
+                        let ls_hidden = "";
+
+                        if (status.id == 1) {
+                            ls_hidden = loan_stat_access.pending == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.pending)
+                        } else if (status.id == 2) {
+                            ls_hidden = loan_stat_access.for_interview == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.for_interview)
+                        } else if (status.id == 3) {
+                            ls_hidden = loan_stat_access.for_revision == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.for_revision)
+                        } else if (status.id == 4) {
+                            ls_hidden = loan_stat_access.waiting == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.waiting)
+                        } else if (status.id == 5) {
+                            ls_hidden = loan_stat_access.rejected == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.rejected)
+                        } else if (status.id == 6) {
+                            ls_hidden = loan_stat_access.transferred_and_processed == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.transferred_and_processed)
+                        } else if (status.id == 7) {
+                            ls_hidden = loan_stat_access.closed == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.closed)
+                        }
+
+                        loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden}>${status.loan_status}</option>`;
                     });
 
                     let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
@@ -482,11 +514,11 @@ $(document).ready(function () {
                                                 </div>`;
 
                     $('#historyTab').empty().append(loan_history_content);
-                        
+
                     let activity_logs_content = `<ul id="activityLogCustom" class="list-group mt-3">`;
-                            logs.forEach(log => {
-                                activity_logs_content += `<li class="list-group-item">${log.created_at}: [${log.user_name}] ${log.description}</li>`;
-                            });
+                    logs.forEach(log => {
+                        activity_logs_content += `<li class="list-group-item">${log.created_at}: [${log.user_name}] ${log.description}</li>`;
+                    });
                     activity_logs_content += `</ul>`;
 
                     $('#activityTab').empty().append(activity_logs_content);
@@ -511,12 +543,12 @@ $(document).ready(function () {
 $(document).on('keyup', '#suggestedAmount', function () {
     let val = $(this).val().replace(/,/g, ''); // tanggalin muna lahat ng comma
     if (val !== "" && !isNaN(val)) {
-        $(this).val(val.replace(/\B(?=(\d{3})+(?!\d))/g, ",")); 
+        $(this).val(val.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     }
 });
 
 $(document).on('click', '#approveBtn', function () {
-   
+
     let loan_id = $('#customLoanPopup').attr('data-loan_id');
     let admin_id = $(this).attr('admin_id');
 
@@ -543,7 +575,7 @@ $(document).on('click', '#approveBtn', function () {
                                 action: function () {
                                     $('#admin' + admin_id)
                                         .prop('checked', false)
-                                        .trigger('change'); 
+                                        .trigger('change');
 
                                     $('#admin' + admin_id)
                                         .closest('.form-check')
@@ -558,7 +590,7 @@ $(document).on('click', '#approveBtn', function () {
                                         data: {
                                             admin_id: admin_id
                                         },
-                                        success: function(response) {
+                                        success: function (response) {
                                             $.alert({
                                                 title: 'Success',
                                                 content: 'The loan request has been rejected successfully.',
@@ -627,10 +659,10 @@ $(document).on('click', '#approveBtn', function () {
     });
 });
 
-$(document).on('click', '.rejectData', function() {
+$(document).on('click', '.rejectData', function () {
     let loan_id = $('#customLoanPopup').attr('data-loan_id');
     let id = $(this).attr('id');
-    
+
     $.confirm({
         title: 'Reject Field',
         content: function () {
@@ -702,7 +734,7 @@ $(document).on('click', '.rejectData', function() {
             url: '/admin/loan-request/loan/' + loan_id + '/reject-field',
             method: 'POST',
             data: data,
-            success: function(response) {
+            success: function (response) {
                 $.alert({
                     title: 'Success',
                     content: 'This field has been rejected.',
@@ -724,15 +756,15 @@ $(document).on("click", "#updateStatus", function () {
     $("#loan_status_admin").prop("disabled", false).focus();
 
     if (current === total && total === 3) {
-        $("#loan_status_admin").find('option[value="2"]').removeAttr('disabled', 'true');
-        $("#loan_status_admin").find('option[value="4"]').removeAttr('disabled', 'true');
-        $("#loan_status_admin").find('option[value="5"]').removeAttr('disabled', 'true');
-        $("#loan_status_admin").find('option[value="8"]').removeAttr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="2"]').removeAttr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="4"]').removeAttr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="5"]').removeAttr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="8"]').removeAttr('hidden', 'true');
     } else {
-        $("#loan_status_admin").find('option[value="2"]').attr('disabled', 'true');
-        $("#loan_status_admin").find('option[value="4"]').attr('disabled', 'true');
-        $("#loan_status_admin").find('option[value="5"]').attr('disabled', 'true');
-        $("#loan_status_admin").find('option[value="8"]').attr('disabled', 'true');
+        $("#loan_status_admin").find('option[value="2"]').attr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="4"]').attr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="5"]').attr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="8"]').attr('hidden', 'true');
     }
 });
 
@@ -754,7 +786,7 @@ $(document).on("change", "#loan_status_admin", function () {
                         url: '/admin/loan-request/update-loan-status',
                         method: 'POST',
                         data: {
-                            loan_id: loan_id, 
+                            loan_id: loan_id,
                             status_id: newStatus
                         },
                         success: function (res) {
@@ -782,13 +814,13 @@ $(document).on("change", "#loan_status_admin", function () {
 
 $(document).on("click", ".transfer_money", function () {
 
-    let loan_id          = $(this).attr('data-loan_id');
-    let screenshot       = $('#screenshot')[0].files[0];  // file input
-    let refNumber        = $('#refNumber').val();
-    let transferDate     = $('#transferDate').val();
-    let processedBy      = $('#processedBy').val();
-    let monthlyDueDate   = $('#monthlyDueDate').val();
-    let remarks          = $('#remarks').val();
+    let loan_id = $(this).attr('data-loan_id');
+    let screenshot = $('#screenshot')[0].files[0];  // file input
+    let refNumber = $('#refNumber').val();
+    let transferDate = $('#transferDate').val();
+    let processedBy = $('#processedBy').val();
+    let monthlyDueDate = $('#monthlyDueDate').val();
+    let remarks = $('#remarks').val();
 
     let formData = new FormData();
     formData.append('loan_id', loan_id);
@@ -799,7 +831,7 @@ $(document).on("click", ".transfer_money", function () {
     formData.append('monthly_due_date', monthlyDueDate);
     formData.append('remarks', remarks);
 
-     let isValid = true;
+    let isValid = true;
 
     $('#screenshot, #refNumber, #remarks').removeClass('is-invalid');
 
@@ -818,7 +850,7 @@ $(document).on("click", ".transfer_money", function () {
     }
 
     if (!isValid) {
-        return; 
+        return;
     }
 
     $.confirm({
@@ -847,8 +879,8 @@ $(document).on("click", ".transfer_money", function () {
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     // close modal, refresh table, etc.
-                                    $('#transferModal').modal('hide'); 
-                                    location.reload(); 
+                                    $('#transferModal').modal('hide');
+                                    location.reload();
                                 });
                             }
                         }
