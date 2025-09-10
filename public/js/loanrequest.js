@@ -670,8 +670,13 @@ $(document).on('click', '.rejectData', function () {
             if (id === 'rejectAmount') {
                 return '' +
                     '<div>' +
-                    '<label><strong>Suggested Loan Amount</strong></label>' +
-                    '<input type="text" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
+                        '<label><strong>Suggested Loan Amount</strong></label>' +
+                        '<input type="text" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
+                    '</div>' +
+
+                    '<div>' +
+                        '<label><strong>Remarks</strong></label>' +
+                        '<textarea rows="3" class="form-control mt-2" id="amountRemarks"> </textarea>' +
                     '</div>';
             }
             return 'Are you sure you want to reject this field?';
@@ -687,6 +692,7 @@ $(document).on('click', '.rejectData', function () {
                     // If rejecting loanAmount, also send suggested amount
                     if (id === 'rejectAmount') {
                         let suggestedAmount = this.$content.find('#suggestedAmount').val();
+                        let amountRemarks = this.$content.find('#amountRemarks').val();
                         if (!suggestedAmount) {
                             $.alert('Please enter a suggested loan amount.');
                             return false; // stop confirm until valid
@@ -702,6 +708,7 @@ $(document).on('click', '.rejectData', function () {
                                     btnClass: 'btn-success',
                                     action: function () {
                                         dataToSend.suggested_amount = suggestedAmount.replace(/,/g, '');
+                                        dataToSend.amount_remarks = amountRemarks;
                                         // $('.changeEditLR').text(suggestedAmount);
                                         $('#loan_status_admin').val('3');
                                         saveRejection(dataToSend);
@@ -735,11 +742,12 @@ $(document).on('click', '.rejectData', function () {
             method: 'POST',
             data: data,
             success: function (response) {
-                $.alert({
-                    title: 'Success',
-                    content: 'This field has been rejected.',
-                    type: 'green'
-                });
+                // $.alert({
+                //     title: 'Success',
+                //     content: 'This field has been rejected.',
+                //     type: 'green'
+                // });
+                toastr.success('Saved successfully.');
             }
         });
     }

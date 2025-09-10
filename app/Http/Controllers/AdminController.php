@@ -298,7 +298,12 @@ class AdminController extends Controller
                 if ($request->has('suggested_amount')) {
                     $data['amount_suggested'] = $request->input('suggested_amount');
                 }
-                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'), $id);
+
+                if ($request->has('amount_remarks')) {
+                    $data['amount_remarks'] = $request->input('amount_remarks');
+                }
+                
+                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'). ' Remarks: ' . $request->input('amount_remarks'), $id);
                 break;
 
             case 'rejectQRcode':

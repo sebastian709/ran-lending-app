@@ -394,7 +394,7 @@ $(function () {
             $error.remove();
         }
     });
-    
+
     $(document).on('click', '.la_submit_final_application', function (e) {
         const $accountInput = $('.la_account_number');
         let accVal = $accountInput.val().trim();
@@ -982,28 +982,33 @@ $(document).on('click', '.la_proceed_loan_update_new', function () {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function (res) {
-            if (step == 1) {
-                $('#standard-result').addClass('d-none');
-                $('.step-contents').removeClass('d-none');
+            toastr.success('Submit Successfully!', '', {
+                onShown: function () {
+                    if (step == 1) {
+                        $('#standard-result').addClass('d-none');
+                        $('.step-contents').removeClass('d-none');
 
-                setTimeout(function () {
-                    window.location.href = '/home';
-                }, 3000);
+                        setTimeout(function () {
+                            window.location.href = '/home';
+                        }, 3000);
 
-            } else if (step == 3) {
-                $('#standard-result').addClass('d-none');
+                    } else if (step == 3) {
+                        $('#standard-result').addClass('d-none');
+                        $('.step-contents').removeClass('d-none');
 
-                $('.step-contents').removeClass('d-none');
+                        setTimeout(function () {
+                            $('.step-contents').addClass('d-none');
+                            $('.document_step').removeClass('d-none');
+                        }, 3000);
+                    }
+                }
+            });
+        },
+        complete: function () {
 
-                // Hide it after 3 seconds
-                setTimeout(function () {
-                    $('.step-contents').addClass('d-none');
-                    $('.document_step').removeClass('d-none');
-                }, 3000);
-            }
         },
         error: function () {
-            alert('Failed to update loan details.');
+            toastr.error('Failed to update loan details.');
         }
     });
 });
