@@ -378,6 +378,12 @@ $(function () {
         let length = value.length;
         let $error = $this.next('.acc-error');
 
+        // limit input to 16 digits
+        if (length > 16) {
+            $this.val(value.substring(0, 16));
+            length = 16; // update length
+        }
+
         if (length < 9 || length > 16) {
             $this.removeClass('is-valid');
             if ($error.length === 0) {
@@ -388,7 +394,7 @@ $(function () {
             $error.remove();
         }
     });
-
+    
     $(document).on('click', '.la_submit_final_application', function (e) {
         const $accountInput = $('.la_account_number');
         let accVal = $accountInput.val().trim();
