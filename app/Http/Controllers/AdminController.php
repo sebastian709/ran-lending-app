@@ -259,7 +259,7 @@ class AdminController extends Controller
         // If all admins disapproved → status = 3
         if (count($disapproved) === $admin_count) {
             DB::table('loan_application')->where('id', $id)->update([
-                'loan_status' => 3
+                'loan_status' => 6
             ]);
         }else{
             DB::table('loan_application')->where('id', $id)->update([
