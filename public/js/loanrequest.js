@@ -349,6 +349,12 @@ $(document).ready(function () {
 
                     let approvedAdmins = r.approved_by;
                     let disapprovedAdmins = r.disapproved_by;
+                    
+
+                    // console.log('test', loan_status)
+                    if(parseInt(loan.loan_status) == 5){
+                        $('#approveBtn').attr('hidden', true);
+                    }
 
                     $('#approvalCounter').text(`${approvedAdmins.length}/3`);
                     $('.form-check-input.admin-approval').each(function () {
@@ -390,13 +396,13 @@ $(document).ready(function () {
 
                             console.log(loan_stat_access.waiting)
                         } else if (status.id == 5) {
-                            ls_hidden = loan_stat_access.rejected == 1 ? '' : 'hidden';
-
-                            console.log(loan_stat_access.rejected)
-                        } else if (status.id == 6) {
                             ls_hidden = loan_stat_access.transferred_and_processed == 1 ? '' : 'hidden';
 
                             console.log(loan_stat_access.transferred_and_processed)
+                        } else if (status.id == 6) {
+                            ls_hidden = loan_stat_access.rejected == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.rejected)
                         } else if (status.id == 7) {
                             ls_hidden = loan_stat_access.closed == 1 ? '' : 'hidden';
 
