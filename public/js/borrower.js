@@ -222,13 +222,20 @@ $(function () {
 
     function updateAdminLoanSummary() {
         const amount = parseInt($('#customAmount').val()) || 0;
-        const tenure = parseInt($('#adminTenure').val());
-        const month = amount * 1.05;
-        const total = month * tenure;
+        const tenure = parseInt($('#adminTenure').val()) || 0;
+
+        // compute interest per month
+        const monthlyInterest = amount * 0.05;
+        // total interest for whole tenure
+        const totalInterest = monthlyInterest * tenure;
+        // total payable
+        const total = amount + totalInterest;
+
         $('#admin-summary-amount').text(amount.toLocaleString());
         $('#admin-summary-tenure').text(tenure);
         $('#admin-summary-total').text(Math.round(total).toLocaleString());
     }
+
 
     // Admin loan input & dropdown
     $(document).on('input', '#customAmount', updateAdminLoanSummary);
