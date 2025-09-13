@@ -275,23 +275,40 @@ $(document).ready(function () {
                             }
 
                             // Helper: get next month same day
-                            function nextMonthSameDay(base) {
+                            // function nextMonthSameDay(base) {
+                            //     const y = base.getFullYear();
+                            //     const m = base.getMonth(); // 0-11
+                            //     const d = base.getDate();
+
+                            //     // Tentative next month
+                            //     const next = new Date(y, m + 1, 1);
+                            //     // Days in target month
+                            //     const daysInTarget = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+                            //     const day = Math.min(d, daysInTarget);
+                            //     next.setDate(day);
+                            //     return next;
+                            // }
+
+                            function nextMonthPlusOneDay(base) {
                                 const y = base.getFullYear();
                                 const m = base.getMonth(); // 0-11
                                 const d = base.getDate();
 
                                 // Tentative next month
                                 const next = new Date(y, m + 1, 1);
+
                                 // Days in target month
                                 const daysInTarget = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
                                 const day = Math.min(d, daysInTarget);
-                                next.setDate(day);
+
+                                next.setDate(day + 1); // dito yung dagdag na +1
                                 return next;
                             }
 
+
                             // Autopopulate Monthly Due Date when modal content is ready
                             const now = new Date();
-                            const due = nextMonthSameDay(now);
+                            const due = nextMonthPlusOneDay(now);
                             $('#monthlyDueDate').val(toYMD(due));
                             $('#transferDate').val(toYMD(now));
                         },
@@ -686,13 +703,13 @@ $(document).on('click', '.rejectData', function () {
             if (id === 'rejectAmount') {
                 return '' +
                     '<div>' +
-                        '<label><strong>Suggested Loan Amount</strong></label>' +
-                        '<input type="text" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
+                    '<label><strong>Suggested Loan Amount</strong></label>' +
+                    '<input type="text" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
                     '</div>' +
 
                     '<div>' +
-                        '<label><strong>Remarks</strong></label>' +
-                        '<textarea rows="3" class="form-control mt-2" id="amountRemarks"> </textarea>' +
+                    '<label><strong>Remarks</strong></label>' +
+                    '<textarea rows="3" class="form-control mt-2" id="amountRemarks"> </textarea>' +
                     '</div>';
             }
             return 'Are you sure you want to reject this field?';
