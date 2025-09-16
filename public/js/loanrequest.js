@@ -13,7 +13,7 @@ $(document).ready(function () {
             '5': 'success',
             '6': 'danger'
         };
-        const badgeClass = classMap[status] || 'light';
+        const badgeClass = classMap[status] || 'dark';
         return `<span class="badge bg-${badgeClass}">${status_name}</span>`;
     }
 
@@ -34,6 +34,7 @@ $(document).ready(function () {
                     <tr data-loan_id="${item.id}" data-loan-status="${item.loan_status}">
                         <td>${'LN-' + String(item.id).padStart(5, '0')}</td>
                         <td>${item.loan_applicant}</td>
+                        <td>${item.loan_type || '-'}</td>
                         <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
                         <td>${item.loan_tenure} months</td>
                         <td>${item.interest_rate * 100}%</td>
@@ -347,17 +348,18 @@ $(document).ready(function () {
                         loanStatusDropdowns += 
                                 `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""}>${status.loan_status}</option>`;
                     });
-
+                    let rlt_request_date = `<strong>Requested Date:</strong> ${loan.scheduled_date}`
                     let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
                                                     <div class="row g-3">
                                                         <div class="col-md-6">
-                                                            <strong>Amount:</strong> ₱${parseFloat(loan.loan_amount).toFixed(2)}<i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
+                                                            <strong>Requested Amount:</strong> ₱${parseFloat(loan.loan_amount).toFixed(2)}<i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
                                                             <strong>Loan Term:</strong> ${parseInt(loan.loan_tenure)} months<br>
-                                                            <strong>Interest:</strong> ${loan.interest_rate * 100}%
+                                                            <strong>Interest:</strong> ${loan.interest_rate * 100}% <br>
+                                                            ${loan.loan_type == 'Scheduled' ? rlt_request_date : ''}
                                                         </div>
                                                         <div class="col-md-6">
                                                             <strong>Purpose:</strong> ${loan.purpose_of_loan}<br>
-                                                            <strong>Request Date:</strong> ${loan.created_at}<br>
+                                                            <strong>Created At:</strong> ${loan.created_at}<br>
                                                             <strong>Last Updated:</strong> ${loan.updated_at}<br>
                                                             <strong>Referral:</strong> ${loan.referral}
                                                         </div>

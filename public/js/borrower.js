@@ -236,6 +236,8 @@ $(function () {
         const occupation = $('#occupation').val();
         const income = $('#income').val();
         const employmentStatus = $('input[name="employmentStatus"]:checked').val();
+        const loanType = $('input[name="scheduledLoan"]:checked').val();
+        let scheduledLoan = (loanType === 'Scheduled') ? $('#scheduledLoan').val() : null;
 
         // Optional: you can skip AJAX if both purpose and referral are empty
         if (!purpose && !referral) {
@@ -254,7 +256,9 @@ $(function () {
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
-                load_step: 1
+                load_step: 1,
+                loan_type : loanType,
+                scheduled_date : scheduledLoan
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
@@ -1127,6 +1131,15 @@ $(document).on('change', '.pEmploymentStatus', function(){
     $('.specifyOthers').removeAttr('required')
   }
 });
+
+$(document).on('click', 'input[name="scheduledLoan"]', function() {
+    if ($('#slYes').is(':checked')) {
+        $('#scheduled-loan-section').show();
+    } else if ($('#slNo').is(':checked')) {
+        $('#scheduled-loan-section').hide();
+    }
+});
+
 
 
 

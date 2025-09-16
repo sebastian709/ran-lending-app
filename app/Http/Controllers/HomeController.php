@@ -301,13 +301,15 @@ class HomeController extends Controller
             'occupation' => 'required|string',
             'income' => 'required|numeric',
             'employmentStatus' => 'required|integer',
+            'loan_type' => 'nullable|string',
+            'scheduled_date' => 'nullable|date',
         ]);
 
         $existing = DB::table('loan_application')
             ->where('loan_applicant', $userId)
             ->where('loan_application_id', 0)
             ->first();
-        dd($existing);
+        // dd($existing);
 
         if ($existing) {
             // Update user income
@@ -328,6 +330,8 @@ class HomeController extends Controller
                     'referral' => $validated['referral'],
                     'referral_code_id' => $validated['referral_code_id'],
                     'load_step' => $validated['load_step'],
+                    'loan_type' => $validated['loan_type'],
+                    'scheduled_date' => $validated['scheduled_date'],
                     'updated_at' => now()
                 ]);
 
@@ -354,6 +358,8 @@ class HomeController extends Controller
                 'referral' => $validated['referral'],
                 'referral_code_id' => $validated['referral_code_id'],
                 'loan_status' => 0,
+                'loan_type' => $validated['loan_type'],
+                'scheduled_date' => $validated['scheduled_date'],
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
