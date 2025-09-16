@@ -27,6 +27,7 @@
                             <th>Loan Amount</th>
                             <th>Loan Tenure</th>
                             <th>Interest Rate</th>
+                            <th>Purpose</th>
                             <th>Request Date</th>
                             <th>Referral</th>
                             <th>Status</th>

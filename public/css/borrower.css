@@ -518,3 +518,23 @@ img.user-avatar {
     font-size: 30px;
     margin-right: 10px;
 }
+
+#toast-container > .toast-success {
+    background-color: #51A351 !important; /* green */
+    color: #fff !important;
+  }
+
+  #toast-container > .toast-error {
+    background-color: #BD362F !important; /* red */
+    color: #fff !important;
+  }
+
+  #toast-container > .toast-info {
+    background-color: #2F96B4 !important; /* blue */
+    color: #fff !important;
+  }
+
+  #toast-container > .toast-warning {
+    background-color: #F89406 !important; /* orange */
+    color: #fff !important;
+  }

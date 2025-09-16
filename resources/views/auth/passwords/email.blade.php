@@ -177,6 +177,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/auth.js') }}"></script>
 <script>
 
@@ -283,7 +284,11 @@ $(document).on('click' , '#authcheck' , function (e) {
     let pass2 = $('#confirm-password').val();
 
     if (pass1 != pass2) {
-        alert()
+        Swal.fire({
+            icon: 'error',
+            title: 'Password mismatch',
+            text: 'Your new password and confirmation do not match.'
+        });
         return false;
     }
 
@@ -299,8 +304,13 @@ $(document).on('click' , '#authcheck' , function (e) {
           if (res == 1) {
             $('#forgot-step3-container').addClass('d-none')
             $('#success-container').removeClass('d-none')
+
           }else{
-            alert()
+            Swal.fire({
+                icon: 'error',
+                title: 'Update failed',
+                text: 'Something went wrong while updating your password.'
+            });
           }
         },
         error: function (xhr) {

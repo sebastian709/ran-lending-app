@@ -38,8 +38,9 @@ $(document).ready(function () {
                         <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
                         <td>${item.loan_tenure} months</td>
                         <td>${item.interest_rate * 100}%</td>
+                        <td>${item.purpose_of_loan}</td>
                         <td>${item.created_at}</td>
-                        <td>${item.referral || '-'}</td>
+                        <td>${item.referral || 'None'}</td>
                         <td>${renderStatusBadge(item.loan_status, item.loan_status_name)}</td>
                     </tr>
                 `;
@@ -128,14 +129,14 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
- 
+
 
     $(document).on('click', '#loanBody tr', function () {
 
         let loan_status = $('#loanBody tr').attr('data-loan-status');
         $('.topbar').css('z-index', 0);
         let loan_id = $(this).attr('data-loan_id');
-        let complete_loan_id = 'LN-'+String(loan_id).padStart(5, '0');
+        let complete_loan_id = 'LN-' + String(loan_id).padStart(5, '0');
 
         if (loan_status == 4) {
             $.ajax({
@@ -147,6 +148,18 @@ $(document).ready(function () {
                 dataType: 'json',
                 success: function (ress) {
                     console.log(ress);
+
+                    let rqrCode = ress.upload_qr_code_img;
+
+                    let rqrContent = rqrCode && rqrCode.trim() !== ""
+                        ? `
+                            <div>
+                                <div class="p-1 border rounded-3 bg-light d-inline-block shadow-sm">
+                                    <img src="${rqrCode}" alt="Bank QR Code" width="160" height="160">
+                                </div>
+                            </div>
+                        `
+                        : ``;
                     let content = ` 
                         <!-- Tabs -->
                         <ul class="nav nav-tabs" id="simpleTabs" role="tablist">
@@ -173,11 +186,7 @@ $(document).ready(function () {
                                             <label class="form-label fw-semibold d-block text-muted">Bank Name</label>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div class="p-1 border rounded-3 bg-light d-inline-block shadow-sm">
-                                            <img src="${ress.upload_qr_code_img}" alt="Bank QR Code" width="160" height="160">
-                                        </div>
-                                    </div>
+                                    ${rqrContent}
                                     <div class="justify-content-center gap-5 mt-4 flex-wrap">
                                         <div>
                                             <p class="fs-5 mb-0">${ress.account_number}</p>
@@ -245,7 +254,7 @@ $(document).ready(function () {
                             </div>
                             </div>
                         </div>`;
-                    
+
                     // Show confirm dialog with content
                     $.confirm({
                         title: complete_loan_id,
@@ -267,23 +276,40 @@ $(document).ready(function () {
                             }
 
                             // Helper: get next month same day
-                            function nextMonthSameDay(base) {
+                            // function nextMonthSameDay(base) {
+                            //     const y = base.getFullYear();
+                            //     const m = base.getMonth(); // 0-11
+                            //     const d = base.getDate();
+
+                            //     // Tentative next month
+                            //     const next = new Date(y, m + 1, 1);
+                            //     // Days in target month
+                            //     const daysInTarget = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+                            //     const day = Math.min(d, daysInTarget);
+                            //     next.setDate(day);
+                            //     return next;
+                            // }
+
+                            function nextMonthPlusOneDay(base) {
                                 const y = base.getFullYear();
                                 const m = base.getMonth(); // 0-11
                                 const d = base.getDate();
 
                                 // Tentative next month
                                 const next = new Date(y, m + 1, 1);
+
                                 // Days in target month
                                 const daysInTarget = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
                                 const day = Math.min(d, daysInTarget);
-                                next.setDate(day);
+
+                                next.setDate(day + 1); // dito yung dagdag na +1
                                 return next;
                             }
 
+
                             // Autopopulate Monthly Due Date when modal content is ready
                             const now = new Date();
-                            const due = nextMonthSameDay(now);
+                            const due = nextMonthPlusOneDay(now);
                             $('#monthlyDueDate').val(toYMD(due));
                             $('#transferDate').val(toYMD(now));
                         },
@@ -292,14 +318,14 @@ $(document).ready(function () {
                     });
                 }
             });
-        }else{
+        } else {
             $('#loanStatusCustom').val('Pending');
             $('#customLoanPopup').removeClass('d-none');
             let firstTabEl = document.querySelector('#loanTabs button:first-child');
             let firstTab = new bootstrap.Tab(firstTabEl);
             firstTab.show();
 
-            $('#customLoanPopup').attr('data-loan_id',loan_id);
+            $('#customLoanPopup').attr('data-loan_id', loan_id);
             $('.alr_loan_id').text(complete_loan_id);
 
             $.ajaxSetup({
@@ -310,33 +336,40 @@ $(document).ready(function () {
             $.ajax({
                 url: '/admin/loan-request/get-loan-data',
                 method: 'POST',
-                data : {
-                    "loan_id" : loan_id
+                data: {
+                    "loan_id": loan_id
                 },
                 dataType: 'json',
                 success: function (r) {
-                    
+
                     let loan = r.data;
                     let logs = r.logs;
                     let admins = r.admins;
                     let loan_status = r.loan_status;
+                    let loan_stat_access = r.loan_request_access[0];
 
-                    let approvedAdmins = r.approved_by;    
-                    let disapprovedAdmins = r.disapproved_by; 
+                    let approvedAdmins = r.approved_by;
+                    let disapprovedAdmins = r.disapproved_by;
+                    
+
+                    // console.log('test', loan_status)
+                    if(parseInt(loan.loan_status) == 5){
+                        $('#approveBtn').attr('hidden', true);
+                    }
 
                     $('#approvalCounter').text(`${approvedAdmins.length}/3`);
-                    $('.form-check-input.admin-approval').each(function() {
+                    $('.form-check-input.admin-approval').each(function () {
                         let adminId = $(this).val();
                         let $status = $(this).closest('.form-check').find('.status_approval');
 
                         if (approvedAdmins.includes(adminId)) {
                             $(this).prop('checked', true);
                             $status.text('Approved').removeClass().addClass('text-success status_approval');
-                        } 
+                        }
                         else if (disapprovedAdmins.includes(adminId)) {
                             $(this).prop('checked', false);
                             $status.text('Rejected').removeClass().addClass('text-danger status_approval');
-                        } 
+                        }
                         else {
                             $(this).prop('checked', false);
                             $status.text('Pending').removeClass().addClass('text-secondary status_approval');
@@ -345,14 +378,45 @@ $(document).ready(function () {
 
                     let loanStatusDropdowns = "";
                     $.each(loan_status, function (index, status) {
-                        loanStatusDropdowns += 
-                                `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""}>${status.loan_status}</option>`;
+                        let ls_hidden = "";
+
+                        if (status.id == 1) {
+                            ls_hidden = loan_stat_access.pending == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.pending)
+                        } else if (status.id == 2) {
+                            ls_hidden = loan_stat_access.for_interview == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.for_interview)
+                        } else if (status.id == 3) {
+                            ls_hidden = loan_stat_access.for_revision == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.for_revision)
+                        } else if (status.id == 4) {
+                            ls_hidden = loan_stat_access.waiting == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.waiting)
+                        } else if (status.id == 5) {
+                            ls_hidden = loan_stat_access.transferred_and_processed == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.transferred_and_processed)
+                        } else if (status.id == 6) {
+                            ls_hidden = loan_stat_access.rejected == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.rejected)
+                        } else if (status.id == 7) {
+                            ls_hidden = loan_stat_access.closed == 1 ? '' : 'hidden';
+
+                            console.log(loan_stat_access.closed)
+                        }
+
+                        loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden}>${status.loan_status}</option>`;
                     });
                     let rlt_request_date = `<strong>Requested Date:</strong> ${loan.scheduled_date}`
                     let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
                                                     <div class="row g-3">
                                                         <div class="col-md-6">
-                                                            <strong>Requested Amount:</strong> ₱${parseFloat(loan.loan_amount).toFixed(2)}<i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
+                                                            <strong>Requested Amount:</strong> ₱<span class="changeEditLR">${loan.loan_amount && Math.floor(loan.loan_amount).toLocaleString('en-US')}</span> <i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
                                                             <strong>Loan Term:</strong> ${parseInt(loan.loan_tenure)} months<br>
                                                             <strong>Interest:</strong> ${loan.interest_rate * 100}% <br>
                                                             ${loan.loan_type == 'Scheduled' ? rlt_request_date : ''}
@@ -378,6 +442,23 @@ $(document).ready(function () {
                                                 </div>`;
 
                     $('.alr_loan_details_content').empty().append(loan_detail_content);
+
+                    let qrCodess = loan.upload_qr_code_img;
+
+                    let qrContent = qrCodess && qrCodess.trim() !== ""
+                        ? `
+                            <img src="${qrCodess}" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
+                            <div>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-outline-danger rejectData ms-2 mt-4" 
+                                    id="rejectQRcode" 
+                                    title="Reject this field">
+                                    <i class="ri-pencil-fill"></i> Reject
+                                </button>
+                            </div>
+                        `
+                        : `<p>No QR Available</p>`;
 
                     let loan_documents_content = `<div class="mt-3">
                                                         <p class="text-center fw-bold mb-4">${loan.loan_applicant}'s Documents.</p>
@@ -412,16 +493,7 @@ $(document).ready(function () {
                                                             </div>
                                                             
                                                             <div class="tab-pane fade" id="qrTab" role="tabpanel">
-                                                                <img src="${loan.upload_qr_code_img}" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
-                                                                <div>
-                                                                    <button 
-                                                                        type="button" 
-                                                                        class="btn btn-sm btn-outline-danger rejectData ms-2 mt-4" 
-                                                                        id="rejectQRcode" 
-                                                                        title="Reject this field">
-                                                                        <i class="ri-pencil-fill"></i> Reject
-                                                                    </button>
-                                                                </div>
+                                                                ${qrContent}
                                                             </div>
                                                             <div class="tab-pane fade" id="idTab" role="tabpanel">
                                                                 <img src="${loan.government_id_img}" alt="Government ID" class="img-fluid border rounded" style="max-height: 300px;">
@@ -483,11 +555,11 @@ $(document).ready(function () {
                                                 </div>`;
 
                     $('#historyTab').empty().append(loan_history_content);
-                        
+
                     let activity_logs_content = `<ul id="activityLogCustom" class="list-group mt-3">`;
-                            logs.forEach(log => {
-                                activity_logs_content += `<li class="list-group-item">${log.created_at}: [${log.user_name}] ${log.description}</li>`;
-                            });
+                    logs.forEach(log => {
+                        activity_logs_content += `<li class="list-group-item">${log.created_at}: [${log.user_name}] ${log.description}</li>`;
+                    });
                     activity_logs_content += `</ul>`;
 
                     $('#activityTab').empty().append(activity_logs_content);
@@ -509,8 +581,15 @@ $(document).ready(function () {
     });
 });
 
+$(document).on('keyup', '#suggestedAmount', function () {
+    let val = $(this).val().replace(/,/g, ''); // tanggalin muna lahat ng comma
+    if (val !== "" && !isNaN(val)) {
+        $(this).val(val.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    }
+});
+
 $(document).on('click', '#approveBtn', function () {
-   
+
     let loan_id = $('#customLoanPopup').attr('data-loan_id');
     let admin_id = $(this).attr('admin_id');
 
@@ -537,7 +616,7 @@ $(document).on('click', '#approveBtn', function () {
                                 action: function () {
                                     $('#admin' + admin_id)
                                         .prop('checked', false)
-                                        .trigger('change'); 
+                                        .trigger('change');
 
                                     $('#admin' + admin_id)
                                         .closest('.form-check')
@@ -552,7 +631,7 @@ $(document).on('click', '#approveBtn', function () {
                                         data: {
                                             admin_id: admin_id
                                         },
-                                        success: function(response) {
+                                        success: function (response) {
                                             $.alert({
                                                 title: 'Success',
                                                 content: 'The loan request has been rejected successfully.',
@@ -621,10 +700,10 @@ $(document).on('click', '#approveBtn', function () {
     });
 });
 
-$(document).on('click', '.rejectData', function() {
+$(document).on('click', '.rejectData', function () {
     let loan_id = $('#customLoanPopup').attr('data-loan_id');
     let id = $(this).attr('id');
-    
+
     $.confirm({
         title: 'Reject Field',
         content: function () {
@@ -633,7 +712,12 @@ $(document).on('click', '.rejectData', function() {
                 return '' +
                     '<div>' +
                     '<label><strong>Suggested Loan Amount</strong></label>' +
-                    '<input type="number" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
+                    '<input type="text" min="0" class="form-control mt-2" id="suggestedAmount" placeholder="Enter suggested amount">' +
+                    '</div>' +
+
+                    '<div>' +
+                    '<label><strong>Remarks</strong></label>' +
+                    '<textarea rows="3" class="form-control mt-2" id="amountRemarks"> </textarea>' +
                     '</div>';
             }
             return 'Are you sure you want to reject this field?';
@@ -649,6 +733,7 @@ $(document).on('click', '.rejectData', function() {
                     // If rejecting loanAmount, also send suggested amount
                     if (id === 'rejectAmount') {
                         let suggestedAmount = this.$content.find('#suggestedAmount').val();
+                        let amountRemarks = this.$content.find('#amountRemarks').val();
                         if (!suggestedAmount) {
                             $.alert('Please enter a suggested loan amount.');
                             return false; // stop confirm until valid
@@ -663,7 +748,10 @@ $(document).on('click', '.rejectData', function() {
                                     text: 'Yes, Save',
                                     btnClass: 'btn-success',
                                     action: function () {
-                                        dataToSend.suggested_amount = suggestedAmount;
+                                        dataToSend.suggested_amount = suggestedAmount.replace(/,/g, '');
+                                        dataToSend.amount_remarks = amountRemarks;
+                                        // $('.changeEditLR').text(suggestedAmount);
+                                        $('#loan_status_admin').val('3');
                                         saveRejection(dataToSend);
                                         jc.close();
                                     }
@@ -694,12 +782,13 @@ $(document).on('click', '.rejectData', function() {
             url: '/admin/loan-request/loan/' + loan_id + '/reject-field',
             method: 'POST',
             data: data,
-            success: function(response) {
-                $.alert({
-                    title: 'Success',
-                    content: 'This field has been rejected.',
-                    type: 'green'
-                });
+            success: function (response) {
+                // $.alert({
+                //     title: 'Success',
+                //     content: 'This field has been rejected.',
+                //     type: 'green'
+                // });
+                toastr.success('Saved successfully.');
             }
         });
     }
@@ -707,8 +796,27 @@ $(document).on('click', '.rejectData', function() {
 
 
 $(document).on("click", "#updateStatus", function () {
+    let approvalText = $("#approvalCounter").text().trim(); // e.g. "1/3"
+    let parts = approvalText.split("/");
+
+    let current = parseInt(parts[0], 10);
+    let total = parseInt(parts[1], 10);
+
     $("#loan_status_admin").prop("disabled", false).focus();
+
+    if (current === total && total === 3) {
+        $("#loan_status_admin").find('option[value="2"]').removeAttr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="4"]').removeAttr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="5"]').removeAttr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="8"]').removeAttr('hidden', 'true');
+    } else {
+        $("#loan_status_admin").find('option[value="2"]').attr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="4"]').attr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="5"]').attr('hidden', 'true');
+        $("#loan_status_admin").find('option[value="8"]').attr('hidden', 'true');
+    }
 });
+
 
 $(document).on("change", "#loan_status_admin", function () {
     let originalStatus = $('#updateStatus').attr("data-original_status");
@@ -727,7 +835,7 @@ $(document).on("change", "#loan_status_admin", function () {
                         url: '/admin/loan-request/update-loan-status',
                         method: 'POST',
                         data: {
-                            loan_id: loan_id, 
+                            loan_id: loan_id,
                             status_id: newStatus
                         },
                         success: function (res) {
@@ -755,13 +863,13 @@ $(document).on("change", "#loan_status_admin", function () {
 
 $(document).on("click", ".transfer_money", function () {
 
-    let loan_id          = $(this).attr('data-loan_id');
-    let screenshot       = $('#screenshot')[0].files[0];  // file input
-    let refNumber        = $('#refNumber').val();
-    let transferDate     = $('#transferDate').val();
-    let processedBy      = $('#processedBy').val();
-    let monthlyDueDate   = $('#monthlyDueDate').val();
-    let remarks          = $('#remarks').val();
+    let loan_id = $(this).attr('data-loan_id');
+    let screenshot = $('#screenshot')[0].files[0];  // file input
+    let refNumber = $('#refNumber').val();
+    let transferDate = $('#transferDate').val();
+    let processedBy = $('#processedBy').val();
+    let monthlyDueDate = $('#monthlyDueDate').val();
+    let remarks = $('#remarks').val();
 
     let formData = new FormData();
     formData.append('loan_id', loan_id);
@@ -772,7 +880,7 @@ $(document).on("click", ".transfer_money", function () {
     formData.append('monthly_due_date', monthlyDueDate);
     formData.append('remarks', remarks);
 
-     let isValid = true;
+    let isValid = true;
 
     $('#screenshot, #refNumber, #remarks').removeClass('is-invalid');
 
@@ -791,7 +899,7 @@ $(document).on("click", ".transfer_money", function () {
     }
 
     if (!isValid) {
-        return; 
+        return;
     }
 
     $.confirm({
@@ -820,8 +928,8 @@ $(document).on("click", ".transfer_money", function () {
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     // close modal, refresh table, etc.
-                                    $('#transferModal').modal('hide'); 
-                                    location.reload(); 
+                                    $('#transferModal').modal('hide');
+                                    location.reload();
                                 });
                             }
                         }

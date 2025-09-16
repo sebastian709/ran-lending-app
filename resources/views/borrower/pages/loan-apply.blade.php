@@ -52,7 +52,7 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="income" class="form-label fw-medium">Current Income (₱)</label>
-                                        <input type="number" class="form-control" id="income">
+                                        <input type="text" class="form-control" id="income">
                                         
                                     </div>
                                 </div>
@@ -70,6 +70,16 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="employmentStatus" id="none" value="3">
                                         <label class="form-check-label" for="none">None</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="employmentStatus" id="es-others" value="4">
+                                        <label class="form-check-label" for="none">Others</label>
+                                    </div>
+
+                                    <!-- Others Input (hidden by default) -->
+                                    <div id="employment-status-section" class="mt-3" style="display: none;">
+                                        <label for="employement" class="form-label fw-medium">If Others, Please specify:</label>
+                                        <input type="text" class="form-control" data-employement-status="0" id="otherEmploymentStat" placeholder="Enter other employment status">
                                     </div>
                                 </div>
 
@@ -198,7 +208,7 @@
                                                 <span class="fw-medium">₱<span id="admin-summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Interest Rate:</span>
+                                                <span>Monthly Interest:</span>
                                                 <span class="fw-medium la_ad_loan_interest">5%</span>
                                             </div>
                                         </div>
@@ -272,7 +282,7 @@
                                                 <span class="fw-medium">₱<span id="summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Interest Rate:</span>
+                                                <span>Monthly Interest:</span>
                                                 <span class="fw-medium la_loan_interest">5%</span>
                                             </div>
                                         </div>
@@ -394,7 +404,7 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <button class="btn btn-primary-custom w-100 la_submit_final_application" id="submitFinalApplication" disabled>
+                        <button class="btn btn-secondary w-100 la_submit_final_application" id="submitFinalApplication" disabled>
                             Submit Application
                         </button>
                         </div>

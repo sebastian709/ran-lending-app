@@ -17,11 +17,11 @@
                     <i class="ri-calendar-line"></i> Payments
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="" class="">
                     <i class="ri-file-text-line"></i> Applications
                 </a>
-            </li>
+            </li> -->
         </ul>
     </div>
 </div>

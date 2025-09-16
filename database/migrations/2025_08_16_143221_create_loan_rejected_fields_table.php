@@ -18,7 +18,7 @@ return new class extends Migration
             // Rejected fields
             $table->decimal('amount_amount', 15, 2)->nullable();
             $table->decimal('amount_suggested', 15, 2)->nullable();
-
+            $table->string('amount_remarks')->nullable();
             $table->string('payslip_img')->nullable();              // proof of income
             $table->string('upload_qr_code_img')->nullable();
             $table->string('government_id_img')->nullable();

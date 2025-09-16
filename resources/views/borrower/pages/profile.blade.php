@@ -23,7 +23,7 @@
         @include('borrower.layouts.sidebar')
 
         <div class="main-content flex-grow-1">
-            <div class="container pt-4">
+            <div class="container pt-4" hidden>
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="dashboard-card bg-pp-notif-warning p-4 text-muted">
@@ -46,7 +46,7 @@
                 </div>
 
             </div>
-            <div class="container">
+            <div class="container mt-4">
                 <div class="card shadow border-0 rounded-4">
                     <div class="card-body p-5">
                         <div class="row">
@@ -83,7 +83,11 @@
                                     <div class="mt-3 text-center">
                                         <h4 class="fw-bold mb-0">{{Auth::user()->firstname . ' ' . Auth::user()->lastname}}
                                         </h4>
-                                        <small class="text-muted">{{ '@'.$usersInformation->username }}</small>
+                                        <small class="text-muted">
+                                            @if(!empty($usersInformation->username))
+                                                {{ '@'.$usersInformation->username }}
+                                            @endif
+                                        </small>
                                     </div>
                                     <hr>
                                     <!-- <div class="d-flex justify-content-between align-items-center"> -->

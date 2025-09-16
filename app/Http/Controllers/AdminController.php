@@ -87,6 +87,7 @@ class AdminController extends Controller
                 'loan_application.loan_amount',
                 'loan_application.loan_tenure',
                 'loan_application.interest_rate',
+                DB::raw("IFNULL(loan_application.purpose_of_loan, 'None') as purpose_of_loan"),
                 DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
                 'loan_application.referral',
                 'loan_application.loan_status as loan_status',
@@ -118,12 +119,13 @@ class AdminController extends Controller
                 'loan_application.interest_rate',
                 DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
                 DB::raw("DATE_FORMAT(loan_application.updated_at, '%b %d, %Y') as updated_at"),
-                'loan_application.referral',
+                DB::raw("IFNULL(loan_application.referral, 'None') as referral"),
+                // 'loan_application.referral',
                 'loan_application.loan_status as loan_status',
                 'loan_status.loan_status as loan_status_name',
                 'loan_application.loan_type',
                 DB::raw("DATE_FORMAT(loan_application.scheduled_date, '%b %d, %Y') as scheduled_date"),
-                DB::raw("IFNULL(loan_application.purpose_of_loan, 'N/A') as purpose_of_loan"),
+                DB::raw("IFNULL(loan_application.purpose_of_loan, 'None') as purpose_of_loan"),
                 // 'referral_source.name as referral',
                 DB::raw("CONCAT('" . asset('storage') . "/', loan_application.payslip_img) as payslip_img"),
                 DB::raw("CONCAT('" . asset('storage') . "/', loan_application.billing_statement_img) as billing_statement_img"),
@@ -165,13 +167,18 @@ class AdminController extends Controller
                 ->select('id','loan_status')
                 ->where('status', 1)
                 ->get();
-
+            
+            $user = auth()->user();
+            $loan_request_access = DB::table('admin_loan_request_access')
+                ->where('user_id', $user->id)
+                ->get();
 
             return response()->json([
                 "data" => $loanApplication,
                 "logs" => $logs,
                 "approved_by" => $approved_admins_array,
                 "disapproved_by" => $disapproved_admins_array,
+                "loan_request_access" => $loan_request_access,
                 "loan_status" => $loan_status
             ]);
     }
@@ -256,7 +263,7 @@ class AdminController extends Controller
         // If all admins disapproved → status = 3
         if (count($disapproved) === $admin_count) {
             DB::table('loan_application')->where('id', $id)->update([
-                'loan_status' => 3
+                'loan_status' => 6
             ]);
         }else{
             DB::table('loan_application')->where('id', $id)->update([
@@ -295,7 +302,12 @@ class AdminController extends Controller
                 if ($request->has('suggested_amount')) {
                     $data['amount_suggested'] = $request->input('suggested_amount');
                 }
-                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'), $id);
+
+                if ($request->has('amount_remarks')) {
+                    $data['amount_remarks'] = $request->input('amount_remarks');
+                }
+                
+                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'). ' Remarks: ' . $request->input('amount_remarks'), $id);
                 break;
 
             case 'rejectQRcode':
@@ -468,6 +480,7 @@ class AdminController extends Controller
 
             // Due date calculation (based on monthly_due_date instead of static now)
             $dueDate = Carbon::parse($request->monthly_due_date)
+                ->subDay()
                 ->addMonths($i - 1) // start from given due date
                 ->endOfDay();
 
