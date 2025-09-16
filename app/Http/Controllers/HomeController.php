@@ -761,10 +761,8 @@ class HomeController extends Controller
 
             // Map inputs to folders and DB columns
             $folderMap = [
-                'payslip_img' => ['folder' => 'payslip', 'db_field' => 'payslip_img'],
-                'qr_code_img' => ['folder' => 'qr_code', 'db_field' => 'upload_qr_code_img'],
-                'government_id_img' => ['folder' => 'government_id', 'db_field' => 'government_id_img'],
-                'billing_statement_img' => ['folder' => 'billing_statement', 'db_field' => 'billing_statement_img'],
+                'proof' => ['folder' => 'loan_appeal', 'db_field' => 'uploaded_proof'],
+                
             ];
 
             $updateData = [];
@@ -853,5 +851,81 @@ class HomeController extends Controller
             ], 500);
         }
     }
-}
 
+      public function checkLoanData()
+    {
+        $userId = auth()->id();
+
+        $loanApplication = DB::table('loan_application')
+            ->where('loan_applicant', $userId)
+            ->where('loan_status', 5)
+            ->where('make_appeal', 1)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return response()->json([
+            'loan_id' => $loanApplication->id,
+            'loan_status' => $loanApplication->loan_status,
+            'make_appeal' => $loanApplication->make_appeal,
+        ]);
+    }
+
+    
+   public function updateAppealStatus(Request $request)
+    {
+        $loan_id = $request->input('loan_id');
+
+        DB::table('loan_application')
+            ->where('id', $loan_id)
+            ->update(['make_appeal' => 0]);
+
+        return response()->json(['status' => 'ok']);
+    }
+
+     public function saveAppeal(Request $request)
+    {
+        $request->validate([
+            'loan_id' => 'required|integer',
+            'reason' => 'required|string',
+            'uploaded_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $updateData = [
+            'loan_id' => $request->loan_id,
+            'reason' => $request->reason,
+            'date_of_appeal' => now(),
+            'uploaded_proof' => null, // default
+        ];
+
+        // File upload handling
+        $folderMap = [
+            'uploaded_proof' => ['folder' => 'loan_appeal', 'db_field' => 'uploaded_proof'],
+        ];
+
+        foreach ($folderMap as $requestField => $info) {
+            if ($request->hasFile($requestField)) {
+                $file = $request->file($requestField);
+
+                $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+                $directory = public_path("storage/uploads/{$info['folder']}");
+
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0775, true);
+                }
+
+                $file->move($directory, $filename);
+
+                $updateData[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
+            }
+        }
+
+        // Insert directly into loan_appeal table
+        DB::table('loan_appeal')->insert($updateData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Appeal submitted successfully',
+            'name' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+        ]);
+    }
+}

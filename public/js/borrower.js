@@ -1209,6 +1209,80 @@ $(document).on('click', '.clearAllNotif', function () {
     return false;
 });
 
+$(document).ready(function() {
+    let user = $('#gb_user_id').val();
+
+     $.ajax({
+       url: `/borrower/check-loan-data`,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(res) {
+          if(res.loan_status = 5 && res.make_appeal == 1){
+            $('#congratsModal').modal('show');
+            $('.appeal_close').attr('loan_id', res.loan_id);
+            $('#makeAppealBtn').attr('loan_id', res.loan_id);
+            window.addEventListener('load', () => {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+                const duration = 2000;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 }
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 }
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                })();
+            }, 300);
+            });
+          }
+        },
+  
+    });
+
+});
+
+$(document).on("click", ".appeal_close", function () {
+
+    let loan_id = $(this).attr('loan_id');
+    if ($("#dontShowCongrats").is(":checked")) {
+        $.ajax({
+            url: "/borrower/update-appeal-status",   
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+            },
+            data: {
+                loan_id : loan_id
+            },
+            success: function (res) {
+                
+            },
+            error: function (xhr) {
+                
+            }
+        });
+    }
+});
 
 $(document).on('change', '.pEmploymentStatus', function () {
     let $this = $(this);
@@ -1233,5 +1307,110 @@ $(document).on('click', 'input[name="scheduledLoan"]', function() {
 
 
 
+$(document).on("click", "#makeAppealBtn", function () {
+    let loanId = $(this).attr("loan_id");
+    $('#congratsModal').hide()
+    Swal.fire({
+        title: "Make an Appeal",
+        html: `
+             <div class="appeal-form text-start" style="max-width:500px; margin:auto;">
+            
+            <div class="mb-3">
+                <label class="fw-bold d-block mb-1" style="font-size:0.9rem; color:#555;">Loan ID</label>
+                <div id="swal-loan-id" class="p-2 rounded bg-light border text-dark fw-semibold">
+                    LN-${String(loanId).padStart(5, '0')}
+                </div>
+            </div>
 
+            <div class="mb-3">
+                <label class="fw-bold mb-1" style="font-size:0.9rem; color:#555;">Reason for Appeal</label>
+                <textarea id="swal-reason" class="form-control" 
+                          placeholder="Enter your reason..." 
+                          style="min-height:100px; border-radius:10px; border:1px solid #ddd;"></textarea>
+            </div>
 
+            <div class="mb-3">
+                <label class="fw-bold mb-1" style="font-size:0.9rem; color:#555;">Upload Proof (Optional)</label>
+                <input type="file" id="swal-proof" class="form-control" 
+                       style="border-radius:10px; border:1px solid #ddd;">
+            </div>
+        </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Submit Appeal",
+        cancelButtonText: "Cancel",
+        focusConfirm: false,
+        preConfirm: () => {
+            let reason = $("#swal-reason").val();
+            let proof = $("#swal-proof")[0].files[0];
+
+            if (!reason) {
+                Swal.showValidationMessage("Reason for appeal is required");
+                return false;
+            }
+
+            return { loanId, reason, proof };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let formData = new FormData();
+            formData.append("loan_id", result.value.loanId);
+            formData.append("reason", result.value.reason);
+            if (result.value.proof) {
+                formData.append("uploaded_proof", result.value.proof);
+            }
+
+            $.ajax({
+                url: "/borrower/submit-appeal",
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+                },
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    Swal.fire(
+                        "Success!",
+                        "Your appeal has been submitted successfully. Our team will review it and update you once a decision is made.",
+                        "success"
+                    );
+                    $('#congratsModal').modal('hide');
+
+                    //Admin Notif
+                    const table_id = 'notifications';
+                    const target_type = 1;
+                    const level_id = 1;
+                    const user_id = 0;
+                    const group_user_id = 0;
+                    const icon = '<i class="ri-file-text-line"></i>';
+                    const message = `<p class="mb-1 small appeal_notifs" value="${loanId}">${res.name} did not receive the fund for Loan <b>LN-${String(loanId).padStart(5, '0')}</b></p>`;
+                    const data_url = '';
+
+                    if (typeof window.triggerNotif === "function") {
+                        window.triggerNotif(
+                        table_id,
+                        target_type,
+                        level_id,
+                        user_id,
+                        group_user_id,
+                        icon,
+                        message,
+                        data_url
+                        );
+                    } else {
+                        console.warn("⚠️ window.triggerNotif is not defined.");
+                    }
+
+                    
+                },
+                error: function (xhr) {
+                    Swal.fire("Error", "Something went wrong. Please try again.", "error");
+                    $('#congratsModal').modal('hide');
+                }
+            });
+        }else{
+            $('#congratsModal').show()
+        }
+    });
+});

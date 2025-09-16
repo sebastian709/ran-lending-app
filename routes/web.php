@@ -202,3 +202,6 @@ Route::get('/loan-list', [ProfileController::class, 'loanList'])->name('borrower
 Route::get('/update-application-info', [App\Http\Controllers\HomeController::class, 'updateInformation'])->name('update-information');
 Route::post('/borrower/resubmit-loan-info', [HomeController::class, 'resubmitLoanInfo']);
 Route::post('/borrower/resubmit-loan-documents', [HomeController::class, 'resubmitLoanDocuments']);
+Route::post('/borrower/check-loan-data', [HomeController::class, 'checkLoanData']);
+Route::post('/borrower/update-appeal-status', [HomeController::class, 'updateAppealStatus']);
+Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
