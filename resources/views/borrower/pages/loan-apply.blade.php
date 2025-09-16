@@ -89,6 +89,24 @@
                                 </div>
 
                                 <div class="mb-4">
+                                    <label class="form-label fw-medium">Applying as a scheduled loan?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="scheduledLoan" id="slYes" value="Scheduled">
+                                        <label class="form-check-label" for="admin">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="scheduledLoan" id="slNo" value="Express">
+                                        <label class="form-check-label" for="friend">No</label>
+                                    </div>
+                                    
+                                    <!-- Scheduled Date Input (hidden by default) -->
+                                    <div id="scheduled-loan-section" class="mt-3" style="display: none;">
+                                        <label for="scheduledLoan" class="form-label fw-medium">Scheduled Date:</label>
+                                        <input type="date" class="form-control" id="scheduledLoan">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
                                     <label class="form-label fw-medium">Select your referral (if any):</label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="referralType" id="admin" value="admin">

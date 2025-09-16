@@ -23,6 +23,7 @@
                         <tr>
                             <th>Loan ID</th>
                             <th>Borrower Name</th>
+                            <th>Loan Type</th>
                             <th>Loan Amount</th>
                             <th>Loan Tenure</th>
                             <th>Interest Rate</th>

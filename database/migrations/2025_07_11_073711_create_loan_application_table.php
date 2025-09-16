@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
 
             $table->unsignedBigInteger('loan_status')->nullable();
+            $table->string('loan_type')->nullable(); // express, scheduled
+            $table->date('scheduled_date')->nullable();// scheduled date if applicable
             $table->integer('load_step')->nullable();
             $table->unsignedBigInteger('loan_applicant')->nullable(); // user_id
             $table->text('purpose_of_loan')->nullable();

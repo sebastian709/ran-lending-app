@@ -91,7 +91,9 @@ class AdminController extends Controller
                 DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
                 'loan_application.referral',
                 'loan_application.loan_status as loan_status',
-                'loan_status.loan_status as loan_status_name'
+                'loan_status.loan_status as loan_status_name',
+                'loan_application.loan_type',
+                'loan_application.scheduled_date'
             );
 
             if (!empty($loanStatus)) {
@@ -121,6 +123,8 @@ class AdminController extends Controller
                 // 'loan_application.referral',
                 'loan_application.loan_status as loan_status',
                 'loan_status.loan_status as loan_status_name',
+                'loan_application.loan_type',
+                DB::raw("DATE_FORMAT(loan_application.scheduled_date, '%b %d, %Y') as scheduled_date"),
                 DB::raw("IFNULL(loan_application.purpose_of_loan, 'None') as purpose_of_loan"),
                 // 'referral_source.name as referral',
                 DB::raw("CONCAT('" . asset('storage') . "/', loan_application.payslip_img) as payslip_img"),

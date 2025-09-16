@@ -263,6 +263,8 @@ $(function () {
         const occupation = $('#occupation').val();
         const income = $('#income').val();
         const employmentStatus = $('input[name="employmentStatus"]:checked').val();
+        const loanType = $('input[name="scheduledLoan"]:checked').val();
+        let scheduledLoan = (loanType === 'Scheduled') ? $('#scheduledLoan').val() : null;
         let specify_others = null;
         if (employmentStatus == 4) {
             specify_others = $('#otherEmploymentStat').val();
@@ -284,8 +286,10 @@ $(function () {
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
+                load_step: 1,
+                loan_type : loanType,
+                scheduled_date : scheduledLoan
                 specify_others: specify_others,
-                load_step: 1
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
@@ -1218,6 +1222,15 @@ $(document).on('change', '.pEmploymentStatus', function () {
         $('.specifyOthers').removeAttr('required')
     }
 });
+
+$(document).on('click', 'input[name="scheduledLoan"]', function() {
+    if ($('#slYes').is(':checked')) {
+        $('#scheduled-loan-section').show();
+    } else if ($('#slNo').is(':checked')) {
+        $('#scheduled-loan-section').hide();
+    }
+});
+
 
 
 
