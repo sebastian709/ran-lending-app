@@ -21,11 +21,8 @@ class LoanStatusSeeder extends Seeder
             ['loan_status' => 'Transferred and Processed', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
             ['loan_status' => 'Rejected', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
             ['loan_status' => 'Closed', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-<<<<<<< Updated upstream
             ['loan_status' => 'Scheduled', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-=======
             ['loan_status' => 'Cancelled', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
->>>>>>> Stashed changes
         ]);
     }
 }
