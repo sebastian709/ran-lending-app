@@ -288,8 +288,8 @@ $(function () {
                 employmentStatus: employmentStatus,
                 load_step: 1,
                 loan_type : loanType,
-                scheduled_date : scheduledLoan
-                specify_others: specify_others,
+                scheduled_date : scheduledLoan,
+                specify_others: specify_others
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
