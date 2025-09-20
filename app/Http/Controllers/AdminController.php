@@ -498,7 +498,7 @@ class AdminController extends Controller
                 'principal'         => $monthly,
                 'count'             => $i,
                 'payment_status_id' => 1,
-                'make_appeal'       => 1,
+                // 'make_appeal'       => 1,
                 'payment_id'        => 0,
                 'created_at'        => now(),
                 'updated_at'        => now(),
@@ -515,7 +515,7 @@ class AdminController extends Controller
             ]);
         }
 
-         DB::table('loan_application')
+        DB::table('loan_application')
             ->where('id', $request->loan_id)
             ->update([
                 'loan_status' => 5, 
