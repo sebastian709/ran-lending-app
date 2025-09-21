@@ -270,6 +270,8 @@ class HomeController extends Controller
                 'loan_tenure' => $loan->loan_tenure ?? '',
                 'interest_rate' => $loan->interest_rate ?? '',
                 'total_amount' => $loan->total_amount ?? '',
+                'loan_type' => $loan->loan_type ?? '',
+                'scheduled_date' => $loan->scheduled_date ?? '',
 
                 // Additional Fields
                 'payslip_img' => $loan->payslip_img ?? '',

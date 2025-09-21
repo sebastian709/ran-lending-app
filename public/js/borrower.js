@@ -40,6 +40,12 @@ $(function () {
                         $('#otherEmploymentStat').val('').attr('data-employement-status', 0);
                     }
 
+                    if (res.loan_type == 'Scheduled'){
+                        $(`input[name="scheduledLoan"][value="${res.loan_type}"]`).prop('checked', true);
+                        $('#scheduled-loan-section').css('display', '');
+                        $('#scheduledLoan').val(res.scheduled_date);
+                    } 
+
                     // 1st step
                     if (res.purpose_of_loan) $('#la_purpose').val(res.purpose_of_loan);
                     if (res.referral) $(`input[name="referralType"][value="${res.referral}"]`).prop('checked', true);
@@ -269,11 +275,25 @@ $(function () {
         if (employmentStatus == 4) {
             specify_others = $('#otherEmploymentStat').val();
         }
+
+        let dateScheduledError = $('#scheduledLoan').attr('data-has_error');
+        
+        if (dateScheduledError === "1") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Date',
+                text: 'Please select a date at least 3 days after today.',
+            });
+            return false; 
+        }
+
         // Optional: you can skip AJAX if both purpose and referral are empty
         if (!purpose && !referral) {
             proceedToEligibility();
             return;
         }
+
+        
 
         $.ajax({
             url: '/borrower/save-precheck',
@@ -287,8 +307,8 @@ $(function () {
                 income: income,
                 employmentStatus: employmentStatus,
                 load_step: 1,
-                loan_type : loanType,
-                scheduled_date : scheduledLoan,
+                loan_type: loanType,
+                scheduled_date: scheduledLoan,
                 specify_others: specify_others
             },
             headers: {
@@ -1209,54 +1229,54 @@ $(document).on('click', '.clearAllNotif', function () {
     return false;
 });
 
-$(document).ready(function() {
+$(document).ready(function () {
     let user = $('#gb_user_id').val();
 
-     $.ajax({
-       url: `/borrower/check-loan-data`,
+    $.ajax({
+        url: `/borrower/check-loan-data`,
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(res) {
-          if(res.loan_status = 5 && res.make_appeal == 1){
-            $('#congratsModal').modal('show');
-            $('.appeal_close').attr('loan_id', res.loan_id);
-            $('#makeAppealBtn').attr('loan_id', res.loan_id);
-            window.addEventListener('load', () => {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-
-            setTimeout(() => {
-                const duration = 2000;
-                const end = Date.now() + duration;
-
-                (function frame() {
+        success: function (res) {
+            if (res.loan_status = 5 && res.make_appeal == 1) {
+                $('#congratsModal').modal('show');
+                $('.appeal_close').attr('loan_id', res.loan_id);
+                $('#makeAppealBtn').attr('loan_id', res.loan_id);
+                window.addEventListener('load', () => {
                     confetti({
-                        particleCount: 5,
-                        angle: 60,
-                        spread: 55,
-                        origin: { x: 0 }
-                    });
-                    confetti({
-                        particleCount: 5,
-                        angle: 120,
-                        spread: 55,
-                        origin: { x: 1 }
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 }
                     });
 
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame);
-                    }
-                })();
-            }, 300);
-            });
-          }
+                    setTimeout(() => {
+                        const duration = 2000;
+                        const end = Date.now() + duration;
+
+                        (function frame() {
+                            confetti({
+                                particleCount: 5,
+                                angle: 60,
+                                spread: 55,
+                                origin: { x: 0 }
+                            });
+                            confetti({
+                                particleCount: 5,
+                                angle: 120,
+                                spread: 55,
+                                origin: { x: 1 }
+                            });
+
+                            if (Date.now() < end) {
+                                requestAnimationFrame(frame);
+                            }
+                        })();
+                    }, 300);
+                });
+            }
         },
-  
+
     });
 
 });
@@ -1266,19 +1286,19 @@ $(document).on("click", ".appeal_close", function () {
     let loan_id = $(this).attr('loan_id');
     if ($("#dontShowCongrats").is(":checked")) {
         $.ajax({
-            url: "/borrower/update-appeal-status",   
+            url: "/borrower/update-appeal-status",
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
             },
             data: {
-                loan_id : loan_id
+                loan_id: loan_id
             },
             success: function (res) {
-                
+
             },
             error: function (xhr) {
-                
+
             }
         });
     }
@@ -1297,13 +1317,35 @@ $(document).on('change', '.pEmploymentStatus', function () {
     }
 });
 
-$(document).on('click', 'input[name="scheduledLoan"]', function() {
+$(document).on('click', 'input[name="scheduledLoan"]', function () {
     if ($('#slYes').is(':checked')) {
         $('#scheduled-loan-section').show();
     } else if ($('#slNo').is(':checked')) {
         $('#scheduled-loan-section').hide();
     }
 });
+
+$(document).on('change', '#scheduledLoan', function () {
+    let this_val = $(this).val();
+    let input = $(this);
+    let selectedDate = new Date(this_val);
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let minDate = new Date(today);
+    minDate.setDate(today.getDate() + 3);
+
+
+    input.next('.error-message').remove();
+
+    if (selectedDate < minDate) {
+        input.attr('data-has_error', '1');
+        input.after('<div class="error-message" style="color:red; font-size: 12px; margin-top: 4px;">Please select a date at least 3 days after today.</div>');
+    } else {
+        // valid
+        input.attr('data-has_error', '0');
+    }
+});
+
 
 
 
@@ -1389,27 +1431,27 @@ $(document).on("click", "#makeAppealBtn", function () {
 
                     if (typeof window.triggerNotif === "function") {
                         window.triggerNotif(
-                        table_id,
-                        target_type,
-                        level_id,
-                        user_id,
-                        group_user_id,
-                        icon,
-                        message,
-                        data_url
+                            table_id,
+                            target_type,
+                            level_id,
+                            user_id,
+                            group_user_id,
+                            icon,
+                            message,
+                            data_url
                         );
                     } else {
                         console.warn("⚠️ window.triggerNotif is not defined.");
                     }
 
-                    
+
                 },
                 error: function (xhr) {
                     Swal.fire("Error", "Something went wrong. Please try again.", "error");
                     $('#congratsModal').modal('hide');
                 }
             });
-        }else{
+        } else {
             $('#congratsModal').show()
         }
     });
