@@ -44,31 +44,60 @@ $(document).on('click', '.cp-view-more', function () {
             // }
 
             let loanHistoryTr = `<tr>
-                                    <td>${res.loan_applications.id}</td>
+                                    <td>Loan ID</td>
+                                    <td>${'LN-' + String(res.loan_applications.id).padStart(5, '0')}</td>
+                                </tr>
+                                <tr>
+                                    <td>Date Requested</td>
                                     <td>${res.loan_applications.created_at}</td>
+                                </tr>
+                                <tr>
+                                    <td>Loan Amount</td>
                                     <td>${res.loan_applications.loan_amount}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tenure</td>
                                     <td>${res.loan_applications.loan_tenure}</td>
+                                </tr>
+                                <tr>
+                                    <td>Referral</td>
                                     <td>${res.loan_applications.referral}</td>
+                                </tr>
+                                <tr>
+                                    <td>Status</td>
                                     <td>${res.loan_applications.loan_status_by_name}</td>
+                                </tr>
+                                <tr>
+                                    <td>Outstanding Balance</td>
                                     <td>${res.outstanding_balance || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last Payment</td>
                                     <td>${res.last_payments_date || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Next Due</td>
                                     <td>${res.next_payment_date || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Score</td>
                                     <td>${res.loan_applications.score || '-'}</td>
                                 </tr>`;
 
+                                    // <tr>
+                                    //     <th>Loan ID</th>
+                                    //     <th>Date Requested</th>
+                                    //     <th>Loan Amount</th>
+                                    //     <th>Tenure</th>
+                                    //     <th>Referral</th>
+                                    //     <th>Status</th>
+                                    //     <th>Outstanding Balance</th>
+                                    //     <th>Last Payment</th>
+                                    //     <th>Next Due</th>
+                                    //     <th>Score</th>
+                                    // </tr>
 
             var loanHistory = `<table class="table table-bordered table-sm">
-                                    <tr>
-                                        <th>Loan ID</th><th>Date Requested</th>
-                                        <th>Loan Amount</th>
-                                        <th>Tenure</th>
-                                        <th>Referral</th>
-                                        <th>Status</th>
-                                        <th>Outstanding Balance</th>
-                                        <th>Last Payment</th>
-                                        <th>Next Due</th>
-                                        <th>Score</th>
-                                    </tr>
                                     ${loanHistoryTr}
                                 </table>`;
 
