@@ -39,9 +39,8 @@ $(function () {
                         $('#employment-status-section').slideUp();
                         $('#otherEmploymentStat').val('').attr('data-employement-status', 0);
                     }
-
+                    if (res.loan_type) $(`input[name="scheduledLoan"][value="${res.loan_type}"]`).prop('checked', true);
                     if (res.loan_type == 'Scheduled'){
-                        $(`input[name="scheduledLoan"][value="${res.loan_type}"]`).prop('checked', true);
                         $('#scheduled-loan-section').css('display', '');
                         $('#scheduledLoan').val(res.scheduled_date);
                     } 
@@ -278,7 +277,7 @@ $(function () {
 
         let dateScheduledError = $('#scheduledLoan').attr('data-has_error');
         
-        if (dateScheduledError === "1") {
+        if (dateScheduledError === "1" && loanType == 'Scheduled') {
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid Date',
