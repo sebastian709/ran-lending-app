@@ -30,22 +30,38 @@ $(document).ready(function () {
         } else {
             $('#emptyState').hide();
             $.each(currentItems, function (_, item) {
+                let scheduledDateObj = new Date(item.scheduled_date);
+                let twoDaysBefore = new Date(scheduledDateObj);
+                twoDaysBefore.setDate(scheduledDateObj.getDate() - 2);
+
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let statusTd = '';
+
+                if (item.loan_status == 4 && item.loan_type === 'Scheduled' && today < twoDaysBefore) {
+                    statusTd = `<span class="badge bg-secondary">Scheduled</span>`;
+                } else {
+                    statusTd = renderStatusBadge(item.loan_status, item.loan_status_name);
+                }
+
                 const row = `
-                    <tr data-loan_id="${item.id}" data-loan-status="${item.loan_status}">
-                        <td>${'LN-' + String(item.id).padStart(5, '0')}</td>
-                        <td>${item.loan_applicant}</td>
-                        <td>${item.loan_type || '-'}</td>
-                        <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
-                        <td>${item.loan_tenure} months</td>
-                        <td>${item.interest_rate * 100}%</td>
-                        <td>${item.purpose_of_loan}</td>
-                        <td>${item.created_at}</td>
-                        <td>${item.referral || 'None'}</td>
-                        <td>${renderStatusBadge(item.loan_status, item.loan_status_name)}</td>
-                    </tr>
-                `;
+                                <tr data-loan_id="${item.id}" data-loan-status="${item.loan_status}" data-loan_type="${item.loan_type}" data-scheduled_date="${item.scheduled_date}">
+                                    <td>${'LN-' + String(item.id).padStart(5, '0')}</td>
+                                    <td>${item.loan_applicant}</td>
+                                    <td>${item.loan_type || '-'}</td>
+                                    <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
+                                    <td>${item.loan_tenure} months</td>
+                                    <td>${item.interest_rate * 100}%</td>
+                                    <td>${item.purpose_of_loan}</td>
+                                    <td>${item.created_at}</td>
+                                    <td>${item.referral || 'None'}</td>
+                                    <td>${statusTd}</td>
+                                </tr>
+                            `;
                 $tbody.append(row);
             });
+
         }
 
         $('#totalData').text(filteredData.length);
@@ -138,7 +154,32 @@ $(document).ready(function () {
         let loan_id = $(this).attr('data-loan_id');
         let complete_loan_id = 'LN-' + String(loan_id).padStart(5, '0');
 
-        if (loan_status == 4) {
+        let loan_type = $(this).attr('data-loan_type');
+        let scheduled_date = $(this).attr('data-scheduled_date');
+        let scheduledDateObj = new Date(scheduled_date);
+
+        // Kunin ang "2 days before" ng scheduled date
+        let twoDaysBefore = new Date(scheduledDateObj);
+        twoDaysBefore.setDate(scheduledDateObj.getDate() - 2);
+
+        // Today
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Format function para maging "September 21, 2025"
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        if (loan_status == 4 && loan_type == 'Scheduled' && today < twoDaysBefore) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Transfer Not Available Yet',
+                text: 'Transfer money will only be available 2 days before the scheduled date (' + formatDate(scheduledDateObj) + ').',
+                confirmButtonText: 'OK'
+            });
+        } else if (loan_status == 4 || (loan_type == 'Scheduled' && today > twoDaysBefore)) {
             $.ajax({
                 url: '/admin/loan-request/get-bank-details',
                 method: 'POST',
@@ -350,10 +391,10 @@ $(document).ready(function () {
 
                     let approvedAdmins = r.approved_by;
                     let disapprovedAdmins = r.disapproved_by;
-                    
+
 
                     // console.log('test', loan_status)
-                    if(parseInt(loan.loan_status) == 5){
+                    if (parseInt(loan.loan_status) == 5) {
                         $('#approveBtn').attr('hidden', true);
                     }
 
