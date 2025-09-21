@@ -166,6 +166,7 @@ class AdminController extends Controller
             $loan_status =  DB::table('loan_status')
                 ->select('id','loan_status')
                 ->where('status', 1)
+                ->where('id', '!=', 8)
                 ->get();
             
             $user = auth()->user();

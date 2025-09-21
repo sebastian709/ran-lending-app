@@ -844,17 +844,17 @@ $(document).on("click", "#updateStatus", function () {
     let total = parseInt(parts[1], 10);
 
     $("#loan_status_admin").prop("disabled", false).focus();
-
+    $("#loan_status_admin").find('option[value="8"]').removeAttr('hidden', 'true');
     if (current === total && total === 3) {
         $("#loan_status_admin").find('option[value="2"]').removeAttr('hidden', 'true');
         $("#loan_status_admin").find('option[value="4"]').removeAttr('hidden', 'true');
         $("#loan_status_admin").find('option[value="5"]').removeAttr('hidden', 'true');
-        $("#loan_status_admin").find('option[value="8"]').removeAttr('hidden', 'true');
+        // $("#loan_status_admin").find('option[value="8"]').removeAttr('hidden', 'true');
     } else {
         $("#loan_status_admin").find('option[value="2"]').attr('hidden', 'true');
         $("#loan_status_admin").find('option[value="4"]').attr('hidden', 'true');
         $("#loan_status_admin").find('option[value="5"]').attr('hidden', 'true');
-        $("#loan_status_admin").find('option[value="8"]').attr('hidden', 'true');
+        // $("#loan_status_admin").find('option[value="8"]').attr('hidden', 'true');
     }
 });
 
