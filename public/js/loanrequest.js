@@ -133,7 +133,7 @@ $(document).ready(function () {
 
     $(document).on('click', '#loanBody tr', function () {
 
-        let loan_status = $('#loanBody tr').attr('data-loan-status');
+        let loan_status = $(this).attr('data-loan-status');
         $('.topbar').css('z-index', 0);
         let loan_id = $(this).attr('data-loan_id');
         let complete_loan_id = 'LN-' + String(loan_id).padStart(5, '0');

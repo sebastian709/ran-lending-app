@@ -14,6 +14,7 @@ use App\Http\Controllers\ReferralCodeController;
 use App\Http\Controllers\LimitLoanSettingsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NoAuthController;
+use App\Http\Controllers\CustomerController;
 
 
 // Route::get('/', [ChatTestController::class, 'login']);
@@ -120,8 +121,16 @@ Route::prefix('admin')->group(function () {
     });
 
     Route::get('/notification-page', [NotificationController::class, 'AdminViewPage']);
-    
+
+    Route::get('/customer', [CustomerController::class, 'index'])->name('admin.pages.customer.index');
+    Route::prefix('customer')->group(function () {
+        Route::get('cp-active', [CustomerController::class, 'getCpActive']);
+        Route::get('cp-scheduled', [CustomerController::class, 'getCpScheduled']);
+        Route::post('cpas-view-more-info', [CustomerController::class, 'cpasViewMoreInfo']);
+        Route::post('cpa-payment-details', [CustomerController::class, 'cpaPaymentDetails']);
+    });
 });
+
 Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferralCode']);
 
 Route::post('/upload', [BlogPostController::class, 'upload']);
