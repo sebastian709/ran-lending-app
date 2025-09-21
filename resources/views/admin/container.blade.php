@@ -29,6 +29,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/blogpost.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <!-- Lightbox2 CSS -->
@@ -92,6 +93,9 @@
         <!-- <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/profile/referral-management">
             <i class="ri-coupon-3-line"></i> Referral Code
         </a> -->
+        <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/customer">
+            <i class="ri-user-community-line"></i> Customer
+        </a>
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>
@@ -285,6 +289,7 @@
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
     <script src="{{ asset('js/loanrequest.js') }}"></script>
+    <script src="{{ asset('js/customer.js') }}"></script>
     @stack('sb-scripts')
 
     <script type="module">
