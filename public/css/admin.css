@@ -6,7 +6,9 @@
 :where([class^="ri-"])::before {
     content: "\f3c2";
 }
-
+.hidden{
+    display: none;
+}
 .font-pacifico {
     font-family: "Pacifico", cursive;
 }

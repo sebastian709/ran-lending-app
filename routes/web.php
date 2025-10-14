@@ -14,7 +14,7 @@ use App\Http\Controllers\ReferralCodeController;
 use App\Http\Controllers\LimitLoanSettingsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NoAuthController;
-
+use App\Http\Controllers\Admin\PaymentPageController;
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
@@ -126,6 +126,11 @@ Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferra
 
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
+//DAN
+Route::resource('paymentpage', PaymentPageController::class);
+Route::get('/get_pending', [PaymentPageController::class, 'get_pending'])->name('payment.pending');
+Route::post('/get_pending_data', [PaymentPageController::class, 'get_pending_data'])->name('payment.pending.data');
+Route::post('/get_pending_data_two', [PaymentPageController::class, 'get_pending_data_two'])->name('payment.pending.data_two');
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');

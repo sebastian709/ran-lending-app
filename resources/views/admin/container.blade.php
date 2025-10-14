@@ -95,6 +95,9 @@
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>
+        <a href="#" class="nav-link" data-is-sidebar="1" data-url="/paymentpage">
+            <i class="ri-wallet-3-line"></i> Payment Page
+        </a>
     </div>
 
     <!-- Overlay for mobile -->
