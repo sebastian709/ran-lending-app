@@ -1043,6 +1043,54 @@ $(document).on('click', '.la_proceed_loan_update_new', function () {
     });
 });
 
+$(document).on('click', '.la-terms-and-conditions', function() {
+    let laTermsHtml = `<div style="
+                            text-align: justify;
+                            font-size: 14px;
+                            line-height: 1.8;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            color: #222;
+                        ">
+                            <strong>a. Interest</strong>
+                            <div style="margin-left: 30px; text-indent: -20px;">
+                                <p style="margin: 6px 0;">
+                                    <i>i.</i> The Borrower shall be obliged to pay interest at the rate of 5% per month, the “Interest”, such interest to be paid together with the capital sum of the loan at the end of the loan period.
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>ii.</i> <strong>Prepayment –</strong> The Borrower shall be entitled to pay larger installments than the prescribed or the full balance of capital and interest at any time prior to the prescribed dates of payment, in any such event interest shall be calculated up to the date of payment.
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>iii.</i> <strong>Charges –</strong> Any payment not remunerated within __ days of its shall be subject to a belatedly charge of ₱0.50 of the payment for any such late installment (Penalty).
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>iv.</i> <strong>Default –</strong> If borrower has not paid the full amount of the loan when the final payment is due, the Lender will charge Borrower interest on the unpaid balance at 5% per month.
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>v.</i> <strong>Non-members will be allowed one (1) penalty only</strong>, the 2nd penalty will be subject to <strong>DELINQUENCY STATUS.</strong>
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>vi.</i> <strong>Delinquent non-members’ consequence will be a ban for three (3) months to reloan.</strong>
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>vii.</i> <strong>Collection Fees –</strong> If this Note is placed with a legal representative for collection, then the Borrower agrees to pay an attorney’s fee of the voluntary balance. This fee will be added to the unpaid balance of the loan. If this Note is placed within legal bank transactions and transfers, then the Borrower agrees to pay bank charges of __ pesos added to the loan amount.
+                                </p>
+                            </div>
+                        </div>`;
+    $.confirm({
+        title: 'Terms and Conditions',
+        content: laTermsHtml,
+        type: 'blue',
+        boxWidth: '700px',
+        useBootstrap: false,
+        buttons: {
+            close: {
+                text: 'Close',
+                btnClass: 'btn-blue'
+            }
+        }
+    });
+});
+
 $(document).ready(function () {
     // Payslip
     $('#payslipInput').on('change', function () {

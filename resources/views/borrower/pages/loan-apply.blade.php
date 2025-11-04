@@ -385,7 +385,7 @@
                         <div class="form-check mb-4">
                             <input class="form-check-input la_terms_checkbox" type="checkbox" id="termsCheckbox">
                             <label class="form-check-label" for="termsCheckbox">
-                            I agree to the <a href="#">Terms and Conditions</a>
+                            I agree to the <a href="#" class="la-terms-and-conditions">Terms and Conditions</a>
                             </label>
                         </div>
 
