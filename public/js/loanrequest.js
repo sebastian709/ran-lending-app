@@ -4,6 +4,7 @@ $(document).ready(function () {
     let currentPage = 1;
     let filteredData = [];
 
+    // ====== Render Badge ======
     function renderStatusBadge(status, status_name) {
         const classMap = {
             '1': 'secondary',
@@ -17,6 +18,7 @@ $(document).ready(function () {
         return `<span class="badge bg-${badgeClass}">${status_name}</span>`;
     }
 
+    // ====== Render Table ======
     function renderTable() {
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
@@ -46,22 +48,21 @@ $(document).ready(function () {
                 }
 
                 const row = `
-                                <tr data-loan_id="${item.id}" data-loan-status="${item.loan_status}" data-loan_type="${item.loan_type}" data-scheduled_date="${item.scheduled_date}">
-                                    <td>${'LN-' + String(item.id).padStart(5, '0')}</td>
-                                    <td>${item.loan_applicant}</td>
-                                    <td>${item.loan_type || '-'}</td>
-                                    <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
-                                    <td>${item.loan_tenure} months</td>
-                                    <td>${item.interest_rate * 100}%</td>
-                                    <td>${item.purpose_of_loan}</td>
-                                    <td>${item.created_at}</td>
-                                    <td>${item.referral || 'None'}</td>
-                                    <td>${statusTd}</td>
-                                </tr>
-                            `;
+                    <tr data-loan_id="${item.id}" data-loan-status="${item.loan_status}" data-loan_type="${item.loan_type}" data-scheduled_date="${item.scheduled_date}">
+                        <td>${'LN-' + String(item.id).padStart(5, '0')}</td>
+                        <td>${item.loan_applicant}</td>
+                        <td>${item.loan_type || '-'}</td>
+                        <td>₱${parseFloat(item.loan_amount).toLocaleString()}</td>
+                        <td>${item.loan_tenure} months</td>
+                        <td>${item.interest_rate * 100}%</td>
+                        <td>${item.purpose_of_loan}</td>
+                        <td>${item.created_at}</td>
+                        <td>${item.referral || 'None'}</td>
+                        <td>${statusTd}</td>
+                    </tr>
+                `;
                 $tbody.append(row);
             });
-
         }
 
         $('#totalData').text(filteredData.length);
@@ -69,6 +70,7 @@ $(document).ready(function () {
         renderPagination();
     }
 
+    // ====== Render Pagination ======
     function renderPagination() {
         const totalPages = Math.ceil(filteredData.length / itemsPerPage);
         const $pagination = $('#pagination');
@@ -84,12 +86,13 @@ $(document).ready(function () {
         }
     }
 
+    // ====== Pagination Click ======
     $(document).on('click', '.page-btn', function () {
         currentPage = parseInt($(this).data('page'));
         renderTable();
     });
 
-    // ✅ Fixed search (matches your actual DB fields)
+    // ====== Search Filter ======
     $('#search').on('input', function () {
         const query = $(this).val().toLowerCase();
         filteredData = loanData.filter(item =>
@@ -101,19 +104,17 @@ $(document).ready(function () {
         renderTable();
     });
 
-    // ====== Load data with filter when nav clicked ======
-    $(document).off('click', '#loanSubNav a').on('click', '#loanSubNav a', function (e) {
-        e.preventDefault();
-        $('#loanSubNav a').removeClass('active');
-        $(this).addClass('active');
-
-        let loan_status = $(this).data('loan_status') || '';
-
+    // ====== Reusable Loader (Fix for flickering) ======
+    function loadLoans(loan_status = '') {
         $.ajax({
             url: '/admin/loan-request/data',
             method: 'GET',
             data: { loan_status: loan_status },
             dataType: 'json',
+            beforeSend: function () {
+                $('#emptyState').hide();
+                $('#loanBody').html('<tr><td colspan="10" class="text-center py-4 text-muted">Loading...</td></tr>');
+            },
             success: function (data) {
                 loanData = data;
                 filteredData = [...loanData];
@@ -125,24 +126,22 @@ $(document).ready(function () {
                 $('#emptyState').show();
             }
         });
+    }
+
+    // ====== Navigation Click Handler ======
+    $(document).off('click', '#loanSubNav a').on('click', '#loanSubNav a', function (e) {
+        e.preventDefault();
+        $('#loanSubNav a').removeClass('active');
+        $(this).addClass('active');
+
+        let loan_status = $(this).data('loan_status') || '';
+        loadLoans(loan_status);
     });
 
-    // ✅ Initial load (all loans)
-    $.ajax({
-        url: '/admin/loan-request/data',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            loanData = data;
-            filteredData = [...loanData];
-            renderTable();
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching data:', error);
-            $('#emptyState').show();
-        }
-    });
+    // ====== Initial Load ======
+    loadLoans(); // Load all loans on page load
 });
+
 
 $(document).ready(function () {
 
