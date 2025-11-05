@@ -65,7 +65,7 @@
                         </p>
                     </div>
 
-                @elseif ($loanStatus == 3)
+                @elseif ($loanStatus == 6)
                     {{-- Rejected Loan --}}
                     <div class="loan-status-card text-center text-danger mb-5">
                         <div class="loan-status-icon mb-4">
@@ -74,7 +74,7 @@
                         <h2 class="mb-3">No Active Loans</h2>
                         <p class="text-muted">
                             You have no current loans. If you've applied recently and haven't seen an update,<br>
-                            please check your loan history in <a href="{{ url('my-loan') }}">My Loan</a> page.
+                            please check your loan history in Profile page and find <br> <a href="{{ url('loan-list') }}">Loan History</a> button.
                         </p>
                     </div>
 

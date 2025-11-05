@@ -108,7 +108,7 @@
                                         <i class="ri-edit-line me-1"></i> Edit
                                     </button>
                                     <button class="btn btn-sm btn-outline-primary w-100 mt-1" data-url="/loan-list">
-                                        <i class="ri-file-list-line"></i> Loan List
+                                        <i class="ri-file-list-line"></i> Loan History
                                     </button>
                                     <button class="btn btn-sm btn-outline-danger w-100 mt-1" data-url="/borrower/change-password">
                                         <i class="ri-key-2-fill"></i> Change Password
