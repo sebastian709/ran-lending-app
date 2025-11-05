@@ -39,9 +39,6 @@ $(document).ready(function () {
 });
 
 $(document).on('click', '[data-url]', function (e) {
-  const isLoanNav = $(this).closest('#loanSubNav').length > 0;
-  if (isLoanNav) return; // prevent reload of same Blade
-  
   e.preventDefault();
   const url = $(this).data('url');
   const isSidebar = $(this).data('is-sidebar');
