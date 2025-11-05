@@ -134,7 +134,7 @@ class HomeController extends Controller
         //         ->first();
         // }
         if ($data->months === 0) {
-            $loanStatus = 0;
+            // $loanStatus = 0;
             return view('borrower.layouts.payment-state', compact('loanStatus'));
         }
 

@@ -40,10 +40,10 @@ $(function () {
                         $('#otherEmploymentStat').val('').attr('data-employement-status', 0);
                     }
                     if (res.loan_type) $(`input[name="scheduledLoan"][value="${res.loan_type}"]`).prop('checked', true);
-                    if (res.loan_type == 'Scheduled'){
+                    if (res.loan_type == 'Scheduled') {
                         $('#scheduled-loan-section').css('display', '');
                         $('#scheduledLoan').val(res.scheduled_date);
-                    } 
+                    }
 
                     // 1st step
                     if (res.purpose_of_loan) $('#la_purpose').val(res.purpose_of_loan);
@@ -276,14 +276,14 @@ $(function () {
         }
 
         let dateScheduledError = $('#scheduledLoan').attr('data-has_error');
-        
+
         if (dateScheduledError === "1" && loanType == 'Scheduled') {
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid Date',
                 text: 'Please select a date at least 3 days after today.',
             });
-            return false; 
+            return false;
         }
 
         // Optional: you can skip AJAX if both purpose and referral are empty
@@ -292,7 +292,7 @@ $(function () {
             return;
         }
 
-        
+
 
         $.ajax({
             url: '/borrower/save-precheck',
@@ -838,38 +838,104 @@ $(document).ready(function () {
     $('.view-loan-btn').on('click', function () {
         const loanId = $(this).data('id');
 
-        $.confirm({
-            title: `<i class="bi bi-file-earmark-text me-2"></i> Loan Details`,
-            content: `
-                <div class="text-start fs-6">
-                    <div class="mb-2"><strong>Loan ID:</strong> ${loanId}</div>
-                    <div class="mb-2"><strong>Total Amount:</strong> <span class="text-success">₱50,000.00</span></div>
-                    <div class="mb-2"><strong>Loan Tenure:</strong> 12 months</div>
-                    <div class="mb-2"><strong>Date of Payment:</strong> July 30, 2025</div>
-                    <div class="mb-2"><strong>Monthly Amount Due:</strong> ₱4,500.00</div>
-                    <div class="mb-3"><strong>Penalty:</strong> ₱0.00</div>
-                    <hr class="my-2">
-                    <div class="mb-2"><strong>Total Payment:</strong> ₱54,000.00</div>
-                    <div class="mb-1"><strong>Breakdown:</strong></div>
-                    <ul class="ps-4">
-                        <li>Principal: ₱50,000.00</li>
-                        <li>Interest: ₱4,000.00</li>
-                        <li>Penalty: ₱0.00</li>
-                    </ul>
-                </div>
-            `,
-            type: 'blue',
-            columnClass: 'medium',
-            icon: 'bi bi-info-circle-fill',
-            buttons: {
-                close: {
-                    text: 'Close',
-                    btnClass: 'btn-secondary',
+        $.ajax({
+            url: '/loan-list-view-details',
+            method: "POST",
+            data: { loan_id: loanId },
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function (r) {
+                // Format amounts (₱ and commas)
+                const formatMoney = (num) => {
+                    num = parseFloat(num ?? 0);
+                    return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                };
+
+                // Format date (e.g., July 30, 2025)
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '–';
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                };
+
+                // Build accordion dynamically based on breakdown data
+                let accordionItems = '';
+                r.breakDownLoan.forEach((item, index) => {
+                    const monthIndex = index + 1;
+                    accordionItems += `
+                        <div class="accordion-item mb-2">
+                            <h2 class="accordion-header" id="headingMonth${monthIndex}">
+                                <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#month${monthIndex}"
+                                    aria-expanded="false" aria-controls="month${monthIndex}">
+                                    <div>
+                                        <div><strong>Date of Payment:</strong> ${formatDate(item.date)}</div>
+                                        <div><strong>Monthly Amount Due:</strong> ${formatMoney(item.monthly_amount_due)}</div>
+                                        <div><strong>Penalty:</strong> ${formatMoney(item.penalty)}</div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="month${monthIndex}" class="accordion-collapse collapse"
+                                aria-labelledby="headingMonth${monthIndex}" data-bs-parent="#paymentSchedule">
+                                <div class="accordion-body">
+                                    <div class="mb-2"><strong>Total Payment:</strong> ${formatMoney(item.monthly_amount_due + item.penalty)}</div>
+                                    <div class="mb-1"><strong>Breakdown:</strong></div>
+                                    <ul class="ps-4 mb-0">
+                                        <li>Principal: ${formatMoney(item.principal)}</li>
+                                        <li>Interest: ${formatMoney(item.interest)}</li>
+                                        <li>Penalty: ${formatMoney(item.penalty)}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                $.confirm({
+                    title: `<i class="bi bi-file-earmark-text me-2"></i> Loan Details`,
+                    content: `
+                        <div class="text-start fs-6">
+                            <div class="mb-2"><strong>Loan ID:</strong> LN-${String(r.loanID).padStart(8, '0')}</div>
+                            <div class="mb-2"><strong>Loan Tenure:</strong> ${r.loanTenure} months</div>
+                            <div class="mb-2"><strong>Total Amount:</strong> <span class="text-success">${formatMoney(r.totalAmount)}</span></div>
+                            <div><strong>Total Penalty:</strong> ${formatMoney(r.totalPenalty)}</div>
+
+                            <div class="accordion mt-3" id="paymentSchedule">
+                                ${accordionItems}
+                            </div>
+                        </div>
+                    `,
+                    type: 'blue',
+                    columnClass: 'medium',
+                    icon: 'bi bi-info-circle-fill',
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-secondary',
+                        }
+                    }
+                });
+            },
+            error: function (xhr) {
+                let errorMessage = "Something went wrong.";
+                if (xhr.responseJSON?.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON?.errors) {
+                    const errors = xhr.responseJSON.errors;
+                    errorMessage = Object.values(errors).map(arr => arr.join(', ')).join('\n');
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: errorMessage
+                });
             }
         });
     });
 });
+
 
 (function () {
     const totalPages = 50;
@@ -1043,7 +1109,7 @@ $(document).on('click', '.la_proceed_loan_update_new', function () {
     });
 });
 
-$(document).on('click', '.la-terms-and-conditions', function() {
+$(document).on('click', '.la-terms-and-conditions', function () {
     let laTermsHtml = `<div style="
                             text-align: justify;
                             font-size: 14px;

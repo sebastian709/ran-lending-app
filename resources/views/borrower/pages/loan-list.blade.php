@@ -160,7 +160,7 @@
 
                                                             <div class="mt-3 mt-md-0">
                                                                 <button class="btn btn-outline-dark btn-sm view-loan-btn"
-                                                                    data-id="LN-{{ str_pad($loan->id, 8, '0', STR_PAD_LEFT) }}">
+                                                                    data-id="{{ $loan->id }}">
                                                                     <i class="ri-eye-line"></i> View Details
                                                                 </button>
                                                             </div>

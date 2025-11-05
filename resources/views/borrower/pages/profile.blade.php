@@ -93,7 +93,7 @@
                                     <!-- <div class="d-flex justify-content-between align-items-center"> -->
                                     <div class="text-center">
                                         <label class="small text-muted mb-0 w-100">Number of Loans:</label>
-                                        <label class="fs-5 fw-semibold text-muted mb-0 w-100">10</label>
+                                        <label class="fs-5 fw-semibold text-muted mb-0 w-100">{{ $loanApplication ?? 0 }}</label>
                                     </div>
                                     <div class="text-center">
                                         <label class="small text-muted mb-0 w-100">Max Credit Limit:</label>
