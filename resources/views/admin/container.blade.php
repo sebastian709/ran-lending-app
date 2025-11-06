@@ -62,7 +62,7 @@
                 </a>
                 <ul class="collapse nav flex-column ps-4 list-unstyled" id="loanSubNav">
                     <li class="nav-item p-0 m-0">
-                        <a href="#"  class="nav-link py-1 m-0 active" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
+                        <a href="#"  class="nav-link py-1 m-0 active lrFirstReload" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
                     </li>
                     <li class="nav-item p-0 m-0">
 

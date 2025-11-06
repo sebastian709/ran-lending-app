@@ -42,6 +42,9 @@ $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
   const url = $(this).data('url');
   const isSidebar = $(this).data('is-sidebar');
+  const path = window.location.pathname;
+  const parts = path.split('/').filter(Boolean); // ["admin", "loan-request"]
+  const lastSegment = parts[parts.length - 1];
   currentPath = window.location.pathname;
 
 
@@ -80,6 +83,12 @@ $(document).on('click', '[data-url]', function (e) {
     } else if (url === '/admin/customer') {
       renderActive();
     } else if (url === '/admin/loan-request/') {
+      $('.lrFirstReload').click();
+    } else {
+      $('#loanSubNav').collapse('hide');
+    }
+
+    if (lastSegment == "loan-request") {
       // ✅ Initial load (all loans)
       $.ajax({
         url: '/admin/loan-request/data',
