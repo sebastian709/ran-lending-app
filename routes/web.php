@@ -124,6 +124,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/customer', [CustomerController::class, 'index'])->name('admin.pages.customer.index');
     Route::prefix('customer')->group(function () {
+        Route::get('cp-all', [CustomerController::class, 'getCpAll']);
         Route::get('cp-active', [CustomerController::class, 'getCpActive']);
         Route::get('cp-scheduled', [CustomerController::class, 'getCpScheduled']);
         Route::post('cpas-view-more-info', [CustomerController::class, 'cpasViewMoreInfo']);

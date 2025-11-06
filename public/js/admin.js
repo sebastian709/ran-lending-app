@@ -81,7 +81,7 @@ $(document).on('click', '[data-url]', function (e) {
       fetchReferralTable(currentPage);
 
     } else if (url === '/admin/customer') {
-      renderActive();
+      renderAll();
     } else if (url === '/admin/loan-request/') {
       $('.lrFirstReload').click();
     } else {
@@ -1220,6 +1220,63 @@ const cancelledData = [
 ];
 
 // Render Functions
+function renderAll() {
+  $.ajax({
+    url: '/admin/customer/cp-all',
+    method: 'GET',
+    // data: formData,
+    processData: false,
+    contentType: false,
+    success: function (res) {
+      console.log(res)
+      let thead = `<tr>
+                      <th>Borrower’s Name</th>
+                      <th>Loan Amount</th>
+                      <th>Loan Tenure</th>
+                      <th>Loan Type</th>
+                      <th>Date Requested</th>
+                      <th>Referral</th>
+                      <th>Interest</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                  </tr>`;
+      let tbody = "";
+      if (parseInt(res.length) > 0) {
+        res.forEach(item => {
+          tbody += `
+                <tr>
+                    <td>${item.borrower_name}</td>
+                    <td>${item.loan_amount}</td>
+                    <td>${item.loan_tenure}</td>
+                    <td>${item.loan_type}</td>
+                    <td>${item.created_at}</td>
+                    <td>${item.referral}</td>
+                    <td>${item.interest_rate}</td>
+                    <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="0" data-user_id="${item.loan_applicant}">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+        });
+      } else {
+        tbody += `<tr><td class="text-center" colspan="9">No Data</td></tr>`;
+      }
+
+      $("#cp-all-table thead").html(thead);
+      $("#cp-all-table tbody").html(tbody);
+    },
+    error: function (xhr) {
+      const response = xhr.responseJSON;
+      if (response && response.errors) {
+        Object.values(response.errors).forEach(msg => toastr.error(msg));
+      } else {
+        toastr.error('Something went wrong.');
+      }
+    }
+  });
+}
+
 function renderActive() {
   $.ajax({
     url: '/admin/customer/cp-active',
@@ -1254,7 +1311,7 @@ function renderActive() {
                     <td>${item.interest_rate}</td>
                     <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary cp-view-more" data-user_id="${item.loan_applicant}">View More</button>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="1" data-user_id="${item.loan_applicant}">View More</button>
                         <button class="btn btn-sm btn-danger cp-delete">Delete</button>
                     </td>
                 </tr>`;
@@ -1311,7 +1368,7 @@ function renderScheduled() {
                     <td>${item.interest_rate}</td>
                     <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary cp-view-more" data-user_id="${item.loan_applicant}">View More</button>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="2" data-user_id="${item.loan_applicant}">View More</button>
                         <button class="btn btn-sm btn-danger cp-delete">Delete</button>
                     </td>
                 </tr>`;
@@ -1354,7 +1411,7 @@ function renderClosed() {
                     <td>${item.penalties}</td>
                     <td>${item.total}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary cp-view-more">View More</button>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="3">View More</button>
                         <button class="btn btn-sm btn-danger cp-delete">Delete</button>
                     </td>
                 </tr>`;
@@ -1379,7 +1436,7 @@ function renderRejected() {
                     <td>${item.amount}</td>
                     <td>${item.tenure}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary cp-view-more">View More</button>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="4">View More</button>
                         <button class="btn btn-sm btn-danger cp-delete">Delete</button>
                     </td>
                 </tr>`;
@@ -1406,7 +1463,7 @@ function renderCancelled() {
                     <td>${item.tenure}</td>
                     <td>${item.date}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary cp-view-more">View More</button>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="5">View More</button>
                         <button class="btn btn-sm btn-danger cp-delete">Delete</button>
                     </td>
                 </tr>`;
@@ -1416,12 +1473,13 @@ function renderCancelled() {
 }
 
 // Initial Load
-renderActive();
+renderAll();
 
 // Tab Switch Events
 $(document).on('shown.bs.tab', '.cp-status-tabs a[data-bs-toggle="tab"]', function (e) {
   let target = $(e.target).attr("href");
   switch (target) {
+    case "#cp-all": renderAll(); break;
     case "#cp-active": renderActive(); break;
     case "#cp-scheduled": renderScheduled(); break;
     case "#cp-closed": renderClosed(); break;

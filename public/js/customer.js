@@ -1,8 +1,10 @@
 // Event handler for View More button
 $(document).on('click', '.cp-view-more', function () {
     let userID = $(this).attr('data-user_id');
+    let tabType = $(this).attr('data-tab_type');
     const formData = new FormData();
     formData.append('user_id', userID);
+    formData.append('tab_type', tabType);
 
     $.ajax({
         url: '/admin/customer/cpas-view-more-info',
@@ -45,27 +47,27 @@ $(document).on('click', '.cp-view-more', function () {
 
             let loanHistoryTr = `<tr>
                                     <td>Loan ID</td>
-                                    <td>${'LN-' + String(res.loan_applications.id).padStart(5, '0')}</td>
+                                    <td>${res.loan_applications.id ? 'LN-' + String(res.loan_applications.id).padStart(5, '0') : '-'}</td>
                                 </tr>
                                 <tr>
                                     <td>Date Requested</td>
-                                    <td>${res.loan_applications.created_at}</td>
+                                    <td>${res.loan_applications.created_at || '-'}</td>
                                 </tr>
                                 <tr>
                                     <td>Loan Amount</td>
-                                    <td>${res.loan_applications.loan_amount}</td>
+                                    <td>${res.loan_applications.loan_amount || '-'}</td>
                                 </tr>
                                 <tr>
                                     <td>Tenure</td>
-                                    <td>${res.loan_applications.loan_tenure}</td>
+                                    <td>${res.loan_applications.loan_tenure || '-'}</td>
                                 </tr>
                                 <tr>
                                     <td>Referral</td>
-                                    <td>${res.loan_applications.referral}</td>
+                                    <td>${res.loan_applications.referral || '-'}</td>
                                 </tr>
                                 <tr>
                                     <td>Status</td>
-                                    <td>${res.loan_applications.loan_status_by_name}</td>
+                                    <td>${res.loan_applications.loan_status_by_name || '-'}</td>
                                 </tr>
                                 <tr>
                                     <td>Outstanding Balance</td>

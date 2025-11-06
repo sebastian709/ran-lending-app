@@ -18,6 +18,49 @@ class CustomerController extends Controller
         return view('admin.pages.customer.index');
     }
 
+    public function getCpAll(Request $request)
+    {
+        // Existing loan applications
+        $loan_application = DB::table('loan_application')
+            ->select(
+                DB::raw("(SELECT CONCAT(users.firstname, ' ', users.lastname) FROM users WHERE users.id = loan_application.loan_applicant) as borrower_name"),
+                DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
+                DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
+                "loan_application.loan_type",
+                DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
+                DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
+                DB::raw("CONCAT(FORMAT(loan_application.interest_rate, 2) * 100, '%') as interest_rate"),
+                "loan_application.loan_status",
+                DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
+                "loan_application.loan_applicant"
+            )
+            ->where('status', 1)
+            ->get();
+
+        // Users without loans (placeholder data)
+        $no_loans = DB::table('users as u')
+            ->select(
+                DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS borrower_name"),
+                DB::raw("'-' AS loan_amount"),
+                DB::raw("'-' AS loan_tenure"),
+                DB::raw("'-' AS loan_type"),
+                DB::raw("'-' AS created_at"),
+                DB::raw("'-' AS referral"),
+                DB::raw("'-' AS interest_rate"),
+                DB::raw("'-' AS loan_status"),
+                DB::raw("'No Loan Yet' AS loan_status_by_name"),
+                DB::raw("u.id AS loan_applicant")
+            )
+            ->where('u.is_admin', 0)
+            ->get();
+
+        // Merge both collections
+        $merged = $loan_application->merge($no_loans);
+
+        return response()->json($merged);
+    }
+
+
     public function getCpActive(Request $request)
     {
 
@@ -60,7 +103,7 @@ class CustomerController extends Controller
             )
             ->where('status', 1)
             ->where('loan_type', 'Scheduled')
-            ->where('loan_application.loan_status', 5)
+            ->where('loan_application.loan_status', 4)
             ->get();
 
         return response()->json($loan_application);
@@ -69,6 +112,7 @@ class CustomerController extends Controller
     public function cpasViewMoreInfo(Request $request)
     {
         $user_id = $request->user_id;
+        $tab_type = $request->tab_type;
         $user_info = DB::table('users')
             ->join('user_details', 'users.id', '=', 'user_details.user_id')
             ->select(
@@ -82,88 +126,91 @@ class CustomerController extends Controller
             // ->where('users.status', 1)
             ->where('users.id', $user_id)
             ->first();
+        if ($tab_type != 0) {
+            $loan_application = DB::table('loan_application')
+                ->select(
+                    "id"
+                )
+                ->where('loan_application.status', 1)
+                ->where('loan_application.loan_applicant', $user_id)
+                ->get();
 
-        $loan_application = DB::table('loan_application')
-            ->select(
-                "id"
-            )
-            ->where('loan_application.status', 1)
-            ->where('loan_application.loan_applicant', $user_id)
-            ->get();
+            $active_loan = DB::table('loan_application')
+                ->select(
+                    "id",
+                    DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
+                    DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
+                    DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
+                    DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
+                    "loan_application.loan_status",
+                    DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
+                )
+                ->where('loan_application.status', 1)
+                // ->where('loan_application.loan_status', operator: 5)
+                ->where('loan_application.loan_applicant', $user_id)
+                ->first();
 
-        $active_loan = DB::table('loan_application')
-            ->select(
-                "id",
-                DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
-                DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
-                DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
-                DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
-                "loan_application.loan_status",
-                DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
-            )
-            ->where('loan_application.status', 1)
-            ->where('loan_application.loan_status', 5)
-            ->where('loan_application.loan_applicant', $user_id)
-            ->first();
+            $loan_payments = DB::table('loan_payments')
+                ->select(DB::raw("DATE_FORMAT(created_at, '%b %d, %Y') as created_at"))
+                ->where('loan_application_id', $active_loan->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-        $loan_payments = DB::table('loan_payments')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%b %d, %Y') as created_at"))
-            ->where('loan_application_id', $active_loan->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+            $last_payments = $loan_payments->map(function ($payment) {
+                return \Carbon\Carbon::parse($payment->created_at)->format('M d, Y');
+            })->implode('<br>');
 
-        $last_payments = $loan_payments->map(function ($payment) {
-            return \Carbon\Carbon::parse($payment->created_at)->format('M d, Y');
-        })->implode('<br>');
-
-        $next_payment = DB::table('loan_tenure')
-            ->select(DB::raw("DATE_FORMAT(date, '%b %d, %Y') as date"))
-            ->where('payment_id', 0)
-            ->where('loan_id', $active_loan->id)
-            ->first();
-
-
-        $loan_tenure_ids = DB::table('loan_tenure')
-            ->where('loan_id', $active_loan->id)
-            ->pluck('id')
-            ->toArray();
-
-        $loan_tenure = DB::table('loan_tenure')
-            ->where('payment_id', 0)
-            ->where('loan_id', $active_loan->id)
-            ->sum('principal');
-
-        $loan_tenure_interest = DB::table('loan_tenure_interest')
-            ->where('payment_id', 0)
-            ->whereIn('tenure_id', $loan_tenure_ids) // eto yung IN
-            ->sum('interest');
-
-        $outstandingBalance = $loan_tenure + $loan_tenure_interest;
-        $outstandingBalance = number_format($outstandingBalance, 2);
+            $next_payment = DB::table('loan_tenure')
+                ->select(DB::raw("DATE_FORMAT(date, '%b %d, %Y') as date"))
+                ->where('payment_id', 0)
+                ->where('loan_id', $active_loan->id)
+                ->first();
 
 
+            $loan_tenure_ids = DB::table('loan_tenure')
+                ->where('loan_id', $active_loan->id)
+                ->pluck('id')
+                ->toArray();
+
+            $loan_tenure = DB::table('loan_tenure')
+                ->where('payment_id', 0)
+                ->where('loan_id', $active_loan->id)
+                ->sum('principal');
+
+            $loan_tenure_interest = DB::table('loan_tenure_interest')
+                ->where('payment_id', 0)
+                ->whereIn('tenure_id', $loan_tenure_ids) // eto yung IN
+                ->sum('interest');
+
+            $outstandingBalance = $loan_tenure + $loan_tenure_interest;
+            $outstandingBalance = number_format($outstandingBalance, 2);
+
+            $loan_count = $loan_application->count();
+            $active_loan_id = $active_loan->id;
+        }
 
         $final_output = array(
             "user_info" => $user_info,
-            "loan_applications" => $active_loan,
-            "next_payment_date" => $next_payment->date,
-            "last_payments_date" => $last_payments,
-            "total_loan_taken" => $loan_application->count(),
-            "outstanding_balance" => $outstandingBalance,
-            "payment_history" => $this->paymentHistory(1,$active_loan->id)
+            "loan_applications" => $active_loan ?? '-',
+            "next_payment_date" => $next_payment->date ?? '-',
+            "last_payments_date" => $last_payments?? '-',
+            "total_loan_taken" => $loan_count ?? 0,
+            "outstanding_balance" => $outstandingBalance ?? 0,
+            "payment_history" => $this->paymentHistory(1, $active_loan_id ?? 0)
         );
 
         return response()->json($final_output);
     }
 
-    public function cpaPaymentDetails(Request $request){
+    public function cpaPaymentDetails(Request $request)
+    {
         $payment_id = $request->payment_id;
 
-        $data = $this->paymentHistory(2,$payment_id);
+        $data = $this->paymentHistory(2, $payment_id);
         return response()->json($data);
     }
 
-    public function paymentHistory($type,$id)
+    public function paymentHistory($type, $id)
     {
         # TYPES
         # 1 - borrower information
