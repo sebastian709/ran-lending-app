@@ -95,10 +95,10 @@
                                         <label class="small text-muted mb-0 w-100">Number of Loans:</label>
                                         <label class="fs-5 fw-semibold text-muted mb-0 w-100">{{ $loanApplication ?? 0 }}</label>
                                     </div>
-                                    <div class="text-center">
+                                    <!-- <div class="text-center">
                                         <label class="small text-muted mb-0 w-100">Max Credit Limit:</label>
                                         <label class="fs-5 fw-semibold text-muted mb-0 w-10">₱100,000</label>
-                                    </div>
+                                    </div> -->
                                     <!-- </div> -->
 
                                 </div>
