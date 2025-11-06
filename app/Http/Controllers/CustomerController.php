@@ -37,7 +37,10 @@ class CustomerController extends Controller
             ->where('status', 1)
             ->get();
 
-        // Users without loans (placeholder data)
+        // Get IDs of users that already have loans
+        $existing_ids = $loan_application->pluck('loan_applicant')->toArray();
+
+        // Users without loans (exclude existing loan applicants)
         $no_loans = DB::table('users as u')
             ->select(
                 DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS borrower_name"),
@@ -52,13 +55,15 @@ class CustomerController extends Controller
                 DB::raw("u.id AS loan_applicant")
             )
             ->where('u.is_admin', 0)
+            ->whereNotIn('u.id', $existing_ids)
             ->get();
 
-        // Merge both collections
+        // Merge both collections (loan_application prioritized)
         $merged = $loan_application->merge($no_loans);
 
         return response()->json($merged);
     }
+
 
 
     public function getCpActive(Request $request)
@@ -193,7 +198,7 @@ class CustomerController extends Controller
             "user_info" => $user_info,
             "loan_applications" => $active_loan ?? '-',
             "next_payment_date" => $next_payment->date ?? '-',
-            "last_payments_date" => $last_payments?? '-',
+            "last_payments_date" => $last_payments ?? '-',
             "total_loan_taken" => $loan_count ?? 0,
             "outstanding_balance" => $outstandingBalance ?? 0,
             "payment_history" => $this->paymentHistory(1, $active_loan_id ?? 0)
