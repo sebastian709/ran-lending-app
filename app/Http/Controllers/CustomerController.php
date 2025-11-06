@@ -118,6 +118,7 @@ class CustomerController extends Controller
     {
         $user_id = $request->user_id;
         $tab_type = $request->tab_type;
+
         $user_info = DB::table('users')
             ->join('user_details', 'users.id', '=', 'user_details.user_id')
             ->select(
@@ -131,7 +132,7 @@ class CustomerController extends Controller
             // ->where('users.status', 1)
             ->where('users.id', $user_id)
             ->first();
-        if ($tab_type != 0) {
+        if ($tab_type !== 0) {
             $loan_application = DB::table('loan_application')
                 ->select(
                     "id"
