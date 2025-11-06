@@ -68,8 +68,6 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth'])->prefix('profile')->group(function () {
         Route::get('/change-password', [ProfileController::class, 'adminChangePassword'])->name('admin.pages.change-password');
         Route::post('/change-password', [ProfileController::class, 'adminUpdatePassword'])->name('admin.pages.change-password.update');
-    
-    
         // referral management
         Route::get('/referral-management', [ReferralCodeController::class, 'index']);
     });
@@ -96,6 +94,9 @@ Route::prefix('admin')->group(function () {
 
     // page loader
     Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
+    Route::get('/view-appeal/{loan_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
+    Route::get('/appeal-request', [AdminController::class, 'viewAppealRequest'])->name('view.appealRequest'); 
+
 
     // get datas
     Route::prefix('loan-request')->group(function () {
@@ -109,7 +110,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/transfer-money', [AdminController::class, 'transferMoeny'])->name('loan.transferMoney');
     });
 
-    
+    // referral management
+    Route::get('/referral-management', [ReferralCodeController::class, 'index']);
 
     Route::prefix('referral-code')->group(function () {
         Route::post('save', [ReferralCodeController::class, 'store']);
@@ -121,7 +123,7 @@ Route::prefix('admin')->group(function () {
     });
 
     Route::get('/notification-page', [NotificationController::class, 'AdminViewPage']);
-
+    
     Route::get('/customer', [CustomerController::class, 'index'])->name('admin.pages.customer.index');
     Route::prefix('customer')->group(function () {
         Route::get('cp-active', [CustomerController::class, 'getCpActive']);
@@ -130,7 +132,6 @@ Route::prefix('admin')->group(function () {
         Route::post('cpa-payment-details', [CustomerController::class, 'cpaPaymentDetails']);
     });
 });
-
 Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferralCode']);
 
 Route::post('/upload', [BlogPostController::class, 'upload']);
@@ -215,3 +216,6 @@ Route::post('/borrower/resubmit-loan-documents', [HomeController::class, 'resubm
 Route::post('/borrower/check-loan-data', [HomeController::class, 'checkLoanData']);
 Route::post('/borrower/update-appeal-status', [HomeController::class, 'updateAppealStatus']);
 Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
+
+Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived']);
+Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment']);

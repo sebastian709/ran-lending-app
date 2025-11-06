@@ -79,7 +79,7 @@
                                     <span class="fw-medium">₱<span id="summary-amount">{{ $max_amount }}</span></span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1">
-                                    <span>Monthly Interest:</span>
+                                    <span>Interest Rate:</span>
                                     <span class="fw-medium la_loan_interest">5%</span>
                                 </div>
                             </div>
@@ -95,7 +95,10 @@
                             </div>
                         </div>
                     </div>
-
+                     <div class="mb-4">
+                        <label for="remarks" class="form-label fw-medium">Remarks from admin</label>
+                        <textarea class="form-control" id="remarks" name="remarks" rows="3" placeholder="Enter any remarks here..." disabled>{{ $remarks }}</textarea>
+                    </div>
                     <button class="btn btn-primary-custom btn-md w-100 la_proceed_loan_update_new" data-loan_id="{{ $loan_id }}">
                         <i class="ri-arrow-right-line me-2"></i>
                         Proceed

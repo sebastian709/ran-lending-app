@@ -22,7 +22,7 @@
          <p>Our team is currently reviewing your submitted information. We’ll notify you as soon as a decision has been made.</p>
          <p>If you have any questions or need to provide additional documents, please don’t hesitate to reach out to us.</p>
          <br>
-         <p>Thank you for choosing Ran Serenity.</p>
+         <p>Thank you for choosing Ran Serenity.<br>The Ran Serenity Team</p>
          <p style="margin-top: 30px;">Take care,<br><strong>RAN Serenity Team</strong></p>
       </div>
       

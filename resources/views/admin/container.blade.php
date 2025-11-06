@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!-- Optional Theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     @stack('sb-styles')
 </head>
 
@@ -48,8 +49,8 @@
 
 
     <!-- Sidebar -->
+   
     <div class="sidebar" id="sidebar">
-        <h4>RAN Serenity</h4>
         <a href="#" class="nav-link active" data-is-sidebar="1" data-url="/admin/dashboard">
             <i class="bi bi-columns-gap"></i> Dashboard
         </a>
@@ -99,7 +100,11 @@
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
         </a>
+        <a href="#" data-url="/admin/appeal-request/" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
+        <i class="bi bi-exclamation-triangle-fill"></i> Appeal Request
+        </a>
     </div>
+
 
     <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
@@ -108,158 +113,164 @@
     <div class="main" id="mainContent">
 
         <!-- Topbar Background -->
-        <div class="topbar-bg"></div>
+        <!-- <div class="topbar-bg"></div> -->
         <!-- Topbar (Floating on topbar-bg) -->
-        <nav class="topbar d-flex justify-content-between align-items-center px-3 py-2 mt-3">
-            <button class="btn btn-light d-md-none toggle-btn" id="toggleBtn">
-                <i class="bi bi-list"></i>
-            </button>
+         <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container-fluid px-4">
+                <button class="btn btn-light d-md-none toggle-btn" id="toggleBtn">
+                    <i class="bi bi-list"></i>
+                </button>
+                <a class="navbar-brand font-pacifico text-primary-custom text-decoration-none" href="{{ url('/') }}"
+                    style="font-size: 1.8rem;">
+                    RAN Lending
+                </a>
 
-            <nav aria-label="breadcrumb" class="mt-2 ml-4 breadcrumbs-container">
-                <ol id="breadcrumbs" class="breadcrumb rounded-breadcrumb px-3 py-2 mb-0">
-                    {{-- Default content kung walang JS --}}
-                    <li class="breadcrumb-item active">Dashboard</li>
-                </ol>
-            </nav>
+                <!-- <nav aria-label="breadcrumb" class="mt-2 ml-4 breadcrumbs-container">
+                    <ol id="breadcrumbs" class="breadcrumb rounded-breadcrumb px-3 py-2 mb-0">
+                        {{-- Default content kung walang JS --}}
+                        <li class="breadcrumb-item active">Dashboard</li>
+                    </ol>
+                </nav> -->
 
 
 
-            <div class="d-flex align-items-center gap-4 ms-auto pe-1">
-                <!-- 🔔 Notification Bell -->
-                <div class="dropdown">
-                    <button class="btn position-relative text-white p-0" type="button" id="notifDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                        <i class="ri-notification-3-fill fs-5 top-bar-icon"></i>
-                        <span
-                            class="position-absolute top-0 start-100 translate-middle-y badge rounded-pill bg-danger d-none"
-                            style="font-size: 0.65rem; transform: translate(-40%, -40%) !important;"
-                            id="general_notification_count">
-                            0
-                        </span>
-                    </button>
+                <div class="d-flex align-items-center gap-4 ms-auto pe-1">
+                    <!-- 🔔 Notification Bell -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary-custom position-relative" type="button" id="notifDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <i class="ri-notification-line"></i>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle-y badge rounded-pill bg-danger d-none"
+                                style="font-size: 0.65rem; transform: translate(-40%, -40%) !important;"
+                                id="general_notification_count">
+                                0
+                            </span>
+                        </button>
 
-                    <!-- Dropdown -->
-                    <div class="dropdown-menu dropdown-menu-end shadow p-0" aria-labelledby="notifDropdown"
-                        style="min-width: 400px;">
+                        <!-- Dropdown -->
+                        <div class="dropdown-menu dropdown-menu-end shadow p-0" aria-labelledby="notifDropdown"
+                            style="min-width: 400px;">
 
-                        <!-- Header Row -->
-                        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
-                            <h6 class="mb-0 fw-bold">Notifications</h6>
-                            <!-- <a href="#" class="small text-primary" data-url="/admin/notification-page"
-                                style="cursor:pointer;">See all</a> -->
-                        </div>
-
-                        <!-- Tabs Row -->
-                        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
-                            <a href="#" class="small text-primary dropdown-no-close markAllAsRead">Mark all as read</a>
-                            <div>
-                                <!-- <a href="#" class="me-3 fw-semibold text-dark dropdown-no-close">All</a>
-                                <a href="#" class="fw-light text-muted dropdown-no-close">Unread</a> -->
-                                <a href="#" class="small text-primary" data-url="/admin/notification-page"
-                                style="cursor:pointer;">See all</a>
+                            <!-- Header Row -->
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                                <h6 class="mb-0 fw-bold">Notifications</h6>
+                                <!-- <a href="#" class="small text-primary" data-url="/admin/notification-page"
+                                    style="cursor:pointer;">See all</a> -->
                             </div>
-                            
-                        </div>
 
-                        <!-- Notification Items -->
-                        <div style="max-height: 400px; overflow-y: auto;" class="notification-items">
-                            <!-- Notification 1 -->
-                            <!-- <div class="px-3 py-2 border-bottom items unread position-relative">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="d-flex align-items-start">
-                                        <i class="ri-mail-unread-line text-primary fs-5 me-2"></i>
-                                        <div>
-                                            <p class="mb-1 small">You have 2 new messages</p>
-                                            <small class="text-muted">1m ago</small>
+                            <!-- Tabs Row -->
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                                <a href="#" class="small text-primary dropdown-no-close markAllAsRead">Mark all as read</a>
+                                <div>
+                                    <!-- <a href="#" class="me-3 fw-semibold text-dark dropdown-no-close">All</a>
+                                    <a href="#" class="fw-light text-muted dropdown-no-close">Unread</a> -->
+                                    <a href="#" class="small text-primary" data-url="/admin/notification-page"
+                                    style="cursor:pointer;">See all</a>
+                                </div>
+                                
+                            </div>
+
+                            <!-- Notification Items -->
+                            <div style="max-height: 400px; overflow-y: auto;" class="notification-items">
+                                <!-- Notification 1 -->
+                                <!-- <div class="px-3 py-2 border-bottom items unread position-relative">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="d-flex align-items-start">
+                                            <i class="ri-mail-unread-line text-primary fs-5 me-2"></i>
+                                            <div>
+                                                <p class="mb-1 small">You have 2 new messages</p>
+                                                <small class="text-muted">1m ago</small>
+                                            </div>
+                                        </div>
+                                        <div class="position-relative">
+                                            <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore1"
+                                                data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore1">
+                                                <li><a class="dropdown-item" href="#">Mark as read</a></li>
+                                                <li><a class="dropdown-item" href="#">Clear notification</a></li>
+                                            </ul>
                                         </div>
                                     </div>
-                                    <div class="position-relative">
-                                        <i class="ri-more-2-fill text-muted fs-6" role="button" id="notifMore1"
-                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMore1">
-                                            <li><a class="dropdown-item" href="#">Mark as read</a></li>
-                                            <li><a class="dropdown-item" href="#">Clear notification</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div> -->
-                            <p class="text-center">No notifications</p>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="text-center py-2">
-                            <a href="#" class="text-primary small fw-semibold dropdown-no-close seeMoreNotif">See more
-                                notifications</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 👤 Profile Image -->
-                @auth
-                    <div class="dropdown">
-                        <button class="btn p-0 border-0 bg-white py-1 px-2" type="button" data-bs-toggle="dropdown">
-                            <div class="d-flex align-items-center">
-                                @if (Auth::user()->profile_src)
-                                    <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
-                                        class="user-avatar me-2 object-fit-cover" style="object-fit: cover;">
-                                @else
-                                    <div class="user-avatar me-2">
-                                        {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
-                                    </div>
-                                @endif
-
-                                <div class="d-none d-md-block text-start">
-                                    <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
-                                    </div>
-                                    <div class="small text-muted"></div>
-                                </div>
-                                <i class="ri-arrow-down-s-line ms-2 text-muted"></i>
+                                </div> -->
+                                <p class="text-center">No notifications</p>
                             </div>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/home">
-                                    <i class="ri-loop-left-line me-2"></i>Borrower Mode
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/profile">
-                                    <i class="ri-user-line me-2"></i>Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/settings">
-                                    <i class="ri-settings-line me-2"></i>Settings
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="ri-question-line me-2"></i>
-                                    Help & Support
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="ri-logout-box-line me-2"></i>Logout
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </li>
-                        </ul>
+
+                            <!-- Footer -->
+                            <div class="text-center py-2">
+                                <a href="#" class="text-primary small fw-semibold dropdown-no-close seeMoreNotif">See more
+                                    notifications</a>
+                            </div>
+                        </div>
                     </div>
-                @endauth
+
+                    <!-- 👤 Profile Image -->
+                    @auth
+                        <div class="dropdown">
+                            <button class="btn p-0 border-0 bg-white py-1 px-2" type="button" data-bs-toggle="dropdown">
+                                <div class="d-flex align-items-center">
+                                    @if (Auth::user()->profile_src)
+                                        <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
+                                            class="user-avatar me-2 object-fit-cover" style="object-fit: cover;">
+                                    @else
+                                        <div class="user-avatar me-2">
+                                            {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
+                                        </div>
+                                    @endif
+
+                                    <div class="d-none d-md-block text-start">
+                                        <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
+                                        </div>
+                                        <div class="small text-muted"></div>
+                                    </div>
+                                    <i class="ri-arrow-down-s-line ms-2 text-muted"></i>
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/home">
+                                        <i class="ri-loop-left-line me-2"></i>Borrower Mode
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/profile">
+                                        <i class="ri-user-line me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/settings">
+                                        <i class="ri-settings-line me-2"></i>Settings
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="ri-question-line me-2"></i>
+                                        Help & Support
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="ri-logout-box-line me-2"></i>Logout
+                                    </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @endauth
+                </div>
             </div>
         </nav>
 
 
 
         <!-- Dynamic Content -->
-        <div id="content" class="my-4 mx-2">
+        <div id="content" class="" style="padding-top: 30px;">
             @yield('content')
         </div>
 
