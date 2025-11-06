@@ -17,7 +17,7 @@ $(document).ready(function () {
         return `<span class="badge bg-${badgeClass}">${status_name}</span>`;
     }
 
-    function renderTable() {
+    window.renderTable = function() {
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         const currentItems = filteredData.slice(start, end);
@@ -86,7 +86,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.page-btn', function () {
         currentPage = parseInt($(this).data('page'));
-        renderTable();
+        window.renderTable();
     });
 
     // ✅ Fixed search (matches your actual DB fields)
@@ -98,7 +98,7 @@ $(document).ready(function () {
             (item.referral || '').toLowerCase().includes(query)
         );
         currentPage = 1;
-        renderTable();
+        window.renderTable();
     });
 
     // ====== Load data with filter when nav clicked ======
@@ -118,7 +118,7 @@ $(document).ready(function () {
                 loanData = data;
                 filteredData = [...loanData];
                 currentPage = 1;
-                renderTable();
+                window.renderTable();
             },
             error: function (xhr, status, error) {
                 console.error('Error fetching data:', error);
@@ -127,21 +127,21 @@ $(document).ready(function () {
         });
     });
 
-    // ✅ Initial load (all loans)
-    $.ajax({
-        url: '/admin/loan-request/data',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            loanData = data;
-            filteredData = [...loanData];
-            renderTable();
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching data:', error);
-            $('#emptyState').show();
-        }
-    });
+    // // ✅ Initial load (all loans)
+    // $.ajax({
+    //     url: '/admin/loan-request/data',
+    //     method: 'GET',
+    //     dataType: 'json',
+    //     success: function (data) {
+    //         loanData = data;
+    //         filteredData = [...loanData];
+    //         window.renderTable();
+    //     },
+    //     error: function (xhr, status, error) {
+    //         console.error('Error fetching data:', error);
+    //         $('#emptyState').show();
+    //     }
+    // });
 });
 
 $(document).ready(function () {

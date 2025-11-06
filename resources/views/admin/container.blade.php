@@ -55,36 +55,36 @@
         </a>
         <ul class="nav flex-column list-unstyled">
             <li class="nav-item">
-                <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#loanSubNav"
+                <a href="#" class="nav-link"  data-url="/admin/loan-request/" data-bs-toggle="collapse" data-bs-target="#loanSubNav"
                     aria-expanded="false" aria-controls="loanSubNav">
                     <i class="bi bi-table me-2"></i> Loan Request
                     <i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul class="collapse nav flex-column ps-4 list-unstyled" id="loanSubNav">
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/" class="nav-link py-1 m-0 active" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
+                        <a href="#"  class="nav-link py-1 m-0 active" {{ $total_active < 2 ? 'hidden' : '' }}>All</a>
                     </li>
                     <li class="nav-item p-0 m-0">
 
-                        <a href="#" data-url="/admin/loan-request/pending" data-loan_status="1" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }} > Pending</a>
+                        <a href="#" data-loan_status="1" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->pending == 0 ? 'hidden' : '' }} > Pending</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/interview" data-loan_status="2" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_interview == 0 ? 'hidden' : '' }} >For Interview</a>
+                        <a href="#" data-loan_status="2" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_interview == 0 ? 'hidden' : '' }} >For Interview</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/revision" data-loan_status="3" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_revision == 0 ? 'hidden' : '' }} >For revision</a>
+                        <a href="#" data-loan_status="3" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->for_revision == 0 ? 'hidden' : '' }} >For revision</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/waiting" data-loan_status="4" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->waiting == 0 ? 'hidden' : '' }} > Waiting</a>
+                        <a href="#" data-loan_status="4" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->waiting == 0 ? 'hidden' : '' }} > Waiting</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/rejected" data-loan_status="6" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->rejected == 0 ? 'hidden' : '' }} > Rejected</a>
+                        <a href="#" data-loan_status="6" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->rejected == 0 ? 'hidden' : '' }} > Rejected</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/transferred" data-loan_status="5" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->transferred_and_processed == 0 ? 'hidden' : '' }} > Transferred</a>
+                        <a href="#" data-loan_status="5" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->transferred_and_processed == 0 ? 'hidden' : '' }} > Transferred</a>
                     </li>
                     <li class="nav-item p-0 m-0">
-                        <a href="#" data-url="/admin/loan-request/closed" data-loan_status="7" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->closed == 0 ? 'hidden' : '' }} > Closed</a>
+                        <a href="#" data-loan_status="7" class="nav-link py-1 m-0" {{ $loanStatusAccess->loanAccess->closed == 0 ? 'hidden' : '' }} > Closed</a>
 
                     </li>
                 </ul>

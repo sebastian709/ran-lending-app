@@ -79,6 +79,22 @@ $(document).on('click', '[data-url]', function (e) {
 
     } else if (url === '/admin/customer') {
       renderActive();
+    } else if (url === '/admin/loan-request/') {
+      // ✅ Initial load (all loans)
+      $.ajax({
+        url: '/admin/loan-request/data',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+          loanData = data;
+          filteredData = [...loanData];
+          window.renderTable();
+        },
+        error: function (xhr, status, error) {
+          console.error('Error fetching data:', error);
+          $('#emptyState').show();
+        }
+      });
     }
   });
 });
