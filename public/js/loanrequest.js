@@ -420,7 +420,7 @@ $(document).ready(function () {
                     let loanStatusDropdowns = "";
                     $.each(loan_status, function (index, status) {
                         let ls_hidden = "";
-
+                        let ls_is_disabled = "";
                         if (status.id == 1) {
                             ls_hidden = loan_stat_access.pending == 1 ? '' : 'hidden';
 
@@ -431,7 +431,7 @@ $(document).ready(function () {
                             console.log(loan_stat_access.for_interview)
                         } else if (status.id == 3) {
                             ls_hidden = loan_stat_access.for_revision == 1 ? '' : 'hidden';
-
+                            ls_is_disabled = "disabled";
                             console.log(loan_stat_access.for_revision)
                         } else if (status.id == 4) {
                             ls_hidden = loan_stat_access.waiting == 1 ? '' : 'hidden';
@@ -451,7 +451,7 @@ $(document).ready(function () {
                             console.log(loan_stat_access.closed)
                         }
 
-                        loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden}>${status.loan_status}</option>`;
+                        loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden} ${ls_is_disabled}>${status.loan_status}</option>`;
                     });
                     let rlt_request_date = `<strong>Requested Date:</strong> ${loan.scheduled_date}`
                     let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
