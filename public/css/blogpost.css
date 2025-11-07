@@ -1,12 +1,12 @@
 /* Sticky on Desktop */
 @media (min-width: 768px) {
-    .sticky-desktop {
+    /* .sticky-desktop {
         position: sticky;
         top: 60px; /* adjust based on your topbar */
         z-index: 1020;
         background-color: transparent;
         transition: color 0.3s ease;
-    }
+    } */
 
     .sticky-desktop.scrolled {
         background-color: #3e3af7;

@@ -1,7 +1,7 @@
 @extends('admin.container')
 
 @section('content')
-    <div class="container py-3">
+    <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <a class="btn btn-light fw-semibold text-primary float-end create-referral-code">

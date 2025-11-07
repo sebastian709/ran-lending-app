@@ -23,7 +23,7 @@
         @include('borrower.layouts.sidebar')
 
         <div class="main-content flex-grow-1">
-            <div class="container pt-4" hidden>
+            <div class="container pt-4 hidden">
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="dashboard-card bg-pp-notif-warning p-4 text-muted">
@@ -46,7 +46,7 @@
                 </div>
 
             </div>
-            <div class="container mt-4">
+            <div class="container">
                 <div class="card shadow border-0 rounded-4">
                     <div class="card-body p-5">
                         <div class="row">
