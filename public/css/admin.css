@@ -85,6 +85,7 @@ body {
     padding: 1.5rem 1rem;
     /* z-index: 1030; */
     transition: all 0.3s ease;
+    margin-top: 70px;
 }
 
 .sidebar h4 {
@@ -113,8 +114,8 @@ body {
 
 .sidebar .nav-link:hover,
 .sidebar .nav-link.active {
-    background-color: #0d6efd20;
-    color: #0d6efd;
+    background-color: #0056b3;
+    color: #ffffff;
 }
 
 /* Main Area */
@@ -122,7 +123,7 @@ body {
     margin-left: 240px;
     padding: 0;
     transition: margin-left 0.3s ease;
-    min-height: 100vh;
+    max-height: 100vh;
     background: #f8f9fa;
 }
 
@@ -683,4 +684,48 @@ img.user-avatar {
 .notification-items i{
     font-size: 30px;
     margin-right: 10px;
+}
+#commentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* spacing between comments */
+}
+
+.comment {
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+.comment.me {
+    background: #d1e7dd;
+    align-self: flex-end; /* push to right */
+    text-align: right;
+}
+
+.comment.other {
+    background: #e2e3e5;
+    align-self: flex-start; /* push to left */
+    text-align: left;
+}
+.comment-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+}
+
+.comment-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #555;
+    text-align: left;
+}
+.c_date{
+    font-size: 11px;
+}
+#mainContent{
+    margin-top: 70px;
 }

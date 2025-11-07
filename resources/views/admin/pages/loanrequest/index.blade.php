@@ -1,7 +1,7 @@
 @extends('admin.container')
 
 @section('content')
-<div class="container py-4">
+<div class="container">
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
@@ -75,6 +75,9 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#activityTab" type="button">Activity Log</button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link viewComment" data-bs-toggle="tab" data-bs-target="#commentTab" type="button">Comments</button>
+            </li>
         </ul>
 
         <!-- Tab Content -->
@@ -96,6 +99,11 @@
 
             <!-- Activity Log -->
             <div class="tab-pane fade" id="activityTab">
+                
+            </div>
+
+             <!-- Comment Log -->
+            <div class="tab-pane fade" id="commentTab">
                 
             </div>
 
