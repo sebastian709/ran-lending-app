@@ -631,6 +631,7 @@ class HomeController extends Controller
         $max_amount = $first_amount;
         $summary_total = $max_amount + ($max_amount * 0.05);
         $loan_amount_rejected = $rejected_fields->first()->loan_amount;
+        $remarks = $rejected_fields->first()->amount_remarks;
 
         $payslip_img = $rejected_fields->first()->payslip_img;
         $upload_qr_code_img = $rejected_fields->first()->upload_qr_code_img;
@@ -675,6 +676,7 @@ class HomeController extends Controller
                 'first_amount',
                 'max_amount',
                 'summary_total',
+                'remarks',
                 'loan_amount_rejected',
                 'loan_id',
                 'step',
@@ -763,32 +765,31 @@ class HomeController extends Controller
 
             // Map inputs to folders and DB columns
             $folderMap = [
-                'proof' => ['folder' => 'loan_appeal', 'db_field' => 'uploaded_proof'],
-                
+                'payslip_img' => ['folder' => 'payslip', 'db_field' => 'payslip_img'],
+                'qr_code_img' => ['folder' => 'qr_codes', 'db_field' => 'upload_qr_code_img'],
+                'government_id_img' => ['folder' => 'government_id', 'db_field' => 'government_id_img'],
+                'billing_statement_img' => ['folder' => 'billing_statement', 'db_field' => 'billing_statement_img'],
             ];
+
 
             $updateData = [];
 
             foreach ($folderMap as $requestField => $info) {
                 if ($request->hasFile($requestField)) {
                     $file = $request->file($requestField);
-
-                    // Generate unique filename
                     $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-                    // Ensure folder exists
                     $directory = public_path("storage/uploads/{$info['folder']}");
                     if (!file_exists($directory)) {
                         mkdir($directory, 0775, true);
                     }
 
-                    // Move file to storage
                     $file->move($directory, $filename);
 
-                    // Save relative path to DB
                     $updateData[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
                 }
             }
+
 
             $update_reject_field = DB::table('loan_rejected_fields')
                 ->where('loan_id', $loanId)

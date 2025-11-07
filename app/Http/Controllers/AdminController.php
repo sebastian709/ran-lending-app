@@ -368,11 +368,11 @@ class AdminController extends Controller
          // Check if remarks already exist for this loan
         $existingRemarks = DB::table('loan_rejected_fields')
             ->where('loan_id', $id)
-            ->value('remarks');
+            ->value('amount_remarks');
 
         // Only set remarks if not already existing
         if (empty($existingRemarks)) {
-            $data['remarks'] = $request->remarks;
+            $data['amount_remarks'] = $request->remarks;
         }
 
         DB::table('loan_rejected_fields')->updateOrInsert(
