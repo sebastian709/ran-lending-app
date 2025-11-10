@@ -1,0 +1,89 @@
+/* Container */
+.cp-customer-container {
+    font-family: 'Inter', sans-serif;
+    color: #2d3436;
+}
+
+/* Page Title */
+.cp-page-title {
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Tabs Navigation */
+.cp-status-tabs {
+    border-bottom: 0;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    box-shadow: inset 0 -1px 0 #dee2e6;
+}
+
+.cp-status-tabs .nav-item {
+    margin-right: 0.25rem;
+}
+
+.cp-status-tabs .nav-link {
+    border: none;
+    border-radius: 0.5rem;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.25s ease-in-out;
+}
+
+.cp-status-tabs .nav-link:hover {
+    background: #e9ecef;
+    color: #0d6efd;
+}
+
+.cp-status-tabs .nav-link.active {
+    background: #0d6efd;
+    color: #fff !important;
+    box-shadow: 0 3px 6px rgba(13, 110, 253, 0.3);
+}
+
+/* Tab Content */
+.cp-tab-content {
+    background: #fff;
+    border-radius: 0.75rem;
+    /* padding: 1.5rem; */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-top: 1rem;
+}
+
+/* Table */
+.cp-table th {
+    background: #f8f9fa;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-top: none;
+    letter-spacing: 0.5px;
+}
+
+.cp-table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.cp-table tr:hover {
+    background: #f1f5ff;
+    transition: 0.2s;
+}
+
+/* Buttons */
+.cp-view-more {
+    border-radius: 6px;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+}
+
+.cp-delete {
+    border-radius: 6px;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+}

@@ -21,6 +21,9 @@ return new class extends Migration
             ['type' => 'For Verification'],
             ['type' => 'For Correction'],
             ['type' => 'Verified'],
+            ['type' => 'Rejected'],
+            ['type' => 'For Revision'],
+            ['type' => 'For Apppeal'],
         ]);
 
     

@@ -128,9 +128,14 @@ Route::post('/upload', [BlogPostController::class, 'upload']);
 
 //DAN
 Route::resource('paymentpage', PaymentPageController::class);
-Route::get('/get_pending', [PaymentPageController::class, 'get_pending'])->name('payment.pending');
+Route::get('/get_pending_page_data/{id}', [PaymentPageController::class, 'get_pending_page_data'])->name('payment.get_pending_page_data');
+Route::get('/get_verified_page_data', [PaymentPageController::class, 'get_verified_page_data'])->name('payment.get_verified_page_data');
+Route::get('/get_rejected_page_data/{id}', [PaymentPageController::class, 'get_rejected_page_data'])->name('payment.get_rejected_page_data');
+Route::get('/get_revision_page_data/{id}', [PaymentPageController::class, 'get_revision_page_data'])->name('payment.get_revision_page_data');
+Route::get('/get_appeal_page_data/{id}', [PaymentPageController::class, 'get_appeal_page_data'])->name('payment.get_appeal_page_data');
 Route::post('/get_pending_data', [PaymentPageController::class, 'get_pending_data'])->name('payment.pending.data');
 Route::post('/get_pending_data_two', [PaymentPageController::class, 'get_pending_data_two'])->name('payment.pending.data_two');
+Route::post('/paymentpage/verify/{id}/{value}', [PaymentPageController::class, 'verify'])->name('payment.pending.verify');
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');
