@@ -10,19 +10,19 @@
                     class="blog-tabs sticky-desktop d-none d-md-flex justify-content-between align-items-center px-3 py-2 mb-3 rounded shadow-sm">
                     <ul class="nav nav-pills mb-0">
                         <li class="nav-item">
-                            <a class="nav-link active text-white bp-tab" href="#">All Posts</a>
+                            <a class="nav-link active text-dark bp-tab" href="#">All Posts</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white bp-tab" href="#">Drafts</a>
+                            <a class="nav-link text-dark bp-tab" href="#">Drafts</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white bp-tab" href="#">Published</a>
+                            <a class="nav-link text-dark bp-tab" href="#">Published</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white bp-tab" href="#">Archived</a>
+                            <a class="nav-link text-dark bp-tab" href="#">Archived</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white bp-tab" href="#">Deleted</a>
+                            <a class="nav-link text-dark bp-tab" href="#">Deleted</a>
                         </li>
                     </ul>
 

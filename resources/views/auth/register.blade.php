@@ -81,7 +81,7 @@
                 <input type="text" class="form-control" placeholder="Contact Number" name="contactnumber" maxlength="11" required  />
               </div>
               <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="House No." name="house_no" required />
+                <input type="text" class="form-control" placeholder="House No." name="house_no" />
               </div>
               <div class="col-md-8">
                 <input type="text" class="form-control" placeholder="Street Name" name="street"  required />

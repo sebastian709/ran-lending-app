@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_details', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id')->index();
-            $table->string('house_no');
+            $table->string('house_no')->nullable();
             $table->string('street');
             $table->string('barangay');
             $table->string('city');

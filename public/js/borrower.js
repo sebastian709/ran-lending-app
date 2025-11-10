@@ -39,6 +39,11 @@ $(function () {
                         $('#employment-status-section').slideUp();
                         $('#otherEmploymentStat').val('').attr('data-employement-status', 0);
                     }
+                    if (res.loan_type) $(`input[name="scheduledLoan"][value="${res.loan_type}"]`).prop('checked', true);
+                    if (res.loan_type == 'Scheduled') {
+                        $('#scheduled-loan-section').css('display', '');
+                        $('#scheduledLoan').val(res.scheduled_date);
+                    }
 
                     // 1st step
                     if (res.purpose_of_loan) $('#la_purpose').val(res.purpose_of_loan);
@@ -263,15 +268,31 @@ $(function () {
         const occupation = $('#occupation').val();
         const income = $('#income').val();
         const employmentStatus = $('input[name="employmentStatus"]:checked').val();
+        const loanType = $('input[name="scheduledLoan"]:checked').val();
+        let scheduledLoan = (loanType === 'Scheduled') ? $('#scheduledLoan').val() : null;
         let specify_others = null;
         if (employmentStatus == 4) {
             specify_others = $('#otherEmploymentStat').val();
         }
+
+        let dateScheduledError = $('#scheduledLoan').attr('data-has_error');
+
+        if (dateScheduledError === "1" && loanType == 'Scheduled') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Date',
+                text: 'Please select a date at least 3 days after today.',
+            });
+            return false;
+        }
+
         // Optional: you can skip AJAX if both purpose and referral are empty
         if (!purpose && !referral) {
             proceedToEligibility();
             return;
         }
+
+
 
         $.ajax({
             url: '/borrower/save-precheck',
@@ -284,8 +305,10 @@ $(function () {
                 occupation: occupation,
                 income: income,
                 employmentStatus: employmentStatus,
-                specify_others: specify_others,
-                load_step: 1
+                load_step: 1,
+                loan_type: loanType,
+                scheduled_date: scheduledLoan,
+                specify_others: specify_others
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // add CSRF if needed
@@ -815,38 +838,104 @@ $(document).ready(function () {
     $('.view-loan-btn').on('click', function () {
         const loanId = $(this).data('id');
 
-        $.confirm({
-            title: `<i class="bi bi-file-earmark-text me-2"></i> Loan Details`,
-            content: `
-                <div class="text-start fs-6">
-                    <div class="mb-2"><strong>Loan ID:</strong> ${loanId}</div>
-                    <div class="mb-2"><strong>Total Amount:</strong> <span class="text-success">₱50,000.00</span></div>
-                    <div class="mb-2"><strong>Loan Tenure:</strong> 12 months</div>
-                    <div class="mb-2"><strong>Date of Payment:</strong> July 30, 2025</div>
-                    <div class="mb-2"><strong>Monthly Amount Due:</strong> ₱4,500.00</div>
-                    <div class="mb-3"><strong>Penalty:</strong> ₱0.00</div>
-                    <hr class="my-2">
-                    <div class="mb-2"><strong>Total Payment:</strong> ₱54,000.00</div>
-                    <div class="mb-1"><strong>Breakdown:</strong></div>
-                    <ul class="ps-4">
-                        <li>Principal: ₱50,000.00</li>
-                        <li>Interest: ₱4,000.00</li>
-                        <li>Penalty: ₱0.00</li>
-                    </ul>
-                </div>
-            `,
-            type: 'blue',
-            columnClass: 'medium',
-            icon: 'bi bi-info-circle-fill',
-            buttons: {
-                close: {
-                    text: 'Close',
-                    btnClass: 'btn-secondary',
+        $.ajax({
+            url: '/loan-list-view-details',
+            method: "POST",
+            data: { loan_id: loanId },
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function (r) {
+                // Format amounts (₱ and commas)
+                const formatMoney = (num) => {
+                    num = parseFloat(num ?? 0);
+                    return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                };
+
+                // Format date (e.g., July 30, 2025)
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '–';
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                };
+
+                // Build accordion dynamically based on breakdown data
+                let accordionItems = '';
+                r.breakDownLoan.forEach((item, index) => {
+                    const monthIndex = index + 1;
+                    accordionItems += `
+                        <div class="accordion-item mb-2">
+                            <h2 class="accordion-header" id="headingMonth${monthIndex}">
+                                <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#month${monthIndex}"
+                                    aria-expanded="false" aria-controls="month${monthIndex}">
+                                    <div>
+                                        <div><strong>Date of Payment:</strong> ${formatDate(item.date)}</div>
+                                        <div><strong>Monthly Amount Due:</strong> ${formatMoney(item.monthly_amount_due)}</div>
+                                        <div><strong>Penalty:</strong> ${formatMoney(item.penalty)}</div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="month${monthIndex}" class="accordion-collapse collapse"
+                                aria-labelledby="headingMonth${monthIndex}" data-bs-parent="#paymentSchedule">
+                                <div class="accordion-body">
+                                    <div class="mb-2"><strong>Total Payment:</strong> ${formatMoney(item.monthly_amount_due + item.penalty)}</div>
+                                    <div class="mb-1"><strong>Breakdown:</strong></div>
+                                    <ul class="ps-4 mb-0">
+                                        <li>Principal: ${formatMoney(item.principal)}</li>
+                                        <li>Interest: ${formatMoney(item.interest)}</li>
+                                        <li>Penalty: ${formatMoney(item.penalty)}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                $.confirm({
+                    title: `<i class="bi bi-file-earmark-text me-2"></i> Loan Details`,
+                    content: `
+                        <div class="text-start fs-6">
+                            <div class="mb-2"><strong>Loan ID:</strong> LN-${String(r.loanID).padStart(8, '0')}</div>
+                            <div class="mb-2"><strong>Loan Tenure:</strong> ${r.loanTenure} months</div>
+                            <div class="mb-2"><strong>Total Amount:</strong> <span class="text-success">${formatMoney(r.totalAmount)}</span></div>
+                            <div><strong>Total Penalty:</strong> ${formatMoney(r.totalPenalty)}</div>
+
+                            <div class="accordion mt-3" id="paymentSchedule">
+                                ${accordionItems}
+                            </div>
+                        </div>
+                    `,
+                    type: 'blue',
+                    columnClass: 'medium',
+                    icon: 'bi bi-info-circle-fill',
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-secondary',
+                        }
+                    }
+                });
+            },
+            error: function (xhr) {
+                let errorMessage = "Something went wrong.";
+                if (xhr.responseJSON?.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON?.errors) {
+                    const errors = xhr.responseJSON.errors;
+                    errorMessage = Object.values(errors).map(arr => arr.join(', ')).join('\n');
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: errorMessage
+                });
             }
         });
     });
 });
+
 
 (function () {
     const totalPages = 50;
@@ -1016,6 +1105,54 @@ $(document).on('click', '.la_proceed_loan_update_new', function () {
         },
         error: function () {
             toastr.error('Failed to update loan details.');
+        }
+    });
+});
+
+$(document).on('click', '.la-terms-and-conditions', function () {
+    let laTermsHtml = `<div style="
+                            text-align: justify;
+                            font-size: 14px;
+                            line-height: 1.8;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            color: #222;
+                        ">
+                            <strong>a. Interest</strong>
+                            <div style="margin-left: 30px; text-indent: -20px;">
+                                <p style="margin: 6px 0;">
+                                    <i>i.</i> The Borrower shall be obliged to pay interest at the rate of 5% per month, the “Interest”, such interest to be paid together with the capital sum of the loan at the end of the loan period.
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>ii.</i> <strong>Prepayment –</strong> The Borrower shall be entitled to pay larger installments than the prescribed or the full balance of capital and interest at any time prior to the prescribed dates of payment, in any such event interest shall be calculated up to the date of payment.
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>iii.</i> <strong>Charges –</strong> Any payment not remunerated within __ days of its shall be subject to a belatedly charge of ₱0.50 of the payment for any such late installment (Penalty).
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>iv.</i> <strong>Default –</strong> If borrower has not paid the full amount of the loan when the final payment is due, the Lender will charge Borrower interest on the unpaid balance at 5% per month.
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>v.</i> <strong>Non-members will be allowed one (1) penalty only</strong>, the 2nd penalty will be subject to <strong>DELINQUENCY STATUS.</strong>
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>vi.</i> <strong>Delinquent non-members’ consequence will be a ban for three (3) months to reloan.</strong>
+                                </p>
+                                <p style="margin: 6px 0;">
+                                    <i>vii.</i> <strong>Collection Fees –</strong> If this Note is placed with a legal representative for collection, then the Borrower agrees to pay an attorney’s fee of the voluntary balance. This fee will be added to the unpaid balance of the loan. If this Note is placed within legal bank transactions and transfers, then the Borrower agrees to pay bank charges of __ pesos added to the loan amount.
+                                </p>
+                            </div>
+                        </div>`;
+    $.confirm({
+        title: 'Terms and Conditions',
+        content: laTermsHtml,
+        type: 'blue',
+        boxWidth: '700px',
+        useBootstrap: false,
+        buttons: {
+            close: {
+                text: 'Close',
+                btnClass: 'btn-blue'
+            }
         }
     });
 });
@@ -1205,6 +1342,80 @@ $(document).on('click', '.clearAllNotif', function () {
     return false;
 });
 
+$(document).ready(function () {
+    let user = $('#gb_user_id').val();
+
+    $.ajax({
+        url: `/borrower/check-loan-data`,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (res) {
+            if (res.loan_status = 5 && res.make_appeal == 1) {
+                $('#congratsModal').modal('show');
+                $('.appeal_close').attr('loan_id', res.loan_id);
+                $('#makeAppealBtn').attr('loan_id', res.loan_id);
+                window.addEventListener('load', () => {
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+
+                    setTimeout(() => {
+                        const duration = 2000;
+                        const end = Date.now() + duration;
+
+                        (function frame() {
+                            confetti({
+                                particleCount: 5,
+                                angle: 60,
+                                spread: 55,
+                                origin: { x: 0 }
+                            });
+                            confetti({
+                                particleCount: 5,
+                                angle: 120,
+                                spread: 55,
+                                origin: { x: 1 }
+                            });
+
+                            if (Date.now() < end) {
+                                requestAnimationFrame(frame);
+                            }
+                        })();
+                    }, 300);
+                });
+            }
+        },
+
+    });
+
+});
+
+$(document).on("click", ".appeal_close", function () {
+
+    let loan_id = $(this).attr('loan_id');
+    if ($("#dontShowCongrats").is(":checked")) {
+        $.ajax({
+            url: "/borrower/update-appeal-status",
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+            },
+            data: {
+                loan_id: loan_id
+            },
+            success: function (res) {
+
+            },
+            error: function (xhr) {
+
+            }
+        });
+    }
+});
 
 $(document).on('change', '.pEmploymentStatus', function () {
     let $this = $(this);
@@ -1219,6 +1430,142 @@ $(document).on('change', '.pEmploymentStatus', function () {
     }
 });
 
+$(document).on('click', 'input[name="scheduledLoan"]', function () {
+    if ($('#slYes').is(':checked')) {
+        $('#scheduled-loan-section').show();
+    } else if ($('#slNo').is(':checked')) {
+        $('#scheduled-loan-section').hide();
+    }
+});
+
+$(document).on('change', '#scheduledLoan', function () {
+    let this_val = $(this).val();
+    let input = $(this);
+    let selectedDate = new Date(this_val);
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let minDate = new Date(today);
+    minDate.setDate(today.getDate() + 3);
+
+
+    input.next('.error-message').remove();
+
+    if (selectedDate < minDate) {
+        input.attr('data-has_error', '1');
+        input.after('<div class="error-message" style="color:red; font-size: 12px; margin-top: 4px;">Please select a date at least 3 days after today.</div>');
+    } else {
+        // valid
+        input.attr('data-has_error', '0');
+    }
+});
 
 
 
+
+$(document).on("click", "#makeAppealBtn", function () {
+    let loanId = $(this).attr("loan_id");
+    $('#congratsModal').hide()
+    Swal.fire({
+        title: "Make an Appeal",
+        html: `
+             <div class="appeal-form text-start" style="max-width:500px; margin:auto;">
+            
+            <div class="mb-3">
+                <label class="fw-bold d-block mb-1" style="font-size:0.9rem; color:#555;">Loan ID</label>
+                <div id="swal-loan-id" class="p-2 rounded bg-light border text-dark fw-semibold">
+                    LN-${String(loanId).padStart(5, '0')}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold mb-1" style="font-size:0.9rem; color:#555;">Reason for Appeal</label>
+                <textarea id="swal-reason" class="form-control" 
+                          placeholder="Enter your reason..." 
+                          style="min-height:100px; border-radius:10px; border:1px solid #ddd;"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold mb-1" style="font-size:0.9rem; color:#555;">Upload Proof (Optional)</label>
+                <input type="file" id="swal-proof" class="form-control" 
+                       style="border-radius:10px; border:1px solid #ddd;">
+            </div>
+        </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Submit Appeal",
+        cancelButtonText: "Cancel",
+        focusConfirm: false,
+        preConfirm: () => {
+            let reason = $("#swal-reason").val();
+            let proof = $("#swal-proof")[0].files[0];
+
+            if (!reason) {
+                Swal.showValidationMessage("Reason for appeal is required");
+                return false;
+            }
+
+            return { loanId, reason, proof };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let formData = new FormData();
+            formData.append("loan_id", result.value.loanId);
+            formData.append("reason", result.value.reason);
+            if (result.value.proof) {
+                formData.append("uploaded_proof", result.value.proof);
+            }
+
+            $.ajax({
+                url: "/borrower/submit-appeal",
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+                },
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    Swal.fire(
+                        "Success!",
+                        "Your appeal has been submitted successfully. Our team will review it and update you once a decision is made.",
+                        "success"
+                    );
+                    $('#congratsModal').modal('hide');
+
+                    //Admin Notif
+                    const table_id = 'notifications';
+                    const target_type = 1;
+                    const level_id = 1;
+                    const user_id = 0;
+                    const group_user_id = 0;
+                    const icon = '<i class="ri-file-text-line"></i>';
+                    const message = `<p class="mb-1 small appeal_notifs" value="${loanId}">${res.name} did not receive the fund for Loan <b>LN-${String(loanId).padStart(5, '0')}</b></p>`;
+                    const data_url = '';
+
+                    if (typeof window.triggerNotif === "function") {
+                        window.triggerNotif(
+                            table_id,
+                            target_type,
+                            level_id,
+                            user_id,
+                            group_user_id,
+                            icon,
+                            message,
+                            data_url
+                        );
+                    } else {
+                        console.warn("⚠️ window.triggerNotif is not defined.");
+                    }
+
+
+                },
+                error: function (xhr) {
+                    Swal.fire("Error", "Something went wrong. Please try again.", "error");
+                    $('#congratsModal').modal('hide');
+                }
+            });
+        } else {
+            $('#congratsModal').show()
+        }
+    });
+});

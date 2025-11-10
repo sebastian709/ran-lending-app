@@ -134,7 +134,7 @@ class HomeController extends Controller
         //         ->first();
         // }
         if ($data->months === 0) {
-            $loanStatus = 0;
+            // $loanStatus = 0;
             return view('borrower.layouts.payment-state', compact('loanStatus'));
         }
 
@@ -270,6 +270,8 @@ class HomeController extends Controller
                 'loan_tenure' => $loan->loan_tenure ?? '',
                 'interest_rate' => $loan->interest_rate ?? '',
                 'total_amount' => $loan->total_amount ?? '',
+                'loan_type' => $loan->loan_type ?? '',
+                'scheduled_date' => $loan->scheduled_date ?? '',
 
                 // Additional Fields
                 'payslip_img' => $loan->payslip_img ?? '',
@@ -309,6 +311,8 @@ class HomeController extends Controller
             'occupation' => 'required|string',
             'income' => 'required|numeric',
             'employmentStatus' => 'required|integer',
+            'loan_type' => 'nullable|string',
+            'scheduled_date' => 'nullable|date',
         ]);
 
         $existing = DB::table('loan_application')
@@ -337,6 +341,8 @@ class HomeController extends Controller
                     'referral' => $validated['referral'],
                     'referral_code_id' => $validated['referral_code_id'],
                     'load_step' => $validated['load_step'],
+                    'loan_type' => $validated['loan_type'],
+                    'scheduled_date' => $validated['scheduled_date'],
                     'updated_at' => now()
                 ]);
 
@@ -364,6 +370,8 @@ class HomeController extends Controller
                 'referral' => $validated['referral'],
                 'referral_code_id' => $validated['referral_code_id'],
                 'loan_status' => 0,
+                'loan_type' => $validated['loan_type'],
+                'scheduled_date' => $validated['scheduled_date'],
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -623,6 +631,7 @@ class HomeController extends Controller
         $max_amount = $first_amount;
         $summary_total = $max_amount + ($max_amount * 0.05);
         $loan_amount_rejected = $rejected_fields->first()->loan_amount;
+        $remarks = $rejected_fields->first()->amount_remarks;
 
         $payslip_img = $rejected_fields->first()->payslip_img;
         $upload_qr_code_img = $rejected_fields->first()->upload_qr_code_img;
@@ -667,6 +676,7 @@ class HomeController extends Controller
                 'first_amount',
                 'max_amount',
                 'summary_total',
+                'remarks',
                 'loan_amount_rejected',
                 'loan_id',
                 'step',
@@ -756,33 +766,30 @@ class HomeController extends Controller
             // Map inputs to folders and DB columns
             $folderMap = [
                 'payslip_img' => ['folder' => 'payslip', 'db_field' => 'payslip_img'],
-                'qr_code_img' => ['folder' => 'qr_code', 'db_field' => 'upload_qr_code_img'],
+                'qr_code_img' => ['folder' => 'qr_codes', 'db_field' => 'upload_qr_code_img'],
                 'government_id_img' => ['folder' => 'government_id', 'db_field' => 'government_id_img'],
                 'billing_statement_img' => ['folder' => 'billing_statement', 'db_field' => 'billing_statement_img'],
             ];
+
 
             $updateData = [];
 
             foreach ($folderMap as $requestField => $info) {
                 if ($request->hasFile($requestField)) {
                     $file = $request->file($requestField);
-
-                    // Generate unique filename
                     $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-                    // Ensure folder exists
                     $directory = public_path("storage/uploads/{$info['folder']}");
                     if (!file_exists($directory)) {
                         mkdir($directory, 0775, true);
                     }
 
-                    // Move file to storage
                     $file->move($directory, $filename);
 
-                    // Save relative path to DB
                     $updateData[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
                 }
             }
+
 
             $update_reject_field = DB::table('loan_rejected_fields')
                 ->where('loan_id', $loanId)
@@ -847,5 +854,81 @@ class HomeController extends Controller
             ], 500);
         }
     }
-}
 
+      public function checkLoanData()
+    {
+        $userId = auth()->id();
+
+        $loanApplication = DB::table('loan_application')
+            ->where('loan_applicant', $userId)
+            ->where('loan_status', 5)
+            ->where('make_appeal', 1)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return response()->json([
+            'loan_id' => $loanApplication->id,
+            'loan_status' => $loanApplication->loan_status,
+            'make_appeal' => $loanApplication->make_appeal,
+        ]);
+    }
+
+    
+   public function updateAppealStatus(Request $request)
+    {
+        $loan_id = $request->input('loan_id');
+
+        DB::table('loan_application')
+            ->where('id', $loan_id)
+            ->update(['make_appeal' => 0]);
+
+        return response()->json(['status' => 'ok']);
+    }
+
+     public function saveAppeal(Request $request)
+    {
+        $request->validate([
+            'loan_id' => 'required|integer',
+            'reason' => 'required|string',
+            'uploaded_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $updateData = [
+            'loan_id' => $request->loan_id,
+            'reason' => $request->reason,
+            'date_of_appeal' => now(),
+            'uploaded_proof' => null, // default
+        ];
+
+        // File upload handling
+        $folderMap = [
+            'uploaded_proof' => ['folder' => 'loan_appeal', 'db_field' => 'uploaded_proof'],
+        ];
+
+        foreach ($folderMap as $requestField => $info) {
+            if ($request->hasFile($requestField)) {
+                $file = $request->file($requestField);
+
+                $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+                $directory = public_path("storage/uploads/{$info['folder']}");
+
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0775, true);
+                }
+
+                $file->move($directory, $filename);
+
+                $updateData[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
+            }
+        }
+
+        // Insert directly into loan_appeal table
+        DB::table('loan_appeal')->insert($updateData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Appeal submitted successfully',
+            'name' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+        ]);
+    }
+}

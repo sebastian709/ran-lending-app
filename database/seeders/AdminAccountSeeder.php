@@ -92,6 +92,36 @@ class AdminAccountSeeder extends Seeder
             'updated_at' => now()
         ]);
 
+        $test1 = DB::table('users')->insertGetId([
+            'firstname' => 'Test1',
+            'username' => 'Test312',
+            'lastname' => 'Test',
+            'middlename' => 'Test',
+            'contactno' => '099770224547',
+            'referral_source_id' => 0,
+            'referral_id' => 0,
+            'is_admin' => 0,
+            'email' => 'test1@gmail.com',
+            'password' => bcrypt('asdf'),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $test2 = DB::table('users')->insertGetId([
+            'firstname' => 'Test2',
+            'username' => 'Test312',
+            'lastname' => 'Test',
+            'middlename' => 'Test',
+            'contactno' => '099770224547',
+            'referral_source_id' => 0,
+            'referral_id' => 0,
+            'is_admin' => 0,
+            'email' => 'test2@gmail.com',
+            'password' => bcrypt('asdf'),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
 
         DB::table('admin_loan_request_access')->insert([
             [
@@ -190,6 +220,26 @@ class AdminAccountSeeder extends Seeder
                 'province' => 'pampanga',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'user_id' => $test1,
+                'house_no' => '30',
+                'street' => 'senorita',
+                'barangay' => 'saguin',
+                'city' => 'san fernando',
+                'province' => 'pampanga',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'user_id' => $test2,
+                'house_no' => '30',
+                'street' => 'senorita',
+                'barangay' => 'saguin',
+                'city' => 'san fernando',
+                'province' => 'pampanga',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
         DB::table('user_incomes')->insert([
@@ -227,6 +277,22 @@ class AdminAccountSeeder extends Seeder
             ],
             [
                 'user_id' => $testborrower,
+                'occupation' => 'dev',
+                'income' => 100.00,
+                'employment_status' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'user_id' => $test1,
+                'occupation' => 'dev',
+                'income' => 100.00,
+                'employment_status' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'user_id' => $test2,
                 'occupation' => 'dev',
                 'income' => 100.00,
                 'employment_status' => 1,

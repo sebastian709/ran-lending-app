@@ -42,6 +42,9 @@ $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
   const url = $(this).data('url');
   const isSidebar = $(this).data('is-sidebar');
+  const path = window.location.pathname;
+  const parts = path.split('/').filter(Boolean); // ["admin", "loan-request"]
+  const lastSegment = parts[parts.length - 1];
   currentPath = window.location.pathname;
 
 
@@ -76,6 +79,31 @@ $(document).on('click', '[data-url]', function (e) {
     if (url === '/admin/profile/referral-management') {
       updateView(currentView);
       fetchReferralTable(currentPage);
+
+    } else if (url === '/admin/customer') {
+      renderAll();
+    } else if (url === '/admin/loan-request/') {
+      $('.lrFirstReload').click();
+    } else {
+      $('#loanSubNav').collapse('hide');
+    }
+
+    if (lastSegment == "loan-request") {
+      // ✅ Initial load (all loans)
+      $.ajax({
+        url: '/admin/loan-request/data',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+          loanData = data;
+          filteredData = [...loanData];
+          window.renderTable();
+        },
+        error: function (xhr, status, error) {
+          console.error('Error fetching data:', error);
+          $('#emptyState').show();
+        }
+      });
     }
   });
 });
@@ -1167,8 +1195,295 @@ $(document).on('click', '.markAllAsRead', function () {
   return false;
 });
 
-$(document).on('click', '.clearAllNotif', function(){
+$(document).on('click', '.clearAllNotif', function () {
   window.clear_all_notifications();
   return false;
 });
 
+
+// Dummy data
+const activeData = [
+  { name: "Juan Dela Cruz", amount: "₱50,000", tenure: "12 months", type: "Personal Loan", date: "2025-09-01", referral: "Agent A", interest: "5%", status: "Active" },
+  { name: "Maria Santos", amount: "₱30,000", tenure: "6 months", type: "Salary Loan", date: "2025-09-05", referral: "Agent B", interest: "4%", status: "Scheduled" }
+];
+
+const closedData = [
+  { ref: "CL-2025-001", amount: "₱100,000", interest: "₱15,000", penalties: "₱500", total: "₱115,500" }
+];
+
+const rejectedData = [
+  { ref: "RJ-2025-001", amount: "₱20,000", tenure: "6 months / 5%", date: "2025-09-07", rejectedBy: "Admin A" }
+];
+
+const cancelledData = [
+  { ref: "CN-2025-001", amount: "₱40,000", tenure: "12 months / 6%", date: "2025-09-03", cancelledBy: "Borrower" }
+];
+
+// Render Functions
+function renderAll() {
+  $.ajax({
+    url: '/admin/customer/cp-all',
+    method: 'GET',
+    // data: formData,
+    processData: false,
+    contentType: false,
+    success: function (res) {
+      console.log(res)
+      let thead = `<tr>
+                      <th>Borrower’s Name</th>
+                      <th>Loan Amount</th>
+                      <th>Loan Tenure</th>
+                      <th>Loan Type</th>
+                      <th>Date Requested</th>
+                      <th>Referral</th>
+                      <th>Interest</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                  </tr>`;
+      let tbody = "";
+      if (parseInt(res.length) > 0) {
+        res.forEach(item => {
+          tbody += `
+                <tr>
+                    <td>${item.borrower_name}</td>
+                    <td>${item.loan_amount}</td>
+                    <td>${item.loan_tenure}</td>
+                    <td>${item.loan_type}</td>
+                    <td>${item.created_at}</td>
+                    <td>${item.referral}</td>
+                    <td>${item.interest_rate}</td>
+                    <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="0" data-user_id="${item.loan_applicant}">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+        });
+      } else {
+        tbody += `<tr><td class="text-center" colspan="9">No Data</td></tr>`;
+      }
+
+      $("#cp-all-table thead").html(thead);
+      $("#cp-all-table tbody").html(tbody);
+    },
+    error: function (xhr) {
+      const response = xhr.responseJSON;
+      if (response && response.errors) {
+        Object.values(response.errors).forEach(msg => toastr.error(msg));
+      } else {
+        toastr.error('Something went wrong.');
+      }
+    }
+  });
+}
+
+function renderActive() {
+  $.ajax({
+    url: '/admin/customer/cp-active',
+    method: 'GET',
+    // data: formData,
+    processData: false,
+    contentType: false,
+    success: function (res) {
+      console.log(res)
+      let thead = `<tr>
+                      <th>Borrower’s Name</th>
+                      <th>Loan Amount</th>
+                      <th>Loan Tenure</th>
+                      <th>Loan Type</th>
+                      <th>Date Requested</th>
+                      <th>Referral</th>
+                      <th>Interest</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                  </tr>`;
+      let tbody = "";
+      if (parseInt(res.length) > 0) {
+        res.forEach(item => {
+          tbody += `
+                <tr>
+                    <td>${item.borrower_name}</td>
+                    <td>${item.loan_amount}</td>
+                    <td>${item.loan_tenure}</td>
+                    <td>${item.loan_type}</td>
+                    <td>${item.created_at}</td>
+                    <td>${item.referral}</td>
+                    <td>${item.interest_rate}</td>
+                    <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="1" data-user_id="${item.loan_applicant}">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+        });
+      } else {
+        tbody += `<tr><td class="text-center" colspan="9">No Data</td></tr>`;
+      }
+
+      $("#cp-active-table thead").html(thead);
+      $("#cp-active-table tbody").html(tbody);
+    },
+    error: function (xhr) {
+      const response = xhr.responseJSON;
+      if (response && response.errors) {
+        Object.values(response.errors).forEach(msg => toastr.error(msg));
+      } else {
+        toastr.error('Something went wrong.');
+      }
+    }
+  });
+}
+
+function renderScheduled() {
+  $.ajax({
+    url: '/admin/customer/cp-scheduled',
+    method: 'GET',
+    // data: formData,
+    processData: false,
+    contentType: false,
+    success: function (res) {
+      console.log(res)
+      let thead = `<tr>
+                      <th>Borrower’s Name</th>
+                      <th>Loan Amount</th>
+                      <th>Loan Tenure</th>
+                      <th>Loan Type</th>
+                      <th>Date Requested</th>
+                      <th>Referral</th>
+                      <th>Interest</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                  </tr>`;
+      let tbody = "";
+      if (parseInt(res.length) > 0) {
+        res.forEach(item => {
+          tbody += `
+                <tr>
+                    <td>${item.borrower_name}</td>
+                    <td>${item.loan_amount}</td>
+                    <td>${item.loan_tenure}</td>
+                    <td>${item.loan_type}</td>
+                    <td>${item.created_at}</td>
+                    <td>${item.referral}</td>
+                    <td>${item.interest_rate}</td>
+                    <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="2" data-user_id="${item.loan_applicant}">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+        });
+      } else {
+        tbody += `<tr><td class="text-center" colspan="9">No Data</td></tr>`;
+      }
+
+      $("#cp-scheduled-table thead").html(thead);
+      $("#cp-scheduled-table tbody").html(tbody);
+    },
+    error: function (xhr) {
+      const response = xhr.responseJSON;
+      if (response && response.errors) {
+        Object.values(response.errors).forEach(msg => toastr.error(msg));
+      } else {
+        toastr.error('Something went wrong.');
+      }
+    }
+  });
+}
+
+function renderClosed() {
+  let thead = `
+            <tr>
+                <th>Loan Reference No.</th>
+                <th>Loan Amount</th>
+                <th>Total Interest Earned</th>
+                <th>Total Penalties Collected</th>
+                <th>Total Paid</th>
+                <th>Action</th>
+            </tr>`;
+  let tbody = "";
+  closedData.forEach(item => {
+    tbody += `
+                <tr>
+                    <td>${item.ref}</td>
+                    <td>${item.amount}</td>
+                    <td>${item.interest}</td>
+                    <td>${item.penalties}</td>
+                    <td>${item.total}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="3">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+  });
+  $("#cp-closed-table thead").html(thead);
+  $("#cp-closed-table tbody").html(tbody);
+}
+
+function renderRejected() {
+  let thead = `
+            <tr>
+                <th>Loan Reference No.</th>
+                <th>Loan Amount Requested</th>
+                <th>Tenure / Interest Rate</th>
+                <th>Action</th>
+            </tr>`;
+  let tbody = "";
+  rejectedData.forEach(item => {
+    tbody += `
+                <tr>
+                    <td>${item.ref}</td>
+                    <td>${item.amount}</td>
+                    <td>${item.tenure}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="4">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+  });
+  $("#cp-rejected-table thead").html(thead);
+  $("#cp-rejected-table tbody").html(tbody);
+}
+
+function renderCancelled() {
+  let thead = `
+            <tr>
+                <th>Loan Reference No.</th>
+                <th>Loan Amount Requested</th>
+                <th>Tenure / Interest Rate</th>
+                <th>Application Date</th>
+                <th>Action</th>
+            </tr>`;
+  let tbody = "";
+  cancelledData.forEach(item => {
+    tbody += `
+                <tr>
+                    <td>${item.ref}</td>
+                    <td>${item.amount}</td>
+                    <td>${item.tenure}</td>
+                    <td>${item.date}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="5">View More</button>
+                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                    </td>
+                </tr>`;
+  });
+  $("#cp-cancelled-table thead").html(thead);
+  $("#cp-cancelled-table tbody").html(tbody);
+}
+
+// Initial Load
+renderAll();
+
+// Tab Switch Events
+$(document).on('shown.bs.tab', '.cp-status-tabs a[data-bs-toggle="tab"]', function (e) {
+  let target = $(e.target).attr("href");
+  switch (target) {
+    case "#cp-all": renderAll(); break;
+    case "#cp-active": renderActive(); break;
+    case "#cp-scheduled": renderScheduled(); break;
+    case "#cp-closed": renderClosed(); break;
+    case "#cp-rejected": renderRejected(); break;
+    case "#cp-cancelled": renderCancelled(); break;
+  }
+});

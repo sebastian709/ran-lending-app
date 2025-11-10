@@ -289,6 +289,7 @@ $(document).on('click' , '#authcheck' , function (e) {
             title: 'Password mismatch',
             text: 'Your new password and confirmation do not match.'
         });
+        alert()
         return false;
     }
 
@@ -311,6 +312,7 @@ $(document).on('click' , '#authcheck' , function (e) {
                 title: 'Update failed',
                 text: 'Something went wrong while updating your password.'
             });
+            alert()
           }
         },
         error: function (xhr) {

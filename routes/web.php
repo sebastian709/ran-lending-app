@@ -15,6 +15,8 @@ use App\Http\Controllers\LimitLoanSettingsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NoAuthController;
 use App\Http\Controllers\Admin\PaymentPageController;
+use App\Http\Controllers\CustomerController;
+
 
 // Route::get('/', [ChatTestController::class, 'login']);
 Route::get('/chat', [ChatTestController::class, 'index']);
@@ -67,8 +69,6 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth'])->prefix('profile')->group(function () {
         Route::get('/change-password', [ProfileController::class, 'adminChangePassword'])->name('admin.pages.change-password');
         Route::post('/change-password', [ProfileController::class, 'adminUpdatePassword'])->name('admin.pages.change-password.update');
-    
-    
         // referral management
         Route::get('/referral-management', [ReferralCodeController::class, 'index']);
     });
@@ -95,6 +95,9 @@ Route::prefix('admin')->group(function () {
 
     // page loader
     Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
+    Route::get('/view-appeal/{loan_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
+    Route::get('/appeal-request', [AdminController::class, 'viewAppealRequest'])->name('view.appealRequest'); 
+
 
     // get datas
     Route::prefix('loan-request')->group(function () {
@@ -108,7 +111,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/transfer-money', [AdminController::class, 'transferMoeny'])->name('loan.transferMoney');
     });
 
-    
+    // referral management
+    Route::get('/referral-management', [ReferralCodeController::class, 'index']);
 
     Route::prefix('referral-code')->group(function () {
         Route::post('save', [ReferralCodeController::class, 'store']);
@@ -121,6 +125,14 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/notification-page', [NotificationController::class, 'AdminViewPage']);
     
+    Route::get('/customer', [CustomerController::class, 'index'])->name('admin.pages.customer.index');
+    Route::prefix('customer')->group(function () {
+        Route::get('cp-all', [CustomerController::class, 'getCpAll']);
+        Route::get('cp-active', [CustomerController::class, 'getCpActive']);
+        Route::get('cp-scheduled', [CustomerController::class, 'getCpScheduled']);
+        Route::post('cpas-view-more-info', [CustomerController::class, 'cpasViewMoreInfo']);
+        Route::post('cpa-payment-details', [CustomerController::class, 'cpaPaymentDetails']);
+    });
 });
 Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferralCode']);
 
@@ -148,7 +160,7 @@ Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauths
 Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->name('forgot.change.pass');
 
 # borrower routes
-Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('loan.apply');
+Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('my-loan.apply');
 
 
 # message pages
@@ -209,6 +221,13 @@ Route::middleware(['auth'])->prefix('borrower')->name('borrower.')->group(functi
 });
 
 Route::get('/loan-list', [ProfileController::class, 'loanList'])->name('borrower.pages.loan-list');
+Route::post('/loan-list-view-details', [ProfileController::class, 'loanListViewDetails'])->name('loan-list-view-details');
 Route::get('/update-application-info', [App\Http\Controllers\HomeController::class, 'updateInformation'])->name('update-information');
 Route::post('/borrower/resubmit-loan-info', [HomeController::class, 'resubmitLoanInfo']);
 Route::post('/borrower/resubmit-loan-documents', [HomeController::class, 'resubmitLoanDocuments']);
+Route::post('/borrower/check-loan-data', [HomeController::class, 'checkLoanData']);
+Route::post('/borrower/update-appeal-status', [HomeController::class, 'updateAppealStatus']);
+Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
+
+Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived']);
+Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment']);

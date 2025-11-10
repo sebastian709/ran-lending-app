@@ -10,7 +10,8 @@
 
                     <!-- Tabs -->
                     <ul class="nav nav-tabs cp-status-tabs" id="cp-statusTab" role="tablist">
-                        <li class="nav-item"><a class="nav-link active cp-tab-link" data-bs-toggle="tab" href="#cp-active" role="tab">Active</a></li>
+                        <li class="nav-item"><a class="nav-link active cp-tab-link" data-bs-toggle="tab" href="#cp-all" role="tab">All</a></li>
+                        <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-active" role="tab">Active</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-scheduled" role="tab">Scheduled</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-closed" role="tab">Closed</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-rejected" role="tab">Rejected</a></li>
@@ -19,6 +20,14 @@
 
                     <!-- Tab Content -->
                     <div class="tab-content mt-4 cp-tab-content">
+                        <div class="tab-pane fade show active cp-tab-pane" id="cp-all" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped cp-table" id="cp-all-table">
+                                    <thead></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                         <div class="tab-pane fade show active cp-tab-pane" id="cp-active" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped cp-table" id="cp-active-table">

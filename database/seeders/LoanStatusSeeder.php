@@ -22,6 +22,7 @@ class LoanStatusSeeder extends Seeder
             ['loan_status' => 'Rejected', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
             ['loan_status' => 'Closed', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
             ['loan_status' => 'Scheduled', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['loan_status' => 'Cancelled', 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

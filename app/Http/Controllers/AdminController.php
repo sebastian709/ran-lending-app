@@ -91,6 +91,9 @@ class AdminController extends Controller
                 DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
                 'loan_application.referral',
                 'loan_application.loan_status as loan_status',
+                'loan_status.loan_status as loan_status_name',
+                'loan_application.loan_type',
+                'loan_application.scheduled_date',
                 'loan_status.loan_status as loan_status_name'
             );
 
@@ -115,12 +118,16 @@ class AdminController extends Controller
                 'loan_application.loan_amount',
                 'loan_application.loan_tenure',
                 'loan_application.interest_rate',
+                
                 DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
                 DB::raw("DATE_FORMAT(loan_application.updated_at, '%b %d, %Y') as updated_at"),
                 DB::raw("IFNULL(loan_application.referral, 'None') as referral"),
                 // 'loan_application.referral',
+                'loan_application.referral',
                 'loan_application.loan_status as loan_status',
                 'loan_status.loan_status as loan_status_name',
+                'loan_application.loan_type',
+                DB::raw("DATE_FORMAT(loan_application.scheduled_date, '%b %d, %Y') as scheduled_date"),
                 DB::raw("IFNULL(loan_application.purpose_of_loan, 'None') as purpose_of_loan"),
                 // 'referral_source.name as referral',
                 DB::raw("CONCAT('" . asset('storage') . "/', loan_application.payslip_img) as payslip_img"),
@@ -138,6 +145,7 @@ class AdminController extends Controller
            $logs = DB::table('activity_logs')
             ->join('users', 'activity_logs.user_id', '=', 'users.id')
             ->where('activity_logs.loan_id', $loan_id)
+            ->where('activity_logs.action', '!=', 'comment')
             ->orderBy('activity_logs.created_at', 'desc')
             ->select(
                 'activity_logs.*',
@@ -167,7 +175,43 @@ class AdminController extends Controller
             $user = auth()->user();
             $loan_request_access = DB::table('admin_loan_request_access')
                 ->where('user_id', $user->id)
+                 ->get();
+
+            $tenures = DB::table('loan_tenure')
+                ->where('loan_id', $loan_id)
+                ->orderBy('date', 'asc')
                 ->get();
+
+            $today = Carbon::today();
+            $totalViolations = 0;
+            $totalPenalties  = 0;
+
+            foreach ($tenures as $tenure) {
+                $dueDate  = Carbon::parse($tenure->date);
+                $endDate  = $today;
+
+                if ($tenure->payment_status_id == 2 && !empty($tenure->updated_at)) {
+                    $endDate = Carbon::parse($tenure->updated_at); // paid date
+                }
+
+                if ($endDate->greaterThan($dueDate)) {
+                    $monthsLate = $dueDate->diffInMonths($endDate);
+                    $daysLate   = $dueDate->diffInDays($endDate);
+
+                    // Rule 1: violation if 3+ months late
+                    if ($monthsLate >= 3) {
+                        $totalViolations++;
+                    }
+
+                    // Rule 2: penalties = every 7 days late
+                    $totalPenalties += floor($daysLate / 7);
+                }
+            }
+
+            $grade = [
+                'violations' => $totalViolations,
+                'penalties'  => $totalPenalties,
+            ];
 
             return response()->json([
                 "data" => $loanApplication,
@@ -175,7 +219,8 @@ class AdminController extends Controller
                 "approved_by" => $approved_admins_array,
                 "disapproved_by" => $disapproved_admins_array,
                 "loan_request_access" => $loan_request_access,
-                "loan_status" => $loan_status
+                "loan_status" => $loan_status,
+                "grade" => $grade,
             ]);
     }
 
@@ -230,6 +275,8 @@ class AdminController extends Controller
 
     public function reject(Request $request, $id)
     {
+
+        $comment = $request->comment;
         $loan = DB::table('loan_application')->where('id', $id)->first();
 
         $approved = $loan->approved_by_admins ? explode(',', $loan->approved_by_admins) : [];
@@ -268,6 +315,7 @@ class AdminController extends Controller
         }
 
         ActivityLogger::log('Reject', 'Rejected Loan Request', $id);
+        ActivityLogger::log('Comment',  $comment, $id);
 
         return response()->json([
             'success' => true,
@@ -298,12 +346,7 @@ class AdminController extends Controller
                 if ($request->has('suggested_amount')) {
                     $data['amount_suggested'] = $request->input('suggested_amount');
                 }
-
-                if ($request->has('amount_remarks')) {
-                    $data['amount_remarks'] = $request->input('amount_remarks');
-                }
-                
-                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'). ' Remarks: ' . $request->input('amount_remarks'), $id);
+                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'), $id);
                 break;
 
             case 'rejectQRcode':
@@ -320,6 +363,16 @@ class AdminController extends Controller
                 $data['billing_statement_img'] = 1;
                 ActivityLogger::log('Reject Field', 'Billing statement was rejected', $id);
                 break;
+        }
+
+         // Check if remarks already exist for this loan
+        $existingRemarks = DB::table('loan_rejected_fields')
+            ->where('loan_id', $id)
+            ->value('amount_remarks');
+
+        // Only set remarks if not already existing
+        if (empty($existingRemarks)) {
+            $data['amount_remarks'] = $request->remarks;
         }
 
         DB::table('loan_rejected_fields')->updateOrInsert(
@@ -379,10 +432,17 @@ class AdminController extends Controller
 
         try {
            
+            if($request->status_id == 5){
+                $appeal = 1;
+            }else{
+                $appeal = 0;
+            }
+
             DB::table('loan_application')
                 ->where('id', $request->loan_id)
                 ->update([
                     'loan_status' => $request->status_id,
+                    'make_appeal' => $appeal,
                     'updated_at'  => now()
                 ]);
 
@@ -478,6 +538,7 @@ class AdminController extends Controller
             $dueDate = Carbon::parse($request->monthly_due_date)
                 ->subDay()
                 ->addMonths($i - 1) // start from given due date
+                ->subDay()
                 ->endOfDay();
 
             // Insert into loan_tenure
@@ -508,11 +569,89 @@ class AdminController extends Controller
             ->update([
                 'loan_status' => 5, 
                 'updated_at'  => now(),
+                'make_appeal' => 1,
             ]);
 
          return response()->json([
             'success' => true,
             'message' => 'Transfer successful!',
+        ]);
+    }
+
+   public function viewAppeal(Request $request)
+    {
+        $loan_id = $request->loan_id;
+
+        $appeal = DB::table('loan_appeal')
+        ->join('loan_application', 'loan_appeal.loan_id', '=', 'loan_application.id')
+        ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
+        ->join('admin_money_transfer', 'loan_application.id', '=', 'admin_money_transfer.loan_id')
+        ->select(
+            'loan_appeal.reason',
+            DB::raw("CONCAT(users.firstname, ' ', users.lastname) as borrower_name"),
+            'loan_appeal.loan_id',
+            'admin_money_transfer.reference_number',
+            DB::raw("DATE_FORMAT(loan_appeal.date_of_appeal, '%b %e, %Y') as formatted_date"),
+            'loan_appeal.uploaded_proof',
+            'loan_appeal.id as appeal_id',
+            'loan_appeal.receive_status',
+        )
+        ->where('loan_appeal.loan_id', $loan_id)
+        ->first();
+
+
+        return view('admin.pages.appeal.index', compact('appeal'));
+    }
+
+    public function viewAppealRequest(Request $request)
+    {
+        $appeals = DB::table('loan_appeal')
+            ->join('loan_application', 'loan_appeal.loan_id', '=', 'loan_application.id')
+            ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
+            ->select(
+                'loan_appeal.reason',
+                DB::raw("CONCAT(users.firstname, ' ', users.lastname) as borrower_name"),
+                'loan_appeal.loan_id',
+                DB::raw("DATE_FORMAT(loan_appeal.date_of_appeal, '%b %e, %Y') as formatted_date"),
+                'loan_appeal.uploaded_proof',
+                'loan_appeal.receive_status'
+            )
+            ->where('loan_application.status', 1)
+            ->get(); 
+
+        return view('admin.pages.appeal.list', compact('appeals'));
+    }
+
+     public function markReceived(Request $request)
+    {   
+        $id = $request->id;
+        DB::table('loan_appeal')
+            ->where('id', $id)
+            ->update(['receive_status' => 1]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Appeal marked as received successfully!'
+        ]);
+    }
+
+     public function rejectedComment(Request $request)
+    {   
+        $currentUser = auth()->id();
+        $comments = DB::table('activity_logs')
+            ->join('users', 'activity_logs.user_id', '=', 'users.id')
+            ->select(
+                DB::raw("CONCAT(users.firstname, ' ', users.lastname) as name"),
+                'activity_logs.user_id',
+                DB::raw("DATE_FORMAT(activity_logs.created_at, '%b %e, %Y') as formatted_date"),
+                'activity_logs.description',
+            )
+            ->where('activity_logs.action', 'Comment')
+            ->get(); 
+
+         return response()->json([
+            'comment' => $comments,
+            'current_user' => $currentUser
         ]);
     }
 

@@ -89,6 +89,24 @@
                                 </div>
 
                                 <div class="mb-4">
+                                    <label class="form-label fw-medium">Applying as a scheduled loan?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="scheduledLoan" id="slYes" value="Scheduled">
+                                        <label class="form-check-label" for="admin">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="scheduledLoan" id="slNo" value="Express">
+                                        <label class="form-check-label" for="friend">No</label>
+                                    </div>
+                                    
+                                    <!-- Scheduled Date Input (hidden by default) -->
+                                    <div id="scheduled-loan-section" class="mt-3" style="display: none;">
+                                        <label for="scheduledLoan" class="form-label fw-medium">Scheduled Date:</label>
+                                        <input type="date" class="form-control" id="scheduledLoan">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
                                     <label class="form-label fw-medium">Select your referral (if any):</label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="referralType" id="admin" value="admin">
@@ -190,7 +208,7 @@
                                                 <span class="fw-medium">₱<span id="admin-summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Monthly Interest:</span>
+                                                <span>Interest Rate:</span>
                                                 <span class="fw-medium la_ad_loan_interest">5%</span>
                                             </div>
                                         </div>
@@ -264,7 +282,7 @@
                                                 <span class="fw-medium">₱<span id="summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Monthly Interest:</span>
+                                                <span>Interest Rate:</span>
                                                 <span class="fw-medium la_loan_interest">5%</span>
                                             </div>
                                         </div>
@@ -367,7 +385,7 @@
                         <div class="form-check mb-4">
                             <input class="form-check-input la_terms_checkbox" type="checkbox" id="termsCheckbox">
                             <label class="form-check-label" for="termsCheckbox">
-                            I agree to the <a href="#">Terms and Conditions</a>
+                            I agree to the <a href="#" class="la-terms-and-conditions">Terms and Conditions</a>
                             </label>
                         </div>
 

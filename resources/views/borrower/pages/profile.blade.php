@@ -23,7 +23,7 @@
         @include('borrower.layouts.sidebar')
 
         <div class="main-content flex-grow-1">
-            <div class="container pt-4" hidden>
+            <div class="container pt-4 hidden">
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="dashboard-card bg-pp-notif-warning p-4 text-muted">
@@ -46,7 +46,7 @@
                 </div>
 
             </div>
-            <div class="container mt-4">
+            <div class="container">
                 <div class="card shadow border-0 rounded-4">
                     <div class="card-body p-5">
                         <div class="row">
@@ -93,12 +93,12 @@
                                     <!-- <div class="d-flex justify-content-between align-items-center"> -->
                                     <div class="text-center">
                                         <label class="small text-muted mb-0 w-100">Number of Loans:</label>
-                                        <label class="fs-5 fw-semibold text-muted mb-0 w-100">10</label>
+                                        <label class="fs-5 fw-semibold text-muted mb-0 w-100">{{ $loanApplication ?? 0 }}</label>
                                     </div>
-                                    <div class="text-center">
+                                    <!-- <div class="text-center">
                                         <label class="small text-muted mb-0 w-100">Max Credit Limit:</label>
                                         <label class="fs-5 fw-semibold text-muted mb-0 w-10">₱100,000</label>
-                                    </div>
+                                    </div> -->
                                     <!-- </div> -->
 
                                 </div>
@@ -108,7 +108,7 @@
                                         <i class="ri-edit-line me-1"></i> Edit
                                     </button>
                                     <button class="btn btn-sm btn-outline-primary w-100 mt-1" data-url="/loan-list">
-                                        <i class="ri-file-list-line"></i> Loan List
+                                        <i class="ri-file-list-line"></i> Loan History
                                     </button>
                                     <button class="btn btn-sm btn-outline-danger w-100 mt-1" data-url="/borrower/change-password">
                                         <i class="ri-key-2-fill"></i> Change Password

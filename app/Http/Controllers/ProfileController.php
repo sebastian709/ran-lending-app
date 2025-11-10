@@ -17,8 +17,8 @@ class ProfileController extends Controller
 
     public function index()
     {
-
         $userId = auth()->id();
+
         $usersInformation = DB::table('users')
             ->join('user_incomes', 'users.id', '=', 'user_incomes.user_id')
             ->join('user_details', 'users.id', '=', 'user_details.user_id')
@@ -45,9 +45,17 @@ class ProfileController extends Controller
             ->where('users.id', $userId)
             ->first();
 
+        $loanApplicationCount = DB::table('loan_application')
+            ->where('status', 1)
+            ->where('loan_applicant', $userId)
+            ->count();
 
-        return view('borrower.pages.profile', compact('usersInformation'));
+        return view('borrower.pages.profile', [
+            'usersInformation' => $usersInformation,
+            'loanApplication' => $loanApplicationCount
+        ]);
     }
+
 
     public function adminIndex()
     {
@@ -181,7 +189,7 @@ class ProfileController extends Controller
                 'province' => $request->province,
                 'updated_at' => now()
             ]);
-            
+
 
             if ($request->hasFile('profile_picture')) {
                 $file = $request->file('profile_picture');
@@ -278,40 +286,98 @@ class ProfileController extends Controller
 
     public function loanList()
     {
-        $loans = collect([
-            (object) [
-                'id' => 'LN-0001',
-                'applied_at' => '2025-07-20',
-                'amount' => 50000,
-                'status' => 'For Interview',
-                'approved_at' => '2025-07-21',
-                'disbursed_at' => '2025-07-22',
-                'closed_at' => null,
-                'remarks' => 'Awaiting documents.'
-            ],
-            (object) [
-                'id' => 'LN-0002',
-                'applied_at' => '2025-07-18',
-                'amount' => 75000,
-                'status' => 'Pending',
-                'approved_at' => null,
-                'disbursed_at' => null,
-                'closed_at' => null,
-                'remarks' => 'Requires additional verification.'
-            ],
-            (object) [
-                'id' => 'LN-0003',
-                'applied_at' => '2025-07-15',
-                'amount' => 30000,
-                'status' => 'Transferred and Processed',
-                'approved_at' => '2025-07-16',
-                'disbursed_at' => '2025-07-17',
-                'closed_at' => '2025-07-25',
-                'remarks' => 'Successfully processed and completed.'
-            ]
-        ]);
+        // $loans = collect([
+        //     (object) [
+        //         'id' => 'LN-0001',
+        //         'applied_at' => '2025-07-20',
+        //         'amount' => 50000,
+        //         'status' => 'For Interview',
+        //         'approved_at' => '2025-07-21',
+        //         'disbursed_at' => '2025-07-22',
+        //         'closed_at' => null,
+        //         'remarks' => 'Awaiting documents.'
+        //     ]
+        // ]);
+
+        $userId = auth()->id();
+
+        $loans = DB::table('loan_application as la')
+            ->join('loan_status as ls', 'ls.id', '=', 'la.loan_status')
+            ->select(
+                'la.id',
+                'la.created_at as applied_at',
+                'la.loan_amount as amount',
+                'ls.loan_status AS status',
+                DB::raw('(
+                    SELECT MAX(al.created_at)
+                    FROM activity_logs al
+                    WHERE al.loan_id = la.id
+                    AND (
+                        SELECT COUNT(DISTINCT al2.user_id)
+                        FROM activity_logs al2
+                        WHERE al2.loan_id = la.id
+                    ) = 3
+                ) as approved_at'),
+                DB::raw('(
+                    SELECT created_at
+                    FROM admin_money_transfer amt
+                    WHERE amt.loan_id = la.id
+                ) as disbursed_at'),
+                DB::raw('null as closed_at'), // ??? san kukunin tu
+                DB::raw("null as remarks") // ??? san kukunin tu
+            )
+            ->where('la.status', 1)
+            ->where('la.loan_applicant', $userId)
+            ->get();
 
         return view('borrower.pages.loan-list', compact('loans'));
     }
+
+    public function loanListViewDetails(Request $request)
+    {
+        $loan_id = $request->loan_id;
+        $userId = auth()->id();
+
+        // 🔹 Primary Loan
+        $primaryLoan = DB::table('loan_application as la')
+            ->select(
+                'la.id',
+                'la.loan_tenure',
+                'la.loan_amount',
+                DB::raw("CONCAT(la.loan_tenure, ' months') as loan_tenure_label")
+            )
+            ->where('la.id', $loan_id)
+            ->first();
+
+        // 🔹 Breakdown Loan
+        $breakDownLoan = DB::table('loan_tenure as lt')
+            ->join('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
+            ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
+            ->select(
+                'lt.date',
+                DB::raw('(COALESCE(lt.principal, 0) + COALESCE(lti.interest, 0)) as monthly_amount_due'),
+                DB::raw('COALESCE(lt.principal, 0) as principal'),
+                DB::raw('COALESCE(lti.interest, 0) as interest'),
+                DB::raw('COALESCE(ltp.penalty, 0) as penalty')
+            )
+            ->where('lt.loan_id', $loan_id)
+            ->get();
+
+        // 🔹 Total Penalty
+        $totalPenalty = $breakDownLoan->sum('penalty');
+        $totalAmount = $breakDownLoan->sum( 'monthly_amount_due');
+
+        // 🔹 Final Output
+        $final_output = [
+            "loanID" => $primaryLoan->id ?? null,
+            "loanTenure" => $primaryLoan->loan_tenure ?? null,
+            "totalAmount" => $totalAmount ?? 0,
+            "totalPenalty" => $totalPenalty ?? 0,
+            "breakDownLoan" => $breakDownLoan
+        ];
+
+        return response()->json($final_output);
+    }
+
 
 }

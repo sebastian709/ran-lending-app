@@ -87,7 +87,7 @@
 
                                         <!-- Title -->
                                         <h4 class="text-dark fw-bold m-0 loan-title text-md-center text-start pw-md-0 ps-5 pb-md-0 pb-3 flex-grow-1">
-                                            Loan List</h4>
+                                            Loan History</h4>
 
                                         <!-- Search (Desktop Only) -->
                                         <div class="input-group input-group-sm d-none d-md-flex ms-auto"
@@ -160,7 +160,7 @@
 
                                                             <div class="mt-3 mt-md-0">
                                                                 <button class="btn btn-outline-dark btn-sm view-loan-btn"
-                                                                    data-id="LN-{{ str_pad($loan->id, 8, '0', STR_PAD_LEFT) }}">
+                                                                    data-id="{{ $loan->id }}">
                                                                     <i class="ri-eye-line"></i> View Details
                                                                 </button>
                                                             </div>
