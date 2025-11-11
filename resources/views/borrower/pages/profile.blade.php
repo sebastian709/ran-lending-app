@@ -23,7 +23,7 @@
         @include('borrower.layouts.sidebar')
 
         <div class="main-content flex-grow-1">
-            <div class="container pt-4 hidden">
+            <div class="container pt-4" hidden>
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="dashboard-card bg-pp-notif-warning p-4 text-muted">
@@ -109,6 +109,9 @@
                                     </button>
                                     <button class="btn btn-sm btn-outline-primary w-100 mt-1" data-url="/loan-list">
                                         <i class="ri-file-list-line"></i> Loan History
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning w-100 mt-1" data-url="/payment-history">
+                                        <i class="ri-money-dollar-circle-line"></i> Payment History
                                     </button>
                                     <button class="btn btn-sm btn-outline-danger w-100 mt-1" data-url="/borrower/change-password">
                                         <i class="ri-key-2-fill"></i> Change Password

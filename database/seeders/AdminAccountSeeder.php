@@ -31,8 +31,8 @@ class AdminAccountSeeder extends Seeder
 
         $almira = DB::table('users')->insertGetId([
             'firstname' => 'Admin',
-            'username' => 'admin.almira',
-            'lastname' => 'almira',
+            'username' => 'admin.dylan',
+            'lastname' => 'Dylan',
             'middlename' => 'Admin',
             'contactno' => '0639691898835',
             'referral_source_id' => 0,
@@ -47,8 +47,8 @@ class AdminAccountSeeder extends Seeder
 
         $nc = DB::table('users')->insertGetId([
             'firstname' => 'Admin',
-            'username' => 'admin.nc',
-            'lastname' => 'nc',
+            'username' => 'admin.jk',
+            'lastname' => 'JK',
             'middlename' => 'Admin',
             'contactno' => '0639691898835',
             'referral_source_id' => 0,
@@ -63,8 +63,8 @@ class AdminAccountSeeder extends Seeder
 
         $riki = DB::table('users')->insertGetId([
             'firstname' => 'Admin',
-            'username' => 'admin.riki',
-            'lastname' => 'riki',
+            'username' => 'admin.hope',
+            'lastname' => 'Hope',
             'middlename' => 'Admin',
             'contactno' => '0639691898835',
             'referral_source_id' => 0,
@@ -140,7 +140,7 @@ class AdminAccountSeeder extends Seeder
                 'pending' => '1',
                 'for_interview' => '1',
                 'for_revision' => '1',
-                'waiting' => '0',
+                'waiting' => '1',
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
                 'closed' => '0',
@@ -149,8 +149,8 @@ class AdminAccountSeeder extends Seeder
             [
                 'user_id' => $nc,
                 'pending' => '1',
-                'for_interview' => '0',
-                'for_revision' => '0',
+                'for_interview' => '1',
+                'for_revision' => '1',
                 'waiting' => '1', // waiting for disbursement
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
@@ -160,9 +160,9 @@ class AdminAccountSeeder extends Seeder
             [
                 'user_id' => $riki,
                 'pending' => '1',
-                'for_interview' => '0',
-                'for_revision' => '0',
-                'waiting' => '0',
+                'for_interview' => '1',
+                'for_revision' => '1',
+                'waiting' => '1',
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
                 'closed' => '0',

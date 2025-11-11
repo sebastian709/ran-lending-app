@@ -149,7 +149,9 @@ $(document).ready(function () {
 
     $(document).on('click', '#loanBody tr', function () {
 
-        let loan_status = $('#loanBody tr').attr('data-loan-status');
+        let loan_status = $(this).attr('data-loan-status');
+
+        console.log('loan_status: ',loan_status)
         $('.navbar-custom').css('z-index', 0);
         let loan_id = $(this).attr('data-loan_id');
         let complete_loan_id = 'LN-'+String(loan_id).padStart(5, '0');
@@ -172,14 +174,14 @@ $(document).ready(function () {
             return date.toLocaleDateString('en-US', options);
         }
 
-        if (loan_status == 4 && loan_type == 'Scheduled' && today < twoDaysBefore) {
+        if (parseInt(loan_status) == 4 && loan_type == 'Scheduled' && today < twoDaysBefore) {
             Swal.fire({
                 icon: 'info',
                 title: 'Transfer Not Available Yet',
                 text: 'Transfer money will only be available 2 days before the scheduled date (' + formatDate(scheduledDateObj) + ').',
                 confirmButtonText: 'OK'
             });
-        } else if (loan_status == 4 || (loan_type == 'Scheduled' && today > twoDaysBefore)) {
+        } else if (parseInt(loan_status) == 4 || (loan_type == 'Scheduled' && today > twoDaysBefore)) {
             $.ajax({
                 url: '/admin/loan-request/get-bank-details',
                 method: 'POST',
@@ -400,6 +402,8 @@ $(document).ready(function () {
                     // console.log('test', loan_status)
                     if (parseInt(loan.loan_status) == 5) {
                         $('#approveBtn').attr('hidden', true);
+                    } else {
+                        $('#approveBtn').removeAttr('hidden');
                     }
 
                     $('#approvalCounter').text(`${approvedAdmins.length}/3`);
