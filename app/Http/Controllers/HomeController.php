@@ -174,12 +174,21 @@ class HomeController extends Controller
                 "),
                 DB::raw("
                     IF(
-                        (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
-                        1,
+                        (
+                            (lt.payment_status_id != 1 OR lti.payment_status_id != 1)
+                            AND
+                            (lt.payment_status_id = 1 OR lti.payment_status_id = 1)
+                        ),
+                        3,
                         IF(
-                            lt.date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY),
-                            2,
-                            0
+                            (IF(lt.payment_status_id != 1, 0, lt.principal) 
+                            + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
+                            1,
+                            IF(
+                                lt.date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY),
+                                2,
+                                0
+                            )
                         )
                     ) AS payment_status
                 "),

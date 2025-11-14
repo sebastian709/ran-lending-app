@@ -61,6 +61,8 @@
                                     <span class="badge bg-success">Paid</span>
                                 @elseif($data->payment_status == 2)
                                     <span class="badge bg-info text-dark">Upcoming</span>
+                                @elseif($data->payment_status == 3)
+                                    <span class="badge bg-warning text-dark">Partially</span>
                                 @else
                                     -
                                 @endif
