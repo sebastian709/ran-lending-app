@@ -352,9 +352,24 @@ $(document).ready(function () {
                                 return next;
                             }
 
+                            function nextMonthMinusOneDay(base) {
+                                const y = base.getFullYear();
+                                const m = base.getMonth(); // 0-11
+                                const d = base.getDate();
+
+                                // Tentative next month
+                                const next = new Date(y, m + 1, 1);
+
+                                // Days in target month
+                                const daysInTarget = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+                                const day = Math.min(d, daysInTarget);
+
+                                next.setDate(day - 1); // dito yung bawas na -1
+                                return next;
+                            }
                             // Autopopulate Monthly Due Date when modal content is ready
                             const now = new Date();
-                            const due = nextMonthPlusOneDay(now);
+                            const due = nextMonthMinusOneDay(now);
                             $('#monthlyDueDate').val(toYMD(due));
                             $('#transferDate').val(toYMD(now));
                         },
@@ -951,7 +966,7 @@ $(document).on("click", ".transfer_money", function () {
 
     let loan_id          = $(this).attr('data-loan_id');
     let screenshot       = $('#screenshot')[0].files[0];  // file input
-    let refNumber        = $('#refNumber').val();
+    let refNumber        = $('#refNumber').val(); 
     let transferDate     = $('#transferDate').val();
     let processedBy      = $('#processedBy').val();
     let monthlyDueDate   = $('#monthlyDueDate').val();

@@ -487,7 +487,7 @@ class AdminController extends Controller
             ->first();
 
         $user = auth()->user();
-
+ 
         // processed_by )
         if ($bank_details) {
             $bank_details->processed_by = $user->firstname . ' ' . $user->lastname;
@@ -506,7 +506,7 @@ class AdminController extends Controller
         DB::table('admin_money_transfer')->insert([
             'loan_id'          => $request->loan_id,
             'reference_number' => $request->ref_number,
-            'proof_of_transfer'       => $path, // stored path
+            'proof_of_transfer'=> $path, // stored path
             'remarks'          => $request->remarks,
             'processed_by'     => $userId,
             'transfer_date'    => now(),

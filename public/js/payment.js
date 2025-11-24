@@ -436,7 +436,6 @@ $(document).on('click', '#submit_payment', function () {
             id : id,
         });
     });
-    console.log(paymentDue)
 
     // GET DUE PARTIAL
     $('.next_par').each(function () {
@@ -471,7 +470,6 @@ $(document).on('click', '#submit_payment', function () {
             id : id,
         });
     });
-    console.log(paymentData);
 
     $.ajax({
         url: '/payment/submit',

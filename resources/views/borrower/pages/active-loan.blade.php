@@ -85,8 +85,10 @@
                             <h5 class="fw-bold mb-0">
                                 Next Payment:
                                 <h4 class="fw-bold text-primary mb-1">
-                                @if(!$nextPayment)
-                                    Current Month is Already Paid
+                                @if(!$nextPayment && $isnew === 0)
+                                No Due Date Yet
+                                @elseif(!$nextPayment && $isnew > 0)
+                                Current Month is Already Paid
                                 @else
                                     ₱ {{ number_format($nextPayment->total_all, 2) }}
                                 @endif

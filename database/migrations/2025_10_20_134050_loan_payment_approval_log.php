@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('action')->index();  //loan_payment_statuses table
             $table->text('attachment')->nullable();
             $table->text('reason')->nullable();
+            $table->double('actual_amount')->nullable();
             $table->text('remarks')->nullable();
             $table->text('instruction')->nullable();
             $table->boolean('status')->default(1);

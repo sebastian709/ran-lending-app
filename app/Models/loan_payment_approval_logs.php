@@ -15,6 +15,7 @@ class loan_payment_approval_logs extends Model
         'reason',
         'remarks',
         'instruction',
+        'actual_amount',
         'attachment',
         'status',
         'action',
