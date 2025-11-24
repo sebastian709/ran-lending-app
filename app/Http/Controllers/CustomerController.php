@@ -222,14 +222,14 @@ class CustomerController extends Controller
         # 1 - borrower information
         # 2 - payment details
 
-        $condition = $type == 1 ? "lp.loan_application_id" : "lp.id";
+        $condition = $type == 1 ? "lp.loan_application_id" : "lt.id";
 
         $payment_history = DB::table('loan_payments as lp')
             ->leftjoin('loan_tenure as lt', 'lp.id', '=', 'lt.payment_id')
             ->leftjoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
             ->leftjoin('loan_tenure_penalty as ltp', 'lt.id', '=', 'ltp.tenure_id')
             ->select(
-                "lp.id as payment_id",
+                "lt.id as payment_id",
                 "lp.reference_code",
                 DB::raw("DATE_FORMAT(lp.created_at, '%b %d, %Y') as payment_date"),
                 DB::raw("FORMAT(lt.principal, 2) as principal"),

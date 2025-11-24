@@ -152,7 +152,7 @@
                     <span class="payment-interest">₱</span>
                 </li>
                 <li class="breakdown-item d-flex align-items-center rebate d-none">
-                    <span class="label">Rebate</span>
+                    <span class="label">Wave Interest</span>
                     <span class="flex-line mx-2"></span>
                     <span class="payment-rebate">₱ 0.00</span>
                 </li>

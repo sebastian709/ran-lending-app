@@ -141,9 +141,9 @@
               <div class="col-md-12 d-none" id="referral-names">
                 <select class="form-select" name="referral_names" required>
                   <option value="0">Select</option>
-                  <option value="1">Ms. NC</option>
-                  <option value="2">Ms. Riki</option>
-                  <option value="3">Ms. Almira</option>
+                  <option value="1">JK</option>
+                  <option value="2">Hope</option>
+                  <option value="3">Dylan</option>
                 </select>
               </div>
             </div>
