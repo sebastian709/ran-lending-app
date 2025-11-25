@@ -95,7 +95,7 @@ Route::prefix('admin')->group(function () {
 
     // page loader
     Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
-    Route::get('/view-appeal/{loan_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
+    Route::get('/view-appeal/{appeal_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
     Route::get('/appeal-request', [AdminController::class, 'viewAppealRequest'])->name('view.appealRequest'); 
 
 
@@ -156,7 +156,8 @@ Route::post('/get_appeal_page_data_view_more', [PaymentPageController::class, 'g
 Route::post('/get_pending_data', [PaymentPageController::class, 'get_pending_data'])->name('payment.pending.data');
 Route::post('/get_pending_data_two', [PaymentPageController::class, 'get_pending_data_two'])->name('payment.pending.data_two');
 Route::post('/paymentpage/verify/{id}/{value}', [PaymentPageController::class, 'verify'])->name('payment.pending.verify');
-Route::post('/checkappeal', [PaymentPageController::class, 'verify'])->name('payment.pending.verify');
+Route::post('/checkappeal', [PaymentPageController::class, 'checkappeal'])->name('payment.pending.checkappeal');
+Route::post('/appealuser', [PaymentPageController::class, 'appealuser'])->name('payment.appeal');
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');

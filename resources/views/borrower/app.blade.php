@@ -129,22 +129,6 @@
                                         <i class="ri-user-line me-2"></i>Profile
                                     </a>
                                 </li>
-                                <!-- <li>
-                                                    <a class="dropdown-item"  href="#" data-url="/borrower/change-password">
-                                                        <i class="ri-key-2-line"></i> Change Password
-                                                    </a>
-                                                </li> -->
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="ri-settings-line me-2"></i>Settings
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="ri-question-line me-2"></i>
-                                        Help & Support
-                                    </a>
-                                </li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>

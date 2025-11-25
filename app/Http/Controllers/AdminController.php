@@ -580,7 +580,7 @@ class AdminController extends Controller
 
    public function viewAppeal(Request $request)
     {
-        $loan_id = $request->loan_id;
+        $appeal_id = $request->appeal_id;
 
         $appeal = DB::table('loan_appeal')
         ->join('loan_application', 'loan_appeal.loan_id', '=', 'loan_application.id')
@@ -596,7 +596,7 @@ class AdminController extends Controller
             'loan_appeal.id as appeal_id',
             'loan_appeal.receive_status',
         )
-        ->where('loan_appeal.loan_id', $loan_id)
+        ->where('loan_appeal.id', $appeal_id)
         ->first();
 
 
@@ -610,6 +610,7 @@ class AdminController extends Controller
             ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
             ->select(
                 'loan_appeal.reason',
+                'loan_appeal.id',
                 DB::raw("CONCAT(users.firstname, ' ', users.lastname) as borrower_name"),
                 'loan_appeal.loan_id',
                 DB::raw("DATE_FORMAT(loan_appeal.date_of_appeal, '%b %e, %Y') as formatted_date"),
@@ -627,7 +628,13 @@ class AdminController extends Controller
         $id = $request->id;
         DB::table('loan_appeal')
             ->where('id', $id)
-            ->update(['receive_status' => 1]);
+            ->update([
+                    'receive_status' => 1 ,
+                    'updated_at' => now()
+                ]);
+
+        $payment_id = DB::selectOne("SELECT payment_id from loan_appeal where id = ?",[$id]);
+        DB::update('UPDATE loan_payments SET payment_status_id = 3 WHERE id = ?', [$payment_id->payment_id]);
 
         return response()->json([
             'status' => 'success',

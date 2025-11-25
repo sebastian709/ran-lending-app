@@ -144,47 +144,6 @@ class PaymentPageController extends Controller
         $length = $request->get('length', 10);
         $search = $request->input('search.value');
 
-        // // Total records
-        // $totalRecords = DB::table('loan_payments as lp')
-        // ->join('loan_payment_statuses as lps', 'lps.id', '=', 'lp.payment_status_id')
-        // ->join('loan_application as la', 'la.id', '=', 'lp.loan_application_id')
-        // ->join('users as u', 'u.id', '=', 'la.loan_applicant')
-        // ->where('lps.id', 3)
-        // ->count('lp.id');
-
-        // // Query
-        // $query = DB::table('loan_payments as lp')
-        // ->select([
-        //     'lp.loan_application_id',
-        //     'lp.payment_status_id',
-        //     DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS name"),
-        //     'lps.type',
-        //     'lp.id',
-        //     DB::raw('DATE(lp.created_at) AS date_paid'),
-        //     DB::raw('DATE(lpal.created_at) AS date_triggered'),
-        // ])
-        // ->join('loan_payment_statuses as lps', 'lps.id', '=', 'lp.payment_status_id')
-        // ->join('loan_application as la', 'la.id', '=', 'lp.loan_application_id')
-        // ->join('users as u', 'u.id', '=', 'la.loan_applicant')
-        // ->join('loan_payment_approval_logs as lpal', 'lpal.loan_payment_id', '=', 'lp.id')
-        // ->where('lps.id', 3);
-
-        // $recordsFiltered = $query->count();
-
-        // // Pagination
-        // $pendings = $query->skip($start)->take($length)->get();
-        // // Add action column
-        // $data = $pendings->map(function ($pending) {
-        //     return [
-        //         'loan_application_id' => $pending->loan_application_id,
-        //         'name' => $pending->name,
-        //         'date_paid' => $pending->date_paid,
-        //         'date_triggered' => $pending->date_triggered,
-        //         'action' => '<button type="button" data-id="'.$pending->loan_application_id.'" data-pay_id="'.$pending->id.'" class="btn sm-btn btn-primary verified_view">View</button>',
-        //     ];
-        // });
-
-
         // Total records
         $totalRecords = DB::select("SELECT count(lp.id) total
        FROM loan_payments AS lp
@@ -309,51 +268,6 @@ class PaymentPageController extends Controller
         $length = $request->get('length', 10);
         $search = $request->input('search.value');
 
-        // Total records
-        // $totalRecords = DB::table('loan_payments as lp')
-        // ->join('loan_payment_statuses as lps', 'lps.id', '=', 'lp.payment_status_id')
-        // ->join('loan_application as la', 'la.id', '=', 'lp.loan_application_id')
-        // ->join('users as u', 'u.id', '=', 'la.loan_applicant')
-        // ->join('loan_payment_approval_logs as lpal', 'lpal.loan_payment_id', '=', 'lp.id')
-        // ->where('lps.id', 5)
-        // ->count('lp.id');
-
-        // // Query
-        // $query = DB::table('loan_payments as lp')
-        // ->select([
-        //     'lp.loan_application_id',
-        //     'lp.payment_status_id',
-        //     DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS name"),
-        //     'lps.type',
-        //     'lp.id',
-        //     DB::raw('DATE(lp.created_at) AS date_paid'),
-        //     DB::raw('DATE(lpal.created_at) AS date_triggered'),
-        //     DB::raw('lpal.id AS logid'),
-        // ])
-        // ->join('loan_payment_statuses as lps', 'lps.id', '=', 'lp.payment_status_id')
-        // ->join('loan_application as la', 'la.id', '=', 'lp.loan_application_id')
-        // ->join('users as u', 'u.id', '=', 'la.loan_applicant')
-        // ->join('loan_payment_approval_logs as lpal', 'lpal.loan_payment_id', '=', 'lp.id')
-        // ->where('lps.id', 5);
-
-        // $recordsFiltered = $query->count();
-
-        // // Pagination
-        // $pendings = $query->skip($start)->take($length)->get();
-        // // Add action column
-        // $data = $pendings->map(function ($pending) {
-        //     return [
-        //         'loan_application_id' => $pending->loan_application_id,
-        //         'name' => $pending->name,
-        //         'date_paid' => $pending->date_paid,
-        //         'date_triggered' => $pending->date_triggered,
-        //         'logid' => $pending->logid,
-        //         'action' => '<button type="button" data-id="'.$pending->loan_application_id.'" data-pay_id="'.$pending->id.'" class="btn sm-btn btn-primary revision_view">View</button>',
-        //     ];
-        // });
-
-        
-
          // Total records
         $totalRecords = DB::select("SELECT count(lp.id) total
        FROM loan_payments AS lp
@@ -445,6 +359,12 @@ class PaymentPageController extends Controller
                     GROUP BY lt.id, lt.count, lt.date, lt.payment_id, lti.payment_id, lt.principal, lti.interest
                     HAVING total_amount > 0", [$request->id]);
         
+        $total_interest = DB::selectOne("SELECT 
+                        sum(interest) interest
+                    FROM loan_tenure lt
+                    INNER JOIN loan_tenure_interest lti ON lti.tenure_id = lt.id
+                    WHERE lt.loan_id = ?", [$request->id]);
+        
         $date = $date[0];
 
         $history = DB::select("SELECT ifnull(remarks,'N/A') remarks,lps.type,DATE_FORMAT(date(lp.created_at), '%M %D %Y') date,lp.payment_status_id
@@ -460,6 +380,7 @@ class PaymentPageController extends Controller
             'due' => $due,
             'date' => $date,
             'history' => $history,
+            'total_interest' => $total_interest->interest,
         ]);
 
     }
@@ -610,18 +531,44 @@ class PaymentPageController extends Controller
         if ($request->value == 4) {
             $path = null;
 
+            // if ($request->hasFile('imageFile')) {
+            //     $file = $request->file('imageFile');
+            //     $filename = time() . '.' . $file->getClientOriginalExtension();
+            //     $image = Image::make($file)
+            //     ->resize(800, 800, function ($constraint) {
+            //         $constraint->aspectRatio(); 
+            //         $constraint->upsize();
+            //     })
+            //     ->save(storage_path('public/storage/uploads/' . $filename), 80);
+            //     $path = 'uploads/rejected_images/' . $filename;
+            //     Storage::disk('public')->put($path, (string) $image);
+
+            // }
             if ($request->hasFile('imageFile')) {
+
                 $file = $request->file('imageFile');
                 $filename = time() . '.' . $file->getClientOriginalExtension();
-                $image = Image::make($file)
-                ->resize(800, 800, function ($constraint) {
-                    $constraint->aspectRatio(); 
-                    $constraint->upsize();
-                })
-                ->save(storage_path('app/public/upload_files/' . $filename), 80);
-                $path = 'rejected_images/' . $filename;
-                Storage::disk('public')->put($path, (string) $image);
 
+                // Process image
+                $image = Image::make($file)
+                    ->resize(800, 800, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+
+                // Direct physical path: public/storage/uploads/appeal_attachments
+                $destination = public_path('storage/uploads/appeal_attachments/' . $filename);
+
+                // Ensure folder exists
+                if (!file_exists(dirname($destination))) {
+                    mkdir(dirname($destination), 0777, true);
+                }
+
+                // Save directly to public/storage
+                $image->save($destination, 80);
+
+                // dd('uploads/appeal_attachments/' . $filename);
+                $path = 'uploads/appeal_attachments/' . $filename;
             }
 
             loan_payment_approval_logs::insertGetId([
@@ -917,4 +864,165 @@ class PaymentPageController extends Controller
         ]);
     }
 
+    public function checkappeal(Request $request){
+        // dd(auth()->id());
+
+        // -- 1	For Verification
+        // -- 2	For Correction
+        // -- 3	Verified
+        // -- 4	Rejected
+        // -- 5	For Revision
+        // -- 6	For Apppeal
+
+        $data['loanid'] = DB::selectOne("SELECT id from loan_application 
+                        where loan_applicant = ?
+                        order by id desc limit 1",[auth()->id()]);
+        
+        $data['paymentid'] = DB::selectOne("SELECT id,payment_status_id 
+                        from loan_payments 
+                        where loan_application_id = ?
+                        order by id desc limit 1",[$data['loanid']->id]);
+
+        $data['paymentlog'] = DB::selectOne("SELECT * from loan_payment_approval_logs 
+                        where loan_payment_id = ? 
+                        order by id desc limit 1",[$data['paymentid']->id]);
+
+        // dd($data);
+        
+    
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'image' => asset('storage/' . $data['paymentlog']->attachment) 
+        ]);
+
+    }
+
+
+        public function appealuser(Request $request){
+        // dd($request->all(), $request->file());
+
+        // -- 1	For Verification
+        // -- 2	For Correction
+        // -- 3	Verified
+        // -- 4	Rejected
+        // -- 5	For Revision
+        // -- 6	For Apppeal
+        $data['email'] = DB::selectOne("SELECT email from users where id = ?",[auth()->id()]);
+                        
+        $data['loanid'] = DB::selectOne("SELECT id from loan_application 
+                        where loan_applicant = ?
+                        order by id desc limit 1",[auth()->id()]);
+        
+        $data['paymentid'] = DB::selectOne("SELECT id,payment_status_id 
+                        from loan_payments 
+                        where loan_application_id = ?
+                        order by id desc limit 1",[$data['loanid']->id]);
+
+        $data['paymentlog'] = DB::selectOne("SELECT * from loan_payment_approval_logs 
+                        where loan_payment_id = ? 
+                        order by id desc limit 1",[$data['paymentid']->id]);
+
+        // $path = null;
+
+        // if ($request->hasFile('upload')) {
+
+        //     $file = $request->file('upload');
+        //     $filename = time() . '.' . $file->getClientOriginalExtension();
+
+        //     // Process image
+        //     $image = Image::make($file)
+        //         ->resize(800, 800, function ($constraint) {
+        //             $constraint->aspectRatio();
+        //             $constraint->upsize();
+        //         });
+
+        //     // Direct physical path: public/storage/uploads/appeal_attachments
+        //     $destination = public_path('storage/uploads/appeal_attachments/' . $filename);
+
+        //     // Ensure folder exists
+        //     if (!file_exists(dirname($destination))) {
+        //         mkdir(dirname($destination), 0777, true);
+        //     }
+
+        //     // Save directly to public/storage
+        //     $image->save($destination, 80);
+
+        //     // dd('uploads/appeal_attachments/' . $filename);
+        //     $path = 'uploads/appeal_attachments/' . $filename;
+        // }
+
+
+            //PROCESS APPEAL
+            // DB::table('loan_payment_approval_appeal')->insert([
+            //     'loan_payment_approval_log_id' => $data['paymentlog']->id,
+            //     'reason' => $request->reason,
+            //     'attachment' => $path,
+            //     'created_at' => now(),
+            //     'updated_at' => now()
+            // ]);
+
+
+        // return response()->json([
+        //     'success' => true,
+        // ]);
+
+
+        $updateData = [
+            'loan_id' => $data['loanid']->id,
+            'payment_id' => $data['paymentid']->id,
+            'reason' => $request->reason,
+            'date_of_appeal' => now(),
+            'uploaded_proof' => null, // default
+        ];
+
+        // File upload handling
+        $folderMap = [
+            'upload' => ['folder' => 'loan_appeal', 'db_field' => 'uploaded_proof'],
+        ];
+
+        foreach ($folderMap as $requestField => $info) {
+            if ($request->hasFile($requestField)) {
+                $file = $request->file($requestField);
+
+                $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+                $directory = public_path("storage/uploads/{$info['folder']}");
+
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0775, true);
+                }
+
+                $file->move($directory, $filename);
+                $updateData[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
+            }
+        }
+
+        // Insert directly into loan_appeal table
+        DB::table('loan_appeal')->insert($updateData);
+
+        //UPDATE DATA
+        DB::update('UPDATE loan_payments SET payment_status_id = 6 WHERE id = ?', [$data['paymentid']->id]);
+        // dd($data);
+
+        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', env('BREVO_API_KEY'));
+        $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
+
+        $content = "Appeal Has been Sent to the Admin . Please Wait for the Verdict.";
+
+        $emailObj = new SendSmtpEmail([
+            'subject' => 'Appeal Sent Confirmation',
+            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'to' => [['email' => $data['email']->email]],
+            'htmlContent' => $content,
+        ]);
+        // dd($emailObj);
+        $apiInstance->sendTransacEmail($emailObj);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Appeal submitted successfully',
+            'name' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+        ]);
+
+    }
 }

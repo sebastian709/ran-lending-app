@@ -48,11 +48,6 @@
         ✏️ For Revision
       </button>
     </li>
-    <li class="nav-item px-2" role="presentation">
-      <button class="nav-link" id="appeal-tab" data-bs-toggle="pill" data-bs-target="#appeal" type="button" role="tab">
-        📩 For Appeal
-      </button>
-    </li>
   </ul>
 
   <!-- Tabs Content -->
@@ -155,28 +150,6 @@
       </div>
     </div>
 
-    <!-- For Appeal -->
-    <div class="tab-pane fade" id="appeal" role="tabpanel">
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body">
-          <h5 class="mb-3 text-primary"><i class="bi bi-envelope-fill"></i> For Appeal</h5>
-          <div style="width:100%" class="table-responsive">
-            <table style="width:100%" id="table_appeal" class="table table-hover align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Loan ID</th>
-                  <th>Borrowers Name</th>
-                  <th>Payment</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
 
   </div>
 </div>
@@ -246,6 +219,10 @@
                   <div class="row mb-3">
                     <div class="col-6 text-secondary">Loan Amount:</div>
                     <div class="col-6 text-end fw-bold text-dark loan_amount"></div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-6 text-secondary">Total Interest:</div>
+                    <div class="col-6 text-end fw-bold text-dark interest_amount"></div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-6 text-secondary">Loan Term:</div>
@@ -442,7 +419,7 @@ $(document).on('click', '#pending-tab', function () {
 });
 
 
-$(document).on('click', '#verified-tab', function () {
+$(document).off('click', '#verified-tab').on('click', '#verified-tab', function () {
   $('#table_verified').DataTable().clear().destroy();
   $('#table_verified').DataTable({
     processing: true,
@@ -458,6 +435,7 @@ $(document).on('click', '#verified-tab', function () {
     ]
   });
 });
+
 
 $(document).on('click', '#rejected-tab', function () {
   $('#table_rejected').DataTable().clear().destroy();
@@ -496,24 +474,6 @@ $(document).on('click', '#revision-tab', function () {
 });
 
 
-$(document).on('click', '#appeal-tab', function () {
-  $('#table_appeal').DataTable().clear().destroy();
-  $('#table_appeal').DataTable({
-    processing: true,
-    serverSide: true,
-    responsive: true,
-    ajax: "/get_appeal_page_data",
-    columns: [
-      { data: 'loan_application_id' },
-      { data: 'name' },
-      { data: 'type' },
-      { data: 'action', orderable: false, searchable: false }
-    ]
-  });
-});
-
-
-
 $(document).on('click', '.pending_view', function () {
   var id = $(this).attr('data-id');
   var pay_id = $(this).attr('data-pay_id');
@@ -547,6 +507,7 @@ $(document).on('click', '.pending_view', function () {
           let total = response.data.principal + response.data.interest;
           //LOAN DETAILS
           $('.loan_amount').text('₱'+(parseFloat(response.data.loan_amount).toFixed(2)));
+          $('.interest_amount').text('₱'+(parseFloat(response.total_interest).toFixed(2)));
           $('.loan_term').text(response.date.total_tenure + ' Month(s)');
           $('.loan_progress').text(response.date.count + ' Month(s)');
           $('.loan_due').text(response.date.date);
