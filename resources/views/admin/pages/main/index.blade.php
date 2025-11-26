@@ -31,21 +31,21 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="color: green"><i class="bi bi-currency-dollar"></i></div>
                     <div class="stat-label">Available Money</div>
-                    <div class="stat-value">₱2,450,000</div>
+                    <div class="stat-value quick__money"></div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-icon" style="color: var(--success);">✓</div>
                     <div class="stat-label">Balance</div>
-                    <div class="stat-value">₱1,275,000</div>
+                    <div class="stat-value quick_balance"></div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-icon" style="color: orange"><i class="bi bi-bar-chart-fill"></i></div>
                     <div class="stat-label">Total Tithes</div>
-                    <div class="stat-value">10%</div>
+                    <div class="stat-value quick_tithes"></div>
                     <small class="text-muted">Interest + Penalty</small>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="color: #d81c1c;"><i class="bi bi-graph-up-arrow"></i></div>
                     <div class="stat-label">Miscellaneous</div>
-                    <div class="stat-value">10%</div>
+                    <div class="stat-value quick_misc"></div>
                     <small class="text-muted">Interest + Penalty</small>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="color: var(--primary);">💳</div>
                     <div class="stat-label">Total Amount Disbursed</div>
-                    <div class="stat-value">₱2,450,000</div>
+                    <div class="stat-value total_disbursed"></div>
                     <small class="text-muted">Principal Loan Amount</small>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="color: var(--warning);">📊</div>
                     <div class="stat-label">Outstanding Balance</div>
-                    <div class="stat-value">₱1,275,000</div>
+                    <div class="stat-value outstanding_balance"></div>
                     <small class="text-muted">Unpaid Principal + Interest</small>
                 </div>
             </div>
@@ -117,7 +117,7 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="color: var(--success);">✓</div>
                     <div class="stat-label">Total Amount Repaid</div>
-                    <div class="stat-value">₱1,175,000</div>
+                    <div class="stat-value verified_amount"></div>
                     <small class="text-muted">All Verified Repayments</small>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="color: #8b5cf6;">📈</div>
                     <div class="stat-label">Next 30 Days Expected</div>
-                    <div class="stat-value">₱600,000</div>
+                    <div class="stat-value expected_amount"></div>
                     <small class="text-muted">Expected Repayments</small>
                 </div>
             </div>
@@ -166,33 +166,41 @@
 
         <!-- Added Borrower Insight section with borrower statistics -->
         <div class="section-title">Borrower Insight</div>
-        <div class="row g-4 mb-5">
+        <div class="row g-4 mb-5" id="insight">
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: var(--primary);">👥</div>
+                     <div class="stat-icon" style="color: var(--primary);">
+                    <i class="bi bi-people-fill"></i>
+                </div>
                     <div class="stat-label">Total Borrowers</div>
-                    <div class="stat-value">540</div>
+                    <div class="stat-value total_borrower"></div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: #06b6d4;">🔄</div>
+                    <div class="stat-icon" style="color: #06b6d4;">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
                     <div class="stat-label">Active Borrowers</div>
-                    <div class="stat-value">220</div>
+                    <div class="stat-value active_borrower"></div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: var(--success);">⭐</div>
+                    <div class="stat-icon" style="color: #eded10">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
                     <div class="stat-label">Good Payers</div>
-                    <div class="stat-value">185</div>
+                    <div class="stat-value good_payer"></div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: var(--danger);">⚠️</div>
+                    <div class="stat-icon" style="color:red">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
                     <div class="stat-label">With Violations</div>
-                    <div class="stat-value">35</div>
+                    <div class="stat-value with_violations"></div>
                 </div>
             </div>
         </div>

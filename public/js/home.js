@@ -32,12 +32,15 @@ $(document).ready(function() {
 });
 
 function load_dashboard(filter) {
+    quick_statistics(filter)
     total_applications(filter);
     scheduled_loans();
     recent_applications();
     recent_payments();
     financial_overview(filter);
     top_borrowers(filter);
+    borrower_insight(filter);
+    loan_insight(filter);
 }
 
 
@@ -184,6 +187,17 @@ function scheduled_loans() {
         method: "GET",
         dataType: "json",
         success: function(response) {
+
+            if (!response || response.length === 0) {
+                $('#scheduled_div').html(`
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                        <p class="mt-3 text-muted">No scheduled loans found</p>
+                    </div>
+                `);
+                return;
+            }
+
             let html = `
                 <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <p>Upcoming loan payments that require attention</p>
@@ -256,6 +270,17 @@ function recent_applications() {
         method: "GET",
         dataType: "json",
         success: function(response) {
+
+            if (!response || response.length === 0) {
+                $('#recent_div').html(`
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                        <p class="mt-3 text-muted">No Recent loans found</p>
+                    </div>
+                `);
+                return;
+            }
+
             let html = `
                 <div class="table-header">
                     <p>Latest loan applications submitted</p>
@@ -377,6 +402,17 @@ function recent_payments() {
         dataType: "json",
         success: function(response) {
 
+
+            if (!response || response.length === 0) {
+                $('#recentPayments_div').html(`
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                        <p class="mt-3 text-muted">No payments found</p>
+                    </div>
+                `);
+                return;
+            }
+
             let rows = "";
 
             response.forEach(item => {
@@ -480,6 +516,18 @@ function top_borrowers(filter = 'month') {
         data: { filter: filter },
         dataType: "json",
         success: function(response) {
+
+            if (!response || response.length === 0) {
+                $('#top_borrowers').html(`
+                    <div class="text-center py-5 w-100">
+                        <i class="bi bi-person-x" style="font-size: 3rem; color: #6c757d;"></i>
+                        <p class="mt-3 text-muted">No top borrowers found</p>
+                    </div>
+                `);
+                return;
+            }
+
+
             let html = '';
 
             response.forEach(item => {
@@ -513,6 +561,100 @@ function top_borrowers(filter = 'month') {
         }
     });
 }
+
+function borrower_insight(filter = 'month') {
+
+    $('.total_borrower, .active_borrower, .with_violations, .good_payer').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-insight",
+        method: "GET",
+        data: { filter: filter },
+        dataType: "json",
+        success: function(response) {
+            
+            let html = '';
+
+            $('.total_borrower').html(response.total_borrowers);
+            $('.active_borrower').html(response.active_borrowers);
+            $('.with_violations').html(response.violations);
+            $('.good_payer').html(response.good_payer);
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
+function loan_insight(filter = 'month') {
+
+    $('.total_disbursed, .outstanding_balance, .verified_amount, .expected_amount').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-loan-insight",
+        method: "GET",
+        data: { filter: filter },
+        dataType: "json",
+        success: function(response) {
+            
+            let html = '';
+
+        $('.total_disbursed').html('₱ ' + Number(response.total_disburse).toLocaleString());
+        $('.outstanding_balance').html('₱ ' + Number(response.total_balance).toLocaleString());
+        $('.verified_amount').html('₱ ' + Number(response.verified_payments).toLocaleString());
+        $('.expected_amount').html('₱ ' + Number(response.upcoming_balance).toLocaleString());
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
+function quick_statistics(filter = 'month') {
+
+    $('.quick__money, .quick_balance, .quick_tithes, .quick_misc').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-statistics",
+        method: "GET",
+        data: { filter: filter },
+        dataType: "json",
+        success: function(response) {
+            
+            let html = '';
+
+        $('.quick__money').html('₱ ' + Number(response.available_money).toLocaleString());
+        $('.quick_balance').html('₱ ' + Number(response.balance).toLocaleString());
+        $('.quick_tithes').html('₱ ' + Number(response.tithes).toLocaleString());
+        $('.quick_misc').html('₱ ' + Number(response.misc).toLocaleString());
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
 
 let calendarInitialized = false;
 

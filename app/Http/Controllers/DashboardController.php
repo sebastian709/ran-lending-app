@@ -191,7 +191,7 @@ class DashboardController extends Controller
         return response()->json($topBorrowers);
     }
 
-  public function getLoanDates(Request $request)
+    public function getLoanDates(Request $request)
     {
         $paymentId = $request->input('payment_id', 0); // default 9
 
@@ -219,6 +219,173 @@ class DashboardController extends Controller
 
         return response()->json($events);
     }
+
+    public function getBorrowerInsight(Request $request)
+    {
+        $filter = $request->input('filter', 'month'); // default filter
+
+        // Total borrowers query
+        $totalBorrowersQuery = DB::table('users')
+            ->where('is_admin', 0)
+            ->where('is_super_admin', 0)
+            ->where('status', 1);
+
+        // Active borrowers query
+        $activeBorrowersQuery = DB::table('users as u')
+            ->join('loan_application as la', 'la.loan_applicant', '=', 'u.id')
+            ->where('u.is_admin', 0)
+            ->where('u.is_super_admin', 0)
+            ->where('u.status', 1)
+            ->distinct('u.id');
+
+        // Apply time filters
+        if ($filter === 'week') {
+            $activeBorrowersQuery->whereBetween('la.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            $totalBorrowersQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        } elseif ($filter === 'month') {
+            $activeBorrowersQuery->whereMonth('la.created_at', now()->month)
+                                ->whereYear('la.created_at', now()->year);
+            $totalBorrowersQuery->whereMonth('created_at', now()->month)
+                                ->whereYear('created_at', now()->year);
+        } elseif ($filter === 'year') {
+            $activeBorrowersQuery->whereYear('la.created_at', now()->year);
+            $totalBorrowersQuery->whereYear('created_at', now()->year);
+        }
+
+        // Execute queries
+        $totalBorrowers = $totalBorrowersQuery->count();
+        $activeBorrowers = $activeBorrowersQuery->count('u.id');
+
+        return response()->json([
+            'total_borrowers' => $totalBorrowers,
+            'active_borrowers' => $activeBorrowers,
+            'violations' => 0,
+            'good_payer' => 0,
+        ]);
+    }
+
+    public function LoanInsight(Request $request)
+    {
+        $filter = $request->input('filter', 'month'); // default filter
+
+        // Base date range based on filter
+        $startDate = null;
+        $endDate = null;
+
+        if ($filter === 'week') {
+            $startDate = now()->startOfWeek();
+            $endDate = now()->endOfWeek();
+        } elseif ($filter === 'month') {
+            $startDate = now()->startOfMonth();
+            $endDate = now()->endOfMonth();
+        } elseif ($filter === 'year') {
+            $startDate = now()->startOfYear();
+            $endDate = now()->endOfYear();
+        }
+
+        // Total disbursed loans
+        $totalDisburseQuery = DB::table('loan_application')
+            ->where('status', 1)
+            ->where('loan_status', 5);
+
+        if ($startDate && $endDate) {
+            $totalDisburseQuery->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $totalDisburse = $totalDisburseQuery->sum('loan_amount');
+
+        // Total balance (unpaid)
+        $totalBalanceQuery = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', 0);
+
+        // if ($startDate && $endDate) {
+        //     $totalBalanceQuery->whereBetween('lt.date', [$startDate, $endDate]);
+        // }
+
+        $totalBalance = $totalBalanceQuery->sum(DB::raw('lt.principal + IFNULL(lti.interest, 0)'));
+
+        // Verified payments (paid and confirmed)
+        $verifiedPaymentsQuery = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', '!=', 0)
+            ->where('lt.payment_status_id', 3);
+
+        if ($startDate && $endDate) {
+            $verifiedPaymentsQuery->whereBetween('lt.updated_at', [$startDate, $endDate]);
+        }
+
+        $verifiedPayments = $verifiedPaymentsQuery->sum(DB::raw('lt.principal + IFNULL(lti.interest, 0)'));
+
+        // Upcoming payments in next 30 days (unpaid)
+        $next30Days = now()->addDays(30);
+        $upcomingBalanceQuery = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', 0)
+            ->where('lt.date', '<=', $next30Days);
+
+        $upcomingBalance = $upcomingBalanceQuery->sum(DB::raw('lt.principal + IFNULL(lti.interest, 0)'));
+
+        return response()->json([
+            'total_disburse' => $totalDisburse,
+            'total_balance' => $totalBalance,
+            'verified_payments' => $verifiedPayments,
+            'upcoming_balance' => $upcomingBalance,
+        ]);
+    }
+
+
+    public function QuickStats(Request $request)
+    {
+        $filter = $request->input('filter', 'month'); // default filter
+
+        // Determine date range based on filter
+        if ($filter === 'week') {
+            $startDate = now()->startOfWeek();
+            $endDate = now()->endOfWeek();
+        } elseif ($filter === 'month') {
+            $startDate = now()->startOfMonth();
+            $endDate = now()->endOfMonth();
+        } elseif ($filter === 'year') {
+            $startDate = now()->startOfYear();
+            $endDate = now()->endOfYear();
+        }
+
+        //PENALTY (PAID + CONFIRMED)
+        $penaltyQuery = DB::table('loan_tenure_penalty')
+            ->where('payment_id', '!=', 0)
+            ->where('payment_status_id', 3);
+
+        if (isset($startDate) && isset($endDate)) {
+            $penaltyQuery->whereBetween('updated_at', [$startDate, $endDate]);
+        }
+
+        $totalPenalty = $penaltyQuery->sum('penalty');
+
+        //INTEREST (PAID + CONFIRMED)
+        $interestQuery = DB::table('loan_tenure_interest')
+            ->where('payment_id', '!=', 0)
+            ->where('payment_status_id', 3);
+
+        if (isset($startDate) && isset($endDate)) {
+            $interestQuery->whereBetween('updated_at', [$startDate, $endDate]);
+        }
+
+        $totalInterest = $interestQuery->sum('interest');
+
+        //COMBINE & TIGTHES
+        $totalAmount = $totalPenalty + $totalInterest;
+        $percentage_amount = $totalAmount * 0.10;
+
+        return response()->json([
+            'available_money' => 0,
+            'balance' => 0,
+            'tithes' => $percentage_amount,
+            'misc' => $percentage_amount,
+        ]);
+    }
+
+
 
 
 

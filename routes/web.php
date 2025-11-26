@@ -242,3 +242,6 @@ Route::get('/admin/get-recent-payments', [DashboardController::class, 'getRecent
 Route::get('/admin/get-top-borrowers', [DashboardController::class, 'topBorrowers']);
 Route::get('/admin/get-financial-overview', [DashboardController::class, 'financialOverview']);
 Route::get('/admin/get-calendar', [DashboardController::class, 'getLoanDates']);
+Route::get('/admin/get-insight', [DashboardController::class, 'getBorrowerInsight']);
+Route::get('/admin/get-loan-insight', [DashboardController::class, 'LoanInsight']);
+Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);
