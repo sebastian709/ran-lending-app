@@ -36,7 +36,7 @@ class PaymentController extends Controller
             return view('borrower.layouts.payment_pending',compact('payment_status'));
         }
 
-        if ($loanStatus < 4 || $loanStatus == 999) {
+        if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
             return view('borrower.layouts.payment-state', compact('loanStatus'));
         }
 

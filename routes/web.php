@@ -16,6 +16,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NoAuthController;
 use App\Http\Controllers\Admin\PaymentPageController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 
 
 // Route::get('/', [ChatTestController::class, 'login']);
@@ -240,3 +241,16 @@ Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
 
 Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived']);
 Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment']);
+
+Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+Route::get('/admin/get-total-applications', [DashboardController::class, 'getTotalApplications']);
+Route::get('/admin/get-scheduled-loans', [DashboardController::class, 'getScheduledLoans']);
+Route::get('/admin/get-recent-application', [DashboardController::class, 'getRecentApplications']);
+Route::get('/admin/get-recent-payments', [DashboardController::class, 'getRecentPayments']);
+
+Route::get('/admin/get-top-borrowers', [DashboardController::class, 'topBorrowers']);
+Route::get('/admin/get-financial-overview', [DashboardController::class, 'financialOverview']);
+Route::get('/admin/get-calendar', [DashboardController::class, 'getLoanDates']);
+Route::get('/admin/get-insight', [DashboardController::class, 'getBorrowerInsight']);
+Route::get('/admin/get-loan-insight', [DashboardController::class, 'LoanInsight']);
+Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);

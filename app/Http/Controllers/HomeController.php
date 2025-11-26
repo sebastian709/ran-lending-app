@@ -46,7 +46,7 @@ class HomeController extends Controller
         // dd($loanApplication);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
-        if ($loanStatus < 4 || $loanStatus == 999) {
+        if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
             return view('borrower.pages.home', compact('loanStatus'));
         }
 
@@ -133,7 +133,7 @@ class HomeController extends Controller
         // dd($loanApplication->id);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
-        if ($loanStatus < 4 || $loanStatus == 999) {
+        if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
             return view('borrower.pages.home', compact('loanStatus'));
         }
 
@@ -210,6 +210,14 @@ class HomeController extends Controller
                 ->where('loan_status', 0)
                 ->first();
 
+            // last_closed_loan_data
+            $last_closed = DB::table('loan_application')
+                ->where('loan_applicant', $id)
+                ->where('status', 1)
+                ->where('loan_status', 7)
+                ->orderBy('id', 'desc')
+                ->first();
+
             $ref_code = null;
             if ($loan && $loan->referral_code_id) {
                 $ref_code = DB::table('referral_code')
@@ -237,12 +245,12 @@ class HomeController extends Controller
 
                 // Additional Fields
                 'payslip_img' => $loan->payslip_img ?? '',
-                'bank_name' => $loan->bank_name ?? '',
-                'account_number' => $loan->account_number ?? '',
-                'upload_qr_code_img' => $loan->upload_qr_code_img ?? '',
-                'government_type_id' => $loan->government_type_id ?? '',
-                'government_id_img' => $loan->government_id_img ?? '',
-                'billing_statement_img' => $loan->billing_statement_img ?? '',
+                'bank_name' => $last_closed->bank_name ?? '',
+                'account_number' => $last_closed->account_number ?? '',
+                'upload_qr_code_img' => $last_closed->upload_qr_code_img ?? '',
+                'government_type_id' => $last_closed->government_type_id ?? '',
+                'government_id_img' => $last_closed->government_id_img ?? '',
+                'billing_statement_img' => $last_closed->billing_statement_img ?? '',
                 'signature_img' => $loan->signature_img ?? '',
             ]);
         } catch (\Exception $e) {
@@ -413,20 +421,46 @@ class HomeController extends Controller
 
     public function finalSubmit(Request $request)
     {
-        // dd('tests');
         try {
-            $validator = Validator::make($request->all(), [
+            $userId = auth()->id();
+
+            // Check if user has previous CLOSED loan
+            $loan_closed = DB::table('loan_application')
+                ->where('loan_applicant', $userId)
+                ->where('status', 1)
+                ->where('loan_status', 7)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            // Prepare old files
+            $old_govid = $loan_closed->government_id_img ?? null;
+            $old_billing = $loan_closed->billing_statement_img ?? null;
+            $old_qr = $loan_closed->upload_qr_code_img ?? null;
+
+            // -----------------------------
+            // ✔ Dynamic Validation Rules
+            // -----------------------------
+            $rules = [
                 'loan_application_id' => 'required|integer',
                 'load_step' => 'required|integer',
                 'bank_name' => 'required|string',
                 'account_number' => 'required|string',
                 'government_type_id' => 'required|integer',
-                'payslip_img' => 'required|file|mimes:jpg,jpeg,png,pdf',
-                // 'qr_code_img' => 'file|mimes:jpg,jpeg,png',
-                'government_id_img' => 'required|file|mimes:jpg,jpeg,png',
-                'billing_statement_img' => 'required|file|mimes:jpg,jpeg,png,pdf',
+                'payslip_img' => 'file|mimes:jpg,jpeg,png,pdf',
                 'signature_img' => 'required|string',
-            ]);
+            ];
+
+            // If NO previous closed loan → require uploads
+            if (!$loan_closed) {
+                $rules['government_id_img'] = 'required|file|mimes:jpg,jpeg,png';
+                $rules['billing_statement_img'] = 'required|file|mimes:jpg,jpeg,png,pdf';
+            } else {
+                // Not required for 2nd loan and up
+                $rules['government_id_img'] = 'file|mimes:jpg,jpeg,png';
+                $rules['billing_statement_img'] = 'file|mimes:jpg,jpeg,png,pdf';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -435,9 +469,10 @@ class HomeController extends Controller
                 ], 422);
             }
 
+            // Data to update
             $data = [
                 'load_step' => $request->load_step,
-                'loan_status' => 1, // Processing
+                'loan_status' => 1,
                 'bank_name' => $request->bank_name,
                 'account_number' => $request->account_number,
                 'government_type_id' => $request->government_type_id,
@@ -453,11 +488,26 @@ class HomeController extends Controller
             ];
 
             foreach ($folderMap as $requestField => $info) {
+
                 if ($request->hasFile($requestField)) {
+                    // NEW UPLOAD
                     $file = $request->file($requestField);
                     $filename = uniqid() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path("storage/uploads/{$info['folder']}"), $filename);
                     $data[$info['db_field']] = "uploads/{$info['folder']}/{$filename}";
+                } else {
+                    // NO UPLOAD + MAY CLOSED LOAN → use OLD DATA
+                    if ($loan_closed) {
+                        if ($requestField === 'government_id_img') {
+                            $data[$info['db_field']] = $old_govid;
+                        }
+                        if ($requestField === 'billing_statement_img') {
+                            $data[$info['db_field']] = $old_billing;
+                        }
+                        if ($requestField === 'qr_code_img') {
+                            $data[$info['db_field']] = $old_qr;
+                        }
+                    }
                 }
             }
 
@@ -466,25 +516,23 @@ class HomeController extends Controller
                 $base64 = $request->input('signature_img');
                 if (Str::startsWith($base64, 'data:image')) {
                     $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
-                    $ext = 'png';
-                    $filename = uniqid() . '.' . $ext;
+                    $filename = uniqid() . '.png';
 
                     $directory = public_path("storage/uploads/signature");
-                    if (!file_exists($directory)) {
+                    if (!file_exists($directory))
                         mkdir($directory, 0775, true);
-                    }
 
-                    $path = "{$directory}/{$filename}";
-                    file_put_contents($path, $image);
+                    file_put_contents("{$directory}/{$filename}", $image);
                     $data['signature_img'] = "uploads/signature/{$filename}";
                 }
             }
 
+            // Update loan
             DB::table('loan_application')
                 ->where('id', $request->loan_application_id)
-                ->update(values: $data);
+                ->update($data);
 
-            // Send confirmation email
+            // Send Confirmation Email
             $email = auth()->user()->email;
             $htmlContent = view('components.emails.state_email')->render();
             $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
@@ -495,13 +543,13 @@ class HomeController extends Controller
                 'to' => [['email' => $email]],
                 'htmlContent' => $htmlContent
             ]);
-            $apiInstance->sendTransacEmail(sendSmtpEmail: $emailObj);
-            //==============================================================
+            $apiInstance->sendTransacEmail($emailObj);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Final application submitted successfully.'
             ]);
+
         } catch (\Exception $e) {
             \Log::error('Final Submit Error: ' . $e->getMessage());
             return response()->json([
@@ -510,6 +558,7 @@ class HomeController extends Controller
             ], 500);
         }
     }
+
 
     public function getLoanStatus()
     {
@@ -818,7 +867,7 @@ class HomeController extends Controller
         }
     }
 
-      public function checkLoanData()
+    public function checkLoanData()
     {
         $userId = auth()->id();
 
@@ -836,8 +885,8 @@ class HomeController extends Controller
         ]);
     }
 
-    
-   public function updateAppealStatus(Request $request)
+
+    public function updateAppealStatus(Request $request)
     {
         $loan_id = $request->input('loan_id');
 
@@ -848,7 +897,7 @@ class HomeController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
-     public function saveAppeal(Request $request)
+    public function saveAppeal(Request $request)
     {
         $request->validate([
             'loan_id' => 'required|integer',

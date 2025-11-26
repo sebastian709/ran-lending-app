@@ -454,10 +454,19 @@ $(function () {
         formData.append('government_type_id', $('.la_government_id').val());
 
         // File inputs
-        formData.append('payslip_img', $('#payslipInput')[0]?.files[0]);
-        formData.append('qr_code_img', $('#qrInput')[0]?.files[0]);
-        formData.append('government_id_img', $('#govIdInput')[0]?.files[0]);
-        formData.append('billing_statement_img', $('#billingInput')[0]?.files[0]);
+        if ($('#govIdInput')[0]?.files.length > 0) {
+            formData.append('government_id_img', $('#govIdInput')[0].files[0]);
+        }
+        if ($('#billingInput')[0]?.files.length > 0) {
+            formData.append('billing_statement_img', $('#billingInput')[0].files[0]);
+        }
+        if ($('#qrInput')[0]?.files.length > 0) {
+            formData.append('qr_code_img', $('#qrInput')[0].files[0]);
+        }
+        if ($('#payslipInput')[0]?.files.length > 0) {
+            formData.append('payslip_img', $('#payslipInput')[0].files[0]);
+        }
+
 
         // Signature
         const signatureBase64 = $('.signature-filled img').attr('src');

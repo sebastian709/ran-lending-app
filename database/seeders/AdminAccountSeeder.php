@@ -132,7 +132,7 @@ class AdminAccountSeeder extends Seeder
                 'waiting' => '1',
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
-                'closed' => '0',
+                'closed' => '1',
                 'created_at' => now()
             ],
             [
@@ -143,7 +143,7 @@ class AdminAccountSeeder extends Seeder
                 'waiting' => '1',
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
-                'closed' => '0',
+                'closed' => '1',
                 'created_at' => now()
             ],
             [
@@ -154,7 +154,7 @@ class AdminAccountSeeder extends Seeder
                 'waiting' => '1', // waiting for disbursement
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
-                'closed' => '0',
+                'closed' => '1',
                 'created_at' => now()
             ],
             [
@@ -165,7 +165,7 @@ class AdminAccountSeeder extends Seeder
                 'waiting' => '1',
                 'rejected' => '1',
                 'transferred_and_processed' => '1',
-                'closed' => '0',
+                'closed' => '1',
                 'created_at' => now()
             ]
         ]);
