@@ -43,11 +43,11 @@
         ❌ Rejected
       </button>
     </li>
-    <li class="nav-item px-2" role="presentation">
+    <!-- <li class="nav-item px-2" role="presentation">
       <button class="nav-link" id="revision-tab" data-bs-toggle="pill" data-bs-target="#revision" type="button" role="tab">
         ✏️ For Revision
       </button>
-    </li>
+    </li> -->
   </ul>
 
   <!-- Tabs Content -->
@@ -126,7 +126,7 @@
     </div>
 
     <!-- For Revision -->
-    <div class="tab-pane fade" id="revision" role="tabpanel">
+    <!-- <div class="tab-pane fade" id="revision" role="tabpanel">
       <div class="card shadow-sm border-0 rounded-3">
         <div class="card-body">
           <h5 class="mb-3 text-info"><i class="bi bi-pencil-square"></i> For Revision</h5>
@@ -148,7 +148,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
   </div>
@@ -341,7 +341,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary rounded-pill" id="pending_verify">Verify</button>
         <button type="button" class="btn btn-danger rounded-pill" id="pending_reject">Reject</button>
-        <button type="button" class="btn btn-warning rounded-pill" id="pending_revision">Revision</button>
+        <!-- <button type="button" class="btn btn-warning rounded-pill" id="pending_revision">Revision</button> -->
         <button type="button" class="btn btn-secondary rounded-pill" id="pending_close" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
@@ -455,23 +455,23 @@ $(document).on('click', '#rejected-tab', function () {
   });
 });
 
-$(document).on('click', '#revision-tab', function () {
-  $('#table_revision').DataTable().clear().destroy();
-  $('#table_revision').DataTable({
-    processing: true,
-    serverSide: true,
-    responsive: true,
-    ajax: "/get_revision_page_data",
-    columns: [
-      { data: 'loan_application_id' },
-      { data: 'name' },
-      { data: 'date_paid' },
-      { data: 'date_triggered' },
-      { data: 'logid' },
-      { data: 'action', orderable: false, searchable: false }
-    ]
-  });
-});
+// $(document).on('click', '#revision-tab', function () {
+//   $('#table_revision').DataTable().clear().destroy();
+//   $('#table_revision').DataTable({
+//     processing: true,
+//     serverSide: true,
+//     responsive: true,
+//     ajax: "/get_revision_page_data",
+//     columns: [
+//       { data: 'loan_application_id' },
+//       { data: 'name' },
+//       { data: 'date_paid' },
+//       { data: 'date_triggered' },
+//       { data: 'logid' },
+//       { data: 'action', orderable: false, searchable: false }
+//     ]
+//   });
+// });
 
 
 $(document).on('click', '.pending_view', function () {
@@ -481,7 +481,7 @@ $(document).on('click', '.pending_view', function () {
   //PUT IDS 
   $('#pending_verify').attr('data-id',pay_id);
   $('#pending_reject').attr('data-id',pay_id);
-  $('#pending_revision').attr('data-id',pay_id);
+  // $('#pending_revision').attr('data-id',pay_id);
 
 
   //RESET TO 1st TAB
@@ -780,119 +780,119 @@ $(document).on('click', '#pending_reject', function () {
 
 
 
-$(document).on('click', '#pending_revision', function () {
-  $('#loanModal').modal('hide');
-  var id = $(this).attr('data-id');
+// $(document).on('click', '#pending_revision', function () {
+//   $('#loanModal').modal('hide');
+//   var id = $(this).attr('data-id');
 
-  var content = `
-    <form id="revisionForm">
-        <!-- Reason for revision -->
-        <div class="form-group">
-          <label for="reasonRevision">Reason for revision</label>
-          <textarea id="reasonRevision" name="reasonRevision" class="form-control" rows="3" required></textarea>
-        </div>
+//   var content = `
+//     <form id="revisionForm">
+//         <!-- Reason for revision -->
+//         <div class="form-group">
+//           <label for="reasonRevision">Reason for revision</label>
+//           <textarea id="reasonRevision" name="reasonRevision" class="form-control" rows="3" required></textarea>
+//         </div>
 
-        <div class="form-group">
-          <label for="received">Actual Received</label>
-          <input type="number"  id="received" name="received" class="form-control" required>
-        </div>
+//         <div class="form-group">
+//           <label for="received">Actual Received</label>
+//           <input type="number"  id="received" name="received" class="form-control" required>
+//         </div>
 
-        <!-- Instructions -->
-        <div class="form-group">
-          <label for="instructions">Instructions</label>
-          <textarea id="instructions" name="instructions" class="form-control" rows="3"></textarea>
-        </div>
+//         <!-- Instructions -->
+//         <div class="form-group">
+//           <label for="instructions">Instructions</label>
+//           <textarea id="instructions" name="instructions" class="form-control" rows="3"></textarea>
+//         </div>
 
-        <!-- Internal remarks -->
-        <div class="form-group">
-          <label for="revisionRemarks">Internal remarks</label>
-          <input type="text" id="revisionRemarks" name="revisionRemarks" class="form-control">
-          <p class="help-block">These remarks will reflect on the revision page &gt; Status History.</p>
-        </div>
+//         <!-- Internal remarks -->
+//         <div class="form-group">
+//           <label for="revisionRemarks">Internal remarks</label>
+//           <input type="text" id="revisionRemarks" name="revisionRemarks" class="form-control">
+//           <p class="help-block">These remarks will reflect on the revision page &gt; Status History.</p>
+//         </div>
 
-      </form>
-  `;
-  $.confirm({
-      title: 'Confirm Revision',
-      content: content,
-      type: 'orange',
-      buttons: {
-          confirm: {
-              text: 'Yes, Revision',
-              btnClass: 'btn-warning',
-              action: function () {
+//       </form>
+//   `;
+//   $.confirm({
+//       title: 'Confirm Revision',
+//       content: content,
+//       type: 'orange',
+//       buttons: {
+//           confirm: {
+//               text: 'Yes, Revision',
+//               btnClass: 'btn-warning',
+//               action: function () {
 
 
-                  var form = document.getElementById('revisionForm');
-                  var formData = new FormData(form);
+//                   var form = document.getElementById('revisionForm');
+//                   var formData = new FormData(form);
 
-                      // Second confirmation
-                        $.confirm({
-                            title: 'Warning',
-                            content: 'Are you sure you want to Revise this payment?<br>Borrower will automatically be notified.',
-                            type: 'red',
-                            buttons: {
-                                confirm: {
-                                    text: 'Yes',
-                                    btnClass: 'btn-danger',
-                                    action: function () {
+//                       // Second confirmation
+//                         $.confirm({
+//                             title: 'Warning',
+//                             content: 'Are you sure you want to Revise this payment?<br>Borrower will automatically be notified.',
+//                             type: 'red',
+//                             buttons: {
+//                                 confirm: {
+//                                     text: 'Yes',
+//                                     btnClass: 'btn-danger',
+//                                     action: function () {
 
-                                        $.ajax({
-                              url: '/paymentpage/verify/' + id + '/5',
-                              method: 'POST',
-                              data: formData,
-                              processData: false,
-                              contentType: false,
-                              headers: {
-                                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                              },
-                              success: function (response) {
-                                  $.alert({
-                                      title: 'Success',
-                                      content: 'The payment has been For Revisioned successfully.',
-                                      type: 'green',
-                                      buttons: {
-                                          ok: function () {
-                                              $('#pending-tab').click();
-                                          }
-                                      }
-                                  });
-                              },
-                              error: function (xhr) {
-                                  $.alert({
-                                      title: 'Error',
-                                      content: 'Something went wrong while saving your rejection details.',
-                                      type: 'red'
-                                  });
-                              }
-                          });
+//                                         $.ajax({
+//                               url: '/paymentpage/verify/' + id + '/5',
+//                               method: 'POST',
+//                               data: formData,
+//                               processData: false,
+//                               contentType: false,
+//                               headers: {
+//                                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//                               },
+//                               success: function (response) {
+//                                   $.alert({
+//                                       title: 'Success',
+//                                       content: 'The payment has been For Revisioned successfully.',
+//                                       type: 'green',
+//                                       buttons: {
+//                                           ok: function () {
+//                                               $('#pending-tab').click();
+//                                           }
+//                                       }
+//                                   });
+//                               },
+//                               error: function (xhr) {
+//                                   $.alert({
+//                                       title: 'Error',
+//                                       content: 'Something went wrong while saving your rejection details.',
+//                                       type: 'red'
+//                                   });
+//                               }
+//                           });
 
-                              }
-                          },
-                          cancel: {
-                              text: 'Cancel',
-                              btnClass: 'btn-secondary',
-                              action: function () {
-                                $('#loanModal').modal('show');
-                              }
-                          }
-                      }
-                  });
+//                               }
+//                           },
+//                           cancel: {
+//                               text: 'Cancel',
+//                               btnClass: 'btn-secondary',
+//                               action: function () {
+//                                 $('#loanModal').modal('show');
+//                               }
+//                           }
+//                       }
+//                   });
 
                   
 
-              }
-          },
-          cancel: {
-              text: 'Cancel',
-              btnClass: 'btn-secondary',
-              action: function () {
-                $('#loanModal').modal('show');
-              }
-          }
-      }
-  });
-});
+//               }
+//           },
+//           cancel: {
+//               text: 'Cancel',
+//               btnClass: 'btn-secondary',
+//               action: function () {
+//                 $('#loanModal').modal('show');
+//               }
+//           }
+//       }
+//   });
+// });
 
 
 
@@ -1026,65 +1026,65 @@ $(document).on('click', '.rejected_view', function () {
 
 
 
-$(document).on('click', '.revision_view', function () {
+// $(document).on('click', '.revision_view', function () {
 
-    var id = $(this).attr('data-id');
-  var pay_id = $(this).attr('data-pay_id');
+//     var id = $(this).attr('data-id');
+//   var pay_id = $(this).attr('data-pay_id');
 
-    $.ajax({
-        url: '/get_rejected_page_data_view_more',
-        method: 'POST',
-        data: {
-            id : id,
-            pay_id : pay_id,
-        },
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (response) {
+//     $.ajax({
+//         url: '/get_rejected_page_data_view_more',
+//         method: 'POST',
+//         data: {
+//             id : id,
+//             pay_id : pay_id,
+//         },
+//         headers: {
+//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//         },
+//         success: function (response) {
             
-              $.confirm({
-                  title: 'Payment Revision Confirmation',
-                  columnClass: 'col-md-6 col-md-offset-3',
-                  theme: 'modern',
-                  type: 'orange',
-                  icon: 'fa fa-pen-to-square',
-                  content: `
-                      <div style="text-align:left;">
-                          <p><strong>Payment Type:</strong> <span id="payment_type">${response.data.behavior[0].payment_type}</span></p>
-                          <p><strong>Month Coverage:</strong> <span id="month_coverage">${response.data.from} - ${response.data.to}</span></p>
-                          <p><strong>Amount Submitted vs Actual Amount:</strong><br>
-                            <span id="amounts">₱${(parseFloat(response.data.totalpaid)).toFixed(2)} submitted / ₱${(parseFloat(response.data.behavior[0].actual_amount)).toFixed(2)} actual</span>
-                          </p>
-                          <p><strong>Revision Reason:</strong><br>
-                                <span id="rejection_reason">${response.data.behavior[0].reason}</span>
-                          </p>
-                          <p><strong>Additional Remarks:</strong><br>
-                                <span id="remarks">${response.data.behavior[0].remarks}</span>
-                          </p>
-                      </div>
-                  `,
-                  buttons: {
-                      cancel: {
-                          text: 'Cancel',
-                          btnClass: 'btn-secondary'
-                      },
-                      confirm: {
-                          text: 'Confirm',
-                          btnClass: 'btn-warning',
-                          action: function () {
-                              // your confirm logic here
-                              console.log('Revision confirmed');
-                          }
-                      }
-                  }
-              });
+//               $.confirm({
+//                   title: 'Payment Revision Confirmation',
+//                   columnClass: 'col-md-6 col-md-offset-3',
+//                   theme: 'modern',
+//                   type: 'orange',
+//                   icon: 'fa fa-pen-to-square',
+//                   content: `
+//                       <div style="text-align:left;">
+//                           <p><strong>Payment Type:</strong> <span id="payment_type">${response.data.behavior[0].payment_type}</span></p>
+//                           <p><strong>Month Coverage:</strong> <span id="month_coverage">${response.data.from} - ${response.data.to}</span></p>
+//                           <p><strong>Amount Submitted vs Actual Amount:</strong><br>
+//                             <span id="amounts">₱${(parseFloat(response.data.totalpaid)).toFixed(2)} submitted / ₱${(parseFloat(response.data.behavior[0].actual_amount)).toFixed(2)} actual</span>
+//                           </p>
+//                           <p><strong>Revision Reason:</strong><br>
+//                                 <span id="rejection_reason">${response.data.behavior[0].reason}</span>
+//                           </p>
+//                           <p><strong>Additional Remarks:</strong><br>
+//                                 <span id="remarks">${response.data.behavior[0].remarks}</span>
+//                           </p>
+//                       </div>
+//                   `,
+//                   buttons: {
+//                       cancel: {
+//                           text: 'Cancel',
+//                           btnClass: 'btn-secondary'
+//                       },
+//                       confirm: {
+//                           text: 'Confirm',
+//                           btnClass: 'btn-warning',
+//                           action: function () {
+//                               // your confirm logic here
+//                               console.log('Revision confirmed');
+//                           }
+//                       }
+//                   }
+//               });
 
             
-          },
-      });
+//           },
+//       });
 
-});
+// });
 
 
   </script>
