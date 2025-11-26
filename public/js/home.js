@@ -1,260 +1,599 @@
-/* chart.js chart examples */
+$(document).ready(function() {
+     $('.btn-date').off('click').on('click', function() {
+        
+        $('.btn-date').removeClass('active');
 
-// chart colors
-var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
+        
+        $(this).addClass('active');
 
-/* large line chart */
-var chLine = document.getElementById("chLine");
-var chartData = {
-  labels: ["S", "M", "T", "W", "T", "F", "S"],
-  datasets: [{
-    data: [589, 445, 483, 503, 689, 692, 634],
-    backgroundColor: 'transparent',
-    borderColor: colors[0],
-    borderWidth: 4,
-    pointBackgroundColor: colors[0]
-  }
-    //   {
-    //     data: [639, 465, 493, 478, 589, 632, 674],
-    //     backgroundColor: colors[3],
-    //     borderColor: colors[1],
-    //     borderWidth: 4,
-    //     pointBackgroundColor: colors[1]
-    //   }
-  ]
-};
-if (chLine) {
-  new Chart(chLine, {
-    type: 'line',
-    data: chartData,
-    options: {
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: false
-          }
-        }]
-      },
-      legend: {
-        display: false
-      },
-      responsive: true
-    }
-  });
+        let filter = $(this).text().trim().toLowerCase(); // 'week', 'month', or 'year'
+        console.log("Selected filter:", filter);
+
+        load_dashboard(filter);
+    });
+
+    var scrollTimer;  
+    const stickyFilter = document.querySelector('.sticky-filters');
+
+    window.addEventListener('scroll', function() {
+
+        clearTimeout(scrollTimer);
+
+        stickyFilter.style.top = '-70px';
+
+        scrollTimer = setTimeout(function() {
+            stickyFilter.style.top = '100px';
+        }, 150); 
+    });
+
+    load_dashboard('month');
+    
+
+});
+
+function load_dashboard(filter) {
+    total_applications(filter);
+    scheduled_loans();
+    recent_applications();
+    recent_payments();
+    financial_overview(filter);
+    top_borrowers(filter);
 }
 
-/* large pie/donut chart */
-var chPie = document.getElementById("chPie");
-if (chPie) {
-  new Chart(chPie, {
-    type: 'pie',
-    data: {
-      labels: ['Desktop', 'Phone', 'Tablet', 'Unknown'],
-      datasets: [
-        {
-          backgroundColor: [colors[1], colors[0], colors[2], colors[5]],
-          borderWidth: 0,
-          data: [50, 40, 15, 5]
-        }
-      ]
-    },
-    plugins: [{
-      beforeDraw: function (chart) {
-        var width = chart.chart.width,
-          height = chart.chart.height,
-          ctx = chart.chart.ctx;
-        ctx.restore();
-        var fontSize = (height / 70).toFixed(2);
-        ctx.font = fontSize + "em sans-serif";
-        ctx.textBaseline = "middle";
-        var text = chart.config.data.datasets[0].data[0] + "%",
-          textX = Math.round((width - ctx.measureText(text).width) / 2),
-          textY = height / 2;
-        ctx.fillText(text, textX, textY);
-        ctx.save();
-      }
-    }],
-    options: { layout: { padding: 0 }, legend: { display: false }, cutoutPercentage: 80 }
-  });
-}
 
-/* bar chart */
-var chBar = document.getElementById("chBar");
-if (chBar) {
-  new Chart(chBar, {
-    type: 'bar',
-    data: {
-      labels: ["S", "M", "T", "W", "T", "F", "S"],
-      datasets: [{
-        data: [589, 445, 483, 503, 689, 692, 634],
-        backgroundColor: colors[0]
-      },
-      {
-        data: [639, 465, 493, 478, 589, 632, 674],
-        backgroundColor: colors[1]
-      }]
-    },
-    options: {
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          barPercentage: 0.4,
-          categoryPercentage: 0.5
-        }]
-      }
-    }
-  });
-}
 
-/* 3 donut charts */
-var donutOptions = {
-  cutoutPercentage: 85,
-  legend: { position: 'bottom', padding: 5, labels: { pointStyle: 'circle', usePointStyle: true } }
-};
+function total_applications(filter = 'month') {
 
-// donut 1
-var chDonutData1 = {
-  labels: ['Bootstrap', 'Popper', 'Other'],
-  datasets: [
-    {
-      backgroundColor: colors.slice(0, 3),
-      borderWidth: 0,
-      data: [74, 11, 40]
-    }
-  ]
-};
+     $('#total_applications').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
 
-var chDonut1 = document.getElementById("chDonut1");
-if (chDonut1) {
-  new Chart(chDonut1, {
-    type: 'pie',
-    data: chDonutData1,
-    options: donutOptions
-  });
-}
+    $.ajax({
+        url: "/admin/get-total-applications",
+        method: "GET",
+        data: {filter: filter},
+        dataType: "json",
+        success: function(response) {
+            let html = `
+                <div class="col-12">
+                    <div class="stat-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center">
+                                <div class="stat-icon" style="color: red; margin-bottom: 0;"> 
+                                    <i class="bi bi-clipboard"></i>
+                                </div>
+                                <div class="stat-label">Total Applications</div>
+                                <div class="stat-value">${response.grand_total}</div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="status-grid">
+                                    <div class="status-item pending">
+                                        <div class="status-count">${response.status_totals.pending}</div>
+                                        <div class="status-label">Pending</div>
+                                    </div>
+                                    <div class="status-item approved">
+                                        <div class="status-count">${Number(response.status_totals.for_interview) + Number(response.status_totals.transferred)}</div>
+                                        <div class="status-label">Approved</div>
+                                    </div>
+                                    <div class="status-item scheduled">
+                                        <div class="status-count">${response.status_totals.scheduled}</div>
+                                        <div class="status-label">Scheduled</div>
+                                    </div>
+                                    <div class="status-item rejected">
+                                        <div class="status-count">${response.status_totals.rejected}</div>
+                                        <div class="status-label">Rejected</div>
+                                    </div>
+                                    <div class="status-item cancelled">
+                                        <div class="status-count">${response.status_totals.cancelled}</div>
+                                        <div class="status-label">Cancelled</div>
+                                    </div>
+                                    <div class="status-item revision">
+                                        <div class="status-count">${response.status_totals.for_revision}</div>
+                                        <div class="status-label">For Revision</div>
+                                    </div>
+                                    <div class="status-item closed">
+                                        <div class="status-count">${response.status_totals.closed}</div>
+                                        <div class="status-label">Closed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <canvas id="loanApplicationsChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div> 
+            `;
+            $('#total_applications').html(html);
 
-// donut 2
-var chDonutData2 = {
-  labels: ['Wips', 'Pops', 'Dags'],
-  datasets: [
-    {
-      backgroundColor: colors.slice(0, 3),
-      borderWidth: 0,
-      data: [40, 45, 30]
-    }
-  ]
-};
-var chDonut2 = document.getElementById("chDonut2");
-if (chDonut2) {
-  new Chart(chDonut2, {
-    type: 'pie',
-    data: chDonutData2,
-    options: donutOptions
-  });
-}
-
-// donut 3
-var chDonutData3 = {
-  labels: ['Angular', 'React', 'Other'],
-  datasets: [
-    {
-      backgroundColor: colors.slice(0, 3),
-      borderWidth: 0,
-      data: [21, 45, 55, 33]
-    }
-  ]
-};
-var chDonut3 = document.getElementById("chDonut3");
-if (chDonut3) {
-  new Chart(chDonut3, {
-    type: 'pie',
-    data: chDonutData3,
-    options: donutOptions
-  });
-}
-
-/* 3 line charts */
-var lineOptions = {
-  legend: { display: false },
-  tooltips: { interest: false, bodyFontSize: 11, titleFontSize: 11 },
-  scales: {
-    xAxes: [
-      {
-        ticks: {
-          display: false
+            // Create chart AFTER canvas exists
+            const ctx = document.getElementById('loanApplicationsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pending', 'Approved', 'Scheduled', 'Rejected', 'Cancelled', 'For Revision', 'Closed'],
+                    datasets: [{
+                        label: 'Number of Applications',
+                        data: [
+                            response.status_totals.pending,
+                            response.status_totals.for_interview + response.status_totals.transferred,
+                            response.status_totals.scheduled,
+                            response.status_totals.rejected,
+                            response.status_totals.cancelled,
+                            response.status_totals.for_revision,
+                            response.status_totals.closed
+                        ],
+                        backgroundColor: [
+                            '#ffc107', // Pending - yellow
+                            '#28a745', // Approved - green
+                            '#17a2b8', // Scheduled - blue
+                            '#dc3545', // Rejected - red
+                            '#6c757d', // Cancelled - gray
+                            '#fd7e14', // For Revision - orange
+                            '#6f42c1'  // Closed - purple
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Loan Applications Status (This Month)',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Applications Count' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Status' }
+                        }
+                    }
+                }
+            });
         },
-        gridLines: {
-          display: false,
-          drawBorder: false
+        error: function(xhr) {
+            console.log("Error:", xhr);
         }
-      }
-    ],
-    yAxes: [{ display: false }]
-  },
-  layout: {
-    padding: {
-      left: 6,
-      right: 6,
-      top: 4,
-      bottom: 6
+    });
+}
+
+
+function scheduled_loans() {
+    $('#scheduled_div').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-scheduled-loans",
+        method: "GET",
+        dataType: "json",
+        success: function(response) {
+            let html = `
+                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <p>Upcoming loan payments that require attention</p>
+                    <button class="btn-view-more" onclick="window.location.href='#'">
+                        <i class="bi bi-arrow-right"></i> View More
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Due Date</th>
+                                <th>Referral</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            response.forEach(function(loan) {
+                // Format the date
+                let dateObj = new Date(loan.tenure_date);
+                let formattedDate = dateObj.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Badge color based on referral
+                let badgeClass = 'bg-info';
+                if (loan.referral.toLowerCase().includes('friend')) badgeClass = 'bg-warning text-dark';
+                if (loan.referral.toLowerCase().includes('employee')) badgeClass = 'bg-success';
+
+                html += `
+                    <tr>
+                        <td>${loan.full_name}</td>
+                        <td>${formattedDate}</td>
+                        <td><span class="badge ${badgeClass}">${loan.referral}</span></td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            $('#scheduled_div').html(html);
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+
+}
+
+function recent_applications() {
+    $('#recent_div').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-recent-application", 
+        method: "GET",
+        dataType: "json",
+        success: function(response) {
+            let html = `
+                <div class="table-header">
+                    <p>Latest loan applications submitted</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Borrower</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Referral</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            response.forEach(function(app) {
+            // Format the date
+            let dateObj = new Date(app.created_at);
+            let formattedDate = dateObj.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let statusText = '';
+            let statusClass = 'bg-secondary';
+            switch (app.loan_status) {
+                case 1:
+                    statusText = 'Pending for Approval';
+                    statusClass = 'bg-warning text-dark';
+                    break;
+                case 2:
+                    statusText = 'For Interview';
+                    statusClass = 'bg-primary text-white';
+                    break;
+                case 3:
+                    statusText = 'For Revision';
+                    statusClass = 'bg-orange text-dark';
+                    break;
+                case 4:
+                    statusText = 'Waiting for disbursement';
+                    statusClass = 'bg-info text-white';
+                    break;
+                case 5:
+                    statusText = 'Transferred and Processed';
+                    statusClass = 'bg-success text-white';
+                    break;
+                case 6:
+                    statusText = 'Rejected';
+                    statusClass = 'bg-danger text-white';
+                    break;
+                case 7:
+                    statusText = 'Closed';
+                    statusClass = 'bg-secondary text-white';
+                    break;
+                case 8:
+                    statusText = 'Scheduled';
+                    statusClass = 'bg-info text-white';
+                    break;
+                case 9:
+                    statusText = 'Cancelled';
+                    statusClass = 'bg-dark text-white';
+                    break;
+                default:
+                    statusText = 'Unknown';
+                    statusClass = 'bg-secondary text-white';
+            }
+
+            // Referral badge color
+            let referralClass = 'bg-info';
+            if (app.referral && app.referral.toLowerCase().includes('friend')) referralClass = 'bg-warning text-dark';
+            else if (app.referral && app.referral.toLowerCase().includes('employee')) referralClass = 'bg-success';
+
+            // Format amount
+            let formattedAmount = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(app.loan_amount);
+
+            html += `
+                <tr>
+                    <td>${formattedDate}</td>
+                    <td>${app.full_name}</td>
+                    <td>${formattedAmount}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td><span class="badge ${referralClass}">${app.referral}</span></td>
+                </tr>
+            `;
+        });
+
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            $('#recent_div').html(html);
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
+function recent_payments() {
+    $('#recentPayments_div').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-recent-payments",
+        method: "GET",
+        dataType: "json",
+        success: function(response) {
+
+            let rows = "";
+
+            response.forEach(item => {
+                let badgeClass = "bg-secondary";
+
+                switch(item.status) {
+                    case "For Verification": badgeClass = "bg-info text-dark"; break;
+                    case "For Correction":   badgeClass = "bg-warning text-dark"; break;
+                    case "Verified":         badgeClass = "bg-success"; break;
+                    case "Rejected":         badgeClass = "bg-danger"; break;
+                    case "For Revision":     badgeClass = "bg-warning text-dark"; break;
+                    case "For Appeal":       badgeClass = "bg-primary text-light"; break;
+                }
+
+
+                rows += `
+                    <tr>
+                        <td>${item.created_at}</td>
+                        <td>${item.reference_code ?? ''}</td>
+                        <td>${item.full_name}</td>
+                        <td>${item.coverage}</td>
+                        <td>₱${Number(item.amount_sent).toLocaleString()}</td>
+                        <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                    </tr>
+                `;
+            });
+
+            let html = `
+                <div class="table-header">
+                    <h3>Recent Payments</h3>
+                    <p>Latest loan payment transactions</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Reference Number</th>
+                                <th>Borrower Name</th>
+                                <th>Payment Type</th>
+                                <th>Amount Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            $('#recentPayments_div').html(html);
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
+function financial_overview(filter = 'month') {
+    $('.interest_earned, .penalty_earned, .revenue_earned').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-financial-overview",
+        method: "GET",
+        data: {filter:filter},
+        dataType: "json",
+        success: function(response) {
+            $('.interest_earned').html(response.interest_earned);
+            $('.penalty_earned').html(response.penalties_collected);
+            $('.revenue_earned').html(response.revenue);
+           
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
+function top_borrowers(filter = 'month') {
+    $('#top_borrowers').html(`
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Loading Data...</div>
+        </div>
+    `);
+
+    $.ajax({
+        url: "/admin/get-top-borrowers",
+        method: "GET",
+        data: { filter: filter },
+        dataType: "json",
+        success: function(response) {
+            let html = '';
+
+            response.forEach(item => {
+                // Get initials
+                let names = item.full_name.split(' ');
+                let initials = '';
+                if (names.length >= 2) {
+                    initials = names[0].charAt(0).toUpperCase() + names[1].charAt(0).toUpperCase();
+                } else if (names.length === 1) {
+                    initials = names[0].charAt(0).toUpperCase();
+                }
+
+                html += `
+                <div class="col-md-2 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #0056b3; color: #fff; border-radius: 50%; width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+                            ${initials}
+                        </div>
+                        <div class="stat-label">Top Borrower</div>
+                        <div class="stat-value" style="font-size: 1.25rem;">${item.full_name}</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-top: 0.5rem;">₱${parseFloat(item.loan_amount).toLocaleString()}</div>
+                    </div>
+                </div>`;
+            });
+
+
+            $('#top_borrowers').html(html);
+        },
+        error: function(xhr) {
+            console.log("Error:", xhr);
+        }
+    });
+}
+
+let calendarInitialized = false;
+
+$(document).ready(function() {
+    $('#calendar-float-icon').on('click', function() {
+        $('#calendar-popup').fadeToggle(200);
+        $('#calendar-overlay').fadeToggle(200);
+        $('.sticky-filters').fadeToggle(200);
+
+        if (!calendarInitialized) {
+            ensureFullCalendarLoaded(initFullCalendar);
+            calendarInitialized = true; // prevent re-initialization
+        }
+    });
+});
+
+function ensureFullCalendarLoaded(callback) {
+    if (window.FullCalendar) {
+        callback();
+        return;
     }
-  }
-};
-
-var chLine1 = document.getElementById("chLine1");
-if (chLine1) {
-  new Chart(chLine1, {
-    type: 'line',
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-      datasets: [
-        {
-          backgroundColor: '#ffffff',
-          borderColor: '#ffffff',
-          data: [10, 11, 4, 11, 4],
-          fill: false
-        }
-      ]
-    },
-    options: lineOptions
-  });
-}
-var chLine2 = document.getElementById("chLine2");
-if (chLine2) {
-  new Chart(chLine2, {
-    type: 'line',
-    data: {
-      labels: ['A', 'B', 'C', 'D', 'E'],
-      datasets: [
-        {
-          backgroundColor: '#ffffff',
-          borderColor: '#ffffff',
-          data: [4, 5, 7, 13, 12],
-          fill: false
-        }
-      ]
-    },
-    options: lineOptions
-  });
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js';
+    script.onload = () => {
+        console.log('FullCalendar loaded.');
+        callback();
+    };
+    script.onerror = () => console.error('Failed to load FullCalendar.');
+    document.head.appendChild(script);
 }
 
-var chLine3 = document.getElementById("chLine3");
-if (chLine3) {
-  new Chart(chLine3, {
-    type: 'line',
-    data: {
-      labels: ['Pos', 'Neg', 'Nue', 'Other', 'Unknown'],
-      datasets: [
-        {
-          backgroundColor: '#ffffff',
-          borderColor: '#ffffff',
-          data: [13, 15, 10, 9, 14],
-          fill: false
+function initFullCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: function(fetchInfo, successCallback, failureCallback) {
+            $.ajax({
+                url: '/admin/get-calendar',
+                method: 'GET',
+                data: { start: fetchInfo.startStr, end: fetchInfo.endStr },
+                dataType: 'json',
+                success: function(events) { successCallback(events); },
+                error: function(xhr) { failureCallback(xhr); }
+            });
+        },
+        editable: true,
+        selectable: true,
+        eventContent: function(arg) {
+            // Split title into name and amount
+            const parts = arg.event.title.split('₱'); // split by currency symbol
+            const name = parts[0].trim(); // "Alejandro Bermudo"
+            const amount = parts[1] ? '₱' + parts[1].trim() : '';
+
+            // Get initials from name only
+            let initials = name
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase())
+                .join('');
+
+            return { 
+                html: `
+                        <div class="fc-event-left">
+                            <div class="fc-event-initials">${initials}</div>
+                        </div>
+                        <div class="fc-event-right">
+                            <div class="fc-event-name">${name}</div>
+                            <div class="fc-event-amount">${amount}</div>
+                        </div>
+                ` 
+            };
+
         }
-      ]
-    },
-    options: lineOptions
-  });
+
+    });
+
+    calendar.render();
 }
