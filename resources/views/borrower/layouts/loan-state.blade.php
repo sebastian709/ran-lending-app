@@ -1,4 +1,4 @@
-@if ($loanStatus == 999 || $loanStatus == 0)
+@if ($loanStatus == 999 || $loanStatus == 0 || $loanStatus == 7)
     {{-- Not applied for loan --}}
     <div class="empty-state-icon">
         <i class="ri-money-dollar-circle-line"></i>

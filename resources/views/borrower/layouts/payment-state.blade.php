@@ -36,7 +36,7 @@
         <div class="main-content flex-grow-1">
             <div class="container-fluid p-4">
                 <!-- <input type="text" value="{{ $loanStatus }}"> -->
-                @if ($loanStatus == 999 || $loanStatus == 0)
+                @if ($loanStatus == 999 || $loanStatus == 0 || $loanStatus == 7 )
                     {{-- No Active Loan --}}
                     <div class="loan-status-card text-center text-primary mb-5">
                         <div class="loan-status-icon mb-4">
