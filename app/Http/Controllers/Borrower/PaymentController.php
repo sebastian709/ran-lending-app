@@ -24,14 +24,17 @@ class PaymentController extends Controller
         $data = [];
         $homeController = new HomeController();
         $loanStatus = $homeController->getLoanStatus();
-
         $data['loan_application'] = loan_application::
             where('loan_applicant', auth()->id())
             ->where('status', 1)
             ->orderBy('id', 'desc')
             ->first();
 
-        // dd($loanStatus)
+        $payment_status = DB::selectOne("SELECT payment_status_id FROM loan_payments where loan_application_id = ? and payment_status_id != 3",[$data['loan_application']->id]);
+    //    dd($payment_status?-->payment_status_id); 
+        if ($payment_status?->payment_status_id > 0) {
+            return view('borrower.layouts.payment_pending',compact('payment_status'));
+        }
 
         if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
             return view('borrower.layouts.payment-state', compact('loanStatus'));

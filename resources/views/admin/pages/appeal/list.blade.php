@@ -40,7 +40,7 @@
                                     <td>
                                         <button 
                                             class="btn btn-sm btn-outline-primary view-appeal" 
-                                            data-url="{{ '/admin/view-appeal/' . $appeal->loan_id }}">
+                                            data-url="{{ '/admin/view-appeal/' . $appeal->id }}">
                                             <i class="ri-eye-line"></i> View Appeal
                                         </button>
                                     </td>

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('loan_appeal', function (Blueprint $table) {
             $table->id(); // auto-increment primary key
             $table->unsignedBigInteger('loan_id'); // reference to loan_application
+            $table->unsignedBigInteger('payment_id'); // reference to transaction id
             $table->text('reason'); // appeal reason
             $table->string('uploaded_proof')->nullable(); // file path or URL
             $table->timestamp('date_of_appeal')->useCurrent(); // default now

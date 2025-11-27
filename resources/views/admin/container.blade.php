@@ -242,17 +242,6 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/settings">
-                                        <i class="ri-settings-line me-2"></i>Settings
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="ri-question-line me-2"></i>
-                                        Help & Support
-                                    </a>
-                                </li>
-                                <li>
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>

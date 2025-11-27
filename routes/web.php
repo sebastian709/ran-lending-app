@@ -96,7 +96,7 @@ Route::prefix('admin')->group(function () {
 
     // page loader
     Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
-    Route::get('/view-appeal/{loan_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
+    Route::get('/view-appeal/{appeal_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
     Route::get('/appeal-request', [AdminController::class, 'viewAppealRequest'])->name('view.appealRequest'); 
 
 
@@ -141,14 +141,24 @@ Route::post('/upload', [BlogPostController::class, 'upload']);
 
 //DAN
 Route::resource('paymentpage', PaymentPageController::class);
-Route::get('/get_pending_page_data/{id}', [PaymentPageController::class, 'get_pending_page_data'])->name('payment.get_pending_page_data');
+
+Route::get('/get_pending_page_data', [PaymentPageController::class, 'get_pending_page_data'])->name('payment.get_pending_page_data');
 Route::get('/get_verified_page_data', [PaymentPageController::class, 'get_verified_page_data'])->name('payment.get_verified_page_data');
-Route::get('/get_rejected_page_data/{id}', [PaymentPageController::class, 'get_rejected_page_data'])->name('payment.get_rejected_page_data');
-Route::get('/get_revision_page_data/{id}', [PaymentPageController::class, 'get_revision_page_data'])->name('payment.get_revision_page_data');
-Route::get('/get_appeal_page_data/{id}', [PaymentPageController::class, 'get_appeal_page_data'])->name('payment.get_appeal_page_data');
+Route::get('/get_rejected_page_data', [PaymentPageController::class, 'get_rejected_page_data'])->name('payment.get_rejected_page_data');
+Route::get('/get_revision_page_data', [PaymentPageController::class, 'get_revision_page_data'])->name('payment.get_revision_page_data');
+Route::get('/get_appeal_page_data', [PaymentPageController::class, 'get_appeal_page_data'])->name('payment.get_appeal_page_data');
+
+Route::post('/get_pending_page_data_view_more', [PaymentPageController::class, 'get_pending_page_data_view_more'])->name('payment.get_pending_page_data_view_more');
+Route::post('/get_verified_page_data_view_more', [PaymentPageController::class, 'get_verified_page_data_view_more'])->name('payment.get_verified_page_data_view_more');
+Route::post('/get_rejected_page_data_view_more', [PaymentPageController::class, 'get_rejected_page_data_view_more'])->name('payment.get_rejected_page_data_view_more');
+Route::post('/get_revision_page_data_view_more', [PaymentPageController::class, 'get_revision_page_data_view_more'])->name('payment.get_revision_page_data_view_more');
+Route::post('/get_appeal_page_data_view_more', [PaymentPageController::class, 'get_appeal_page_data_view_more'])->name('payment.get_appeal_page_data_view_more');
+
 Route::post('/get_pending_data', [PaymentPageController::class, 'get_pending_data'])->name('payment.pending.data');
 Route::post('/get_pending_data_two', [PaymentPageController::class, 'get_pending_data_two'])->name('payment.pending.data_two');
 Route::post('/paymentpage/verify/{id}/{value}', [PaymentPageController::class, 'verify'])->name('payment.pending.verify');
+Route::post('/checkappeal', [PaymentPageController::class, 'checkappeal'])->name('payment.pending.checkappeal');
+Route::post('/appealuser', [PaymentPageController::class, 'appealuser'])->name('payment.appeal');
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');
@@ -162,7 +172,6 @@ Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgo
 
 # borrower routes
 Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('my-loan.apply');
-
 
 # message pages
 Route::get('/loan-success', fn() => view('borrower.layouts.message'))->name('borrower.layouts.message');
