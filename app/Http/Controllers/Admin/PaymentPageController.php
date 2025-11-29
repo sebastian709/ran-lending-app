@@ -873,7 +873,8 @@ class PaymentPageController extends Controller
         // -- 4	Rejected
         // -- 5	For Revision
         // -- 6	For Apppeal
-
+        date_default_timezone_set('Asia/Manila');
+        
         $data['loanid'] = DB::selectOne("SELECT id from loan_application 
                         where loan_applicant = ?
                         order by id desc limit 1",[auth()->id()]);
@@ -885,10 +886,10 @@ class PaymentPageController extends Controller
 
         $data['paymentlog'] = DB::selectOne("SELECT * from loan_payment_approval_logs 
                         where loan_payment_id = ? 
+                        and declined_accepted is null
                         order by id desc limit 1",[$data['paymentid']->id]);
 
         // dd($data);
-        
     
         return response()->json([
             'success' => true,

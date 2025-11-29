@@ -21,25 +21,6 @@
     </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- Payment Rejected Modal -->
 <div class="modal fade" id="paymentRejectedModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="paymentRejectedLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -166,6 +147,7 @@
             $('#appealModal').find('#adminRemarks').attr('value',response.data?.paymentlog?.reason)
             $('#appealModal').find('#adminImage').attr('src',response.image)
             $('#appealModal').find('#paymentReference').attr('value',response.data?.paymentlog?.id)
+            $('#confirmRejectBtn').attr('value',response.data?.paymentlog?.id)
 
               paymentRejectedModal.show();            
           }
@@ -212,22 +194,35 @@ $(document).on('click', '#submitAppeal', function () {
     confirmRejectModal.show();
   });
 
-  // Confirm rejection
-  document.getElementById('confirmRejectBtn').addEventListener('click', () => {
-    confirmRejectModal.hide();
-    paymentRejectedModal.hide();
-    // Add logic to update the status as rejected in your backend
-    alert("You accepted the rejection.");
-  });
+$(document).on('click', '#confirmRejectBtn', function () {
+      
+    var log_id = $(this).attr('value');     
 
-  // Submit appeal
-  // document.getElementById('submitAppeal').addEventListener('click', () => {
-  //   const reason = document.getElementById('appealReason').value;
-  //   const proof = document.getElementById('appealProof').files[0];
-  //   console.log("Appeal reason:", reason);
-  //   console.log("Proof file:", proof);
-  //   appealModal.hide();
-  //   alert("Your appeal has been submitted.");
-  // });
+    if (parseInt(log_id) === 0 ) {
+      console.log('no logId');
+      return false;
+    }
+    $.ajax({
+        url: 'rejectaccept',
+        method: 'POST',
+        dataType: 'json',
+        data: {log_id:log_id},
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            $.alert({
+                title: 'Success',
+                content: 'Appeal Accepted',
+                type: 'green'
+            });
+
+            confirmRejectModal.hide();
+            paymentRejectedModal.hide();
+        }
+    });
+});
+
+
 </script>
 @endsection

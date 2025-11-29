@@ -86,38 +86,6 @@
                         </tr>
                     @endforeach
 
-
-                    <!-- <tr>
-                        <td>07/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-danger">Late</span></td>
-                        <td>07/08/2025</td>
-                        <td>₱50</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>06/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-success">Paid</span></td>
-                        <td>06/01/2025</td>
-                        <td>₱0</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>05/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-warning text-dark">Overdue</span></td>
-                        <td>-</td>
-                        <td>₱50</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>04/01/2025</td>
-                        <td>₱8,500</td>
-                        <td><span class="badge bg-secondary">At Risk</span></td>
-                        <td>-</td>
-                        <td>₱50</td>
-                        <td>-</td> -->
                     </tr>
                     </tbody>
                 </table>

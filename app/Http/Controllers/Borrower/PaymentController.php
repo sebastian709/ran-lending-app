@@ -30,8 +30,8 @@ class PaymentController extends Controller
             ->orderBy('id', 'desc')
             ->first();
 
-        $payment_status = DB::selectOne("SELECT payment_status_id FROM loan_payments where loan_application_id = ? and payment_status_id != 3",[$data['loan_application']->id]);
-    //    dd($payment_status?-->payment_status_id); 
+        $payment_status = DB::selectOne("SELECT payment_status_id FROM loan_payments where loan_application_id = ? and payment_status_id != 3 and cancelled_approved_date is null",[$data['loan_application']->id]);
+
         if ($payment_status?->payment_status_id > 0) {
             return view('borrower.layouts.payment_pending',compact('payment_status'));
         }
@@ -229,158 +229,6 @@ class PaymentController extends Controller
         // categoryText = 'Normal Payment';
         // categoryType = 4;
 
-        // if($request->type == 1){
-        //     // dd('1');
-
-        //     foreach ($request->paymentData as $key => $record) {
-        //         $loan_tenure = loan_tenure::selectRaw("
-        //             CASE 
-        //                 WHEN date < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 2 MONTH), '%Y-%m-01 00:00:00')
-        //                 THEN '1' 
-        //                 ELSE '0' 
-        //             END AS dates
-        //         ")
-        //         ->where('id', $record['id'])
-        //         ->first();
-
-        //         loan_tenure::where('id',  $record['id'])
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //         loan_tenure_penalty::where('tenure_id',  $record['id'])
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-                
-        //         //Current Month is not bound for Rebate
-        //         if($loan_tenure['dates'] == '1'){
-
-        //             loan_tenure_interest::where('tenure_id',  $record['id'])
-        //             ->update([
-        //                 'payment_id' => $Loan_payment,
-        //                 'payment_status_id' => 2,
-        //             ]);
-        //         }else{
-        //             //Month > current month is  bound for Rebate
-        //             loan_tenure_interest::where('tenure_id',  $record['id'])
-        //             ->update([
-        //                 'payment_id' => $Loan_payment,
-        //                 'payment_status_id' => 4,
-        //             ]);
-        //         }
-        //     }
-        // }elseif ($request->type == 2) {
-        //     // dd('2');
-        //     $nextId = $request->next_id;
-        //     $paymentId = $Loan_payment;
-
-        //     // foreach ($request->paymentDue as $key => $record) {
-        //     //     loan_tenure::where('id',  $record['id'])
-        //     //     ->where('payment_status_id', 1)
-        //     //     ->update([
-        //     //         'payment_id' => $record->id,
-        //     //         'payment_status_id' => 2,
-        //     //     ]);
-        //     //     loan_tenure_penalty::where('tenure_id',  $record['id'])
-        //     //     ->where('payment_status_id', 1)
-        //     //     ->update([
-        //     //         'payment_id' => $record->id,
-        //     //         'payment_status_id' => 2,
-        //     //     ]);
-        //     //     loan_tenure_interest::where('tenure_id',  $record['id'])
-        //     //     ->where('payment_status_id', 1)
-        //     //     ->update([
-        //     //         'payment_id' => $record->id,
-        //     //         'payment_status_id' => 2,
-        //     //     ]);
-        //     // }
-
-
-
-        //     if ($this->isValidAmount($request->partial_principal)) {
-        //         loan_tenure::where('id', $nextId)
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $paymentId,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //     }
-
-        //     if ($this->isValidAmount($request->partial_interest)) {
-        //         loan_tenure_interest::where('tenure_id', $nextId)
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $paymentId,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //     }
-
-        //     if ($this->isValidAmount($request->partial_penalty)) {
-        //         loan_tenure_penalty::where('tenure_id', $nextId)
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $paymentId,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //     }
-
-        // }elseif ($request->type == 3) {
-        //     // dd('3');
-
-        //     foreach ($request->paymentData as $key => $record) {
-        //         loan_tenure::where('id',  $record['id'])
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //         loan_tenure_penalty::where('tenure_id',  $record['id'])
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //         loan_tenure_interest::where('tenure_id',  $record['id'])
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //     }
-
-        //     // dd('3');
-        // }elseif ($request->type == 4) {
-        //     // dd('4');
-
-        //     foreach ($request->paymentDue as $key => $record) {
-        //         loan_tenure::where('id',  $record['id'])
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //         loan_tenure_interest::where('tenure_id',  $record['id'])
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //         loan_tenure_penalty::where('tenure_id',  $record['id'])
-        //         ->where('payment_status_id', 1)
-        //         ->update([
-        //             'payment_id' => $Loan_payment,
-        //             'payment_status_id' => 2,
-        //         ]);
-        //     }
-        //     // dd('4');
-            
-            
-        // }else{
-        //     dd('error');
-        // }
-
         if ($request->fullpayment == 1) {
             // dd('if');
             if (isset($request->paymentDue)) {
@@ -426,7 +274,7 @@ class PaymentController extends Controller
             // dd('else');
             return response()->json([
                 'success' => true,
-                'redirect' => url('/payment-success')
+                'redirect' => url('/repayment-schedule')
             ]);
         }
 

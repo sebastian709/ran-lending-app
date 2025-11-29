@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->text('instruction')->nullable();
             $table->boolean('status')->default(1);
+            $table->integer('declined_accepted')->index(); 
             $table->integer('added_by')->index(); 
             $table->timestamps();
         });

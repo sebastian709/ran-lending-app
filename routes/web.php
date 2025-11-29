@@ -239,6 +239,7 @@ Route::post('/borrower/resubmit-loan-documents', [HomeController::class, 'resubm
 Route::post('/borrower/check-loan-data', [HomeController::class, 'checkLoanData']);
 Route::post('/borrower/update-appeal-status', [HomeController::class, 'updateAppealStatus']);
 Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
+Route::post('/rejectaccept', [HomeController::class, 'rejectaccept']);
 
 Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived']);
 Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment']);

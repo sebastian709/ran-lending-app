@@ -947,4 +947,33 @@ class HomeController extends Controller
             'name' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
         ]);
     }
+    
+    public function rejectaccept(Request $request){
+        date_default_timezone_set('Asia/Manila');
+        
+        $payment_id = DB::selectOne("SELECT * from loan_payment_approval_logs where id = ?",[$request->log_id]);
+        
+        DB::update('UPDATE loan_payments SET cancelled_approved_date = ? WHERE id = ?', [ Carbon::now() ,$payment_id->id]);
+        DB::update('UPDATE loan_payment_approval_logs SET updated_at = ?,declined_accepted = 1 WHERE id = ?', [Carbon::now(),$request->log_id]);
+
+        DB::update('UPDATE loan_tenure SET payment_status_id = 1,payment_id = 0 WHERE payment_id = ?', [$payment_id->id]);
+        DB::update('UPDATE loan_tenure_interest SET payment_status_id = 1,payment_id = 0 WHERE payment_id = ?', [$payment_id->id]);
+        DB::update('UPDATE loan_tenure_penalty SET payment_status_id = 1,payment_id = 0 WHERE payment_id = ?', [$payment_id->id]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Accepted successfully',
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
 }
+
