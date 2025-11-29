@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->text('attachment');
             $table->integer('added_by')->index(); 
-            $table->dateTime('cancelled_approved_date'); 
+            $table->dateTime('cancelled_approved_date')->nullable(); 
             $table->timestamps();
         });
     }
