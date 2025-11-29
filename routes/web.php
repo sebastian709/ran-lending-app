@@ -255,3 +255,6 @@ Route::get('/admin/get-calendar', [DashboardController::class, 'getLoanDates']);
 Route::get('/admin/get-insight', [DashboardController::class, 'getBorrowerInsight']);
 Route::get('/admin/get-loan-insight', [DashboardController::class, 'LoanInsight']);
 Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);
+
+Route::get('/admin/export-pdf', [DashboardController::class, 'exportPDF'])->name('applications.pdf');
+Route::get('/admin/export-excel', [DashboardController::class, 'exportExcel'])->name('applications.excel');
