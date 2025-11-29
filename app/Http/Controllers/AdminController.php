@@ -535,11 +535,16 @@ class AdminController extends Controller
         for ($i = 1; $i <= $loanApplications->loan_tenure; $i++) {
 
             // Due date calculation (based on monthly_due_date instead of static now)
+            // $dueDate = Carbon::parse($request->monthly_due_date)
+            //     ->subDay()
+            //     ->addMonths($i - 1) // start from given due date
+            //     ->subDay()
+            //     ->endOfDay();
+
             $dueDate = Carbon::parse($request->monthly_due_date)
-                ->subDay()
-                ->addMonths($i - 1) // start from given due date
-                ->subDay()
+                ->addMonths($i - 1)
                 ->endOfDay();
+
 
             // Insert into loan_tenure
             $tenureId = DB::table('loan_tenure')->insertGetId([

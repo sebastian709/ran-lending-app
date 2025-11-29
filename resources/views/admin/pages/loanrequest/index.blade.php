@@ -143,7 +143,8 @@
            <div class="d-flex gap-3 justify-content-end">
                 @foreach ($admins as $admin)
                     <div class="form-check">
-                        <input class="form-check-input admin-approval"  
+                        <input class="form-check-input admin-approval" 
+                            style="pointer-events:none" 
                             admin_id="{{ Auth::user()->id }}"
                             type="checkbox" 
                             id="admin{{ $admin->id }}" 

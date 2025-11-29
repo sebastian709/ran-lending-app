@@ -55,6 +55,7 @@ class CustomerController extends Controller
                 DB::raw("u.id AS loan_applicant")
             )
             ->where('u.is_admin', 0)
+            ->where('u.status', 1)
             ->whereNotIn('u.id', $existing_ids)
             ->get();
 
@@ -88,6 +89,12 @@ class CustomerController extends Controller
             ->get();
 
         return response()->json($loan_application);
+    }
+
+    public function cpDelete(Request $request)
+    {   
+        DB::update('UPDATE users SET status = 0 WHERE id = ?', [$request->id]);
+        return response()->json($request->id);
     }
 
     public function getCpScheduled(Request $request)

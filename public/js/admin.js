@@ -1252,10 +1252,12 @@ function renderAll() {
                     <td>${item.created_at}</td>
                     <td>${item.referral}</td>
                     <td>${item.interest_rate}</td>
-                    <td><span class="badge bg-success">${item.loan_status_by_name}</span></td>
+                    <td>
+                      <center><span class="badge bg-success">${item.loan_status_by_name}</span></center>
+                    </td>
                     <td>
                         <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="0" data-user_id="${item.loan_applicant}">View More</button>
-                        <button class="btn btn-sm btn-danger cp-delete">Delete</button>
+                        <button class="btn btn-sm btn-danger cp-delete" data-user_id="${item.loan_applicant}">Delete</button>
                     </td>
                 </tr>`;
         });
@@ -1486,4 +1488,45 @@ $(document).on('shown.bs.tab', '.cp-status-tabs a[data-bs-toggle="tab"]', functi
     case "#cp-rejected": renderRejected(); break;
     case "#cp-cancelled": renderCancelled(); break;
   }
+});
+
+$(document).on('click', '.cp-delete', function (e) {
+
+      var id = $(this).attr('data-user_id');
+      console.log(id)
+
+      $.confirm({
+        title: 'Are you sure you want to Delete this Account?',
+        content: 'This action cannot be undone.',
+        buttons: {
+            Yes: {
+                text: 'Yes',
+                btnClass: 'btn-warning',
+                action: function () {
+                    $.ajax({
+                        url: 'customer/cp-delete',
+                        type: 'POST',
+                        data: {id:id},
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: res.message,
+                                    confirmButtonColor: '#198754', // Bootstrap success green
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            No: {
+                text: 'No',
+                btnClass: 'btn-secondary'
+            }
+        }
+    });
 });

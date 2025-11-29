@@ -415,7 +415,7 @@ $(document).ready(function () {
                     let grade = r.grade; 
 
                     // console.log('test', loan_status)
-                    if (parseInt(loan.loan_status) == 5) {
+                    if (parseInt(loan.loan_status) > 1) {
                         $('#approveBtn').attr('hidden', true);
                     } else {
                         $('#approveBtn').removeAttr('hidden');
@@ -695,7 +695,7 @@ $(document).on('click', '#approveBtn', function () {
                                             '<form action="" class="formName">' +
                                             '<div class="form-group">' +
                                             '<label>Enter your comment</label>' +
-                                            '<textarea class="comment form-control" rows="4" required></textarea>' +
+                                            '<textarea class="comment form-control" style="max-width: 100% !important;" rows="4" required></textarea>' +
                                             '</div>' +
                                             '</form>',
                                         type: 'red',
