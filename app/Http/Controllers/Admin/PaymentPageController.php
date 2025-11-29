@@ -882,19 +882,23 @@ class PaymentPageController extends Controller
         $data['paymentid'] = DB::selectOne("SELECT id,payment_status_id 
                         from loan_payments 
                         where loan_application_id = ?
+                        and cancelled_approved_date is null
                         order by id desc limit 1",[$data['loanid']->id]);
 
         $data['paymentlog'] = DB::selectOne("SELECT * from loan_payment_approval_logs 
                         where loan_payment_id = ? 
                         and declined_accepted is null
                         order by id desc limit 1",[$data['paymentid']->id]);
-
+        $image = null;
+        if ($data['paymentlog'] != null) {
+            $image = asset('storage/' . $data['paymentlog']->attachment);
+        }      
         // dd($data);
     
         return response()->json([
             'success' => true,
             'data' => $data,
-            'image' => asset('storage/' . $data['paymentlog']->attachment) 
+            'image' =>  $image
         ]);
 
     }

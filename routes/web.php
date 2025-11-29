@@ -184,9 +184,7 @@ Route::get('/active-loan', function () {
 
 //Payment
 Route::name('loan.')->group(function () {
-    // Route::get('/payment', function () {
-    //     return view('borrower.pages.payments.payment');
-    // })->name('payment');
+    
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
     Route::post('/payment/submit', [PaymentController::class, 'submit']);
 

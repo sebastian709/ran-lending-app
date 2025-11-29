@@ -93,11 +93,11 @@
         <h5 class="modal-title" id="confirmRejectLabel">Confirm Rejection</h5>
       </div>
       <div class="modal-body">
-        Are you sure you want to accept this payment rejection?
+        By continuing, you confirm that you understand and accept the reason provided for the payment <span style="color:red">rejection</span>.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmRejectBtn">Yes, Accept</button>
+        <button type="button" class="btn btn-danger" id="confirmRejectBtn">Confirm</button>
       </div>
     </div>
   </div>

@@ -31,7 +31,7 @@ class PaymentController extends Controller
             ->first();
 
         $payment_status = DB::selectOne("SELECT payment_status_id FROM loan_payments where loan_application_id = ? and payment_status_id != 3 and cancelled_approved_date is null",[$data['loan_application']->id]);
-
+        // dd($payment_status);
         if ($payment_status?->payment_status_id > 0) {
             return view('borrower.layouts.payment_pending',compact('payment_status'));
         }
