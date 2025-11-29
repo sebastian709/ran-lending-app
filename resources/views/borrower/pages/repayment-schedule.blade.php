@@ -58,15 +58,19 @@
                             <td>{{ \Carbon\Carbon::parse($data->date)->format('F j, Y') }}</td>
                             <td>₱ {{ number_format($data->total,2) }}</td>
                             <td>
-                                @if($data->partial === 'p')
-                                    <span class="badge bg-primary">Partial</span>
+                                @if($data->verification === 1)
+                                    <span class="badge bg-primary">For Verification</span>
                                 @else
-                                    @if($data->payment_status == 1)
-                                        <span class="badge bg-success">Paid</span>
-                                    @elseif($data->payment_status == 2)
-                                        <span class="badge bg-info text-dark">Upcoming</span>
+                                    @if($data->partial === 'p')
+                                        <span class="badge bg-primary">Partial</span>
                                     @else
-                                        -
+                                        @if($data->payment_status == 1)
+                                            <span class="badge bg-success">Paid</span>
+                                        @elseif($data->payment_status == 2)
+                                            <span class="badge bg-info text-dark">Upcoming</span>
+                                        @else
+                                            -
+                                        @endif
                                     @endif
                                 @endif
                             </td>

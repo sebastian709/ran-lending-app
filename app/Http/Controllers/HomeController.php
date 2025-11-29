@@ -157,7 +157,11 @@ class HomeController extends Controller
 								(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0 ,
                                 0,
 								if((IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) != (lt.principal + lti.interest),'p',0) 
-							) partial
+							) partial, 
+                            if(
+                            ((select payment_status_id from loan_payments where id = lt.payment_id) = 1 OR
+                            (select payment_status_id from loan_payments where id = lti.payment_id) = 1 OR
+                            (select payment_status_id from loan_payments where id = ltp.payment_id) = 1),1,0) verification
                         FROM loan_application AS la
                         LEFT JOIN loan_tenure AS lt ON lt.loan_id = la.id
                         LEFT JOIN loan_tenure_interest AS lti ON lti.tenure_id = lt.id

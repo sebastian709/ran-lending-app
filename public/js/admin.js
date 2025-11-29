@@ -1230,28 +1230,28 @@ function renderAll() {
     success: function (res) {
       console.log(res)
       let thead = `<tr>
-                      <th>Borrower’s Name</th>
-                      <th>Loan Amount</th>
-                      <th>Loan Tenure</th>
-                      <th>Loan Type</th>
-                      <th>Date Requested</th>
-                      <th>Referral</th>
-                      <th>Interest</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th><center>Borrower’s Name</center></th>
+                      <th><center>Loan Amount</center></th>
+                      <th><center>Loan Tenure</center></th>
+                      <th><center>Loan Type</center></th>
+                      <th><center>Date Requested</center></th>
+                      <th><center>Referral</center></th>
+                      <th><center>Interest</center></th>
+                      <th><center>Status</center></th>
+                      <th><center>Action</center></th>
                   </tr>`;
       let tbody = "";
       if (parseInt(res.length) > 0) {
         res.forEach(item => {
           tbody += `
                 <tr>
-                    <td>${item.borrower_name}</td>
-                    <td>${item.loan_amount}</td>
-                    <td>${item.loan_tenure}</td>
-                    <td>${item.loan_type}</td>
-                    <td>${item.created_at}</td>
-                    <td>${item.referral}</td>
-                    <td>${item.interest_rate}</td>
+                    <td><center>${item.borrower_name}</center></td>
+                    <td><center>${item.loan_amount}</center></td>
+                    <td><center>${item.loan_tenure}</center></td>
+                    <td><center>${item.loan_type}</center></td>
+                    <td><center>${item.created_at}</center></td>
+                    <td><center>${item.referral}</center></td>
+                    <td><center>${item.interest_rate}</center></td>
                     <td>
                       <center><span class="badge bg-success">${item.loan_status_by_name}</span></center>
                     </td>
@@ -1493,10 +1493,10 @@ $(document).on('shown.bs.tab', '.cp-status-tabs a[data-bs-toggle="tab"]', functi
 $(document).on('click', '.cp-delete', function (e) {
 
       var id = $(this).attr('data-user_id');
-      console.log(id)
+      var dis = $(this);
 
       $.confirm({
-        title: 'Are you sure you want to Delete this Account?',
+        title: 'Are you sure you want to delete this account?',
         content: 'This action cannot be undone.',
         buttons: {
             Yes: {
@@ -1509,16 +1509,15 @@ $(document).on('click', '.cp-delete', function (e) {
                         data: {id:id},
                         dataType: 'json',
                         success: function (res) {
-                            if (res.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: res.message,
-                                    confirmButtonColor: '#198754', // Bootstrap success green
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                });
-                            }
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: res.message,
+                                confirmButtonColor: '#198754', // Bootstrap success green
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                            });
+                            dis.closest('tr').remove()
                         }
                     });
                 }
