@@ -636,7 +636,8 @@ class PaymentPageController extends Controller
         
         //================================================================
         $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', env('BREVO_API_KEY'));
+        ->setApiKey('api-key', config('services.brevo.key'));
+        
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
 
         if((int)$value == 5){ //Revision
@@ -1009,7 +1010,9 @@ class PaymentPageController extends Controller
         DB::update('UPDATE loan_payments SET payment_status_id = 6 WHERE id = ?', [$data['paymentid']->id]);
         // dd($data);
 
-        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', env('BREVO_API_KEY'));
+        $config = Configuration::getDefaultConfiguration()
+        ->setApiKey('api-key', config('services.brevo.key'));
+        
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
 
         $content = "Appeal Has been Sent to the Admin . Please Wait for the Verdict.";
