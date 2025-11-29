@@ -12,7 +12,12 @@ use Brevo\Client\Model\SendSmtpEmail;
 use Brevo\Client\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 use Carbon\Carbon;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class DashboardController extends Controller
 {
@@ -385,6 +390,443 @@ class DashboardController extends Controller
         ]);
     }
 
+
+    public function exportPDF(Request $request)
+    {
+        $filter = $request->input('filter', 'month'); // optional filter
+
+        // --- Total Applications ---
+        $statuses = [
+            1 => 'pending', 2 => 'for_interview', 3 => 'for_revision',
+            4 => 'waiting', 5 => 'transferred', 6 => 'rejected',
+            7 => 'closed', 8 => 'scheduled', 9 => 'cancelled'
+        ];
+
+        $query = DB::table('loan_application');
+        if ($filter === 'week') {
+            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        } elseif ($filter === 'month') {
+            $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+        } elseif ($filter === 'year') {
+            $query->whereYear('created_at', now()->year);
+        }
+
+        $statusTotals = [];
+        foreach($statuses as $key => $label){
+            $statusTotals[$label] = (clone $query)->where('loan_status', $key)->count();
+        }
+        $grandTotal = (clone $query)->count();
+
+        // --- Scheduled Loans ---
+        $scheduledLoans = DB::table('loan_application as la')
+            ->join('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"), 'lt.date as tenure_date', 'la.referral')
+            ->where('la.loan_type', 'Scheduled')->where('la.status', 1)->where('la.loan_status', 5)
+            ->orderBy('lt.date', 'asc')->limit(5)->get();
+
+        // --- Recent Applications ---
+        $recentApplications = DB::table('loan_application as la')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"), 'la.created_at', 'la.referral', 'la.loan_amount', 'la.loan_status')
+            ->where('la.status', 1)->orderBy('la.created_at', 'desc')->limit(5)->get();
+
+        // --- Recent Payments ---
+        $recentPayments = DB::table('loan_payments as lp')
+            ->join('users as u', 'u.id', '=', 'lp.added_by')
+            ->join('loan_payment_types as lpt', 'lpt.id', '=', 'lp.payment_type_id')
+            ->join('loan_payment_statuses as lps', 'lps.id', '=', 'lp.payment_status_id')
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"), 'lp.amount_sent', 'lp.reference_code', DB::raw("DATE_FORMAT(lp.created_at, '%M %d, %Y') as created_at"), 'lpt.type as coverage', 'lps.type as status')
+            ->orderBy('lp.created_at', 'desc')->limit(5)->get();
+
+        // --- Financial Overview ---
+        $totalInterest = DB::table('loan_tenure_interest as lti')
+            ->join('loan_payments as lp', 'lp.id', '=', 'lti.payment_id')
+            ->where('lp.payment_status_id', 3)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('lp.created_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('lp.created_at', now()->year))
+            ->sum('lti.interest');
+
+        $totalPenalty = DB::table('loan_tenure_penalty as ltp')
+            ->join('loan_payments as lp', 'lp.id', '=', 'ltp.payment_id')
+            ->where('lp.payment_status_id', 3)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('lp.created_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('lp.created_at', now()->year))
+            ->sum('ltp.penalty');
+
+        // --- Top Borrowers ---
+        $topBorrowers = DB::table('loan_application as la')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->where('la.loan_status', 5)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('la.created_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('la.created_at', now()->month)->whereYear('la.created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('la.created_at', now()->year))
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) as full_name"), 'la.loan_amount', 'la.created_at')
+            ->orderByDesc('la.loan_amount')->limit(5)->get();
+
+        // --- Borrower Insight ---
+        $totalBorrowers = DB::table('users')
+            ->where('is_admin', 0)->where('is_super_admin', 0)->where('status', 1)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('created_at', now()->year))
+            ->count();
+
+        $activeBorrowers = DB::table('users as u')
+            ->join('loan_application as la', 'la.loan_applicant', '=', 'u.id')
+            ->where('u.is_admin', 0)->where('u.is_super_admin', 0)->where('u.status', 1)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('la.created_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('la.created_at', now()->month)->whereYear('la.created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('la.created_at', now()->year))
+            ->distinct('u.id')->count('u.id');
+
+        $borrowerInsight = [
+            'total_borrowers' => $totalBorrowers,
+            'active_borrowers' => $activeBorrowers,
+            'violations' => 0,
+            'good_payer' => 0
+        ];
+
+        // --- Loan Insight ---
+        $startDate = $filter === 'week' ? now()->startOfWeek() : ($filter === 'month' ? now()->startOfMonth() : now()->startOfYear());
+        $endDate = $filter === 'week' ? now()->endOfWeek() : ($filter === 'month' ? now()->endOfMonth() : now()->endOfYear());
+
+        $totalDisburse = DB::table('loan_application')
+            ->where('status', 1)->where('loan_status', 5)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('loan_amount');
+
+        $totalBalance = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', 0)
+            ->sum(DB::raw('lt.principal + IFNULL(lti.interest,0)'));
+
+        $verifiedPayments = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', '!=', 0)->where('lt.payment_status_id', 3)
+            ->whereBetween('lt.updated_at', [$startDate, $endDate])
+            ->sum(DB::raw('lt.principal + IFNULL(lti.interest,0)'));
+
+        $upcomingBalance = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', 0)
+            ->where('lt.date', '<=', now()->addDays(30))
+            ->sum(DB::raw('lt.principal + IFNULL(lti.interest,0)'));
+
+        $loanInsight = [
+            'total_disburse' => $totalDisburse,
+            'total_balance' => $totalBalance,
+            'verified_payments' => $verifiedPayments,
+            'upcoming_balance' => $upcomingBalance
+        ];
+
+        $totalPenalty = DB::table('loan_tenure_penalty')
+            ->where('payment_id', '!=', 0)
+            ->where('payment_status_id', 3)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereBetween('updated_at', [now()->startOfMonth(), now()->endOfMonth()]))
+            ->when($filter === 'year', fn($q) => $q->whereBetween('updated_at', [now()->startOfYear(), now()->endOfYear()]))
+            ->sum('penalty');
+
+        $totalInterest = DB::table('loan_tenure_interest')
+            ->where('payment_id', '!=', 0)
+            ->where('payment_status_id', 3)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()]))
+            ->when($filter === 'month', fn($q) => $q->whereBetween('updated_at', [now()->startOfMonth(), now()->endOfMonth()]))
+            ->when($filter === 'year', fn($q) => $q->whereBetween('updated_at', [now()->startOfYear(), now()->endOfYear()]))
+            ->sum('interest');
+
+        $totalAmount = $totalPenalty + $totalInterest;
+        $percentageAmount = $totalAmount * 0.10;
+
+        $quickStats = [
+            'available_money' => 0,
+            'balance' => 0,
+            'tithes' => $percentageAmount,
+            'misc' => $percentageAmount,
+        ];
+
+        $data = [
+            'grand_total' => $grandTotal,
+            'status_totals' => $statusTotals,
+            'scheduled_loans' => $scheduledLoans,
+            'recent_applications' => $recentApplications,
+            'recent_payments' => $recentPayments,
+            'total_interest' => $totalInterest,
+            'total_penalty' => $totalPenalty,
+            'top_borrowers' => $topBorrowers,
+            'borrower_insight' => $borrowerInsight,
+            'loan_insight' => $loanInsight,
+            'quick_stats' => $quickStats, 
+        ];
+
+        $pdf = Pdf::loadView('admin.exports.loan_export', $data);
+        return $pdf->download('dashboard_report.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filter = $request->input('filter', 'month');
+
+        // --- Status mapping ---
+        $statuses = [
+            1 => 'pending', 2 => 'for_interview', 3 => 'for_revision',
+            4 => 'waiting', 5 => 'transferred', 6 => 'rejected',
+            7 => 'closed', 8 => 'scheduled', 9 => 'cancelled'
+        ];
+
+        // --- Date range based on filter ---
+        $startDate = $filter === 'week' ? now()->startOfWeek() :
+                    ($filter === 'month' ? now()->startOfMonth() : now()->startOfYear());
+        $endDate   = $filter === 'week' ? now()->endOfWeek() :
+                    ($filter === 'month' ? now()->endOfMonth() : now()->endOfYear());
+
+        // --- Total loan applications by status ---
+        $query = DB::table('loan_application');
+        if ($filter === 'week') {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($filter === 'month') {
+            $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+        } elseif ($filter === 'year') {
+            $query->whereYear('created_at', now()->year);
+        }
+
+        $statusTotals = [];
+        foreach ($statuses as $key => $label) {
+            $statusTotals[$label] = (clone $query)->where('loan_status', $key)->count();
+        }
+
+        // --- Scheduled Loans ---
+        $scheduledLoans = DB::table('loan_application as la')
+            ->join('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"), 'lt.date as tenure_date', 'la.referral')
+            ->where('la.loan_type', 'Scheduled')->where('la.status', 1)->where('la.loan_status', 5)
+            ->orderBy('lt.date', 'asc')->limit(5)->get();
+
+        $scheduledLoansData = $scheduledLoans->map(fn($item) => [
+            'Borrower' => $item->full_name,
+            'Tenure Date' => $item->tenure_date,
+            'Referral' => $item->referral
+        ])->toArray();
+
+        // --- Recent Applications ---
+        $recentApplications = DB::table('loan_application as la')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"), 'la.created_at', 'la.referral', 'la.loan_amount', 'la.loan_status')
+            ->where('la.status', 1)->orderBy('la.created_at', 'desc')->limit(5)->get();
+
+        $recentApplicationsData = $recentApplications->map(fn($item) => [
+            'Borrower' => $item->full_name,
+            'Date' => $item->created_at,
+            'Referral' => $item->referral,
+            'Amount' => $item->loan_amount,
+            'Status' => $statuses[$item->loan_status] ?? 'Unknown'
+        ])->toArray();
+
+        // --- Recent Payments ---
+        $recentPayments = DB::table('loan_payments as lp')
+            ->join('users as u', 'u.id', '=', 'lp.added_by')
+            ->join('loan_payment_types as lpt', 'lpt.id', '=', 'lp.payment_type_id')
+            ->join('loan_payment_statuses as lps', 'lps.id', '=', 'lp.payment_status_id')
+            ->select(
+                DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"),
+                'lp.amount_sent',
+                'lp.reference_code',
+                DB::raw("DATE_FORMAT(lp.created_at, '%M %d, %Y') as created_at"),
+                'lpt.type as coverage',
+                'lps.type as status'
+            )
+            ->orderBy('lp.created_at', 'desc')->limit(5)->get();
+
+        $recentPaymentsData = $recentPayments->map(fn($item) => [
+            'Added By' => $item->full_name,
+            'Amount' => $item->amount_sent,
+            'Reference' => $item->reference_code,
+            'Date' => $item->created_at,
+            'Coverage' => $item->coverage,
+            'Status' => $item->status
+        ])->toArray();
+
+        // --- Top 5 Borrowers ---
+        $topBorrowers = DB::table('loan_application as la')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->where('la.loan_status', 5)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('la.created_at', [$startDate, $endDate]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('la.created_at', now()->month)->whereYear('la.created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('la.created_at', now()->year))
+            ->select(DB::raw("CONCAT(u.firstname, ' ', u.lastname) as full_name"), 'la.loan_amount')
+            ->orderByDesc('la.loan_amount')->limit(5)->get();
+
+        $topBorrowersData = $topBorrowers->map(fn($item) => [
+            'Borrower' => $item->full_name,
+            'Amount' => $item->loan_amount
+        ])->toArray();
+
+        // --- Borrower Insight ---
+        $totalBorrowers = DB::table('users')
+            ->where('is_admin', 0)->where('is_super_admin', 0)->where('status', 1)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('created_at', now()->year))
+            ->count();
+
+        $activeBorrowers = DB::table('users as u')
+            ->join('loan_application as la', 'la.loan_applicant', '=', 'u.id')
+            ->where('u.is_admin', 0)->where('u.is_super_admin', 0)->where('u.status', 1)
+            ->when($filter === 'week', fn($q) => $q->whereBetween('la.created_at', [$startDate, $endDate]))
+            ->when($filter === 'month', fn($q) => $q->whereMonth('la.created_at', now()->month)->whereYear('la.created_at', now()->year))
+            ->when($filter === 'year', fn($q) => $q->whereYear('la.created_at', now()->year))
+            ->distinct('u.id')->count('u.id');
+
+        $borrowerInsight = [
+            'total_borrowers' => $totalBorrowers,
+            'active_borrowers' => $activeBorrowers,
+            'violations' => 0,
+            'good_payer' => 0
+        ];
+
+        // --- Loan Insight ---
+        $totalDisburse = DB::table('loan_application')
+            ->where('status', 1)->where('loan_status', 5)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('loan_amount');
+
+        $totalBalance = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', 0)
+            ->sum(DB::raw('lt.principal + IFNULL(lti.interest,0)'));
+
+        $verifiedPayments = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', '!=', 0)->where('lt.payment_status_id', 3)
+            ->whereBetween('lt.updated_at', [$startDate, $endDate])
+            ->sum(DB::raw('lt.principal + IFNULL(lti.interest,0)'));
+
+        $upcomingBalance = DB::table('loan_tenure as lt')
+            ->leftJoin('loan_tenure_interest as lti', 'lt.id', '=', 'lti.tenure_id')
+            ->where('lt.payment_id', 0)
+            ->where('lt.date', '<=', now()->addDays(30))
+            ->sum(DB::raw('lt.principal + IFNULL(lti.interest,0)'));
+
+        $loanInsight = [
+            'total_disburse' => $totalDisburse,
+            'total_balance' => $totalBalance,
+            'verified_payments' => $verifiedPayments,
+            'upcoming_balance' => $upcomingBalance
+        ];
+
+        // --- Quick Stats ---
+        $totalInterest = DB::table('loan_tenure_interest as lti')
+            ->join('loan_payments as lp', 'lp.id', '=', 'lti.payment_id')
+            ->where('lp.payment_status_id', 3)
+            ->when($filter === 'week', fn($q)=>$q->whereBetween('lp.created_at', [$startDate, $endDate]))
+            ->when($filter === 'month', fn($q)=>$q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
+            ->when($filter === 'year', fn($q)=>$q->whereYear('lp.created_at', now()->year))
+            ->sum('lti.interest');
+
+        $totalPenalty = DB::table('loan_tenure_penalty as ltp')
+            ->join('loan_payments as lp', 'lp.id', '=', 'ltp.payment_id')
+            ->where('lp.payment_status_id', 3)
+            ->when($filter === 'week', fn($q)=>$q->whereBetween('lp.created_at', [$startDate, $endDate]))
+            ->when($filter === 'month', fn($q)=>$q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
+            ->when($filter === 'year', fn($q)=>$q->whereYear('lp.created_at', now()->year))
+            ->sum('ltp.penalty');
+
+        $quickStats = [
+            'available_money'=>0,
+            'balance'=>0,
+            'tithes'=>($totalInterest+$totalPenalty)*0.10,
+            'misc'=>($totalInterest+$totalPenalty)*0.10
+        ];
+
+        // --- Excel Generation ---
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Dashboard Report');
+        $row = 1;
+
+        $styleHeader = [
+            'font' => ['bold' => true, 'color' => ['rgb' => '40739e']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+        ];
+
+        $styleTableHeader = [
+            'font' => ['bold' => true, 'color' => ['rgb' => 'ffffff']],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '40739e']],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+        ];
+
+        $styleTableRow = [
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+        ];
+
+        $getValue = function($item, $header) {
+            if (is_array($item) && isset($item[$header])) return $item[$header];
+            if (is_object($item) && isset($item->$header)) return $item->$header;
+            return '';
+        };
+
+        $addSectionTable = function($title, $headers, $data) use (&$sheet, &$row, $getValue, $styleHeader, $styleTableHeader, $styleTableRow) {
+            $sheet->mergeCells("A$row:" . Coordinate::stringFromColumnIndex(count($headers)) . "$row");
+            $sheet->setCellValue("A$row", $title);
+            $sheet->getStyle("A$row")->applyFromArray($styleHeader);
+            $row++;
+
+            foreach ($headers as $col => $header) {
+                $cell = Coordinate::stringFromColumnIndex($col + 1) . $row;
+                $sheet->setCellValue($cell, ucfirst($header));
+            }
+            $sheet->getStyle("A$row:" . Coordinate::stringFromColumnIndex(count($headers)) . "$row")->applyFromArray($styleTableHeader);
+            $row++;
+
+            foreach ($data as $item) {
+                foreach ($headers as $col => $header) {
+                    $cell = Coordinate::stringFromColumnIndex($col + 1) . $row;
+                    $sheet->setCellValue($cell, $getValue($item, $header));
+                }
+                $sheet->getStyle("A$row:" . Coordinate::stringFromColumnIndex(count($headers)) . "$row")->applyFromArray($styleTableRow);
+                $row++;
+            }
+            $row++;
+        };
+
+        // --- Add sections ---
+        $quickStatsData = collect($quickStats)->map(fn($v,$k)=>['Metric'=>$k,'Value'=>$v])->toArray();
+        $addSectionTable('Quick Stats', ['Metric','Value'], $quickStatsData);
+
+        $statusTotalsData = collect($statusTotals)->map(fn($v,$k)=>['Status'=>$k,'Count'=>$v])->toArray();
+        $addSectionTable('Loan Applications', ['Status','Count'], $statusTotalsData);
+
+        $addSectionTable('Scheduled Loans', ['Borrower','Tenure Date','Referral'], $scheduledLoansData);
+        $addSectionTable('Recent Applications', ['Borrower','Date','Referral','Amount','Status'], $recentApplicationsData);
+        $addSectionTable('Recent Payments', ['Added By','Amount','Reference','Date','Coverage','Status'], $recentPaymentsData);
+        $addSectionTable('Loan Insight', ['Metric','Value'], collect($loanInsight)->map(fn($v,$k)=>['Metric'=>$k,'Value'=>$v])->toArray());
+        $addSectionTable('Borrower Insight', ['Metric','Value'], collect($borrowerInsight)->map(fn($v,$k)=>['Metric'=>$k,'Value'=>$v])->toArray());
+        $addSectionTable('Top 5 Borrowers', ['Borrower','Amount'], $topBorrowersData);
+        $addSectionTable('Financial Overview', ['Metric','Value'], array_merge(
+            collect($borrowerInsight)->map(fn($v,$k)=>['Metric'=>$k,'Value'=>$v])->toArray(),
+            collect($loanInsight)->map(fn($v,$k)=>['Metric'=>$k,'Value'=>$v])->toArray()
+        ));
+
+        // --- Auto-size columns ---
+        foreach(range('A',$sheet->getHighestColumn()) as $col){
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // --- Export Excel ---
+        $filename = 'dashboard_report.xlsx';
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        $writer->save('php://output');
+        exit;
+    }
 
 
 
