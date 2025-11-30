@@ -133,7 +133,7 @@ class HomeController extends Controller
         // dd($loanApplication->id);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
-        if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
+        if ($loanStatus <= 4 || $loanStatus == 999 || $loanStatus == 7) {
             return view('borrower.pages.home', compact('loanStatus'));
         }
 
