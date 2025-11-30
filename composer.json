@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "barryvdh/laravel-dompdf": "*",
+        "barryvdh/laravel-dompdf": "^3.1",
         "getbrevo/brevo-php": "^2.0",
         "intervention/image": "2.7",
         "kreait/laravel-firebase": "^6.0",

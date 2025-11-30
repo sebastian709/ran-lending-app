@@ -230,11 +230,6 @@ $(document).ready(function () {
                                         </div>
                                     </div>
                                     ${rqrContent}
-                                    <div>
-                                        <div class="p-1 border rounded-3 bg-light d-inline-block shadow-sm">
-                                            <img src="${ress.upload_qr_code_img}" alt="Bank QR Code" width="160" height="160">
-                                        </div>
-                                    </div>
                                     <div class="justify-content-center gap-5 mt-4 flex-wrap">
                                         <div>
                                             <p class="fs-5 mb-0">${ress.account_number}</p>
