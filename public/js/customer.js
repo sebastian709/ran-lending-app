@@ -81,10 +81,12 @@ $(document).on('click', '.cp-view-more', function () {
                                     <td>Next Due</td>
                                     <td>${res.next_payment_date || '-'}</td>
                                 </tr>
-                                <tr>
-                                    <td>Score</td>
-                                    <td>${res.loan_applications.score || '-'}</td>
-                                </tr>`;
+                                `;
+
+                                // <tr>
+                                //     <td>Score</td>
+                                //     <td>${res.loan_applications.score || '-'}</td>
+                                // </tr>
 
                                     // <tr>
                                     //     <th>Loan ID</th>
