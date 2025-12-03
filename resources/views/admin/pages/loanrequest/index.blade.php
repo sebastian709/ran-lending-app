@@ -131,7 +131,7 @@
     <div class="mt-4 border-top pt-3 d-flex justify-content-between align-items-center">
         <div>
             <button class="btn btn-primary" id="approveBtn" admin_id="{{ Auth::user()->id }}">
-                Action
+                <i class="ri-file-check-fill"></i> Process Request
             </button>
         </div>
         <div class="text-end">
