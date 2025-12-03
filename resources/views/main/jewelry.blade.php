@@ -351,10 +351,8 @@
                     <div
                         class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
                         <div class="overflow-hidden">
-                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
-                                alt="Blog Image"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                        </div>
+                           <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                                class="blog-image cursor-pointer w-full h-48 object-cover rounded-lg hover:opacity-90 transition">
                         <div class="p-6">
                             <span
                                 class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>

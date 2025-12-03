@@ -155,7 +155,7 @@
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
                     <a href="#blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
-                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button" 
+                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button"
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Donate</button>
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
@@ -168,7 +168,7 @@
                     <a href="#" class="text-white hover:text-white/80 font-medium">Home</a>
                     <a href="#about" class="text-white hover:text-white/80 font-medium">About</a>
                     <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
-                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button" 
+                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button"
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Donate</button>
                 </div>
             </div>
@@ -303,8 +303,7 @@
                         class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
                         <div class="overflow-hidden">
                             <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
-                                alt="Blog Image"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
+                                class="blog-image cursor-pointer w-full h-48 object-cover rounded-lg hover:opacity-90 transition">
                         </div>
                         <div class="p-6">
                             <span
@@ -313,7 +312,9 @@
                                 {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
                             <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
                             <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
-                            <a href="#" data-type="charity" data-id="{{ $post->id }}" class="inline-block mt-4 text-purple-600 font-semibold hover:underline hpReadmoreBP">Read More
+                            <a href="#" data-type="charity" data-id="{{ $post->id }}"
+                                class="inline-block mt-4 text-purple-600 font-semibold hover:underline hpReadmoreBP">Read
+                                More
                                 →</a>
                         </div>
                     </div>
@@ -355,13 +356,17 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a data-url="/lending" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/lending"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Lending</a></li>
-                        <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/jewelry"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Jewelry</a></li>
-                        <li><a data-url="/travel-and-tours" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
+                        <li><a data-url="/travel-and-tours"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
                                 Serenity Travel & Tours</a></li>
-                        <li><a data-url="/hub" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/hub"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Hub</a></li>
                     </ul>
                 </div>
@@ -429,8 +434,7 @@
 
             <!-- QR Code -->
             <div class="flex justify-center mb-6">
-                <img src="{{ asset('images/donate_qr.jpg') }}" alt="Donation QR Code"
-                    class="w-[250px] h-[250px] " />
+                <img src="{{ asset('images/donate_qr.jpg') }}" alt="Donation QR Code" class="w-[250px] h-[250px] " />
             </div>
 
             <!-- Bank Details -->
@@ -439,8 +443,8 @@
                 <div><strong>Account Number:</strong> 466-3-466-28180-9</div>
                 <div><strong>Account Name:</strong> Almira Avendano</div>
             </div>
-             <p class="text-muted small text-center mt-3">
-                <i class="ri-phone-line text-primary"></i> 
+            <p class="text-muted small text-center mt-3">
+                <i class="ri-phone-line text-primary"></i>
                 Need assistance? <br>Please reach out to our admin:
                 <a href="tel:09691899935" class="text-primary-custom fw-bold">0969-189-9935</a>
             </p>

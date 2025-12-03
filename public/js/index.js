@@ -84,19 +84,49 @@ $(document).on('click', '.hpReadmoreBP', function (e) {
 
 const backToTop = document.getElementById("backToTop");
 
-window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-        backToTop.classList.remove("hidden");
-        backToTop.classList.add("opacity-100");
-    } else {
-        backToTop.classList.add("hidden");
-        backToTop.classList.remove("opacity-100");
-    }
-});
+if (backToTop) {
 
-backToTop.addEventListener("click", () => {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+            backToTop.classList.remove("hidden");
+            backToTop.classList.add("opacity-100");
+        } else {
+            backToTop.classList.add("hidden");
+            backToTop.classList.remove("opacity-100");
+        }
+    });
+
+    backToTop.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+
+}
+
+$(document).on('click', '.blog-image', function () {
+    const src = $(this).attr('src');
+
+    // build overlay viewer
+    const viewer = `
+        <div id="imageViewer" class="fixed inset-0 bg-black/90 z-[99999] flex items-center justify-center p-4 cursor-zoom-out">
+            <img src="${src}" class="max-w-full max-h-full rounded-lg shadow-xl animate-viewer-in">
+        </div>
+    `;
+
+    $('body').append(viewer);
+
+    // close when clicking anywhere
+    $('#imageViewer').on('click', function () {
+        $(this).remove();
+    });
+
+    // close when pressing ESC
+    $(document).on('keyup.imageViewer', function (e) {
+        if (e.key === "Escape") {
+            $('#imageViewer').remove();
+            $(document).off('keyup.imageViewer');
+        }
     });
 });
