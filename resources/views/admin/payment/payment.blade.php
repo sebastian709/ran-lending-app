@@ -15,6 +15,7 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" ></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
 
     <!-- DataTables -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js" defer></script>
@@ -542,6 +543,20 @@ $(document).on('click', '.pending_view', function () {
   $('#loanModal').modal('show');
 });
 
+function convertToPHT(timeStr) {
+    let utcDate = new Date(timeStr + "Z"); // "Z" = UTC
+
+    // Convert to Philippine Time
+    let options = {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        timeZone: 'Asia/Manila'
+    };
+
+    return utcDate.toLocaleTimeString('en-US', options); // e.g., "11:50 PM"
+}
+
 
 $(document).on('click', '#payment-tab', function () {
   var id = $(this).attr('data-id');
@@ -587,9 +602,14 @@ $(document).on('click', '#payment-tab', function () {
           // $('.pt_outstanding').text(formatMoney(response.data.total_balance));
           // $('.pt_ref').text(response.data.reference_code);
           // $('.pt_rem').text(response.data.remarks);
+
+          
           console.log(response.data.behavior)
-          let [datePart, timePart] = (response.data.behavior.created_at).split(" ");
-          $('.pt_time').text( convertTo12HourFormat( timePart ) );
+          // let [datePart, timePart] = (response.data.behavior.created_at).split(" ");
+          // $('.pt_time').text( convertTo12HourFormat( timePart ) );
+
+          let phtTime = convertToPHT(response.data.behavior.created_at);
+          $('.pt_time').text(phtTime);
 
 
           $('.pt_date').text(response.data.behavior.paid_date);

@@ -9,7 +9,18 @@ $(document).ready(function() {
         $(this).addClass('active');
 
         let filter = $(this).text().trim().toLowerCase(); // 'week', 'month', or 'year'
-        console.log("Selected filter:", filter);
+        
+        if (filter === 'week'){
+            var date_text = 'Loan Applications (This Week)'
+        }
+        if (filter === 'year'){
+            var date_text = 'Loan Applications (This Year)'
+        }
+         if (filter === 'month'){
+            var date_text = 'Loan Applications (This Month)'
+        }
+
+        $('.loan_for_date').empty().text(date_text);
 
         load_dashboard(filter);
     });
@@ -54,6 +65,13 @@ $(document).ready(function() {
                 <div>Loading Data...</div>
             </div>
         `);
+        
+        let date_text = '';
+        if (filter === 'week') date_text = "Week";
+        else if (filter === 'month') date_text = "Month";
+        else if (filter === 'year') date_text = "Year";
+        else date_text = "";
+        
 
         $.ajax({
             url: "/admin/get-total-applications",
@@ -148,7 +166,7 @@ $(document).ready(function() {
                             legend: { display: false },
                             title: {
                                 display: true,
-                                text: 'Loan Applications Status (This Month)',
+                                text: `Loan Applications Status (This ${date_text})`,
                                 font: { size: 16 }
                             }
                         },

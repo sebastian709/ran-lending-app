@@ -468,8 +468,12 @@ $(document).ready(function () {
 
                             console.log(loan_stat_access.closed)
                         }
+                        if (status.id == 5) {
+                            var is_hidden_opt = 'hidden';
 
-                        loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden} ${ls_is_disabled}>${status.loan_status}</option>`;
+                        }
+
+                        loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden} ${ls_is_disabled} ${is_hidden_opt}>${status.loan_status}</option>`;
                     });
                     let rlt_request_date = `<strong>Requested Date:</strong> ${loan.scheduled_date}`
                     let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
