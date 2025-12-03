@@ -65,10 +65,12 @@ class AdminController extends Controller
     public function viewLoanRequest()
     {
         $admins = DB::table('users')
-                ->select('id', DB::raw("CONCAT(firstname, ' ', lastname) as full_name"))
-                ->where('is_admin', 1)
-                ->where('is_super_admin', 0)
-                ->get();
+            ->select('id', DB::raw("CONCAT(firstname, ' ', lastname) as full_name"))
+            ->where('is_admin', 1)
+            ->where('is_super_admin', 0)
+            ->orderBy('id', 'desc')
+            ->get();
+
 
         return view('admin.pages.loanrequest.index', compact('admins'));
     }
@@ -95,16 +97,17 @@ class AdminController extends Controller
                 'loan_application.loan_type',
                 'loan_application.scheduled_date',
                 'loan_status.loan_status as loan_status_name'
-            );
+            )->orderBy('loan_application.id', 'desc');
 
-            if (!empty($loanStatus)) {
-                $loanApplication->where('loan_application.loan_status', $loanStatus);
-            }
+        if (!empty($loanStatus)) {
+            $loanApplication->where('loan_application.loan_status', $loanStatus);
+        }
 
-            return response()->json($loanApplication->get());
+        return response()->json($loanApplication->get());
     }
 
-    public function getBorrowersApplication(Request $request){
+    public function getBorrowersApplication(Request $request)
+    {
         $loan_id = $request->loan_id;
 
         $loanApplication = DB::table('loan_application')
@@ -118,7 +121,7 @@ class AdminController extends Controller
                 'loan_application.loan_amount',
                 'loan_application.loan_tenure',
                 'loan_application.interest_rate',
-                
+
                 DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
                 DB::raw("DATE_FORMAT(loan_application.updated_at, '%b %d, %Y') as updated_at"),
                 DB::raw("IFNULL(loan_application.referral, 'None') as referral"),
@@ -141,8 +144,8 @@ class AdminController extends Controller
             )
             ->where('loan_application.id', $loan_id)
             ->first();
-            
-           $logs = DB::table('activity_logs')
+
+        $logs = DB::table('activity_logs')
             ->join('users', 'activity_logs.user_id', '=', 'users.id')
             ->where('activity_logs.loan_id', $loan_id)
             ->where('activity_logs.action', '!=', 'comment')
@@ -153,75 +156,75 @@ class AdminController extends Controller
             )
             ->get();
 
-            $approved_admins = DB::table('loan_application')
-                ->select('approved_by_admins')
-                ->where('id', $loan_id)
-                ->value('approved_by_admins');
+        $approved_admins = DB::table('loan_application')
+            ->select('approved_by_admins')
+            ->where('id', $loan_id)
+            ->value('approved_by_admins');
 
-            $approved_admins_array = explode(',', $approved_admins);
-            
-            $disapproved_admins = DB::table('loan_application')
-                ->select('disapproved_by_admins')
-                ->where('id', $loan_id)
-                ->value('disapproved_by_admins');
+        $approved_admins_array = explode(',', $approved_admins);
 
-            $disapproved_admins_array = explode(',', $disapproved_admins);
-            
-            $loan_status =  DB::table('loan_status')
-                ->select('id','loan_status')
-                ->where('status', 1)
-                ->get();
-            
-            $user = auth()->user();
-            $loan_request_access = DB::table('admin_loan_request_access')
-                ->where('user_id', $user->id)
-                 ->get();
+        $disapproved_admins = DB::table('loan_application')
+            ->select('disapproved_by_admins')
+            ->where('id', $loan_id)
+            ->value('disapproved_by_admins');
 
-            $tenures = DB::table('loan_tenure')
-                ->where('loan_id', $loan_id)
-                ->orderBy('date', 'asc')
-                ->get();
+        $disapproved_admins_array = explode(',', $disapproved_admins);
 
-            $today = Carbon::today();
-            $totalViolations = 0;
-            $totalPenalties  = 0;
+        $loan_status = DB::table('loan_status')
+            ->select('id', 'loan_status')
+            ->where('status', 1)
+            ->get();
 
-            foreach ($tenures as $tenure) {
-                $dueDate  = Carbon::parse($tenure->date);
-                $endDate  = $today;
+        $user = auth()->user();
+        $loan_request_access = DB::table('admin_loan_request_access')
+            ->where('user_id', $user->id)
+            ->get();
 
-                if ($tenure->payment_status_id == 2 && !empty($tenure->updated_at)) {
-                    $endDate = Carbon::parse($tenure->updated_at); // paid date
-                }
+        $tenures = DB::table('loan_tenure')
+            ->where('loan_id', $loan_id)
+            ->orderBy('date', 'asc')
+            ->get();
 
-                if ($endDate->greaterThan($dueDate)) {
-                    $monthsLate = $dueDate->diffInMonths($endDate);
-                    $daysLate   = $dueDate->diffInDays($endDate);
+        $today = Carbon::today();
+        $totalViolations = 0;
+        $totalPenalties = 0;
 
-                    // Rule 1: violation if 3+ months late
-                    if ($monthsLate >= 3) {
-                        $totalViolations++;
-                    }
+        foreach ($tenures as $tenure) {
+            $dueDate = Carbon::parse($tenure->date);
+            $endDate = $today;
 
-                    // Rule 2: penalties = every 7 days late
-                    $totalPenalties += floor($daysLate / 7);
-                }
+            if ($tenure->payment_status_id == 2 && !empty($tenure->updated_at)) {
+                $endDate = Carbon::parse($tenure->updated_at); // paid date
             }
 
-            $grade = [
-                'violations' => $totalViolations,
-                'penalties'  => $totalPenalties,
-            ];
+            if ($endDate->greaterThan($dueDate)) {
+                $monthsLate = $dueDate->diffInMonths($endDate);
+                $daysLate = $dueDate->diffInDays($endDate);
 
-            return response()->json([
-                "data" => $loanApplication,
-                "logs" => $logs,
-                "approved_by" => $approved_admins_array,
-                "disapproved_by" => $disapproved_admins_array,
-                "loan_request_access" => $loan_request_access,
-                "loan_status" => $loan_status,
-                "grade" => $grade,
-            ]);
+                // Rule 1: violation if 3+ months late
+                if ($monthsLate >= 3) {
+                    $totalViolations++;
+                }
+
+                // Rule 2: penalties = every 7 days late
+                $totalPenalties += floor($daysLate / 7);
+            }
+        }
+
+        $grade = [
+            'violations' => $totalViolations,
+            'penalties' => $totalPenalties,
+        ];
+
+        return response()->json([
+            "data" => $loanApplication,
+            "logs" => $logs,
+            "approved_by" => $approved_admins_array,
+            "disapproved_by" => $disapproved_admins_array,
+            "loan_request_access" => $loan_request_access,
+            "loan_status" => $loan_status,
+            "grade" => $grade,
+        ]);
     }
 
     public function approve(Request $request, $id)
@@ -308,14 +311,14 @@ class AdminController extends Controller
             DB::table('loan_application')->where('id', $id)->update([
                 'loan_status' => 6
             ]);
-        }else{
+        } else {
             DB::table('loan_application')->where('id', $id)->update([
                 'loan_status' => 1
             ]);
         }
 
         ActivityLogger::log('Reject', 'Rejected Loan Request', $id);
-        ActivityLogger::log('Comment',  $comment, $id);
+        ActivityLogger::log('Comment', $comment, $id);
 
         return response()->json([
             'success' => true,
@@ -346,7 +349,7 @@ class AdminController extends Controller
                 if ($request->has('suggested_amount')) {
                     $data['amount_suggested'] = $request->input('suggested_amount');
                 }
-                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: '.$request->input('suggested_amount'), $id);
+                ActivityLogger::log('Reject Field', 'Loan amount was rejected. Suggested: ' . $request->input('suggested_amount'), $id);
                 break;
 
             case 'rejectQRcode':
@@ -365,7 +368,7 @@ class AdminController extends Controller
                 break;
         }
 
-         // Check if remarks already exist for this loan
+        // Check if remarks already exist for this loan
         $existingRemarks = DB::table('loan_rejected_fields')
             ->where('loan_id', $id)
             ->value('amount_remarks');
@@ -401,13 +404,13 @@ class AdminController extends Controller
         $htmlContent = view('components.emails.for_revision_email')->render();
 
         $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', config('services.brevo.key'));
+            ->setApiKey('api-key', config('services.brevo.key'));
 
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
         $emailObj = new SendSmtpEmail([
-            'subject'     => 'Loan Request Review – Additional Information Needed',
-            'sender'      => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
-            'to'          => [['email' => $email]],
+            'subject' => 'Loan Request Review – Additional Information Needed',
+            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'to' => [['email' => $email]],
             'htmlContent' => $htmlContent
         ]);
 
@@ -423,18 +426,18 @@ class AdminController extends Controller
         ]);
     }
 
-   public function updateLoanStatus(Request $request)
+    public function updateLoanStatus(Request $request)
     {
         $request->validate([
-            'loan_id'   => 'required|integer|exists:loan_application,id',
+            'loan_id' => 'required|integer|exists:loan_application,id',
             'status_id' => 'required|integer|exists:loan_status,id',
         ]);
 
         try {
-           
-            if($request->status_id == 5){
+
+            if ($request->status_id == 5) {
                 $appeal = 1;
-            }else{
+            } else {
                 $appeal = 0;
             }
 
@@ -443,14 +446,14 @@ class AdminController extends Controller
                 ->update([
                     'loan_status' => $request->status_id,
                     'make_appeal' => $appeal,
-                    'updated_at'  => now()
+                    'updated_at' => now()
                 ]);
 
             $updated_to = DB::table('loan_status')
                 ->where('id', $request->status_id)
-                ->value('loan_status'); 
+                ->value('loan_status');
 
-            
+
             ActivityLogger::log(
                 'Update Status',
                 "Update Status to <b>{$updated_to}</b>",
@@ -466,7 +469,7 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update loan status',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -487,7 +490,7 @@ class AdminController extends Controller
             ->first();
 
         $user = auth()->user();
- 
+
         // processed_by )
         if ($bank_details) {
             $bank_details->processed_by = $user->firstname . ' ' . $user->lastname;
@@ -501,21 +504,21 @@ class AdminController extends Controller
         $path = $request->file('screenshot')->store('uploads/money_transfer', 'public');
 
         $userId = auth()->id();
-        
+
         // Insert into DB
         DB::table('admin_money_transfer')->insert([
-            'loan_id'          => $request->loan_id,
+            'loan_id' => $request->loan_id,
             'reference_number' => $request->ref_number,
-            'proof_of_transfer'=> $path, // stored path
-            'remarks'          => $request->remarks,
-            'processed_by'     => $userId,
-            'transfer_date'    => now(),
-            'created_at'       => now(),
-            'updated_at'       => now(),
+            'proof_of_transfer' => $path, // stored path
+            'remarks' => $request->remarks,
+            'processed_by' => $userId,
+            'transfer_date' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         //PROCESS APPROVED LOAN 
-         // Get loan application
+        // Get loan application
         $loanApplications = DB::table('loan_application')
             ->where('id', $request->loan_id)
             ->first();
@@ -528,7 +531,7 @@ class AdminController extends Controller
         }
 
         // Compute monthly principal + interest
-        $monthly  = $loanApplications->loan_amount / $loanApplications->loan_tenure;
+        $monthly = $loanApplications->loan_amount / $loanApplications->loan_tenure;
         $interest = $loanApplications->loan_amount * $loanApplications->interest_rate;
 
         // Insert schedule
@@ -548,61 +551,61 @@ class AdminController extends Controller
 
             // Insert into loan_tenure
             $tenureId = DB::table('loan_tenure')->insertGetId([
-                'loan_id'           => $request->loan_id,
-                'date'              => $dueDate,
-                'principal'         => $monthly,
-                'count'             => $i,
+                'loan_id' => $request->loan_id,
+                'date' => $dueDate,
+                'principal' => $monthly,
+                'count' => $i,
                 'payment_status_id' => 1,
-                'payment_id'        => 0,
-                'created_at'        => now(),
-                'updated_at'        => now(),
+                'payment_id' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             // Insert corresponding interest
             DB::table('loan_tenure_interest')->insert([
-                'tenure_id'         => $tenureId,
-                'interest'          => $interest,
+                'tenure_id' => $tenureId,
+                'interest' => $interest,
                 'payment_status_id' => 1,
-                'payment_id'        => 0,
-                'created_at'        => now(),
-                'updated_at'        => now(),
+                'payment_id' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
 
-         DB::table('loan_application')
+        DB::table('loan_application')
             ->where('id', $request->loan_id)
             ->update([
-                'loan_status' => 5, 
-                'updated_at'  => now(),
+                'loan_status' => 5,
+                'updated_at' => now(),
                 'make_appeal' => 1,
             ]);
 
-         return response()->json([
+        return response()->json([
             'success' => true,
             'message' => 'Transfer successful!',
         ]);
     }
 
-   public function viewAppeal(Request $request)
+    public function viewAppeal(Request $request)
     {
         $appeal_id = $request->appeal_id;
 
         $appeal = DB::table('loan_appeal')
-        ->join('loan_application', 'loan_appeal.loan_id', '=', 'loan_application.id')
-        ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
-        ->join('admin_money_transfer', 'loan_application.id', '=', 'admin_money_transfer.loan_id')
-        ->select(
-            'loan_appeal.reason',
-            DB::raw("CONCAT(users.firstname, ' ', users.lastname) as borrower_name"),
-            'loan_appeal.loan_id',
-            'admin_money_transfer.reference_number',
-            DB::raw("DATE_FORMAT(loan_appeal.date_of_appeal, '%b %e, %Y') as formatted_date"),
-            'loan_appeal.uploaded_proof',
-            'loan_appeal.id as appeal_id',
-            'loan_appeal.receive_status',
-        )
-        ->where('loan_appeal.id', $appeal_id)
-        ->first();
+            ->join('loan_application', 'loan_appeal.loan_id', '=', 'loan_application.id')
+            ->join('users', 'loan_application.loan_applicant', '=', 'users.id')
+            ->join('admin_money_transfer', 'loan_application.id', '=', 'admin_money_transfer.loan_id')
+            ->select(
+                'loan_appeal.reason',
+                DB::raw("CONCAT(users.firstname, ' ', users.lastname) as borrower_name"),
+                'loan_appeal.loan_id',
+                'admin_money_transfer.reference_number',
+                DB::raw("DATE_FORMAT(loan_appeal.date_of_appeal, '%b %e, %Y') as formatted_date"),
+                'loan_appeal.uploaded_proof',
+                'loan_appeal.id as appeal_id',
+                'loan_appeal.receive_status',
+            )
+            ->where('loan_appeal.id', $appeal_id)
+            ->first();
 
 
         return view('admin.pages.appeal.index', compact('appeal'));
@@ -623,22 +626,23 @@ class AdminController extends Controller
                 'loan_appeal.receive_status'
             )
             ->where('loan_application.status', 1)
-            ->get(); 
+            ->orderBy('loan_appeal.date_of_appeal', 'desc')
+            ->get();
 
         return view('admin.pages.appeal.list', compact('appeals'));
     }
 
-     public function markReceived(Request $request)
-    {   
+    public function markReceived(Request $request)
+    {
         $id = $request->id;
         DB::table('loan_appeal')
             ->where('id', $id)
             ->update([
-                    'receive_status' => 1 ,
-                    'updated_at' => now()
-                ]);
+                'receive_status' => 1,
+                'updated_at' => now()
+            ]);
 
-        $payment_id = DB::selectOne("SELECT payment_id from loan_appeal where id = ?",[$id]);
+        $payment_id = DB::selectOne("SELECT payment_id from loan_appeal where id = ?", [$id]);
         DB::update('UPDATE loan_payments SET payment_status_id = 3 WHERE id = ?', [$payment_id->payment_id]);
 
         return response()->json([
@@ -647,8 +651,8 @@ class AdminController extends Controller
         ]);
     }
 
-     public function rejectedComment(Request $request)
-    {   
+    public function rejectedComment(Request $request)
+    {
         $currentUser = auth()->id();
         $comments = DB::table('activity_logs')
             ->join('users', 'activity_logs.user_id', '=', 'users.id')
@@ -659,9 +663,9 @@ class AdminController extends Controller
                 'activity_logs.description',
             )
             ->where('activity_logs.action', 'Comment')
-            ->get(); 
+            ->get();
 
-         return response()->json([
+        return response()->json([
             'comment' => $comments,
             'current_user' => $currentUser
         ]);

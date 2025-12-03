@@ -172,6 +172,7 @@ class PaymentPageController extends Controller
             INNER JOIN loan_application AS la ON la.id = lp.loan_application_id
             INNER JOIN users AS u ON u.id = la.loan_applicant
             WHERE lps.id = 3
+            ORDER BY lp.created_At DESC
             LIMIT ?, ?", [$start, $length]);
 
         // Pagination
@@ -235,6 +236,7 @@ class PaymentPageController extends Controller
             INNER JOIN loan_application AS la ON la.id = lp.loan_application_id
             INNER JOIN users AS u ON u.id = la.loan_applicant
             WHERE lps.id = 4
+            ORDER BY lp.created_at DESC
             LIMIT ?, ?", [$start, $length]);
 
         // Pagination

@@ -35,6 +35,7 @@ class CustomerController extends Controller
                 "loan_application.loan_applicant"
             )
             ->where('status', 1)
+            ->orderBy('loan_application.id', 'desc')
             ->get();
 
         // Get IDs of users that already have loans
