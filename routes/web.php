@@ -47,6 +47,8 @@ Route::get('/jewelry', [NoAuthController::class, 'landingJewelry']);
 Route::get('/hub', [NoAuthController::class, 'landingHub']);
 Route::get('/travel-and-tours', [NoAuthController::class, 'landingTAT']);
 
+Route::get('/blog/view', [NoAuthController::class, 'viewBlogPost'])->name('blog.view');
+
 #index page routes - Lending website
 Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');

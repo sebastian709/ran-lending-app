@@ -126,6 +126,11 @@
 </head>
 
 <body class="bg-gray-50">
+    <!-- Floating Back-to-Top Button -->
+    <button id="backToTop"
+        class="hidden opacity-0 fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-primary/80 transition-all duration-300">
+        <i class="ri-arrow-up-line text-2xl"></i>
+    </button>
 
     <!-- Social Sidebar -->
     <div class="social-sidebar hidden lg:flex flex-col gap-4 bg-primary p-3 rounded-r-lg">
@@ -149,13 +154,13 @@
             <div class="flex justify-between items-center">
                 <a href="/" class="text-2xl font-['Pacifico'] text-white">RAN Serenity HUB</a>
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#"
+                    <a href="/hub"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Home</a>
-                    <a href="#about"
+                    <a href="/hub#about"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
-                    <a href="#blog"
+                    <a href="/hub#blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
-                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button" 
+                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button"
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Donate</button>
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
@@ -165,166 +170,109 @@
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4">
                 <div class="flex flex-col space-y-4">
-                    <a href="#" class="text-white hover:text-white/80 font-medium">Home</a>
-                    <a href="#about" class="text-white hover:text-white/80 font-medium">About</a>
-                    <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
-                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button" 
+                    <a href="/hub" class="text-white hover:text-white/80 font-medium">Home</a>
+                    <a href="/hub#about" class="text-white hover:text-white/80 font-medium">About</a>
+                    <a href="/hub#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
+                    <button onclick="document.getElementById('donate-modal').classList.remove('hidden')" type="button"
                         class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Donate</button>
                 </div>
             </div>
         </div>
     </nav>
+    @php
+        // Convert JSON tags to array
+        $tags = [];
 
-    <!-- Hero with Video Background -->
-    <section
-        class="relative h-[80vh] flex items-center justify-center text-white overflow-hidden bg-cover bg-center-center"
-        style="background-image: url('{{ asset('images/ran_serenity_hub_cover.png') }}');">
+        if (!empty($post->tags_json)) {
+            $decoded = json_decode($post->tags_json, true);
+            if (is_array($decoded)) {
+                // Map to string if stored as objects with 'value', otherwise leave as string
+                $tags = array_map(fn($t) => is_array($t) && isset($t['value']) ? $t['value'] : $t, $decoded);
+            }
+        }
 
-    </section>
+        // Category icon map
+        $map = [
+            'jewelry' => ['bi-gem', '#ffe5ec'],
+            'travel and tours' => ['bi-airplane-engines', '#e0f7fa'],
+            'hub' => ['bi-heart-fill', '#f3e5f5'],
+            'shops' => ['bi-shop', '#fff3cd'],
+        ];
 
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-[#f5efef]">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Support RAN Serenity Hub?</h2>
-                <p class="text-gray-600 max-w-3xl mx-auto">We believe in sustainable impact, transparent giving, and
-                    long-term community transformation.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                    <i class="ri-community-line text-4xl text-primary mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Grassroots Focus</h3>
-                    <p class="text-gray-600">Our work starts where it’s needed most — in the barangays, with real people
-                        and local leaders.</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                    <i class="ri-hand-heart-line text-4xl text-primary mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Volunteer-Driven</h3>
-                    <p class="text-gray-600">From packing goods to organizing events, our passionate volunteers are the
-                        heartbeat of every mission.</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                    <i class="ri-gift-line text-4xl text-primary mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Direct Donations</h3>
-                    <p class="text-gray-600">100% of donations go straight to those in need. No hidden admin fees — just
-                        real impact.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        $key = strtolower($post->category ?? '');
+        $icon = $map[$key][0] ?? 'bi-folder-fill';
+        $bgColor = $map[$key][1] ?? '#f8f9fa';
+    @endphp
 
-    <!-- RAN Serenity HUB - Core Values Section -->
-    <section class="py-20 bg-[#e7e2e2]">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                    CONNECTING COMMUNITIES, CONNECTING GOD
-                </h2>
-                <p class="text-gray-700 max-w-2xl mx-auto">
-                    At RAN Serenity HUB, we are committed to making a meaningful difference through our values:
+    <div class="max-w-3xl mx-auto px-6 py-10 my-10">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900 leading-tight">
+                {{ $post->title ?? 'Untitled' }}
+            </h1>
+
+            @if($post->excerpt)
+                <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                    {{ $post->excerpt }}
                 </p>
+            @endif
+        </div>
+
+        <!-- Featured Image -->
+        @if(!empty($post->featured_image))
+            <div class="w-full mb-10">
+                <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                    class="w-full h-[350px] object-cover rounded-xl shadow-md">
             </div>
+        @endif
 
-            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Card: Compassion -->
-                <div
-                    class="bg-white p-6 rounded-xl shadow-md border-l-4 border-pink-400 hover:shadow-lg transition-all">
-                    <h3 class="text-lg font-bold text-pink-600 mb-2">Compassion</h3>
-                    <p class="text-gray-700">
-                        Embracing empathy and kindness in all our actions.
-                    </p>
-                </div>
+        <!-- Category -->
+        <div class="mb-8">
+            <div class="flex items-center gap-3 p-4 rounded-xl shadow-sm border"
+                style="background-color: {{ $bgColor }};">
 
-                <!-- Card: Empowerment -->
-                <div
-                    class="bg-white p-6 rounded-xl shadow-md border-l-4 border-purple-400 hover:shadow-lg transition-all">
-                    <h3 class="text-lg font-bold text-purple-600 mb-2">Empowerment</h3>
-                    <p class="text-gray-700">
-                        Uplifting individuals to achieve their full potential.
-                    </p>
-                </div>
+                <i class="bi {{ $icon }} text-2xl text-purple-600"></i>
 
-                <!-- Card: Integrity -->
-                <div
-                    class="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-400 hover:shadow-lg transition-all">
-                    <h3 class="text-lg font-bold text-yellow-600 mb-2">Integrity</h3>
-                    <p class="text-gray-700">
-                        Maintaining honesty and transparency in our efforts.
-                    </p>
-                </div>
-
-                <!-- Card: Community -->
-                <div
-                    class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-400 hover:shadow-lg transition-all">
-                    <h3 class="text-lg font-bold text-indigo-600 mb-2">Community</h3>
-                    <p class="text-gray-700">
-                        Fostering a supportive and inclusive environment.
-                    </p>
-                </div>
-
-                <!-- Card: Growth -->
-                <div
-                    class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-400 hover:shadow-lg transition-all">
-                    <h3 class="text-lg font-bold text-green-600 mb-2">Growth</h3>
-                    <p class="text-gray-700">
-                        Encouraging continuous learning and personal development.
-                    </p>
+                <div>
+                    <p class="uppercase text-xs font-semibold text-gray-500">Category</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ ucfirst($post->category) }}</p>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Donate CTA Section -->
-    <section class="py-20 bg-[#f5efef] text-center px-4">
-        <div class="max-w-2xl mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Want to Share Your Blessing?</h2>
-            <p class="text-gray-600 text-lg mb-8">
-                Your support helps us reach more lives. Whether big or small, your donation matters.
+        <!-- Tags -->
+        <div class="mb-8">
+            <p class="uppercase text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
+                <i class="bi bi-tags-fill text-purple-600"></i>
+                Tags
             </p>
-            <button onclick="document.getElementById('donate-modal').classList.remove('hidden')"
-                class="bg-primary text-white px-6 py-3 rounded-button font-semibold hover:bg-primary/90 transition-all">
-                Donate Now
-            </button>
-        </div>
-    </section>
-    <!-- Blog Section -->
-    <section class="py-20 bg-[#e7e2e2]" id="Blog">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Latest Blog Posts</h2>
-                <p class="text-gray-600 max-w-3xl mx-auto">Explore insights, stories, and updates from our businesses
-                    and initiatives.</p>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Blog Post  -->
-                @forelse ($posts as $post)
-                    <div
-                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                        <div class="overflow-hidden">
-                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
-                                alt="Blog Image"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                        </div>
-                        <div class="p-6">
-                            <span
-                                class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
-                            <span class="text-sm text-gray-500 ml-2">|
-                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
-                            <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
-                            <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
-                            <a href="#" data-type="charity" data-id="{{ $post->id }}" class="inline-block mt-4 text-purple-600 font-semibold hover:underline hpReadmoreBP">Read More
-                                →</a>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-4">
-                        <p class="text-center text-gray-500">No blog posts available.</p>
-                    </div>
-                @endforelse
+            <div class="flex flex-wrap gap-2">
+                @if(count($tags) > 0)
+                    @foreach($tags as $tag)
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full shadow-sm">
+                            {{ $tag }}
+                        </span>
+                    @endforeach
+                @else
+                    <span class="italic text-gray-500">No tags added</span>
+                @endif
             </div>
         </div>
-    </section>
+
+        <hr class="my-10 border-gray-200">
+
+        <!-- Content -->
+        <div
+            class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-purple-600">
+            {!! $post->content ?: '<p class="italic text-gray-500">No content written.</p>' !!}
+        </div>
+
+    </div>
+
+    <!-- Blog Section -->
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-white pt-16 pb-8">
         <div class="container mx-auto px-4">
@@ -355,13 +303,17 @@
                 <div>
                     <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
                     <ul class="space-y-3">
-                        <li><a data-url="/lending" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/lending"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Lending</a></li>
-                        <li><a data-url="/jewelry" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/jewelry"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Jewelry</a></li>
-                        <li><a data-url="/travel-and-tours" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
+                        <li><a data-url="/travel-and-tours"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
                                 Serenity Travel & Tours</a></li>
-                        <li><a data-url="/hub" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                        <li><a data-url="/hub"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
                                 Hub</a></li>
                     </ul>
                 </div>
@@ -429,8 +381,7 @@
 
             <!-- QR Code -->
             <div class="flex justify-center mb-6">
-                <img src="{{ asset('images/donate_qr.jpg') }}" alt="Donation QR Code"
-                    class="w-[250px] h-[250px] " />
+                <img src="{{ asset('images/donate_qr.jpg') }}" alt="Donation QR Code" class="w-[250px] h-[250px] " />
             </div>
 
             <!-- Bank Details -->
@@ -439,8 +390,8 @@
                 <div><strong>Account Number:</strong> 466-3-466-28180-9</div>
                 <div><strong>Account Name:</strong> Almira Avendano</div>
             </div>
-             <p class="text-muted small text-center mt-3">
-                <i class="ri-phone-line text-primary"></i> 
+            <p class="text-muted small text-center mt-3">
+                <i class="ri-phone-line text-primary"></i>
                 Need assistance? <br>Please reach out to our admin:
                 <a href="tel:09691899935" class="text-primary-custom fw-bold">0969-189-9935</a>
             </p>

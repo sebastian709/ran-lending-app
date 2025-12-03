@@ -504,7 +504,7 @@
                             </span>
                             <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
                             <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
-                            <a href="#" class="inline-block mt-4 text-purple-600 font-semibold hover:underline">Read More
+                            <a href="#" data-type="lending" data-id="{{ $post->id }}" class="inline-block mt-4 text-purple-600 font-semibold hover:underline hpReadmoreBP">Read More
                                 →</a>
                         </div>
                     </div>

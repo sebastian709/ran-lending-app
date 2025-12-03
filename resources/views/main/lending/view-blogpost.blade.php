@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAN Serenity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { primary: "#76689a", secondary: "#76689a" }, borderRadius: { none: "0px", sm: "4px", DEFAULT: "8px", md: "12px", lg: "16px", xl: "20px", "2xl": "24px", "3xl": "32px", full: "9999px", button: "8px" } },
+            },
+        };
+    </script>
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+        }
+
+        .social-sidebar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        #heroGrid>div {
+            transition: all 0.5s ease-in-out;
+        }
+
+        #heroGrid>div:hover {
+            flex-grow: 2;
+        }
+
+        @media (max-width: 768px) {
+            #heroGrid {
+                height: calc(100vh - 5rem);
+            }
+
+            #heroGrid>div {
+                height: 25%;
+            }
+
+            #heroGrid>div:hover {
+                height: 40%;
+            }
+        }
+
+        .navbar-toggler:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Floating Back-to-Top Button -->
+    <button id="backToTop"
+        class="hidden opacity-0 fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-primary/80 transition-all duration-300">
+        <i class="ri-arrow-up-line text-2xl"></i>
+    </button>
+
+    <!-- Social Sidebar -->
+    <div class="social-sidebar hidden lg:flex flex-col gap-4 bg-primary p-3 rounded-r-lg">
+        <a href="#"
+            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+            <i class="ri-facebook-fill ri-lg"></i>
+        </a>
+        <a href="#"
+            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+            <i class="ri-instagram-fill ri-lg"></i>
+        </a>
+        <a href="#"
+            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+            <i class="ri-twitter-x-fill ri-lg"></i>
+        </a>
+        <a href="#"
+            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+            <i class="ri-linkedin-fill ri-lg"></i>
+        </a>
+    </div>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary to-secondary text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-['Pacifico'] text-white">RAN Serenity</a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/lending"
+                        class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Home</a>
+                    <a href="/lending#business"
+                        class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Business</a>
+                    <a href="/lending#About"
+                        class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
+                    <a href="/lending#Blog"
+                        class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
+
+                    <button type="button" data-url="/login"
+                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Get
+
+                        Started</button>
+                </div>
+                <button id="menuToggle" class="md:hidden text-white focus:outline-none">
+                    <i class="ri-menu-line ri-2x"></i>
+                </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="/lending" class="text-white hover:text-white/80 font-medium">Home</a>
+                    <a href="/lending#business" class="text-white hover:text-white/80 font-medium">Business</a>
+                    <a href="/lending#About" class="text-white hover:text-white/80 font-medium">About</a>
+                    <a href="/lending#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
+
+                    <button type="button" data-url="/login"
+                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Get
+                        Started</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    @php
+        // Convert JSON tags to array
+        $tags = [];
+
+        if (!empty($post->tags_json)) {
+            $decoded = json_decode($post->tags_json, true);
+            if (is_array($decoded)) {
+                // Map to string if stored as objects with 'value', otherwise leave as string
+                $tags = array_map(fn($t) => is_array($t) && isset($t['value']) ? $t['value'] : $t, $decoded);
+            }
+        }
+
+        // Category icon map
+        $map = [
+            'jewelry' => ['bi-gem', '#ffe5ec'],
+            'travel and tours' => ['bi-airplane-engines', '#e0f7fa'],
+            'hub' => ['bi-heart-fill', '#f3e5f5'],
+            'shops' => ['bi-shop', '#fff3cd'],
+        ];
+
+        $key = strtolower($post->category ?? '');
+        $icon = $map[$key][0] ?? 'bi-folder-fill';
+        $bgColor = $map[$key][1] ?? '#f8f9fa';
+    @endphp
+
+    <div class="max-w-3xl mx-auto px-6 py-10 my-10">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900 leading-tight">
+                {{ $post->title ?? 'Untitled' }}
+            </h1>
+
+            @if($post->excerpt)
+                <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                    {{ $post->excerpt }}
+                </p>
+            @endif
+        </div>
+
+        <!-- Featured Image -->
+        @if(!empty($post->featured_image))
+            <div class="w-full mb-10">
+                <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                    class="w-full h-[350px] object-cover rounded-xl shadow-md">
+            </div>
+        @endif
+
+        <!-- Category -->
+        <div class="mb-8">
+            <div class="flex items-center gap-3 p-4 rounded-xl shadow-sm border"
+                style="background-color: {{ $bgColor }};">
+
+                <i class="bi {{ $icon }} text-2xl text-purple-600"></i>
+
+                <div>
+                    <p class="uppercase text-xs font-semibold text-gray-500">Category</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ ucfirst($post->category) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="mb-8">
+            <p class="uppercase text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
+                <i class="bi bi-tags-fill text-purple-600"></i>
+                Tags
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+                @if(count($tags) > 0)
+                    @foreach($tags as $tag)
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full shadow-sm">
+                            {{ $tag }}
+                        </span>
+                    @endforeach
+                @else
+                    <span class="italic text-gray-500">No tags added</span>
+                @endif
+            </div>
+        </div>
+
+        <hr class="my-10 border-gray-200">
+
+        <!-- Content -->
+        <div
+            class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-purple-600">
+            {!! $post->content ?: '<p class="italic text-gray-500">No content written.</p>' !!}
+        </div>
+
+    </div>
+    <!-- Blog Section -->
+
+
+    <!-- Social Media Section -->
+    <section class="py-20 bg-gradient-to-r from-primary to-secondary text-white" id="Social">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Follow Us on Social Media</h2>
+                <p class="text-lg mb-8">Stay connected and updated with our latest news, offerings, and community
+                    stories from across our brands.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <a href="https://www.facebook.com/RANLending" target="_blank"
+                        class="bg-white text-primary px-6 py-4 rounded-button font-medium hover:bg-white/90 transition-all block text-center">
+                        RAN Lending
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61555856647935" target="_blank"
+                        class="bg-white text-primary px-6 py-4 rounded-button font-medium hover:bg-white/90 transition-all block text-center">
+                        RAN Jewelry
+                    </a>
+                    <a href="https://www.facebook.com/nclicious" target="_blank"
+                        class="bg-white text-primary px-6 py-4 rounded-button font-medium hover:bg-white/90 transition-all block text-center">
+                        RAN Travel & Tours
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61567345372877" target="_blank"
+                        class="bg-white text-primary px-6 py-4 rounded-button font-medium hover:bg-white/90 transition-all block text-center">
+                        RAN Serenity HUB
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <a href="/" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">RAN Serenity</a>
+                    <p class="text-gray-400 mb-6">Empowering your success through diverse business solutions in lending,
+                        jewelry, travel, and charitable initiatives.</p>
+                    <div class="flex space-x-4 lg:hidden">
+                        <a href="#"
+                            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+                            <i class="ri-facebook-fill"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+                            <i class="ri-instagram-fill"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+                            <i class="ri-twitter-x-fill"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all">
+                            <i class="ri-linkedin-fill"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Our Businesses</h3>
+                    <ul class="space-y-3">
+                        <li><a data-url="/lending"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                                Lending</a></li>
+                        <li><a data-url="/jewelry"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                                Jewelry</a></li>
+                        <li><a data-url="/travel-and-tours"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran
+                                Serenity Travel & Tours</a></li>
+                        <li><a data-url="/hub"
+                                class="text-gray-400 hover:text-white transition-colors cursor-pointer">Ran Serenity
+                                Hub</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#About" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Business</a></li>
+                        <li><a href="#Social" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Contact Us</h3>
+
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="ri-map-pin-line mr-3 mt-1"></i>
+                            <span class="text-gray-400">
+                                Olongapo, Philippines
+                            </span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-phone-line mr-3"></i>
+                            <span class="text-gray-400">+639691898835</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-mail-line mr-3"></i>
+                            <span class="text-gray-400">ranserenity77@gmail.com</span>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 Ran Serenity. All rights reserved.</p>
+                    <a href="https://asltechnology.online/" target="_blank"
+                        class="text-gray-400 hover:text-white text-sm transition-colors">
+                        Website developed by ASL Technology
+                    </a>
+                    <!-- <div class="flex space-x-6">
+                            <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                            <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
+                            <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Cookie Policy</a>
+                        </div> -->
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+    <script src="{{ asset('js/index.js') }}"></script>
+    <script id="carouselControl">
+        document.addEventListener("DOMContentLoaded", function () {
+            const slides = document.querySelectorAll(".carousel-slide");
+            const dots = document.querySelectorAll(".carousel-dot");
+            let currentSlide = 0;
+            let autoplayInterval;
+            function showSlide(index) {
+                slides.forEach((slide) => {
+                    slide.style.opacity = "0";
+                    slide.style.pointerEvents = "none"; // Disable clicks for hidden slides
+                });
+
+                dots.forEach((dot) => {
+                    dot.classList.remove("bg-white");
+                    dot.classList.add("bg-white/50");
+                });
+
+                slides[index].style.opacity = "1";
+                slides[index].style.pointerEvents = "auto"; // Enable clicks for the active slide
+                dots[index].classList.remove("bg-white/50");
+                dots[index].classList.add("bg-white");
+
+                currentSlide = index;
+            }
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+            function startAutoplay() {
+                autoplayInterval = setInterval(nextSlide, 5000);
+            }
+            function stopAutoplay() {
+                clearInterval(autoplayInterval);
+            }
+            dots.forEach((dot, index) => {
+                dot.addEventListener("click", () => {
+                    stopAutoplay();
+                    showSlide(index);
+                    startAutoplay();
+                });
+            });
+            // Touch events for swipe
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            const carousel = document.querySelector(".carousel-container");
+
+            carousel.addEventListener(
+                "touchstart",
+                (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    stopAutoplay();
+                },
+                false
+            );
+
+            carousel.addEventListener(
+                "touchend",
+                (e) => {
+                    touchEndX = e.changedTouches[0].clientX;
+                    handleSwipe();
+                    startAutoplay();
+                },
+                false
+            );
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const difference = touchStartX - touchEndX;
+
+                if (Math.abs(difference) > swipeThreshold) {
+                    if (difference > 0) {
+                        // Swipe left
+                        currentSlide = (currentSlide + 1) % slides.length;
+                    } else {
+                        // Swipe right
+                        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                    }
+                    showSlide(currentSlide);
+                }
+            }
+            // Initialize carousel
+            showSlide(0);
+            startAutoplay();
+        });
+    </script>
+    <script id="navbarScroll">
+        document.addEventListener("DOMContentLoaded", function () {
+            const navbar = document.querySelector("nav");
+            window.addEventListener("scroll", function () {
+                if (window.scrollY > 50) {
+                    navbar.classList.add("shadow-lg");
+                    navbar.classList.add("bg-primary");
+                    navbar.classList.remove("bg-gradient-to-r");
+                } else {
+                    navbar.classList.remove("shadow-lg");
+                    navbar.classList.remove("bg-primary");
+                    navbar.classList.add("bg-gradient-to-r");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

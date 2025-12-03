@@ -115,6 +115,13 @@
 </head>
 
 <body class="bg-gray-50">
+
+    <!-- Floating Back-to-Top Button -->
+    <button id="backToTop"
+        class="hidden opacity-0 fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-primary/80 transition-all duration-300">
+        <i class="ri-arrow-up-line text-2xl"></i>
+    </button>
+
     <!-- Social Sidebar -->
     <div class="social-sidebar hidden lg:flex flex-col gap-4 bg-primary p-3 rounded-r-lg">
         <a href="#"
@@ -135,214 +142,140 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary to-secondary text-white shadow-md">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
-                <a href="/" class="text-2xl font-['Pacifico'] text-white">RAN Travel and Tours</a>
+                <a href="/travel-and-tours#home" class="text-2xl font-['Pacifico'] text-white">RAN Travel and Tours</a>
+
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#"
+                    <a href="/travel-and-tours#home"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Home</a>
-                    <a href="#about"
+
+                    <a href="/travel-and-tours#about"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
-                    <a href="#blog"
+
+                    <a href="/travel-and-tours#blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
-                    <button type="button"  data-url="/login"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Book
-                        Now</button>
+
+                    <button type="button" data-url="/login"
+                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">
+                        Book Now
+                    </button>
                 </div>
+
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
                     <i class="ri-menu-line ri-2x"></i>
                 </button>
             </div>
+
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4">
                 <div class="flex flex-col space-y-4">
-                    <a href="#" class="text-white hover:text-white/80 font-medium">Home</a>
-                    <a href="#about" class="text-white hover:text-white/80 font-medium">About</a>
-                    <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
-                    <button type="button"  data-url="/login"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Book
-                        Now</button>
+                    <a href="/travel-and-tours#home" class="text-white hover:text-white/80 font-medium">Home</a>
+                    <a href="/travel-and-tours#about" class="text-white hover:text-white/80 font-medium">About</a>
+                    <a href="/travel-and-tours#blog" class="text-white hover:text-white/80 font-medium">Blog</a>
+
+                    <button type="button" data-url="/login"
+                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">
+                        Book Now
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="relative bg-gradient-to-r from-primary to-secondary pt-32 pb-20 overflow-hidden">
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="text-white">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Discover new destinations, Create lasting memories.
-                    </h1>
-                    <p class="text-xl mb-8">Experience the world's most beautiful places with our expertly crafted
-                        travel packages and personalized service.</p>
-                    <div class="flex flex-wrap gap-4">
-                        <button data-url="https://www.facebook.com/nclicious"
-                            class="bg-white text-primary px-8 py-3 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Explore
-                            Packages</button>
-                        <button
-                            class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-button font-medium hover:bg-white/10 transition-all whitespace-nowrap hidden">Plan
-                            Your Trip</button>
-                    </div>
-                </div>
-                <div class="relative">
-                    <div class="bg-[url('/placeholder.svg?height=400&width=600')] bg-cover bg-center w-full h-[400px] rounded-lg shadow-xl"
-                        style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 to-transparent"></div>
-    </section>
 
-    <!-- Booking Process -->
-    <!-- Booking Process -->
-    <section class="py-20 bg-white relative overflow-hidden" id="about">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Simple Booking Process</h2>
-                <p class="text-gray-600 max-w-3xl mx-auto">
-                    Book your dream vacation in just a few easy steps and start your adventure with confidence.
+
+    @php
+        // Convert JSON tags to array
+        $tags = [];
+
+        if (!empty($post->tags_json)) {
+            $decoded = json_decode($post->tags_json, true);
+            if (is_array($decoded)) {
+                // Map to string if stored as objects with 'value', otherwise leave as string
+                $tags = array_map(fn($t) => is_array($t) && isset($t['value']) ? $t['value'] : $t, $decoded);
+            }
+        }
+
+        // Category icon map
+        $map = [
+            'jewelry' => ['bi-gem', '#ffe5ec'],
+            'travel and tours' => ['bi-airplane-engines', '#e0f7fa'],
+            'hub' => ['bi-heart-fill', '#f3e5f5'],
+            'shops' => ['bi-shop', '#fff3cd'],
+        ];
+
+        $key = strtolower($post->category ?? '');
+        $icon = $map[$key][0] ?? 'bi-folder-fill';
+        $bgColor = $map[$key][1] ?? '#f8f9fa';
+    @endphp
+
+    <div class="max-w-3xl mx-auto px-6 py-10 my-10">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900 leading-tight">
+                {{ $post->title ?? 'Untitled' }}
+            </h1>
+
+            @if($post->excerpt)
+                <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                    {{ $post->excerpt }}
                 </p>
+            @endif
+        </div>
+
+        <!-- Featured Image -->
+        @if(!empty($post->featured_image))
+            <div class="w-full mb-10">
+                <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
+                    class="w-full h-[350px] object-cover rounded-xl shadow-md">
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div
-                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
-                        <i class="ri-search-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">1. Choose Destination</h3>
-                    <p class="text-gray-600">Browse our curated destinations and select the perfect trip for your
-                        preferences.</p>
+        @endif
+
+        <!-- Category -->
+        <div class="mb-8">
+            <div class="flex items-center gap-3 p-4 rounded-xl shadow-sm border"
+                style="background-color: {{ $bgColor }};">
+
+                <i class="bi {{ $icon }} text-2xl text-purple-600"></i>
+
+                <div>
+                    <p class="uppercase text-xs font-semibold text-gray-500">Category</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ ucfirst($post->category) }}</p>
                 </div>
-                <div class="text-center">
-                    <div
-                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
-                        <i class="ri-calendar-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">2. Select Dates</h3>
-                    <p class="text-gray-600">Pick your preferred travel dates and customize your itinerary.</p>
-                </div>
-                <div class="text-center">
-                    <div
-                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
-                        <i class="ri-secure-payment-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">3. Secure Payment</h3>
-                    <p class="text-gray-600">Complete your booking with our secure payment system and flexible options.
-                    </p>
-                </div>
-                <div class="text-center">
-                    <div
-                        class="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6 mx-auto">
-                        <i class="ri-flight-takeoff-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">4. Start Your Journey</h3>
-                    <p class="text-gray-600">Receive your travel documents and embark on your unforgettable adventure.
-                    </p>
-                </div>
-            </div>
-            <div class="text-center mt-12">
-                <button
-                    class="bg-gray-400 text-white px-8 py-3 rounded-button font-medium opacity-70 cursor-not-allowed"
-                    title="Coming Soon" disabled>
-                    Coming Soon
-                </button>
             </div>
         </div>
 
-        <!-- Overlay Stamp -->
+        <!-- Tags -->
+        <div class="mb-8">
+            <p class="uppercase text-xs font-semibold text-gray-500 mb-3 flex items-center gap-2">
+                <i class="bi bi-tags-fill text-purple-600"></i>
+                Tags
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+                @if(count($tags) > 0)
+                    @foreach($tags as $tag)
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full shadow-sm">
+                            {{ $tag }}
+                        </span>
+                    @endforeach
+                @else
+                    <span class="italic text-gray-500">No tags added</span>
+                @endif
+            </div>
+        </div>
+
+        <hr class="my-10 border-gray-200">
+
+        <!-- Content -->
         <div
-            class="absolute inset-0 bg-white/0 z-10 flex flex-col items-center justify-center text-center px-4" style="backdrop-filter: blur(1.5px);">
-            <!-- STAMP -->
-            <div class="relative inline-block mb-10">
-                <!-- text-[#76689A] -->
-                <span
-                    class="text-5xl md:text-6xl lg:text-7xl font-black text-gray-700 uppercase tracking-widest opacity-90 rotate-[-10deg] block">
-                    Coming Soon
-                </span>
-                <span
-                    class="absolute inset-0 border-4 border-dashed border-[#76689A] rounded-full transform scale-110 opacity-20"></span>
-            </div>
+            class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-purple-600">
+            {!! $post->content ?: '<p class="italic text-gray-500">No content written.</p>' !!}
         </div>
-    </section>
 
-
-    <!-- Why Choose Us -->
-    <section class="py-20 bg-[#e7e2e2]">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose RAN Travel & Tours</h2>
-                <p class="text-gray-600 max-w-3xl mx-auto">Experience the difference of traveling with a company that
-                    puts your adventure and satisfaction first.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-lg shadow-md">
-                    <div
-                        class="w-14 h-14 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
-                        <i class="ri-award-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Expert Planning</h3>
-                    <p class="text-gray-600">Our experienced travel specialists craft personalized itineraries tailored
-                        to your interests and budget.</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md">
-                    <div
-                        class="w-14 h-14 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
-                        <i class="ri-shield-check-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Safe & Secure</h3>
-                    <p class="text-gray-600">Travel with confidence knowing we prioritize your safety with trusted
-                        partners and comprehensive insurance.</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md">
-                    <div
-                        class="w-14 h-14 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-6">
-                        <i class="ri-customer-service-2-line ri-2x"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">24/7 Support</h3>
-                    <p class="text-gray-600">Our dedicated support team is available around the clock to assist you
-                        throughout your journey.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    </div>
     <!-- Blog Section -->
-    <section class="py-20 bg-[#f5efef]" id="blog">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Travel Stories & Tips</h2>
-                <p class="text-gray-600 max-w-3xl mx-auto">Discover inspiring travel stories, helpful tips, and the
-                    latest updates from our adventures around the world.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Blog Post  -->
-                @forelse ($posts as $post)
-                    <div
-                        class="bg-gray-50 rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-1">
-                        <div class="overflow-hidden">
-                            <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://via.placeholder.com/800x600?text=No+Image' }}"
-                                alt="Blog Image"
-                                class="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110">
-                        </div>
-                        <div class="p-6">
-                            <span
-                                class="text-sm text-purple-600 font-semibold uppercase">{{ $post->category ?? 'Uncategorized' }}</span>
-                            <span class="text-sm text-gray-500 ml-2">|
-                                {{ \Carbon\Carbon::parse($post->created_at)->format('F d, Y') }}</span>
-                            <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $post->title }}</h3>
-                            <p class="text-gray-600 mt-3">{{ Str::limit($post->excerpt, 120) }}</p>
-                            <a href="#" data-type="traveltours" data-id="{{ $post->id }}" class="inline-block mt-4 text-purple-600 font-semibold hover:underline hpReadmoreBP">Read More
-                                →</a>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-4">
-                        <p class="text-center text-gray-500">No blog posts available.</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-    </section>
+
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white pt-16 pb-8">
