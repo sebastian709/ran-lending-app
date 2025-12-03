@@ -328,6 +328,7 @@ class ProfileController extends Controller
             )
             ->where('la.status', 1)
             ->where('la.loan_applicant', $userId)
+            ->orderBy("la.id","DESC")
             ->get();
 
         return view('borrower.pages.loan-list', compact('loans'));
