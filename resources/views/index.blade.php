@@ -140,9 +140,7 @@
                     </div>
                 </div>
                 <div class="relative">
-                    <div
-                        class="bg-[url('https://diversifiedllc.com/wp-content/uploads/2023/06/featured-image-for-blogs-1160x665-2023-06-09T160309.657.jpg')] bg-cover bg-center w-full h-[400px] rounded-lg shadow-xl">
-                    </div>
+                    <div class="bg-[url('{{ asset('storage/stock_images/phMoney.jpg') }}')] bg-cover bg-center w-full h-[400px] rounded-lg shadow-xl"></div>
                 </div>
             </div>
         </div>
