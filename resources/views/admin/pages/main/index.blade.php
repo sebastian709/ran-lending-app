@@ -57,7 +57,7 @@
 
 
         <!-- Loan Applications -->
-        <div class="section-title">Loan Applications (This Month)</div>
+        <div class="section-title loan_for_date">Loan Applications (This Month)</div>
         <div class="row g-4 mb-5" id="total_applications">
                       
         </div>

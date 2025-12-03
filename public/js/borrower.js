@@ -292,6 +292,22 @@ $(function () {
             return;
         }
 
+        const referralType = $('input[name="referralType"]:checked').val();
+        const referralCode = $('#referralCode').val().trim();
+
+        if (referralType === 'admin' && referralCode === '') {
+    
+            Swal.fire({
+                icon: 'warning',
+                title: 'Referral Code Required',
+                text: 'Please enter the referral code provided by the admin.',
+            });
+
+            $('#referralCode').focus();
+            $('#referralCode').css('border', '1px solid red');
+            return false;
+        }
+
 
 
         $.ajax({
