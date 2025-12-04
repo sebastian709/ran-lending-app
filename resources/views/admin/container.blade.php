@@ -99,13 +99,13 @@
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/customer">
             <i class="ri-user-community-line"></i> Customer
         </a>
-        <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
+        <!-- <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
             <i class="bi bi-newspaper"></i> Blogpost
-        </a>
+        </a> -->
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/paymentpage">
             <i class="ri-wallet-3-line"></i> Payment Page
-        <a href="#" data-url="/admin/appeal-request/" class="nav-link" data-is-sidebar="1" data-url="/admin/blogpost">
-        <i class="bi bi-exclamation-triangle-fill"></i> Appeal Request
+        <a href="#" data-url="/admin/appeal-request/" class="nav-link" data-is-sidebar="1">
+            <i class="bi bi-exclamation-triangle-fill"></i> Appeal Request
         </a>
     </div>
 
@@ -239,6 +239,11 @@
                                 <li>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/profile">
                                         <i class="ri-user-line me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/blogpost">
+                                        <i class="bi bi-newspaper me-2"></i>Blogpost
                                     </a>
                                 </li>
                                 <li>
