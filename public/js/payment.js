@@ -471,20 +471,27 @@ $(document).on('click', '#submit_payment', function () {
         });
     });
 
+    let attachment = $("#screenshot")[0].files[0];
+
+    let formData = new FormData();
+    formData.append('id', id);
+    formData.append('total', total);
+    formData.append('reference_code', reference_code);
+    formData.append('remarks', remarks);
+    formData.append('fullpayment', fullpayment);
+    formData.append('attachment', attachment);
+
+    formData.append('paymentDue', JSON.stringify(paymentDue));
+    formData.append('paymentPar', JSON.stringify(paymentPar));
+    formData.append('paymentData', JSON.stringify(paymentData));
+
     $.ajax({
         url: '/payment/submit',
         method: 'POST',
-        data: {
-            id : id,
-            total : total,
-            paymentDue : paymentDue,
-            paymentPar : paymentPar,
-            paymentData : paymentData,
-            reference_code : reference_code,
-            remarks : remarks,
-            fullpayment : fullpayment,
-            
-        },
+        data: formData,
+         processData: false,
+        contentType: false,
+        cache: false,
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },

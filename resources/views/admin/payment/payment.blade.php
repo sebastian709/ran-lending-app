@@ -306,7 +306,7 @@
                     </tr>
                     <tr>
                       <th>Proof of Payment</th>
-                      <td><button class="btn btn-sm btn-outline-primary">View File</button></td>
+                      <td><button class="btn btn-sm btn-outline-primary view_payment_attachment">View File</button></td>
                     </tr>
                     <tr>
                       <th>Remarks</th>
@@ -562,6 +562,7 @@ $(document).on('click', '#payment-tab', function () {
   var id = $(this).attr('data-id');
   var pay_id = $(this).attr('data-pay_id');
   
+  $('.view_payment_attachment').attr('data-id', pay_id);
 
   $.ajax({
         url: '/get_pending_data_two',
@@ -1044,6 +1045,53 @@ $(document).on('click', '.rejected_view', function () {
 });
 
 
+$(document).on('click', '.view_payment_attachment', function () {
+
+    payment_id = $(this).attr('data-id');
+
+    $.ajax({
+        url: '/payment/get-attachment',
+        method: 'POST',
+        data: {
+            payment_id: payment_id,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+
+            if (!response.attachment) {
+                Swal.fire("No Attachment", "This payment has no uploaded file.", "warning");
+                return;
+            }
+
+            let fileUrl = "storage/" + response.attachment;
+
+            // Detect file type
+            let isImage = /\.(jpg|jpeg|png)$/i.test(fileUrl);
+            let isPDF = /\.pdf$/i.test(fileUrl);
+
+            let content = '';
+
+            if (isImage) {
+                content = `<a href="${fileUrl}" target="_blank" rel="noopener noreferrer">
+                               <img src="${fileUrl}" style="width:100%;border-radius:6px;" />
+                           </a>`;
+            } else if (isPDF) {
+                content = `<iframe src="${fileUrl}" width="100%" height="600px"></iframe>`;
+            }
+
+            // Show modal
+            Swal.fire({
+                title: 'Payment Attachment',
+                html: content,
+                width: '800px',
+                showCloseButton: true,
+                showConfirmButton: false,
+            });
+        }
+    });
+
+
+});
 
 
 // $(document).on('click', '.revision_view', function () {
