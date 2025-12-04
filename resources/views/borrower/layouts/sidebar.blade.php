@@ -203,7 +203,7 @@ $(document).on('click', '#confirmRejectBtn', function () {
       return false;
     }
     $.ajax({
-        url: 'rejectaccept',
+        url: '/rejectaccept',
         method: 'POST',
         dataType: 'json',
         data: {log_id:log_id},
