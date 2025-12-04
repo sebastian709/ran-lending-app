@@ -45,8 +45,9 @@
                 </div>
             </div>
 
+
             <!-- Recent Activity -->
-            <div class="row mt-4">
+            <!-- <div class="row mt-4">
                 <div class="col-12">
                     <div class="dashboard-card p-4">
                         <h4 class="fw-bold mb-3">Recent Activity</h4>
@@ -56,7 +57,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
+            @include('borrower.layouts.engagement')
+
         </div>
     </div>  
 </div>

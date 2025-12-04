@@ -5,18 +5,23 @@
     <div class="container-fluid p-4 ran_dashboard">
 
         <div class="container-xl sticky-filters">
-            <div class="filter-section">
-                <div class="filter-group">
+            <div class="row filter-section">
+                <div class="col-6 filter-group">
                     <label>Date Filter</label>
                     <button class="btn-date" data-filter="week">Week</button>
                     <button class="btn-date active" data-filter="month">Month</button>
                     <button class="btn-date" data-filter="year">Year</button>
                 </div>
-                <div class="export-group">
+                <div class="col-3 export-group">
                     <label style="margin-right: 0.5rem;">Export</label>
                     <a href="{{ route('applications.pdf') }}" class="btn-export pdf"><i class="bi bi-file-pdf"></i> PDF</a>
                     <a href="{{ route('applications.excel') }}" class="btn-export excel"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 </div>
+                <!-- <div class="col-2 calendar-container">
+                    <button class="btn-date calendar-btn">
+                        <i class="bi bi-calendar-date"></i> Calendar
+                    </button>
+                </div> -->
             </div>
         </div>
         <!-- Top KPIs -->

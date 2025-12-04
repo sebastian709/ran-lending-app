@@ -46,8 +46,12 @@ class HomeController extends Controller
         // dd($loanApplication);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
+        $hasFeedback = DB::table('engagement_feedback')
+            ->where('user_id', $userId)
+            ->exists();
+
         if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
-            return view('borrower.pages.home', compact('loanStatus'));
+            return view('borrower.pages.home',  compact('loanStatus', 'hasFeedback'));
         }
 
         DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
@@ -115,13 +119,12 @@ class HomeController extends Controller
         $isnew = $is_new['0']->id;
         if ($data->months === 0) {
             // $loanStatus = 0;
-            return view('borrower.layouts.payment-state', compact('loanStatus'));
+            return view('borrower.layouts.payment-state', compact('loanStatus', 'hasFeedback'));
         }
-
 
         // dd($loanStatus,$data,$nextPayment,$is_new);
 
-        return view('borrower.pages.home', compact('loanStatus', 'data', 'nextPayment', 'isnew'));
+        return view('borrower.pages.home', compact('loanStatus', 'data', 'nextPayment', 'isnew', 'hasFeedback'));
     }
 
     public function repayment_schedule()
@@ -133,8 +136,13 @@ class HomeController extends Controller
         // dd($loanApplication->id);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
+        $userId = auth()->id();
+        $hasFeedback = DB::table('engagement_feedback')
+            ->where('user_id', $userId)
+            ->exists();
+
         if ($loanStatus <= 4 || $loanStatus == 999 || $loanStatus == 7) {
-            return view('borrower.pages.home', compact('loanStatus'));
+            return view('borrower.pages.home', compact('loanStatus','hasFeedback'));
         }
 
 
@@ -966,11 +974,26 @@ class HomeController extends Controller
         ]);
     }
 
+    public function EngagementSubmit(Request $request)
+    {
+           $request->validate([
+                'user_id' => 'required|integer',
+                'social_media' => 'required|string',
+                'referral' => 'required|string',
+            ]);
 
+            $id = DB::table('engagement_feedback')->insertGetId([
+                'user_id' => $request->user_id,
+                'social_media' => $request->social_media,
+                'referral' => $request->referral,
+                'created_at' => now(),
+            ]);
 
-
-
-
+            return response()->json([
+                'success' => true,
+                'feedback_id' => $id
+            ]);
+    }
 
 
 
