@@ -1594,3 +1594,72 @@ $(document).on("click", "#makeAppealBtn", function () {
         }
     });
 });
+
+$(document).on("click", ".submit_feedback", function () {
+
+    let socialMedia = $('input[name="social_media_option"]:checked').val();
+    let referral = $('input[name="referral_option"]:checked').val();
+    let user_id = $('#gb_user_id').val();
+    if (!socialMedia) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Error',
+            text: 'Please select a Social Media option.'
+        });
+        return;
+    }
+    if (!referral) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Error',
+            text: 'Please select a Referral option.'
+        });
+        return;
+    }
+
+    console.log("Social Media:", socialMedia);
+    console.log("Referral:", referral);
+
+      $.ajax({
+       url: "/borrower/engagement-feedback",
+        type: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'), // CSRF token
+            user_id: user_id,
+            social_media: socialMedia,
+            referral: referral
+        },
+        success: function(response) {
+             Swal.fire({
+                icon: 'success',
+                title: 'Thank You!',
+                text: 'Feedback submitted successfully!'
+            });
+
+            $('input[name="social_media_option"]').prop('checked', false);
+            $('input[name="referral_option"]').prop('checked', false);
+
+             var html = `
+                <div class="text-center p-5">
+                    <div class="empty-state-icon mb-3">
+                        <i class="ri-check-line fs-1 text-success"></i>
+                    </div>
+                    <h2 class="h3 fw-bold mb-2">Thank You!</h2>
+                    <p class="text-muted mb-0">We have received your feedback successfully.</p>
+                </div>
+            `;
+            $('.engagements').empty().append(html);
+
+            setTimeout(function() {
+                $('.engage_div').fadeOut(function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+            alert("Something went wrong. Please try again.");
+        }
+    });
+
+});

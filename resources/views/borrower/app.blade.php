@@ -224,6 +224,12 @@
             window.general_notification_count();
         });
     </script>
+    <footer class="text-center py-3 text-muted small">
+        © {{ date('Y') }} RAN Lending • Developed by  <a href="https://asltechnology.online/" target="_blank" class="text-decoration-none">
+        <strong>ASLN Technology</strong>
+    </a>
+    </footer>
+
 </body>
 
 </html>

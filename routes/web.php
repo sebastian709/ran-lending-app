@@ -175,6 +175,7 @@ Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgo
 
 # borrower routes
 Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('my-loan.apply');
+Route::get('/engagement-check', [App\Http\Controllers\HomeController::class, 'EngagementCheck'])->name('my-loan.engagement');
 
 # message pages
 Route::get('/loan-success', fn() => view('borrower.layouts.message'))->name('borrower.layouts.message');
@@ -240,6 +241,7 @@ Route::post('/borrower/check-loan-data', [HomeController::class, 'checkLoanData'
 Route::post('/borrower/update-appeal-status', [HomeController::class, 'updateAppealStatus']);
 Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
 Route::post('/rejectaccept', [HomeController::class, 'rejectaccept']);
+Route::post('/borrower/engagement-feedback', [HomeController::class, 'EngagementSubmit']);
 
 Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived']);
 Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment']);
@@ -259,3 +261,4 @@ Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);
 
 Route::get('/admin/export-pdf', [DashboardController::class, 'exportPDF'])->name('applications.pdf');
 Route::get('/admin/export-excel', [DashboardController::class, 'exportExcel'])->name('applications.excel');
+
