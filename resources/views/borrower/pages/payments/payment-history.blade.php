@@ -88,8 +88,8 @@
                         <div class="mb-2">
                             <strong>Attachment:</strong><br>
                             @if ($payment['attachment'])
-                                <a href="{{ asset('storage/payments/'.$payment['attachment']) }}" target="_blank">
-                                    <img src="{{ asset('storage/payments/'.$payment['attachment']) }}" class="attachment-img mt-2" style="max-width:300px;">
+                                <a href="{{ asset('storage/'.$payment['attachment']) }}" target="_blank">
+                                    <img src="{{ asset('storage/'.$payment['attachment']) }}" class="attachment-img mt-2" style="max-width:300px;">
                                 </a>
                             @else
                                 <span class="text-muted fst-italic">No attachment provided</span>

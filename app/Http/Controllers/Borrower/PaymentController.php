@@ -559,7 +559,8 @@ class PaymentController extends Controller
                 ROUND(COALESCE(lt.principal, 0), 2) AS principal,
                 lp.amount_sent AS amount_paid,
                 lp.remarks,
-                COALESCE(DATE_FORMAT(lp.cancelled_approved_date, '%M %Y'), 'n/a') as reject_date
+                COALESCE(DATE_FORMAT(lp.cancelled_approved_date, '%M %Y'), 'n/a') as reject_date,
+                lp.attachment
             FROM loan_payments lp
             LEFT JOIN loan_payment_statuses lps ON lps.id = lp.payment_status_id
             LEFT JOIN loan_payment_types lpt ON lpt.id = lp.payment_type_id
@@ -599,7 +600,7 @@ class PaymentController extends Controller
                 // You will replace this later with real computed outstanding balance
                 "outstanding_balance" => (float) $p->amount_due - (float) $p->amount_paid,
 
-                "attachment" => null,
+                "attachment" => $p->attachment ?? null,
                 "remarks" => $p->remarks,
                 "comments" => [] // EMPTY COMMENTS FOR NOW
             ];

@@ -488,25 +488,16 @@ $(document).on('click', '#submit_payment', function () {
     $.ajax({
         url: '/payment/submit',
         method: 'POST',
-        data: {
-            id: id,
-            total: total,
-            paymentDue: paymentDue,
-            paymentPar: paymentPar,
-            paymentData: paymentData,
-            reference_code: reference_code,
-            remarks: remarks,
-            fullpayment: fullpayment,
-
-        },
+        data: formData,
+        processData: false,
+        contentType: false,
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function (response) {
             window.location.href = response.redirect;
-        },
+        }
     });
-
 });
 
 $(document).on('click', '#payment_return', function () {
