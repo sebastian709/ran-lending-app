@@ -269,4 +269,5 @@ Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);
 
 Route::get('/admin/export-pdf', [DashboardController::class, 'exportPDF'])->name('applications.pdf');
 Route::get('/admin/export-excel', [DashboardController::class, 'exportExcel'])->name('applications.excel');
+Route::post('/payment/get-attachment', [PaymentController::class, 'getAttachment']);
 
