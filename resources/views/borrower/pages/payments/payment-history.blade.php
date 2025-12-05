@@ -5,132 +5,139 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
- <link rel="stylesheet" href="css/payment.css">
-
+<link rel="stylesheet" href="{{ asset('css/payment.css') }}">
 @endsection
 
 @section('content')
 <div class="d-flex">
     @include('borrower.layouts.sidebar')
+
     <div class="container py-4">
         <h2 class="text-center fw-bold mb-4">Payment History</h2>
 
-        {{-- Payment: For Revision --}}
-        <div class="payment-item" data-bs-toggle="collapse" data-bs-target="#payment-1">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="status-dot status-revision"></span>
-                    <strong class="me-2">₱15,000</strong>
-                    <span class="text-muted">20 July 2025 - Monthly Due</span>
-                </div>
-                <i class="ri-arrow-right-s-line arrow-icon"></i>
-            </div>
-        </div>
-        <div id="payment-1" class="collapse">
-            <div class="payment-details">
-                <div class="row mb-2">
-                    <div class="col-md-6"><strong>Status:</strong> <span class="text-warning">For Revision</span></div>
-                    <div class="col-md-6"><strong>Reference:</strong> REF-20250728-1234</div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-3"><strong>Monthly Due:</strong> ₱10,000</div>
-                    <div class="col-md-3"><strong>Interest:</strong> ₱2,000</div>
-                    <div class="col-md-3"><strong>Penalty:</strong> ₱500</div>
-                    <div class="col-md-3"><strong>Principal:</strong> ₱7,500</div>
-                </div>
-                <div class="mb-2"><strong>Amount Paid:</strong> ₱12,500</div>
-                <div class="mb-2"><strong>Attachment:</strong><br>
-                    <a href="#"><img src="https://via.placeholder.com/300x180?text=Receipt" class="attachment-img mt-2"></a>
-                </div>
-                <div class="mb-3"><strong>Remarks:</strong> Payment was submitted late due to banking maintenance. Please verify.</div>
+        @php
+            $statusColor = [
+                'For Verification' => 'status-pending',   // Gray
+                'For Correction'   => 'status-revision',  // Orange
+                'Verified'         => 'status-success',   // Green
+                'Rejected'         => 'status-failed',    // Dark Red
+                'For Revision'     => 'status-warning',   // Yellow/Amber
+                'For Appeal'       => 'status-appeal',    // Blue
+            ];
 
-                <div class="mb-3">
-                    <strong>Comments:</strong>
-                    <div class="comment-box">
-                        <div class="comment-author">Borrower:</div>
-                        <div>I already uploaded the updated screenshot as requested.</div>
+            $textColor = [
+                'For Verification' => 'text-secondary', // Gray text
+                'For Correction'   => 'text-warning',   // Orange/amber text
+                'Verified'         => 'text-success',   // Green text
+                'Rejected'         => 'text-danger',    // Red text
+                'For Revision'     => 'text-warning',   // Yellow/amber text
+                'For Appeal'       => 'text-primary',   // Blue text
+            ];
+        @endphp
+
+        <div class="accordion" id="paymentAccordion">
+            @foreach ($paymentHistory as $index => $payment)
+                @php 
+                    $collapseId = "payment-" . ($index + 1);
+                    $itemClass = $statusColor[$payment['status']] ?? 'status-pending';
+                @endphp
+
+                {{-- PAYMENT ITEM --}}
+                <div data-tenure-id="{{ $payment['tenure_id'] }}" data-payment-id="{{ $payment['payment_id'] }}" class="payment-item {{ $itemClass }}" data-bs-toggle="collapse" data-bs-target="#{{ $collapseId }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        
+                        <div class="d-flex align-items-center">
+                            {{-- Status Badge --}}
+                            <span class="status-badge me-2">{{ $payment['status'] }}</span>
+
+                            <div>
+                                <strong class="me-2">₱{{ number_format($payment['amount_due'], 2) }}</strong>
+                                <span class="text-muted">{{ $payment['month_coverage'] }} - {{ $payment['payment_category'] }}</span>
+                            </div>
+                        </div>
+
+                        <i class="ri-arrow-right-s-line arrow-icon"></i>
                     </div>
-                    <div class="comment-box">
-                        <div class="comment-author">Admin:</div>
-                        <div>Please re-upload a clearer image. The current one is blurred.</div>
+                </div>
+
+                {{-- COLLAPSIBLE DETAILS --}}
+                <div id="{{ $collapseId }}" class="collapse" data-bs-parent="#paymentAccordion">
+                    <div class="payment-details p-3 border rounded mb-3">
+                        {{-- Status + Reference --}}
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <strong>Status:</strong> 
+                                <span class="{{ $textColor[$payment['status']] ?? 'text-secondary' }}">{{ $payment['status'] }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Reference:</strong> {{ $payment['reference_number'] ?? 'N/A' }}
+                            </div>
+                        </div>
+
+                        {{-- Breakdown --}}
+                        <div class="row mb-2">
+                            <div class="col-md-3"><strong>Monthly Due:</strong> ₱{{ number_format($payment['breakdown']['monthly_due'], 2) }}</div>
+                            <div class="col-md-3"><strong>Interest:</strong> ₱{{ number_format($payment['breakdown']['interest'], 2) }}</div>
+                            <div class="col-md-3"><strong>Penalty:</strong> ₱{{ number_format($payment['breakdown']['penalty'], 2) }}</div>
+                            <div class="col-md-3"><strong>Principal:</strong> ₱{{ number_format($payment['breakdown']['principal'], 2) }}</div>
+                        </div>
+
+                        <div class="mb-2"><strong>Amount Paid:</strong> ₱{{ number_format($payment['amount_paid'], 2) }}</div>
+
+                        {{-- Attachment --}}
+                        <div class="mb-2">
+                            <strong>Attachment:</strong><br>
+                            @if ($payment['attachment'])
+                                <a href="{{ asset('storage/payments/'.$payment['attachment']) }}" target="_blank">
+                                    <img src="{{ asset('storage/payments/'.$payment['attachment']) }}" class="attachment-img mt-2" style="max-width:300px;">
+                                </a>
+                            @else
+                                <span class="text-muted fst-italic">No attachment provided</span>
+                            @endif
+                        </div>
+
+                        <div class="mb-3"><strong>Remarks:</strong> {{ $payment['remarks'] ?? 'None' }}</div>
+
+                        {{-- Comments --}}
+                        <!-- <div class="mb-3">
+                            <strong>Comments:</strong>
+                            @forelse ($payment['comments'] as $comment)
+                                <div class="comment-box mb-2 p-2 border rounded">
+                                    <div class="comment-author fw-bold">{{ $comment['author'] }}:</div>
+                                    <div>{{ $comment['message'] }}</div>
+                                    <small class="text-muted">{{ $comment['timestamp'] }}</small>
+                                </div>
+                            @empty
+                                <div class="text-muted fst-italic">No comments yet.</div>
+                            @endforelse
+                        </div> -->
+
+                        {{-- Comments --}}
+                        <div class="mb-3">
+                            <strong>Comments:</strong>
+                            <div class="comments-container">
+                                <div class="text-muted fst-italic">Click accordion to load comments...</div>
+                            </div>
+                        </div>
+                        {{-- Add Comment --}}
+                       
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Your Comment</label>
+                            <textarea class="form-control" rows="3" placeholder="Enter your comment..."></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-submit-comment" data-tenure-id="{{ $payment['tenure_id'] }}" data-payment-id="{{ $payment['payment_id'] }}">Submit Comment</button>
+
+                        
                     </div>
                 </div>
 
-                <form class="form-comment">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Your Comment</label>
-                        <textarea class="form-control" rows="3" placeholder="Enter your comment..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit Comment</button>
-                </form>
-            </div>
+            @endforeach
         </div>
 
-        {{-- Payment: Successful --}}
-        <div class="payment-item" data-bs-toggle="collapse" data-bs-target="#payment-2">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="status-dot status-success"></span>
-                    <strong class="me-2">₱18,000</strong>
-                    <span class="text-muted">15 June 2025 - Monthly Due</span>
-                </div>
-                <i class="ri-arrow-right-s-line arrow-icon"></i>
-            </div>
-        </div>
-        <div id="payment-2" class="collapse">
-            <div class="payment-details">
-                <div class="row mb-2">
-                    <div class="col-md-6"><strong>Status:</strong> <span class="text-success">Successful</span></div>
-                    <div class="col-md-6"><strong>Reference:</strong> REF-20250615-ABCD</div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-3"><strong>Monthly Due:</strong> ₱15,000</div>
-                    <div class="col-md-3"><strong>Interest:</strong> ₱1,500</div>
-                    <div class="col-md-3"><strong>Penalty:</strong> ₱0</div>
-                    <div class="col-md-3"><strong>Principal:</strong> ₱13,500</div>
-                </div>
-                <div class="mb-2"><strong>Amount Paid:</strong> ₱18,000</div>
-                <div class="mb-2"><strong>Attachment:</strong><br>
-                    <a href="#"><img src="https://via.placeholder.com/300x180?text=Receipt" class="attachment-img mt-2"></a>
-                </div>
-                <div class="mb-3"><strong>Remarks:</strong> On-time payment. No issues.</div>
-            </div>
-        </div>
-
-        {{-- Payment: Failed --}}
-        <div class="payment-item" data-bs-toggle="collapse" data-bs-target="#payment-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="status-dot status-failed"></span>
-                    <strong class="me-2">₱15,000</strong>
-                    <span class="text-muted">01 May 2025 - Monthly Due</span>
-                </div>
-                <i class="ri-arrow-right-s-line arrow-icon"></i>
-            </div>
-        </div>
-        <div id="payment-3" class="collapse">
-            <div class="payment-details">
-                <div class="row mb-2">
-                    <div class="col-md-6"><strong>Status:</strong> <span class="text-danger">Failed</span></div>
-                    <div class="col-md-6"><strong>Reference:</strong> REF-20250501-FAILED</div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-3"><strong>Monthly Due:</strong> ₱10,000</div>
-                    <div class="col-md-3"><strong>Interest:</strong> ₱3,000</div>
-                    <div class="col-md-3"><strong>Penalty:</strong> ₱2,000</div>
-                    <div class="col-md-3"><strong>Principal:</strong> ₱5,000</div>
-                </div>
-                <div class="mb-2"><strong>Amount Paid:</strong> ₱0</div>
-                <div class="mb-2"><strong>Attachment:</strong><br>
-                    <span class="text-muted fst-italic">No attachment provided</span>
-                </div>
-                <div class="mb-3"><strong>Remarks:</strong> Payment failed due to insufficient balance.</div>
-            </div>
-        </div>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/payment.js') }}"></script>
-
-
 @endsection

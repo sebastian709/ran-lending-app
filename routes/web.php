@@ -99,7 +99,7 @@ Route::prefix('admin')->group(function () {
     // page loader
     Route::get('/loan-request', [AdminController::class, 'viewLoanRequest']);
     Route::get('/view-appeal/{appeal_id}', [AdminController::class, 'viewAppeal'])->name('view.appeal');
-    Route::get('/appeal-request', [AdminController::class, 'viewAppealRequest'])->name('view.appealRequest'); 
+    Route::get('/appeal-request', [AdminController::class, 'viewAppealRequest'])->name('view.appealRequest');
 
 
     // get datas
@@ -127,7 +127,7 @@ Route::prefix('admin')->group(function () {
     });
 
     Route::get('/notification-page', [NotificationController::class, 'AdminViewPage']);
-    
+
     Route::get('/customer', [CustomerController::class, 'index'])->name('admin.pages.customer.index');
     Route::prefix('customer')->group(function () {
         Route::get('cp-all', [CustomerController::class, 'getCpAll']);
@@ -187,7 +187,7 @@ Route::get('/active-loan', function () {
 
 //Payment
 Route::name('loan.')->group(function () {
-    
+
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
     Route::post('/payment/submit', [PaymentController::class, 'submit']);
 
@@ -199,13 +199,21 @@ Route::name('loan.')->group(function () {
         return view('borrower.layouts.payment_success');
     })->name('payment-success');
 
-    Route::get('/payment-history', function () {
-        return view('borrower.pages.payments.payment-history');
-    })->name('payment-history');
+    // Route::get('/payment-history', function () {
+    //     return view('borrower.pages.payments.payment-history');
+    // })->name('payment-history');
+
+    Route::get('/payment-history', [PaymentController::class, 'paymentHistory'])->name('payment-history');
 
     Route::get('/no_loan', function () {
         return view('borrower.layouts.payment-state');
     })->name('no_loan');
+
+    // Fetch comments for a specific payment/tenure
+    Route::get('/payment-comments', [PaymentController::class, 'getPaymentComments'])->name('loan.payment-comments');
+    Route::post('/payment/comment', [PaymentController::class, 'submitComment'])->name('loan.payment.comment');
+
+
 });
 
 //My loans

@@ -69,39 +69,46 @@
 }
 
 .payment-item {
-    border-bottom: 1px solid #e9ecef;
-    padding: 20px;
     cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    background-color: white;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 15px;
     margin-bottom: 10px;
-    margin-top: 10px;
+    border-left: 5px solid transparent; /* default */
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s, border-left-color 0.3s;
 }
 
 .payment-item:hover {
-    background-color: #f8f9fa;
+    background-color: #e9ecef;
 }
 
-.status-dot {
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
+/* .status-dot {
     display: inline-block;
-    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
 }
 
-.status-success {
-    background-color: #28a745;
-}
-
-.status-failed {
-    background-color: #dc3545;
+.status-pending {
+    border-left-color: gray;
 }
 
 .status-revision {
-    background-color: #ffc107;
+    border-left-color: orange;
 }
+
+.status-success {
+    border-left-color: green;
+}
+
+.status-delayed {
+    border-left-color: red;
+}
+
+.status-failed {
+    border-left-color: darkred;
+} */
 
 .arrow-icon {
     transition: transform 0.3s ease;
@@ -162,3 +169,22 @@
     border-top: 1px dashed #999;
     height: 1px;
 }
+
+/* Status badge */
+.status-badge {
+    padding: 2px 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 12px;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.status-pending .status-badge   { background-color: gray; }
+.status-revision .status-badge  { background-color: orange; }
+.status-success .status-badge   { background-color: green; }
+.status-delayed .status-badge   { background-color: red; }
+.status-failed .status-badge    { background-color: darkred; }
+.status-warning .status-badge   { background-color: gold; }
+.status-appeal .status-badge    { background-color: royalblue; }
+

@@ -7,20 +7,20 @@ function updateTotal() {
     let total_penalty = 0;
 
     // Collect checked normal payments (Next Payment + Advance)
-        $('.payment-option-next input[type="checkbox"]:checked').each(function () {
-            total += (parseFloat($(this).attr('data-interest')) || 0) + (parseFloat($(this).attr('data-principal')) || 0)+ (parseFloat($(this).attr('data-penalty')) || 0);
-            total_interest += parseFloat($(this).attr('data-interest')) || 0;
-            total_principal += parseFloat($(this).attr('data-principal')) || 0;
-            total_penalty += parseFloat($(this).attr('data-penalty')) || 0;
-        });
-        console.log(1,total,total_interest,total_interest,total_penalty,total_principal)
+    $('.payment-option-next input[type="checkbox"]:checked').each(function () {
+        total += (parseFloat($(this).attr('data-interest')) || 0) + (parseFloat($(this).attr('data-principal')) || 0) + (parseFloat($(this).attr('data-penalty')) || 0);
+        total_interest += parseFloat($(this).attr('data-interest')) || 0;
+        total_principal += parseFloat($(this).attr('data-principal')) || 0;
+        total_penalty += parseFloat($(this).attr('data-penalty')) || 0;
+    });
+    console.log(1, total, total_interest, total_interest, total_penalty, total_principal)
 
-    if($('.payment-option-advance input[type="checkbox"]:checked').length > 0){ 
+    if ($('.payment-option-advance input[type="checkbox"]:checked').length > 0) {
         $('.payment-option input[type="checkbox"]:checked').each(function () {
-            
+
             if (!$('#payAllCheck').is(':checked')) {
                 total += parseFloat($(this).attr('data-principal')) + parseFloat($(this).attr('data-interest'));
-            }else{
+            } else {
                 total += parseFloat($(this).attr('data-principal'));
             }
             total_rebate += parseFloat($(this).attr('data-interest'));
@@ -28,13 +28,13 @@ function updateTotal() {
             total_principal += parseFloat($(this).attr('data-principal'));
             total_penalty += parseFloat($(this).attr('data-penalty'));
         });
-        $('.payment-total').attr('data-partial',0);
+        $('.payment-total').attr('data-partial', 0);
     }
-    console.log(3,total,total_interest,total_interest,total_penalty,total_principal)
+    console.log(3, total, total_interest, total_interest, total_penalty, total_principal)
 
     // Collect checked partial payments
     if ($('.partially-pay[type="checkbox"]:checked').length > 0) {
-        $('.payment-total').attr('data-partial',1);
+        $('.payment-total').attr('data-partial', 1);
         console.log('partially-pay')
         $('.payment-option-advance input[type="checkbox"]:checked').prop('checked', false);
         resetTotal()
@@ -44,25 +44,25 @@ function updateTotal() {
             total_interest += parseFloat(dis.find('.partial-interest[type="checkbox"]:checked').attr('data-amount')) || 0;
             total_principal += parseFloat(dis.find('.partial-principal[type="checkbox"]:checked').attr('data-amount')) || 0;
             total_penalty += parseFloat(dis.find('.partial-penalty[type="checkbox"]:checked').attr('data-amount')) || 0;
-            total =  total_interest +  total_principal +  total_penalty;
+            total = total_interest + total_principal + total_penalty;
             console.log(4, total_interest, total_interest, total_penalty, total_principal)
         });
-    
-        console.log(5,total,total_interest,total_interest,total_penalty,total_principal)
+
+        console.log(5, total, total_interest, total_interest, total_penalty, total_principal)
     }
 
-    
+
     $('.payment-total,#totalAmount').text('₱ ' + Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-interest').text('₱ ' + Number(total_interest).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-principal').text('₱ ' + Number(total_principal).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-penalty').text('₱ ' + Number(total_penalty).toLocaleString('en-US', { minimumFractionDigits: 2 }));
     $('.payment-rebate').text('-₱ ' + Number(total_rebate).toLocaleString('en-US', { minimumFractionDigits: 2 }));
 
-    $('.payment-total,#totalAmount').attr('data-amount',(total).toFixed(2))
-    $('.payment-interest').attr('data-amount',(total_interest).toFixed(2))
-    $('.payment-principal').attr('data-amount',(total_principal).toFixed(2))
-    $('.payment-penalty').attr('data-amount',(total_penalty).toFixed(2))
-    $('.payment-rebate').attr('data-amount',(total_rebate).toFixed(2))
+    $('.payment-total,#totalAmount').attr('data-amount', (total).toFixed(2))
+    $('.payment-interest').attr('data-amount', (total_interest).toFixed(2))
+    $('.payment-principal').attr('data-amount', (total_principal).toFixed(2))
+    $('.payment-penalty').attr('data-amount', (total_penalty).toFixed(2))
+    $('.payment-rebate').attr('data-amount', (total_rebate).toFixed(2))
 
 
 
@@ -73,16 +73,16 @@ function updateTotal() {
 
 }
 
-function resetTotal(){
+function resetTotal() {
     $('.payment-total').text('₱ 0.00')
     $('.payment-interest').text('₱ 0.00')
     $('.payment-principal').text('₱ 0.00')
     $('.payment-penalty').text('₱ 0.00')
 
-    $('.payment-total').attr('data-amount','0.00')
-    $('.payment-interest').attr('data-amount','0.00')
-    $('.payment-principal').attr('data-amount','0.00')
-    $('.payment-penalty').attr('data-amount','0.00')
+    $('.payment-total').attr('data-amount', '0.00')
+    $('.payment-interest').attr('data-amount', '0.00')
+    $('.payment-principal').attr('data-amount', '0.00')
+    $('.payment-penalty').attr('data-amount', '0.00')
 }
 
 $(document).on('change', '.partially-pay', function () {
@@ -109,7 +109,7 @@ $(document).on('change', '.partially-pay', function () {
     });
 
     if (monthsWithCheckedPartialPay.length > 0) {
-    
+
         const maxCheckedMonth = Math.max(...monthsWithCheckedPartialPay);
         console.log('test')
         $('.due_payment').each(function (index) {
@@ -125,9 +125,9 @@ $(document).on('change', '.partially-pay', function () {
             let tenureId = parseInt($(this).attr('data-tenure_id'), 10) || 0;
             if (tenureId > tenure) {
                 $(this).prop('checked', false);
-            }else{
+            } else {
             }
-            
+
         });
 
     }
@@ -187,7 +187,7 @@ $(document).on('change', '.payment-option-advance input[type="checkbox"]', funct
     const index = $('.payment-option input[type="checkbox"]').index(this);
     $('#payAllCheck').prop('checked', false);
     $('.rebate').addClass('d-none')
-    
+
     if ($(this).is(':checked')) {
         // Auto-check previous months if one is checked
         $('.payment-option input[type="checkbox"]').slice(0, index + 1).prop('checked', true);
@@ -217,8 +217,8 @@ $(document).on('change', '#payAllCheck', function () {
     $allToggle.removeClass('d-none');
     $all.slice(0, indexz + 1).closest('.next_par').find('.partially-pay').prop('checked', false);
 
-    
-     if ($(this).is(':checked')) {
+
+    if ($(this).is(':checked')) {
         $('.payment-option input[type="checkbox"]').prop('checked', true);
         $('.due_payment').prop('checked', true);
         $('.rebate').removeClass('d-none')
@@ -244,19 +244,19 @@ $('#toggleAdvance').on('click', function () {
     $(this).find('i').toggleClass('bi-chevron-down bi-chevron-up');
 });
 
-$('#showMoreAdvance').on('click', function() {
+$('#showMoreAdvance').on('click', function () {
     $('.extra-payment').removeClass('d-none');
-    $(this).hide(); 
+    $(this).hide();
 });
 
 // Show Partial Payment Section
 $(document).on('click', '.pay-partial-btn', function () {
     $('.partial_section').removeClass('d-none'); // Show Partial
     $('.advance_section').addClass('d-none'); // Hide Advance
-    
+
     $('.pay-partial-btn').addClass('d-none');
     $('.pay-partial-btn_close').removeClass('d-none');
-    
+
     // Uncheck all regular payment options
     $('.due_payment').prop('checked', false);
     $('.payment-option input[type="checkbox"]').prop('checked', false);
@@ -331,7 +331,7 @@ function handleDrop(event) {
 
 function previewImage(file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         document.getElementById('preview-image').src = e.target.result;
         document.getElementById('preview').classList.remove('d-none');
         document.getElementById('placeholder').classList.add('d-none');
@@ -356,8 +356,8 @@ $(document).on('click', '.loan_payment_confirm', function () {
             icon: 'error',
             title: 'Oops...',
             text: 'Amount Cannot be ₱0.00',
-          });
-          return false;
+        });
+        return false;
     }
 
 
@@ -414,8 +414,8 @@ $(document).on('click', '#submit_payment', function () {
         });
     }
     let total = parseFloat($('.total_amount_summary').text().replace(/[^\d.]/g, ''));
-   
-   //gather data based on type
+
+    //gather data based on type
     var reference_code = $('#referenceCode').val().trim();
     var remarks = $('#remarks').val().trim();
     var id = $(this).attr('data-id');
@@ -433,7 +433,7 @@ $(document).on('click', '#submit_payment', function () {
     $($('.payment-option-next input[type="checkbox"]:checked')).each(function () {
         var id = $(this).attr('data-tenure_id');
         paymentDue.push({
-            id : id,
+            id: id,
         });
     });
 
@@ -441,33 +441,33 @@ $(document).on('click', '#submit_payment', function () {
     $('.next_par').each(function () {
         const $nextPar = $(this);
         const checked = $nextPar.find('.partially-pay:checked');
-    
+
         // Only process if there’s at least one checked partial
         if (checked.length) {
             const tenureId = $nextPar.find('.due_payment').data('tenure_id');
             const data = { id: tenureId };
-    
+
             // Add interest if checked
             const $interest = $nextPar.find('.partial-interest:checked');
             if ($interest.length) {
                 data.interest = parseFloat($interest.data('amount')) || 0;
             }
-    
+
             // Add principal if checked
             const $principal = $nextPar.find('.partial-principal:checked');
             if ($principal.length) {
                 data.principal = parseFloat($principal.data('amount')) || 0;
             }
-    
+
             paymentPar.push(data);
         }
     });
     console.log(paymentPar);
-    
+
     $($('.payment-option-advance input[type="checkbox"]:checked')).each(function () {
         var id = $(this).attr('data-tenure_id');
         paymentData.push({
-            id : id,
+            id: id,
         });
     });
 
@@ -475,15 +475,15 @@ $(document).on('click', '#submit_payment', function () {
         url: '/payment/submit',
         method: 'POST',
         data: {
-            id : id,
-            total : total,
-            paymentDue : paymentDue,
-            paymentPar : paymentPar,
-            paymentData : paymentData,
-            reference_code : reference_code,
-            remarks : remarks,
-            fullpayment : fullpayment,
-            
+            id: id,
+            total: total,
+            paymentDue: paymentDue,
+            paymentPar: paymentPar,
+            paymentData: paymentData,
+            reference_code: reference_code,
+            remarks: remarks,
+            fullpayment: fullpayment,
+
         },
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -509,22 +509,22 @@ $(document).on('click', '.pay-partial-btn_close', function () {
 });
 
 $(document).ready(function () {
-  $('.togglePartials').on('click', function (e) {
-    e.preventDefault();
+    $('.togglePartials').on('click', function (e) {
+        e.preventDefault();
 
-    const $btn = $(this);
-    const $partialMonths = $btn.closest('label.payment-option-next').next('.partial-months');
-    const $icon = $btn.find('i.bi');
+        const $btn = $(this);
+        const $partialMonths = $btn.closest('label.payment-option-next').next('.partial-months');
+        const $icon = $btn.find('i.bi');
 
-    $partialMonths.slideToggle(200, function () {
-      // Update icon based on visibility after animation ends
-      if ($partialMonths.is(':visible')) {
-        $icon.removeClass('bi-chevron-down').addClass('bi-chevron-up');
-      } else {
-        $icon.removeClass('bi-chevron-up').addClass('bi-chevron-down');
-      }
+        $partialMonths.slideToggle(200, function () {
+            // Update icon based on visibility after animation ends
+            if ($partialMonths.is(':visible')) {
+                $icon.removeClass('bi-chevron-down').addClass('bi-chevron-up');
+            } else {
+                $icon.removeClass('bi-chevron-up').addClass('bi-chevron-down');
+            }
+        });
     });
-  });
 });
 
 $(document).on('change', '.partial-months .partially-pay', function () {
@@ -539,7 +539,106 @@ $(document).on('change', '.partial-months .partially-pay', function () {
         $(this).closest('.next_par').find('.due_payment').prop('checked', true);
         $(this).closest('.next_par').find('.partially-pay').prop('checked', false);
         console.log('All checkboxes in this .partial-months are checked!');
-        $('.payment-total').attr('data-partial',0);
+        $('.payment-total').attr('data-partial', 0);
 
     }
 });
+
+// 🔹 Function to load comments for a payment item
+function loadComments($collapseBody, paymentId, tenureId) {
+    $collapseBody.find('.comments-container').html('<div class="text-muted fst-italic">Loading comments, please wait...</div>');
+
+    $.ajax({
+        url: '/payment-comments',
+        type: 'GET',
+        data: { payment_id: paymentId, tenure_id: tenureId },
+        success: function (response) {
+            var html = '';
+
+            if (response.length > 0) {
+                response.forEach(function (comment) {
+                    html += `
+                        <div class="comment-box mb-2 p-2 border rounded">
+                            <div class="comment-author fw-bold">${comment.author}:</div>
+                            <div>${comment.message}</div>
+                            <small class="text-muted">${comment.timestamp}</small>
+                        </div>
+                    `;
+                });
+            } else {
+                html = '<div class="text-muted fst-italic">No comments yet.</div>';
+            }
+
+            $collapseBody.find('.comments-container').html(html);
+            $collapseBody.data('loaded', true); // mark as loaded
+        },
+        error: function () {
+            $collapseBody.find('.comments-container').html('<div class="text-danger">Failed to load comments.</div>');
+        }
+    });
+}
+
+// 🔹 Load comments when accordion item is clicked
+$(document).on('click', '.payment-item', function () {
+    var $this = $(this);
+    var tenureId = $this.data('tenure-id');
+    var paymentId = $this.data('payment-id');
+    var collapseId = $this.data('bs-target');
+    var $collapseBody = $(collapseId + ' .payment-details');
+
+    // Load only if not yet loaded
+    if (!$collapseBody.data('loaded')) {
+        loadComments($collapseBody, paymentId, tenureId);
+    }
+});
+
+// 🔹 Submit comment and reload comments
+$(document).on('click', '.btn-submit-comment', function () {
+    let $btn = $(this);
+    let tenureId = $btn.data('tenure-id');
+    let paymentId = $btn.data('payment-id');
+    let $collapseBody = $btn.closest('.payment-details');
+    let comment = $collapseBody.find('textarea').val();
+
+    if (!comment.trim()) {
+        toastr.warning('Please enter a comment.');
+        return;
+    }
+
+    $.ajax({
+        url: '/payment/comment',
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            tenure_id: tenureId,
+            payment_id: paymentId,
+            comment: comment
+        },
+        beforeSend: function () {
+            $btn.prop('disabled', true).text('Submitting...');
+        },
+        success: function (res) {
+            if (res.success) {
+                toastr.success(res.message);
+                // Clear textarea
+                $collapseBody.find('textarea').val('');
+                // 🔹 Reload comments
+                loadComments($collapseBody, paymentId, tenureId);
+            } else {
+                toastr.error(res.message || 'Failed to save comment.');
+            }
+        },
+        error: function (err) {
+            console.error(err);
+            toastr.error('Failed to save comment.');
+        },
+        complete: function () {
+            $btn.prop('disabled', false).text('Submit Comment');
+        }
+    });
+});
+
+
+
+
+
