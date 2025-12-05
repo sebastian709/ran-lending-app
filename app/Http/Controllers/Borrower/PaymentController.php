@@ -193,9 +193,8 @@ class PaymentController extends Controller
         return view('borrower.pages.payments.payment', compact('data'));
     }
 
-
-     public function submit(Request $request){
-        //  $data = $request->all();
+    public function submit(Request $request){
+          //  $data = $request->all();
         //  dd($data);
         // PENDING PAYMENT TYPE TO SAVE
         
@@ -264,7 +263,7 @@ class PaymentController extends Controller
             'updated_at'        => now(),
         ]);
 
-        // categoryText = 'Full Payment';
+          // categoryText = 'Full Payment';
         // categoryType = 1;
         // categoryText = 'Partial Payment';
         // categoryType = 2;
@@ -337,7 +336,7 @@ class PaymentController extends Controller
                         'payment_id' => $Loan_payment,
                         'payment_status_id' => 2,
                     ]);
-
+                    
                 loan_tenure_interest::where('tenure_id', $record['id'])
                     ->where('payment_status_id', 1)
                     ->update([
@@ -535,6 +534,7 @@ class PaymentController extends Controller
         ]);
 
     }
+     
 
 
     public function paymentHistory()

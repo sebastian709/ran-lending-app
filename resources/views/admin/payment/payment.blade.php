@@ -132,32 +132,6 @@
       </div>
     </div>
 
-    <!-- For Revision -->
-    <!-- <div class="tab-pane fade" id="revision" role="tabpanel">
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body">
-          <h5 class="mb-3 text-info"><i class="bi bi-pencil-square"></i> For Revision</h5>
-          <div style="width:100%" class="table-responsive">
-            <table style="width:100%" id="table_revision" class="table table-hover align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Loan ID</th>
-                  <th>Borrowers Name</th>
-                  <th>Submission Date</th>
-                  <th>Revision Date</th>
-                  <th>Reference Number</th>
-                  <th>action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
-
   </div>
 </div>
 
@@ -340,7 +314,6 @@
               </table>
             </div>
           </div>
-
         </div>
       </div>
       
@@ -355,13 +328,19 @@
   </div>
 </div>
 
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js" defer></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js" defer></script>
 
 <script>
+
 $(document).ready(function () {
   $('#pending-tab').click();
 });
-
-
 
 function convertTo12HourFormat(time24) {
     var parts = time24.split(':');
@@ -390,7 +369,6 @@ function convertToReadableDate(dateStr) {
     return months[month] + " " + day + ", " + year;
 }
 
-
 function formatMoney(amount) {
     return '₱' + parseFloat(amount)
         .toFixed(2) // 2 decimals
@@ -405,9 +383,6 @@ function convertdate(datetime){
   let formatted = `${day}${suffix} of ${month}`;
   return formatted;
 }
-
-
-
 
 $(document).on('click', '#pending-tab', function () {
   $('#table_pending').DataTable().clear().destroy();
@@ -425,7 +400,6 @@ $(document).on('click', '#pending-tab', function () {
   });
 });
 
-
 $(document).off('click', '#verified-tab').on('click', '#verified-tab', function () {
   $('#table_verified').DataTable().clear().destroy();
   $('#table_verified').DataTable({
@@ -442,7 +416,6 @@ $(document).off('click', '#verified-tab').on('click', '#verified-tab', function 
     ]
   });
 });
-
 
 $(document).on('click', '#rejected-tab', function () {
   $('#table_rejected').DataTable().clear().destroy();
@@ -462,25 +435,6 @@ $(document).on('click', '#rejected-tab', function () {
   });
 });
 
-// $(document).on('click', '#revision-tab', function () {
-//   $('#table_revision').DataTable().clear().destroy();
-//   $('#table_revision').DataTable({
-//     processing: true,
-//     serverSide: true,
-//     responsive: true,
-//     ajax: "/get_revision_page_data",
-//     columns: [
-//       { data: 'loan_application_id' },
-//       { data: 'name' },
-//       { data: 'date_paid' },
-//       { data: 'date_triggered' },
-//       { data: 'logid' },
-//       { data: 'action', orderable: false, searchable: false }
-//     ]
-//   });
-// });
-
-
 $(document).on('click', '.pending_view', function () {
   var id = $(this).attr('data-id');
   var pay_id = $(this).attr('data-pay_id');
@@ -488,8 +442,6 @@ $(document).on('click', '.pending_view', function () {
   //PUT IDS 
   $('#pending_verify').attr('data-id',pay_id);
   $('#pending_reject').attr('data-id',pay_id);
-  // $('#pending_revision').attr('data-id',pay_id);
-
 
   //RESET TO 1st TAB
   $('#profile-tab').click()
@@ -516,6 +468,7 @@ $(document).on('click', '.pending_view', function () {
           $('.loan_amount').text('₱'+(parseFloat(response.data.loan_amount).toFixed(2)));
           $('.interest_amount').text('₱'+(parseFloat(response.total_interest).toFixed(2)));
           $('.loan_term').text(response.date.total_tenure + ' Month(s)');
+          console.log('loan_progress ' + response.date.count)
           $('.loan_progress').text(response.date.count + ' Month(s)');
           $('.loan_due').text(response.date.date);
           $('.loan_monthly').text(formatMoney(total));
@@ -633,9 +586,6 @@ $(document).on('click', '#payment-tab', function () {
         },
     });
 });
-
-
-
 
 $(document).on('click', '#pending_verify', function () {
   var id = $(this).attr('data-id');
@@ -805,125 +755,6 @@ $(document).on('click', '#pending_reject', function () {
   });
 });
 
-
-
-// $(document).on('click', '#pending_revision', function () {
-//   $('#loanModal').modal('hide');
-//   var id = $(this).attr('data-id');
-
-//   var content = `
-//     <form id="revisionForm">
-//         <!-- Reason for revision -->
-//         <div class="form-group">
-//           <label for="reasonRevision">Reason for revision</label>
-//           <textarea id="reasonRevision" name="reasonRevision" class="form-control" rows="3" required></textarea>
-//         </div>
-
-//         <div class="form-group">
-//           <label for="received">Actual Received</label>
-//           <input type="number"  id="received" name="received" class="form-control" required>
-//         </div>
-
-//         <!-- Instructions -->
-//         <div class="form-group">
-//           <label for="instructions">Instructions</label>
-//           <textarea id="instructions" name="instructions" class="form-control" rows="3"></textarea>
-//         </div>
-
-//         <!-- Internal remarks -->
-//         <div class="form-group">
-//           <label for="revisionRemarks">Internal remarks</label>
-//           <input type="text" id="revisionRemarks" name="revisionRemarks" class="form-control">
-//           <p class="help-block">These remarks will reflect on the revision page &gt; Status History.</p>
-//         </div>
-
-//       </form>
-//   `;
-//   $.confirm({
-//       title: 'Confirm Revision',
-//       content: content,
-//       type: 'orange',
-//       buttons: {
-//           confirm: {
-//               text: 'Yes, Revision',
-//               btnClass: 'btn-warning',
-//               action: function () {
-
-
-//                   var form = document.getElementById('revisionForm');
-//                   var formData = new FormData(form);
-
-//                       // Second confirmation
-//                         $.confirm({
-//                             title: 'Warning',
-//                             content: 'Are you sure you want to Revise this payment?<br>Borrower will automatically be notified.',
-//                             type: 'red',
-//                             buttons: {
-//                                 confirm: {
-//                                     text: 'Yes',
-//                                     btnClass: 'btn-danger',
-//                                     action: function () {
-
-//                                         $.ajax({
-//                               url: '/paymentpage/verify/' + id + '/5',
-//                               method: 'POST',
-//                               data: formData,
-//                               processData: false,
-//                               contentType: false,
-//                               headers: {
-//                                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//                               },
-//                               success: function (response) {
-//                                   $.alert({
-//                                       title: 'Success',
-//                                       content: 'The payment has been For Revisioned successfully.',
-//                                       type: 'green',
-//                                       buttons: {
-//                                           ok: function () {
-//                                               $('#pending-tab').click();
-//                                           }
-//                                       }
-//                                   });
-//                               },
-//                               error: function (xhr) {
-//                                   $.alert({
-//                                       title: 'Error',
-//                                       content: 'Something went wrong while saving your rejection details.',
-//                                       type: 'red'
-//                                   });
-//                               }
-//                           });
-
-//                               }
-//                           },
-//                           cancel: {
-//                               text: 'Cancel',
-//                               btnClass: 'btn-secondary',
-//                               action: function () {
-//                                 $('#loanModal').modal('show');
-//                               }
-//                           }
-//                       }
-//                   });
-
-                  
-
-//               }
-//           },
-//           cancel: {
-//               text: 'Cancel',
-//               btnClass: 'btn-secondary',
-//               action: function () {
-//                 $('#loanModal').modal('show');
-//               }
-//           }
-//       }
-//   });
-// });
-
-
-
-
 $(document).on('click', '.verified_view', function () {
     
   var id = $(this).attr('data-id');
@@ -987,9 +818,6 @@ $(document).on('click', '.verified_view', function () {
 
 
 });
-
-
-
 
 $(document).on('click', '.rejected_view', function () {
 

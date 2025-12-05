@@ -324,42 +324,73 @@ class PaymentPageController extends Controller
     
 
     public function get_pending_data(Request $request){
-        // dd($request->id);
 
-        $data = DB::table('loan_application as la')
-            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
-            ->join('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
-            ->join('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
-            ->where('la.id', $request->id)
-            ->select('*')
-            ->first();
+        $data = DB::selectOne("SELECT *
+                            FROM loan_application AS la
+                            JOIN users AS u ON u.id = la.loan_applicant
+                            JOIN loan_tenure AS lt ON lt.loan_id = la.id
+                            JOIN loan_tenure_interest AS lti ON lti.tenure_id = lt.id
+                            WHERE la.id = ?
+                    ", [$request->id]);
 
-        $due = DB::table('loan_application as la')
-            ->join('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
-            ->join('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
-            ->select(
-                'lt.date',
-                'lt.count',
-                DB::raw("IF(lt.payment_status_id = 1 AND lti.payment_status_id = 1, lt.date, 0) as payment_date")
-            )
-            ->whereRaw("IF(lt.payment_status_id = 1 AND lti.payment_status_id = 1, lt.date, 0) != 0")
-            ->first();
-        
-        $date = DB::select("SELECT 
+        $due = DB::selectOne("SELECT 
+                        lt.date,
+                        lt.count,
+                        IF(lt.payment_status_id = 1 AND lti.payment_status_id = 1, lt.date, 0) AS payment_date
+                    FROM loan_application AS la
+                    JOIN loan_tenure AS lt 
+                        ON lt.loan_id = la.id
+                    JOIN loan_tenure_interest AS lti 
+                        ON lti.tenure_id = lt.id
+                    WHERE IF(lt.payment_status_id = 1 AND lti.payment_status_id = 1, lt.date, 0) != 0 and la.id = ?
+                ",[$request->id]);
+
+                $date = DB::selectOne("SELECT 
                         lt.id,
                         lt.count,
-                        DATE_FORMAT(lt.date, '%M %D %Y') date,
-                        MAX(llt.count) as total_tenure,
-                        IF(lt.payment_id = 0, lt.principal, 0) principal,
-                        IF(lti.payment_id = 0, lti.interest, 0) interest,
-                        SUM(IF(lt.payment_id = 0, lt.principal, 0) + IF(lti.payment_id = 0, lti.interest, 0)) total_amount
+                        DATE_FORMAT(lt.date, '%M %D %Y') AS date,
+                        MAX(llt.count) AS total_tenure,
+                        SUM(IF(lt.payment_id = 0, lt.principal, 0)) AS principal,
+                        SUM(IF(lti.payment_id = 0, lti.interest, 0)) AS interest,
+                        SUM(IF(ltp.payment_id = 0, ltp.penalty, 0)) AS penalty,
+                        SUM(
+                            IF(lt.payment_id = 0, lt.principal, 0) + 
+                            IF(lti.payment_id = 0 AND lti.payment_status_id != 4, lti.interest, 0) + 
+                            IF(ltp.payment_id = 0, ltp.penalty, 0)
+                        ) AS total_amount
                     FROM loan_tenure lt
                     INNER JOIN loan_tenure_interest lti ON lti.tenure_id = lt.id
                     LEFT JOIN loan_tenure_penalty ltp ON ltp.tenure_id = lt.id
                     LEFT JOIN loan_tenure llt ON llt.loan_id = lt.loan_id
                     WHERE lt.loan_id = ?
-                    GROUP BY lt.id, lt.count, lt.date, lt.payment_id, lti.payment_id, lt.principal, lti.interest
-                    HAVING total_amount > 0", [$request->id]);
+                    GROUP BY lt.id, lt.count, lt.date
+                    HAVING total_amount > 0
+                    ", [$request->id]);
+    // dd('test');
+
+        if (empty($date)) {
+            $date = DB::selectOne("SELECT 
+                            lt.id,
+                            lt.count,
+                            DATE_FORMAT(lt.date, '%M %D %Y') AS date,
+                            MAX(llt.count) AS total_tenure,
+                            SUM(IF(lt.payment_id = 0, lt.principal, 0)) AS principal,
+                            SUM(IF(lti.payment_id = 0, lti.interest, 0)) AS interest,
+                            SUM(IF(ltp.payment_id = 0, ltp.penalty, 0)) AS penalty,
+                            SUM(
+                                IF(lt.payment_id = 0, lt.principal, 0) + 
+                                IF(lti.payment_id = 0 AND lti.payment_status_id != 4, lti.interest, 0) + 
+                                IF(ltp.payment_id = 0, ltp.penalty, 0)
+                            ) AS total_amount
+                        FROM loan_tenure lt
+                        INNER JOIN loan_tenure_interest lti ON lti.tenure_id = lt.id
+                        LEFT JOIN loan_tenure_penalty ltp ON ltp.tenure_id = lt.id
+                        LEFT JOIN loan_tenure llt ON llt.loan_id = lt.loan_id
+                        WHERE lt.loan_id = ?
+                        GROUP BY lt.id, lt.count, lt.date
+                        order by lt.id desc
+                    ", [$request->id]);
+        }
         
         $total_interest = DB::selectOne("SELECT 
                         sum(interest) interest
@@ -367,7 +398,6 @@ class PaymentPageController extends Controller
                     INNER JOIN loan_tenure_interest lti ON lti.tenure_id = lt.id
                     WHERE lt.loan_id = ?", [$request->id]);
         
-        $date = $date[0];
 
         $history = DB::select("SELECT ifnull(remarks,'N/A') remarks,lps.type,DATE_FORMAT(date(lp.created_at), '%M %D %Y') date,lp.payment_status_id
                 from loan_payments lp
@@ -389,38 +419,8 @@ class PaymentPageController extends Controller
 
 
     public function get_pending_data_two(Request $request){
-        
-        // $data = DB::table('loan_payments as lp')
-        //     ->select('lp.*', 'lpt.type')
-        //     ->join('loan_payment_types as lpt', 'lpt.id', '=', 'lp.payment_type_id')
-        //     ->where('lp.id', $request->pay_id)
-        //     ->first();
-        // $data->loan_tenure = DB::table('loan_tenure as lt')
-        //     ->where('lt.payment_id', $data->id)
-        //     ->get();
-        
-        // $data->loan_tenure_interest = DB::table('loan_tenure_interest as lti')
-        //     ->where('lti.payment_id', $data->id)
-        //     ->get();
-        
-        // $combined = ($data->loan_tenure)->merge($data->loan_tenure_interest);
 
-        // $tenureIds = $combined->pluck('tenure_id')->unique()->toArray();
-        // // dd($tenureIds);
-        // $data->combined = DB::table('loan_tenure')
-        //     ->select('date')
-        //     ->whereIn('id', $tenureIds)
-        //     ->get();
-
-        // $data->total_balance = DB::table('loan_tenure as lt')
-        //     ->join('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
-        //     ->whereIn('lt.id', $tenureIds)
-        //     ->selectRaw('SUM( IF(lt.payment_id NOT IN ('.$request->pay_id.'), principal, 0) + IF(lti.payment_id NOT IN ('.$request->pay_id.'), interest, 0) ) as total')
-        //     ->value('total');
-        // // dd($data->balance);
-        
-              
-        $data['behavior'] = DB::select("SELECT lp.*,lpt.type payment_type,
+        $data['behavior'] = DB::selectOne("SELECT lp.*,lpt.type payment_type,
                         DATE_FORMAT(lp.created_at, '%M %D %Y') paid_date,
 
                 CASE
@@ -443,30 +443,44 @@ class PaymentPageController extends Controller
                 
                 where lp.id = ? limit 1",[$request->pay_id]);
 
-        $data['behavior']=  $data['behavior'][0];
         $data['payment'] = DB::select("SELECT 
-                    DATE_FORMAT(date(lt.date), '%M %Y') tenure_date,
-                    date(lt.updated_at) lt_paid_date,
-                    date(lti.updated_at) lti_paid_date,
-                    date(ltp.updated_at) ltp_paid_date,
-                    if(lt.payment_id = ?,lt.principal,0) paid_principal,
-                    if(lti.payment_id = ?,lti.interest,0) paid_interest,
-                    if(ltp.payment_id = ?,ltp.penalty,0) paid_penalty,
+                    DATE_FORMAT(DATE(lt.date), '%M %Y') AS tenure_date,
+                    DATE(lt.updated_at) AS lt_paid_date,
+                    DATE(lti.updated_at) AS lti_paid_date,
+                    DATE(MAX(ltp.updated_at)) AS ltp_paid_date,
+
+                    IF(lt.payment_id = ?, lt.principal, 0) AS paid_principal,
+                    IF(lti.payment_id = ? and lti.payment_status_id != 4, lti.interest, 0) AS paid_interest,
+                    IF(MAX(ltp.payment_id) = ?, SUM(ltp.penalty), 0) AS paid_penalty,
+
                     lt.principal,
                     lti.interest,
-                    ltp.penalty
-                    from loan_tenure lt
-                    inner join loan_tenure_interest lti on lti.tenure_id = lt.id
-                    left join loan_tenure_penalty ltp on ltp.tenure_id = lt.id",[$request->pay_id,$request->pay_id,$request->pay_id]);
+                    SUM(ltp.penalty) AS penalty
+                FROM loan_tenure lt
+                INNER JOIN loan_tenure_interest lti 
+                    ON lti.tenure_id = lt.id
+                LEFT JOIN loan_tenure_penalty ltp 
+                    ON ltp.tenure_id = lt.id
+                GROUP BY 
+                    lt.id,
+                    lt.date,
+                    lt.updated_at,
+                    lti.updated_at,
+                    lt.payment_id,
+                    lti.payment_id,
+                    lt.principal,
+                    lti.payment_status_id,
+                    lti.interest
+                ",[$request->pay_id,$request->pay_id,$request->pay_id]);
 
-        // dd($data);
+        // dd($data['payment']);
 
         foreach ($data['payment'] as $key => $row) {
             if ($row->paid_principal === 0.0 && $row->paid_interest === 0.0 && $row->paid_penalty === 0.0) {
                 unset($data['payment'][$key]);
             }
         }
-
+        // dd($data['payment']);
         $data['total_principal'] = 0 ;
         $data['total_interest'] = 0 ;
         $data['total_penalty'] = 0 ;
@@ -475,12 +489,12 @@ class PaymentPageController extends Controller
         $data['total_interest']  = array_sum(array_column($data['payment'], 'paid_interest'));
         $data['total_penalty']  = array_sum(array_column($data['payment'], 'paid_penalty'));
 
+        $data['totalpaid'] = $data['total_principal'] + $data['total_interest'] + $data['total_penalty'];
+
         $data['total_principal'] = number_format($data['total_principal'], 2);
         $data['total_interest'] = number_format($data['total_interest'], 2);
         $data['total_penalty'] = number_format($data['total_penalty'], 2);
-
-        $data['totalpaid'] = $data['total_principal'] + $data['total_interest'] + $data['total_penalty'];
-
+        
         $data['raw_principal'] = 0 ;
         $data['raw_interest'] = 0 ;
         $data['raw_penalty'] = 0 ;
@@ -520,6 +534,9 @@ class PaymentPageController extends Controller
 
         public function verify(Request $request){
             
+        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
+        $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
+
         // dd($request->imageFile);
         $data = $request->id;
         $value = $request->value;
@@ -533,19 +550,6 @@ class PaymentPageController extends Controller
         if ($request->value == 4) {
             $path = null;
 
-            // if ($request->hasFile('imageFile')) {
-            //     $file = $request->file('imageFile');
-            //     $filename = time() . '.' . $file->getClientOriginalExtension();
-            //     $image = Image::make($file)
-            //     ->resize(800, 800, function ($constraint) {
-            //         $constraint->aspectRatio(); 
-            //         $constraint->upsize();
-            //     })
-            //     ->save(storage_path('public/storage/uploads/' . $filename), 80);
-            //     $path = 'uploads/rejected_images/' . $filename;
-            //     Storage::disk('public')->put($path, (string) $image);
-
-            // }
             if ($request->hasFile('imageFile')) {
 
                 $file = $request->file('imageFile');
@@ -616,6 +620,69 @@ class PaymentPageController extends Controller
             //UPDATE DATA
             DB::update('UPDATE loan_payments SET payment_status_id = ? WHERE id = ?', [3, $data]);
 
+            //CHECK IF FULLYPAID
+            $checker = DB::select("SELECT 
+                        lt.id,
+                        lt.count,
+                        DATE_FORMAT(lt.date, '%M %D %Y') date,
+                        MAX(llt.count) as total_tenure,
+                        IF(lt.payment_id = 0, lt.principal, 0) principal,
+                        IF(lti.payment_id = 0, lti.interest, 0) interest,
+                        IF(ltp.payment_id = 0, sum(ltp.penalty), 0) penalty,
+                        SUM(IF(lt.payment_id = 0, lt.principal, 0) + IF(lti.payment_id = 0 AND lti.payment_status_id != 5, lti.interest, 0)) + IF(ltp.payment_id = 0, sum(ltp.penalty), 0)  total_amount
+                    FROM loan_tenure lt
+                    INNER JOIN loan_tenure_interest lti ON lti.tenure_id = lt.id
+                    LEFT JOIN loan_tenure_penalty ltp ON ltp.tenure_id = lt.id
+                    LEFT JOIN loan_tenure llt ON llt.loan_id = lt.loan_id
+                    WHERE lt.loan_id = ?
+                    GROUP BY lt.id, lt.count, lt.date, lt.payment_id, lti.payment_id,ltp.payment_id, lt.principal, lti.interest, lti.payment_status_id
+                    HAVING total_amount > 0",[$data]);
+
+
+            //IF EMPTZY MEANS FULLY PAID NOW
+            if (empty($checker)) {
+
+                $updateData = [
+                    'updated_at' => now(),
+                    'loan_status' => 7,
+                ];
+                //Save updates
+                DB::table('loan_application')->where('id', $data)->update($updateData);
+                
+                
+                $is_eligible = DB::selectOne('SELECT la.red_flag 
+                                            from loan_application la
+                                            inner join loan_payments lp on lp.loan_application_id = la.id
+                                            where lp.id = ?',[$data]);
+                
+                $content = "
+                        Great job! You’ve successfully completed your loan payment
+                        Thank you for your commitment and trust in our service.";
+
+                if ($is_eligible->red_flag != 1) {
+                    $content .= "<br>You’re now eligible to apply for a new loan anytime.";
+                }
+
+
+                $emailObj = new SendSmtpEmail([
+                    'subject' => 'Congratulations! Your Loan Has Been Fully Paid',
+                    'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+                    'to' => [['email' => $loan_info->email]],
+                    'htmlContent' => $content,
+                ]);
+
+                $apiInstance->sendTransacEmail($emailObj);
+
+                //================================================================
+
+                return response()->json(1);
+            }
+
+
+
+
+
+
         }
         //Revision APPROVE-=======================================================================
         if ($request->value == 5) {
@@ -637,10 +704,6 @@ class PaymentPageController extends Controller
                                         ->update(['payment_status_id' => (int)$value]);
         
         //================================================================
-        $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', config('services.brevo.key'));
-        
-        $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
 
         if((int)$value == 5){ //Revision
             $content = "We reviewed your payment and need some adjustments before it can be verified.";
@@ -849,10 +912,6 @@ class PaymentPageController extends Controller
 
         $data['totalrawpaid'] = $data['principal'] + $data['interest'] + $data['penalty'];
 
-
-
-
-
         $first = reset($data['payment']);   // first object
         $last  = end($data['payment']);     // last object
 
@@ -930,51 +989,6 @@ class PaymentPageController extends Controller
         $data['paymentlog'] = DB::selectOne("SELECT * from loan_payment_approval_logs 
                         where loan_payment_id = ? 
                         order by id desc limit 1",[$data['paymentid']->id]);
-
-        // $path = null;
-
-        // if ($request->hasFile('upload')) {
-
-        //     $file = $request->file('upload');
-        //     $filename = time() . '.' . $file->getClientOriginalExtension();
-
-        //     // Process image
-        //     $image = Image::make($file)
-        //         ->resize(800, 800, function ($constraint) {
-        //             $constraint->aspectRatio();
-        //             $constraint->upsize();
-        //         });
-
-        //     // Direct physical path: public/storage/uploads/appeal_attachments
-        //     $destination = public_path('storage/uploads/appeal_attachments/' . $filename);
-
-        //     // Ensure folder exists
-        //     if (!file_exists(dirname($destination))) {
-        //         mkdir(dirname($destination), 0777, true);
-        //     }
-
-        //     // Save directly to public/storage
-        //     $image->save($destination, 80);
-
-        //     // dd('uploads/appeal_attachments/' . $filename);
-        //     $path = 'uploads/appeal_attachments/' . $filename;
-        // }
-
-
-            //PROCESS APPEAL
-            // DB::table('loan_payment_approval_appeal')->insert([
-            //     'loan_payment_approval_log_id' => $data['paymentlog']->id,
-            //     'reason' => $request->reason,
-            //     'attachment' => $path,
-            //     'created_at' => now(),
-            //     'updated_at' => now()
-            // ]);
-
-
-        // return response()->json([
-        //     'success' => true,
-        // ]);
-
 
         $updateData = [
             'loan_id' => $data['loanid']->id,

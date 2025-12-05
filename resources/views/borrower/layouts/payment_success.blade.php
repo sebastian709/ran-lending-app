@@ -37,11 +37,11 @@
                 Our team will verify the transaction within <strong>1–2 business days</strong>.
             </p>
 
-            <a href="/payment-history" class="btn btn-primary">
-                <i class="ri-time-line me-1"></i> Go to Payment History
+            <a href="/repayment-schedule" class="btn btn-primary">
+                <i class="ri-time-line me-1"></i> Go to My Loan
             </a>
             <p class="text-muted mt-4">
-                Redirecting to <strong>Payment History</strong> in <span id="countdown">15</span> seconds...
+                Redirecting to <strong>My Loan</strong> in <span id="countdown">15</span> seconds...
             </p>
         </div>
     </div>
@@ -53,7 +53,7 @@
 <script>
     let seconds = 15;
     const countdownEl = document.getElementById('countdown');
-    const redirectUrl = "/payment-history";
+    const redirectUrl = "/repayment-schedule";
 
     const interval = setInterval(() => {
         seconds--;

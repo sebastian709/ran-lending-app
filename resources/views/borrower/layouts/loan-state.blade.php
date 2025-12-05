@@ -1,4 +1,4 @@
-@if ($loanStatus == 999 || $loanStatus == 0 || $loanStatus == 7)
+@if ($loanStatus == 999 || $loanStatus == 0 || ($loanStatus == 7 && !isset($loanApplication)))
     {{-- Not applied for loan --}}
     <div class="empty-state-icon">
         <i class="ri-money-dollar-circle-line"></i>
@@ -58,4 +58,20 @@
     <h2 class="h3 fw-bold mb-3 text-danger">We're Sorry, Your Loan Was Not Approved</h2>
     <p class="text-muted fs-5">Unfortunately, your loan was declined. Call us at <strong>(+63) 912 345 6789</strong>.</p>
 
+@elseif ($loanStatus == 7 && $loanApplication->red_flag != 1)
+    {{-- Not applied for loan --}}
+    <div class="empty-state-icon">
+        <i class="ri-money-dollar-circle-line"></i>
+    </div>
+    <h2 class="h3 fw-bold mb-3">Hi, {{ Auth::user()->firstname }} Congratulations! Your Loan Has Been Fully Paid</h2>
+    <p class="text-muted mb-4 fs-5">Great job! You’ve successfully completed your loan payment
+Thank you for your commitment and trust in our service.
+You’re now eligible to apply for a new loan anytime.</p>
+    <button onclick="window.location.href='{{ url('/apply-loan') }}'" class="btn btn-primary-custom btn-lg">
+        <i class="ri-{{ $loanStatus == 0 ? 'arrow-right' :'add-circle' }}-line me-2"></i> {{ $loanStatus == 0 ? 'Continue Your Application' : 'Apply for a Loan'}}
+    </button>
 @endif
+
+
+
+

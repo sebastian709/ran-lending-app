@@ -39,10 +39,12 @@ class HomeController extends Controller
     {
 
         $userId = auth()->id();
-        $loanApplication = DB::table('loan_application')
-            ->where('loan_applicant', $userId)
-            ->orderBy('created_at', 'desc')
-            ->first();
+        $loanApplication = DB::selectOne("SELECT *,DATE_FORMAT(DATE_ADD(DATE(updated_at), INTERVAL 90 DAY),'%W, %M %d, %Y') penalty_day FROM loan_application 
+                WHERE loan_applicant = ? 
+                ORDER BY created_at DESC 
+                LIMIT 1",[$userId]
+            );
+
         // dd($loanApplication);
         $loanStatus = $loanApplication->loan_status ?? 999;
 
@@ -51,7 +53,7 @@ class HomeController extends Controller
             ->exists();
 
         if ($loanStatus < 4 || $loanStatus == 999 || $loanStatus == 7) {
-            return view('borrower.pages.home',  compact('loanStatus', 'hasFeedback'));
+            return view('borrower.pages.home',  compact('loanStatus', 'hasFeedback','loanApplication'));
         }
 
         DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
@@ -59,12 +61,7 @@ class HomeController extends Controller
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
             ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
-            ->where('loan_id', $loanApplication->id)
-
-            // ->where(function ($query) {
-            //     $query->where('lt.payment_status_id', '<=', 1)
-            //         ->orWhere('lti.payment_status_id', '<=', 1);
-            // })
+            ->where('lt.loan_id', $loanApplication->id)
             ->select([
                 DB::raw('(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) AS current_payment'),
                 'lt.date',
@@ -93,33 +90,32 @@ class HomeController extends Controller
             ])
             ->first();
 
-
-        $nextPayment = DB::table('loan_tenure as lt')
-            ->select(
-                'lt.loan_id',
-                'lt.date',
-                'lt.principal',
-                'lti.interest',
-                DB::raw('
-                    (
-                        SUM(IF(lt.payment_status_id = 1, lt.principal, 0)) +
-                        SUM(IF(lti.payment_status_id = 1, lti.interest, 0)) +
-                        SUM(IF(ltp.payment_status_id = 1, ltp.penalty, 0))
-                    ) AS total_all
-                ')
-            )
-            ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
-            ->leftJoin('loan_tenure_penalty as ltp', 'ltp.tenure_id', '=', 'lt.id')
-            ->where('lt.loan_id', $loanApplication->id)
-            ->where('lt.date', '<=', Carbon::now()->endOfMonth()->endOfDay())
-            ->groupBy('lt.loan_id', 'lt.date', 'lt.principal', 'lti.interest')
-            ->first();
+        $nextPayment = DB::selectOne("SELECT 
+                            lt.loan_id,
+                            lt.date,
+                            lt.principal,
+                            lti.interest,
+                            (
+                            IF(lt.payment_status_id = 1, lt.principal, 0) +
+                            IF(lti.payment_status_id = 1, lti.interest, 0) +
+                            IF(ltp.payment_status_id = 1, sum(ltp.penalty), 0)
+                            ) AS total_all
+                        FROM loan_tenure AS lt
+                        LEFT JOIN loan_tenure_interest AS lti 
+                            ON lti.tenure_id = lt.id
+                        LEFT JOIN loan_tenure_penalty AS ltp 
+                            ON ltp.tenure_id = lt.id
+                        WHERE lt.loan_id = ?
+                        AND lt.date <= ?
+                        GROUP BY lt.loan_id, lt.date, lt.principal, lti.interest
+                            having total_all > 0
+                            " , [$loanApplication->id,Carbon::now()->endOfMonth()->endOfDay()]);
 
         $is_new = DB::Select("SELECT count(id) id from loan_payments where loan_application_id = ?",[$loanApplication->id]);
         $isnew = $is_new['0']->id;
         if ($data->months === 0) {
             // $loanStatus = 0;
-            return view('borrower.layouts.payment-state', compact('loanStatus', 'hasFeedback'));
+            return view('borrower.layouts.payment-state', compact('loanStatus', 'hasFeedback','loanApplication'));
         }
 
         // dd($loanStatus,$data,$nextPayment,$is_new);
@@ -142,39 +138,50 @@ class HomeController extends Controller
             ->exists();
 
         if ($loanStatus <= 4 || $loanStatus == 999 || $loanStatus == 7) {
-            return view('borrower.pages.home', compact('loanStatus','hasFeedback'));
+            return view('borrower.pages.home', compact('loanStatus','loanApplication','hasFeedback'));
         }
 
-
-
         $results = DB::select("SELECT
-                            lt.date,
-                            IF(
-                                (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
-                                (SELECT DATE_FORMAT(updated_at, '%M %e, %Y') FROM loan_payments WHERE id = IF(lt.payment_id > lti.payment_id, lt.payment_id, lti.payment_id)),0
-                            ) AS paid_date,
-                            IF(
-                                (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,1,
-                                IF(lt.date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY),2,0)
-                            ) AS payment_status,
-                            (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) AS total,
-                            IF(lt.payment_status_id != 1, 0, lt.principal) AS principal,
-                            IF(lti.payment_status_id != 1, 0, lti.interest) AS interest,
-                            IFNULL(IF(ltp.payment_status_id != 1, 0, ltp.penalty), 0) AS penalty,
-                            if(
-								(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0 ,
-                                0,
-								if((IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) != (lt.principal + lti.interest),'p',0) 
-							) partial, 
-                            if(
-                            ((select payment_status_id from loan_payments where id = lt.payment_id) = 1 OR
-                            (select payment_status_id from loan_payments where id = lti.payment_id) = 1 OR
-                            (select payment_status_id from loan_payments where id = ltp.payment_id) = 1),1,0) verification
-                        FROM loan_application AS la
-                        LEFT JOIN loan_tenure AS lt ON lt.loan_id = la.id
-                        LEFT JOIN loan_tenure_interest AS lti ON lti.tenure_id = lt.id
-                        LEFT JOIN loan_tenure_penalty AS ltp ON ltp.tenure_id = lt.id
-                        WHERE la.id = ?",[$loanApplication->id]);
+                lt.date,
+                MAX(
+                    IF(
+                        (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
+                        (SELECT DATE_FORMAT(updated_at, '%M %e, %Y') 
+                        FROM loan_payments 
+                        WHERE id = IF(lt.payment_id > lti.payment_id, lt.payment_id, lti.payment_id)),
+                        0
+                    )
+                ) AS paid_date,
+                MAX(
+                    IF(
+                        (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,1,
+                        IF(lt.date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY),2,0)
+                    )
+                ) AS payment_status,
+                SUM(IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) AS total,
+                SUM(IF(lt.payment_status_id != 1, 0, lt.principal)) AS principal,
+                SUM(IF(lti.payment_status_id != 1, 0, lti.interest)) AS interest,
+                IFNULL(SUM(ltp.penalty), 0) AS penalty,
+                MAX(
+                    IF(
+                        (IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) = 0,
+                        0,
+                        IF((IF(lt.payment_status_id != 1, 0, lt.principal) + IF(lti.payment_status_id != 1, 0, lti.interest)) != (lt.principal + lti.interest),'p',0)
+                    )
+                ) AS partial,
+                MAX(
+                    IF(
+                        ((SELECT payment_status_id FROM loan_payments WHERE id = lt.payment_id) = 1 OR
+                        (SELECT payment_status_id FROM loan_payments WHERE id = lti.payment_id) = 1 OR
+                        (SELECT payment_status_id FROM loan_payments WHERE id = ltp.payment_id) = 1),1,0
+                    )
+                ) AS verification
+            FROM loan_application AS la
+            LEFT JOIN loan_tenure AS lt ON lt.loan_id = la.id
+            LEFT JOIN loan_tenure_interest AS lti ON lti.tenure_id = lt.id
+            LEFT JOIN loan_tenure_penalty AS ltp ON ltp.tenure_id = lt.id
+            WHERE la.id = ?
+            GROUP BY lt.date",[$loanApplication->id]);
 
         //    dd($results);
 
@@ -890,11 +897,19 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
-        return response()->json([
-            'loan_id' => $loanApplication->id,
-            'loan_status' => $loanApplication->loan_status,
-            'make_appeal' => $loanApplication->make_appeal,
-        ]);
+        if (isset($loanApplication)) {
+            return response()->json([
+                'loan_id' => $loanApplication->id,
+                'loan_status' => $loanApplication->loan_status,
+                'make_appeal' => $loanApplication->make_appeal,
+            ]);
+        }else{
+            return response()->json([
+                'loan_id' => 0,
+                'loan_status' => 0,
+                'make_appeal' => 0,
+            ]);
+        }
     }
 
 

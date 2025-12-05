@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('notifications:clear-old')->everyFiveMinutes();
+
+Schedule::command('app:check-delayed-payments')->dailyAt('01:00');
+Schedule::command('app:violation-task')->dailyAt('01:00');
