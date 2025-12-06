@@ -672,18 +672,21 @@ $(document).ready(function() {
         });
     }
 
-    $(document).ready(function() {
-        $('#calendar-float-icon').on('click', function() {
-            $('#calendar-popup').fadeToggle(200);
-            $('#calendar-overlay').fadeToggle(200);
-            $('.sticky-filters').fadeToggle(200);
 
-            if (!calendarInitialized) {
-                ensureFullCalendarLoaded(initFullCalendar);
-                calendarInitialized = true; // prevent re-initialization
-            }
-        });
+
+    $(document).off('click', '#calendar-float-icon').on('click', '#calendar-float-icon', function(e) {
+
+        e.stopPropagation(); 
+        $('#calendar-popup').fadeToggle(200);
+        $('#calendar-overlay').fadeToggle(200);
+        $('.sticky-filters').fadeToggle(200);
+
+        if (!calendarInitialized) {
+            ensureFullCalendarLoaded(initFullCalendar);
+            calendarInitialized = true; // prevent re-initialization
+        }
     });
+    
 
     function ensureFullCalendarLoaded(callback) {
         if (window.FullCalendar) {

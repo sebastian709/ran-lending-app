@@ -133,7 +133,7 @@
         </div>
 
         <!-- Added Payment Behaviour section with payment status metrics -->
-        <div class="section-title">Payment Behaviour</div>
+        <!-- <div class="section-title">Payment Behaviour</div>
         <div class="row g-4 mb-5">
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
@@ -163,7 +163,7 @@
                     <div class="stat-value">4</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Added Borrower Insight section with borrower statistics -->
         <div class="section-title">Borrower Insight</div>
