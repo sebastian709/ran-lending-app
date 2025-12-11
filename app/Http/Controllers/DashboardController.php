@@ -230,42 +230,29 @@ class DashboardController extends Controller
         $filter = $request->input('filter', 'month'); // default filter
 
         // Total borrowers query
-        $totalBorrowersQuery = DB::table('users')
-            ->where('is_admin', 0)
-            ->where('is_super_admin', 0)
-            ->where('status', 1);
+        $totalBorrowersQuery = DB::selectOne("SELECT count(loan_applicant) total from (select loan_applicant from loan_application where status = 1 group by loan_applicant) a;");
 
         // Active borrowers query
-        $activeBorrowersQuery = DB::table('users as u')
-            ->join('loan_application as la', 'la.loan_applicant', '=', 'u.id')
-            ->where('u.is_admin', 0)
-            ->where('u.is_super_admin', 0)
-            ->where('u.status', 1)
-            ->distinct('u.id');
-
-        // Apply time filters
-        if ($filter === 'week') {
-            $activeBorrowersQuery->whereBetween('la.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-            $totalBorrowersQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-        } elseif ($filter === 'month') {
-            $activeBorrowersQuery->whereMonth('la.created_at', now()->month)
-                                ->whereYear('la.created_at', now()->year);
-            $totalBorrowersQuery->whereMonth('created_at', now()->month)
-                                ->whereYear('created_at', now()->year);
-        } elseif ($filter === 'year') {
-            $activeBorrowersQuery->whereYear('la.created_at', now()->year);
-            $totalBorrowersQuery->whereYear('created_at', now()->year);
-        }
-
-        // Execute queries
-        $totalBorrowers = $totalBorrowersQuery->count();
-        $activeBorrowers = $activeBorrowersQuery->count('u.id');
-
+        $data = DB::select("SELECT 
+                            loan_id, 
+                            count(a.count),
+                            sum(has_penalty) ,
+                            ROUND((sum(has_penalty) / count(a.count)) * 100, 2) percentage,
+                            has_penalty
+                        from 
+                        (select *,(select if(count(id) > 0,1,0) from loan_tenure_penalty where tenure_id = lt.id) has_penalty
+                        from loan_tenure lt) a
+                        group by loan_id
+                    ;");
+        $rows = collect($data);
+        $no_penalty_count = $rows->where('has_penalty', 0)->count();
+        $penalty_count = $rows->where('has_penalty', '>', 0)->count();
+        
         return response()->json([
-            'total_borrowers' => $totalBorrowers,
-            'active_borrowers' => $activeBorrowers,
+            'total_borrowers' => $totalBorrowersQuery->total,
             'violations' => 0,
-            'good_payer' => 0,
+            'penalty' => $penalty_count,
+            'good_payer' => $no_penalty_count,
         ]);
     }
 

@@ -579,9 +579,9 @@ $(document).ready(function() {
         });
     }
 
-    function borrower_insight(filter = 'month') {
+    function borrower_insight() {
 
-        $('.total_borrower, .active_borrower, .with_violations, .good_payer').html(`
+        $('.active_borrower, .with_violations, .good_payer').html(`
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -593,16 +593,15 @@ $(document).ready(function() {
         $.ajax({
             url: "/admin/get-insight",
             method: "GET",
-            data: { filter: filter },
             dataType: "json",
             success: function(response) {
                 
                 let html = '';
 
-                $('.total_borrower').html(response.total_borrowers);
                 $('.active_borrower').html(response.active_borrowers);
                 $('.with_violations').html(response.violations);
                 $('.good_payer').html(response.good_payer);
+                $('.with_violations').html(response.with_violationss);
             },
             error: function(xhr) {
                 console.log("Error:", xhr);

@@ -92,11 +92,11 @@
                                     <label class="form-label fw-medium">Applying as a scheduled loan?</label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="scheduledLoan" id="slYes" value="Scheduled">
-                                        <label class="form-check-label" for="admin">Yes</label>
+                                        <label class="form-check-label">Yes</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="scheduledLoan" id="slNo" value="Express">
-                                        <label class="form-check-label" for="friend">No</label>
+                                        <label class="form-check-label">No</label>
                                     </div>
                                     
                                     <!-- Scheduled Date Input (hidden by default) -->

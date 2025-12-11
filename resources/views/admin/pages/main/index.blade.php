@@ -137,36 +137,38 @@
         <div class="row g-4 mb-5">
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
+                     <div class="stat-icon" style="color: var(--primary);">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="stat-label">Active Borrowers</div>
+                    <div class="stat-value active_borrower">4</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
                     <div class="stat-icon" style="color: var(--success);">✓</div>
                     <div class="stat-label">On-time Payments</div>
-                    <div class="stat-value">82%</div>
+                    <div class="stat-value ontime_payment">82%</div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-icon" style="color: var(--warning);">⏰</div>
                     <div class="stat-label">Late Payments</div>
-                    <div class="stat-value">12%</div>
+                    <div class="stat-value late_payment">12%</div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-icon" style="color: #06b6d4;">📦</div>
                     <div class="stat-label">Partial Payments</div>
-                    <div class="stat-value">6%</div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: var(--danger);">✕</div>
-                    <div class="stat-label">Defaulted Loans</div>
-                    <div class="stat-value">4</div>
+                    <div class="stat-value partial_payment">6%</div>
                 </div>
             </div>
         </div> -->
 
         <!-- Added Borrower Insight section with borrower statistics -->
-        <div class="section-title">Borrower Insight</div>
+        <div class="section-title">Borrower Insight (All)</div>
         <div class="row g-4 mb-5" id="insight">
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
@@ -179,20 +181,20 @@
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: #06b6d4;">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </div>
-                    <div class="stat-label">Active Borrowers</div>
-                    <div class="stat-value active_borrower"></div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card">
                     <div class="stat-icon" style="color: #eded10">
                         <i class="bi bi-star-fill"></i>
                     </div>
                     <div class="stat-label">Good Payers</div>
                     <div class="stat-value good_payer"></div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #06b6d4;">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <div class="stat-label">With Penalty</div>
+                    <div class="stat-value with_penalty"></div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
