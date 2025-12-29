@@ -947,6 +947,14 @@ class PaymentPageController extends Controller
                         and cancelled_approved_date is null
                         order by id desc limit 1",[$data['loanid']->id]);
 
+        if (empty($data['paymentid'])) {
+            return response()->json([
+                'success' => false,
+                'data' => '',
+                'image' =>  ''
+            ]);
+        }
+
         $data['paymentlog'] = DB::selectOne("SELECT * from loan_payment_approval_logs 
                         where loan_payment_id = ? 
                         and declined_accepted is null

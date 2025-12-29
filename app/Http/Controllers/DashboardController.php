@@ -174,9 +174,36 @@ class DashboardController extends Controller
             ->join('users as u', 'u.id', '=', 'la.loan_applicant')
             ->where('la.loan_status', 5);
 
+        // // Apply time filter
+        // if ($filter === 'week') {
+        //     $query->whereBetween('la.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        // } elseif ($filter === 'month') {
+        //     $query->whereMonth('la.created_at', now()->month)
+        //         ->whereYear('la.created_at', now()->year);
+        // } elseif ($filter === 'year') {
+        //     $query->whereYear('la.created_at', now()->year);
+        // }
+
+        // $topBorrowers = $query->select(
+        //         DB::raw("CONCAT(u.firstname, ' ', u.lastname) as full_name"),
+        //         'la.loan_amount',
+        //         'la.created_at'
+        //     )
+        //     ->orderByDesc('la.loan_amount')
+        //     ->limit(5)
+        //     ->get();
+
+
+        $query = DB::table('loan_application as la')
+            ->join('users as u', 'u.id', '=', 'la.loan_applicant')
+            ->whereIn('la.loan_status', [5, 7]);
+
         // Apply time filter
         if ($filter === 'week') {
-            $query->whereBetween('la.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            $query->whereBetween('la.created_at', [
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ]);
         } elseif ($filter === 'month') {
             $query->whereMonth('la.created_at', now()->month)
                 ->whereYear('la.created_at', now()->year);
@@ -185,13 +212,14 @@ class DashboardController extends Controller
         }
 
         $topBorrowers = $query->select(
-                DB::raw("CONCAT(u.firstname, ' ', u.lastname) as full_name"),
-                'la.loan_amount',
-                'la.created_at'
+                DB::raw("CONCAT(u.firstname, ' ', u.lastname) AS full_name"),
+                DB::raw("SUM(la.loan_amount) AS loan_amount")
             )
-            ->orderByDesc('la.loan_amount')
+            ->groupBy('la.loan_applicant', 'u.firstname', 'u.lastname')
+            ->orderByDesc('loan_amount')
             ->limit(5)
             ->get();
+
 
         return response()->json($topBorrowers);
     }
@@ -225,34 +253,94 @@ class DashboardController extends Controller
         return response()->json($events);
     }
 
-    public function getBorrowerInsight(Request $request)
+    public function getBorrowerInsight(Request $request) 
     {
         $filter = $request->input('filter', 'month'); // default filter
 
         // Total borrowers query
-        $totalBorrowersQuery = DB::selectOne("SELECT count(loan_applicant) total from (select loan_applicant from loan_application where status = 1 group by loan_applicant) a;");
+        $totalBorrowersQuery = DB::selectOne(query: "SELECT count(loan_applicant) total from (select loan_applicant from loan_application where status = 1 group by loan_applicant) a;");
 
         // Active borrowers query
-        $data = DB::select("SELECT 
+        // $data = DB::select("SELECT 
+        //                     loan_id, 
+        //                     count(a.count),
+        //                     sum(has_penalty) ,
+        //                     ROUND((sum(has_penalty) / count(a.count)) * 100, 2) percentage,
+        //                     has_penalty
+        //                 from 
+        //                 (select *,(select if(count(id) > 0,1,0) from loan_tenure_penalty where tenure_id = lt.id) has_penalty
+        //                 from loan_tenure lt) a
+        //                 inner join loan_application la on la.id = a.loan_id
+        //                 group by la.loan_applicant
+        //             ;");
+
+        $data = DB::select("SELECT sum((select if(count(id) > 0,1,0) from loan_tenure_penalty where tenure_id = lt.id)) has_penalty
+                        from loan_tenure lt
+                        group by loan_id,lt.id,lt.count");
+
+        $rows = collect($data);
+        $no_penalty_count = $rows->where('has_penalty', 0)->count();
+        $penalty_count = $rows->where('has_penalty', '>', 0)->count();
+        
+
+        //==============================
+
+        $active_borrower = DB::selectOne(" SELECT COUNT(DISTINCT loan_applicant) AS total FROM loan_application WHERE loan_status = 5
+        ")->total;
+
+        $paymentss = DB::select("SELECT
                             loan_id, 
                             count(a.count),
                             sum(has_penalty) ,
                             ROUND((sum(has_penalty) / count(a.count)) * 100, 2) percentage,
                             has_penalty
                         from 
+                        (
+							select lt.*,
+                            (select if(count(id) > 0,1,0) from loan_tenure_penalty where tenure_id = lt.id) has_penalty
+							from loan_tenure lt
+							inner join loan_application la on la.id = lt.loan_id and la.loan_status = 5
+						) a
+                        group by loan_id;
+                        ");
+        $rowss = collect($paymentss);
+        $ontime_payment = $rowss->where('has_penalty', 0)->count();
+        $late_payment = $rowss->where('has_penalty', '>', 0)->count();
+
+        // $partial_payment
+
+        $partial = DB::select("SELECT 
+                            loan_id, 
+                            count(a.count),
+                            sum(has_penalty) ,
+                            ROUND((sum(has_penalty) / count(a.count)) * 100, 2) percentage,
+                            has_penalty
+
+                        from 
                         (select *,(select if(count(id) > 0,1,0) from loan_tenure_penalty where tenure_id = lt.id) has_penalty
                         from loan_tenure lt) a
-                        group by loan_id
-                    ;");
-        $rows = collect($data);
-        $no_penalty_count = $rows->where('has_penalty', 0)->count();
-        $penalty_count = $rows->where('has_penalty', '>', 0)->count();
-        
+                        inner join loan_application la on la.id = a.loan_id and la.loan_status = 5
+                        inner join loan_payments lp on lp.loan_application_id = la.id
+                        inner join loan_payment_types lpt on lpt.id =  lp.payment_type_id
+                        
+                        where lp.payment_type_id = 2
+                        group by la.loan_applicant
+                        ");
+        $rowss = collect($partial);
+        $partial_payment = $rowss->where('loan_id', '>', 0)->count();
+
+        $redFlag = DB::selectOne("SELECT count(red_flag) redflag from loan_application where red_flag = 1");
+
+
         return response()->json([
             'total_borrowers' => $totalBorrowersQuery->total,
-            'violations' => 0,
+            'violations' => $redFlag->redflag,
             'penalty' => $penalty_count,
             'good_payer' => $no_penalty_count,
+            'active_borrower' => $active_borrower,
+            'ontime_payment' => $ontime_payment,
+            'late_payment' => $late_payment,
+            'partial_payment' => $partial_payment,
         ]);
     }
 

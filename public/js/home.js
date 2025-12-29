@@ -581,7 +581,7 @@ $(document).ready(function() {
 
     function borrower_insight() {
 
-        $('.active_borrower, .with_violations, .good_payer').html(`
+        $('.total_borrower,.good_payer,.with_penalty,.with_violations,.active_borrower,.ontime_payment,.late_payment,.partial_payment').html(`
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -598,10 +598,19 @@ $(document).ready(function() {
                 
                 let html = '';
 
-                $('.active_borrower').html(response.active_borrowers);
-                $('.with_violations').html(response.violations);
+                $('.total_borrower').html(response.total_borrowers);
                 $('.good_payer').html(response.good_payer);
-                $('.with_violations').html(response.with_violationss);
+                $('.with_penalty').html(response.penalty);
+                $('.with_violations').html(response.violations);
+                $('.active_borrower').html(response.active_borrower);
+                $('.ontime_payment').html(response.ontime_payment);
+                $('.late_payment').html(response.late_payment);
+                $('.partial_payment').html(response.partial_payment);
+
+                
+
+
+
             },
             error: function(xhr) {
                 console.log("Error:", xhr);
