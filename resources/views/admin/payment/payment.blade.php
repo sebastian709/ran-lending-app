@@ -4,11 +4,25 @@
     <style>
       .modal-backdrop {
         z-index: 0 !important;
-        }
+      }
 
-        .modal {
-        z-index: 99999999 !important;
-        }
+      .modal {
+        z-index: 1060 !important;
+      }
+
+      .modal.show {
+        z-index: 1060 !important;
+      }
+
+      #customBackdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65); /* dark, subtle */
+        backdrop-filter: blur(4px);
+        z-index: 1055;
+        display: none;
+      }
+
     </style>
     <!-- DataTables Bootstrap 5 -->
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -29,12 +43,12 @@
 
 <div class="container py-5">
   <div class="text-center mb-5">
-    <h2 class="fw-bold">💳 Payment Pages</h2>
+    <h2 class="fw-bold">Payments Page</h2>
     <p class="text-muted">Manage all payment transactions with clear status tracking</p>
   </div>
 
   <!-- Tabs Navigation -->
-  <ul class="nav nav-pills justify-content-center mb-4 shadow-sm p-2 rounded bg-light" id="pills-tab" role="tablist">
+  <ul class="nav nav-pills justify-content-center mb-4 shadow-sm p-2 rounded" id="pills-tab" role="tablist">
     <li class="nav-item px-2" role="presentation">
       <button class="nav-link active" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
         ⏳ Pending
@@ -138,195 +152,242 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="loanModal" tabindex="-1" aria-labelledby="loanModalLabel" aria-hidden="true">
+<div class="modal fade" id="loanModal" tabindex="-1" aria-labelledby="loanModalLabel" aria-hidden="true" data-bs-backdrop="false">
   <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content shadow-lg border-0 rounded-3">
-      
+    <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
+
       <!-- Header -->
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title fw-bold" id="loanModalLabel">Loan Information</h5>
+      <div class="modal-header bg-primary text-white py-3">
+        <h5 class="modal-title fw-bold" id="loanModalLabel">
+          <i class="bi bi-credit-card me-2"></i> Loan Information
+        </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      
+
       <!-- Body -->
       <div class="modal-body">
+
         <!-- Tabs -->
-        <ul class="nav nav-tabs mb-3" id="loanTabs" role="tablist">
+        <ul class="nav nav-tabs mb-4" id="loanTabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">Profile</button>
+            <button class="nav-link active px-4" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+              Profile
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="loan-tab" data-bs-toggle="tab" data-bs-target="#loan" type="button" role="tab">Loan Details</button>
+            <button class="nav-link px-4" id="loan-tab" data-bs-toggle="tab" data-bs-target="#loan" type="button" role="tab">
+              Loan Details
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button" role="tab">Payment Details</button>
+            <button class="nav-link px-4" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button" role="tab">
+              Payment Details
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#status" type="button" role="tab">Status History</button>
+            <button class="nav-link px-4" id="status-tab" data-bs-toggle="tab" data-bs-target="#status" type="button" role="tab">
+              Status History
+            </button>
           </li>
         </ul>
 
         <!-- Tab Content -->
         <div class="tab-content">
-          
+
           <!-- Profile Tab -->
           <div class="tab-pane fade show active" id="profile" role="tabpanel">
-            <div class="table-responsive">
-              <table class="table table-striped table-bordered align-middle">
-                <tbody>
-                  <tr>
-                      <td>Name</td>
-                      <td class="profile_name"></td>
-                  </tr>
-                  <tr>
-                      <td>Email</td>
-                      <td class="profile_email"></td>
-                  </tr>
-                  <tr>
-                      <td>Phone</td>
-                      <td class="profile_phone"></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <tbody>
+                      <tr>
+                        <td class="fw-semibold text-secondary">Name</td>
+                        <td class="profile_name fw-bold text-dark"></td>
+                      </tr>
+                      <tr>
+                        <td class="fw-semibold text-secondary">Email</td>
+                        <td class="profile_email fw-bold text-dark"></td>
+                      </tr>
+                      <tr>
+                        <td class="fw-semibold text-secondary">Phone</td>
+                        <td class="profile_phone fw-bold text-dark"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Loan Details Tab -->
           <div class="tab-pane fade" id="loan" role="tabpanel">
-            <div class="container my-3">
-              <h5 class="text-center mb-4 text-primary border-bottom pb-2">Loan Details</h5>
-              <div class="row justify-content-center mb-3">
-                <div class="col-10">
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Loan Amount:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_amount"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Total Interest:</div>
-                    <div class="col-6 text-end fw-bold text-dark interest_amount"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Loan Term:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_term"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Payment Progress:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_progress"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Next Payment Due:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_due"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Monthly Payment:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_monthly"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Interest Rate:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_rate"></div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-6 text-secondary">Late Payment Penalty:</div>
-                    <div class="col-6 text-end fw-bold text-dark loan_penalty"></div>
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <h5 class="text-primary border-bottom pb-2 mb-4 text-center fw-bold">Loan Details</h5>
+
+                <div class="row justify-content-center">
+                  <div class="col-10">
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Loan Amount:</div>
+                      <div class="col-6 text-end fw-bold loan_amount"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Total Interest:</div>
+                      <div class="col-6 text-end fw-bold interest_amount"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Loan Term:</div>
+                      <div class="col-6 text-end fw-bold loan_term"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Payment Progress:</div>
+                      <div class="col-6 text-end fw-bold loan_progress"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Next Payment Due:</div>
+                      <div class="col-6 text-end fw-bold loan_due"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Monthly Payment:</div>
+                      <div class="col-6 text-end fw-bold loan_monthly"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Interest Rate:</div>
+                      <div class="col-6 text-end fw-bold loan_rate"></div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-6 text-secondary">Late Payment Penalty:</div>
+                      <div class="col-6 text-end fw-bold loan_penalty"></div>
+                    </div>
+
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
 
           <!-- Payment Details Tab -->
           <div class="tab-pane fade" id="payment" role="tabpanel">
-            <div class="container">
-              <h3 class="mb-4">Payment Details</h3> 
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
-                  <tbody>
-                    <tr>
-                      <th>Date of Payment</th>
-                      <td class="pt_date"></td>
-                    </tr>
-                    <tr>
-                      <th>Time of Payment</th>
-                      <td class="pt_time"></td>
-                    </tr>
-                    <tr>
-                      <th>Payment Type</th>
-                      <td class="pt_type"></td>
-                    </tr>
-                    <tr>
-                      <th>Month Coverage</th>
-                      <td class="pt_coverage"></td>
-                    </tr>
-                    <tr>
-                      <th>Amount Paid</th>
-                      <td><strong class="pt_amount"></strong></td>
-                    </tr>
-                    <tr class="table-primary">
-                      <th colspan="2" class="text-center">Breakdown</th>
-                    </tr>
-                    <tr>
-                      <th>Interest</th>
-                      <td class="pt_interest"></td>
-                    </tr>
-                    <tr>
-                      <th>Principal</th>
-                      <td class="pt_principal"></td>
-                    </tr>
-                    <tr>
-                      <th>Penalty</th>
-                      <td class="pt_penalty">₱0.00</td>
-                    </tr>
-                    <tr class="table-warning hidden">
-                      <th>Outstanding Balance</th>
-                      <td class="pt_outstanding"></td>
-                    </tr>
-                    <tr>
-                      <th>Reference Number</th>
-                      <td class="pt_ref"></td>
-                    </tr>
-                    <tr>
-                      <th>Proof of Payment</th>
-                      <td><button class="btn btn-sm btn-outline-primary view_payment_attachment">View File</button></td>
-                    </tr>
-                    <tr>
-                      <th>Remarks</th>
-                      <td class="pt_rem"></td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <h4 class="fw-bold mb-4 text-primary">Payment Details</h4>
+
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle">
+                    <tbody>
+                      <tr>
+                        <th>Date of Payment</th>
+                        <td class="pt_date"></td>
+                      </tr>
+                      <tr>
+                        <th>Time of Payment</th>
+                        <td class="pt_time"></td>
+                      </tr>
+                      <tr>
+                        <th>Payment Type</th>
+                        <td class="pt_type"></td>
+                      </tr>
+                      <tr>
+                        <th>Month Coverage</th>
+                        <td class="pt_coverage"></td>
+                      </tr>
+                      <tr>
+                        <th>Amount Paid</th>
+                        <td><strong class="pt_amount"></strong></td>
+                      </tr>
+
+                      <tr class="table-primary">
+                        <th colspan="2" class="text-center">Breakdown</th>
+                      </tr>
+
+                      <tr>
+                        <th>Interest</th>
+                        <td class="pt_interest"></td>
+                      </tr>
+
+                      <tr>
+                        <th>Principal</th>
+                        <td class="pt_principal"></td>
+                      </tr>
+
+                      <tr>
+                        <th>Penalty</th>
+                        <td class="pt_penalty">₱0.00</td>
+                      </tr>
+
+                      <tr class="table-warning hidden">
+                        <th>Outstanding Balance</th>
+                        <td class="pt_outstanding"></td>
+                      </tr>
+
+                      <tr>
+                        <th>Reference Number</th>
+                        <td class="pt_ref"></td>
+                      </tr>
+
+                      <tr>
+                        <th>Proof of Payment</th>
+                        <td><button class="btn btn-sm btn-outline-primary view_payment_attachment">View File</button></td>
+                      </tr>
+
+                      <tr>
+                        <th>Remarks</th>
+                        <td class="pt_rem"></td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Status History Tab -->
           <div class="tab-pane fade" id="status" role="tabpanel">
-            <div class="table-responsive">
-              <table class="table table-bordered align-middle">
-                <thead class="table-light">
-                  <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Remarks</th>
-                  </tr>
-                </thead>
-                <tbody class="approve_history">
-                </tbody>
-              </table>
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody class="approve_history"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
+
       </div>
-      
+
       <!-- Footer -->
       <div class="modal-footer">
         <button type="button" class="btn btn-primary rounded-pill" id="pending_verify">Verify</button>
         <button type="button" class="btn btn-danger rounded-pill" id="pending_reject">Reject</button>
-        <!-- <button type="button" class="btn btn-warning rounded-pill" id="pending_revision">Revision</button> -->
         <button type="button" class="btn btn-secondary rounded-pill" id="pending_close" data-bs-dismiss="modal">Close</button>
       </div>
+
     </div>
   </div>
 </div>
+<div id="customBackdrop"></div>
+
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -337,7 +398,6 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js" defer></script>
 
 <script>
-
 $(document).ready(function () {
   $('#pending-tab').click();
 });
@@ -435,6 +495,7 @@ $(document).on('click', '#rejected-tab', function () {
   });
 });
 
+
 $(document).on('click', '.pending_view', function () {
   var id = $(this).attr('data-id');
   var pay_id = $(this).attr('data-pay_id');
@@ -500,7 +561,13 @@ $(document).on('click', '.pending_view', function () {
         },
     });
   $('#loanModal').modal('show');
+  $('#customBackdrop').fadeIn(150);
 });
+
+$(document).on('click', '#pending_close', function() {
+    $('#customBackdrop').fadeOut(150);
+});
+
 
 function convertToPHT(timeStr) {
     let utcDate = new Date(timeStr + "Z"); // "Z" = UTC
@@ -718,6 +785,7 @@ $(document).on('click', '#pending_reject', function () {
                                               buttons: {
                                                   ok: function () {
                                                         $('#pending-tab').click();
+                                                        $('#customBackdrop').fadeOut(150);
                                                   }
                                               }
                                           });
@@ -987,7 +1055,6 @@ $(document).on('click', '.view_payment_attachment', function () {
 //       });
 
 // });
-
 
   </script>
 
