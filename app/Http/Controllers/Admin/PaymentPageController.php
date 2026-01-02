@@ -620,6 +620,8 @@ class PaymentPageController extends Controller
             //UPDATE DATA
             DB::update('UPDATE loan_payments SET payment_status_id = ? WHERE id = ?', [3, $data]);
 
+            $loan_application = DB::selectOne('SELECT loan_application_id FROM loan_payments where id = ?',[$data]);
+
             //CHECK IF FULLYPAID
             $checker = DB::select("SELECT 
                         lt.id,
@@ -636,16 +638,10 @@ class PaymentPageController extends Controller
                     LEFT JOIN loan_tenure llt ON llt.loan_id = lt.loan_id
                     WHERE lt.loan_id = ?
                     GROUP BY lt.id, lt.count, lt.date, lt.payment_id, lti.payment_id,ltp.payment_id, lt.principal, lti.interest, lti.payment_status_id
-                    HAVING total_amount > 0",[$data]);
+                    HAVING total_amount > 0",[$loan_application->loan_application_id]);
 
             //IF EMPTZY MEANS FULLY PAID NOW
             if (empty($checker)) {
-                
-                $updateData = [
-                    'updated_at' => now(),
-                    'loan_status' => 7,
-                ];
-                $loan_application = DB::selectOne('SELECT loan_application_id FROM loan_payments where id = ?',[$data]);
                 
                 DB::update('UPDATE loan_application SET updated_at = ?, loan_status = ? WHERE id = ?',[now(), 7, $loan_application->loan_application_id]);
                 
