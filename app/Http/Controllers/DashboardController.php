@@ -422,7 +422,7 @@ class DashboardController extends Controller
     {
 
 
-        $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(money - sum(remaining)) remaining_money from (select 
+        $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(IFNULL(money,0) - IFNULL(SUM(remaining),0)) remaining_money from (select 
                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
                 (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
@@ -871,28 +871,56 @@ class DashboardController extends Controller
         ];
 
         // --- Quick Stats ---
-        $totalInterest = DB::table('loan_tenure_interest as lti')
-            ->join('loan_payments as lp', 'lp.id', '=', 'lti.payment_id')
-            ->where('lp.payment_status_id', 3)
-            ->when($filter === 'week', fn($q)=>$q->whereBetween('lp.created_at', [$startDate, $endDate]))
-            ->when($filter === 'month', fn($q)=>$q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
-            ->when($filter === 'year', fn($q)=>$q->whereYear('lp.created_at', now()->year))
-            ->sum('lti.interest');
+        // $totalInterest = DB::table('loan_tenure_interest as lti')
+        //     ->join('loan_payments as lp', 'lp.id', '=', 'lti.payment_id')
+        //     ->where('lp.payment_status_id', 3)
+        //     ->when($filter === 'week', fn($q)=>$q->whereBetween('lp.created_at', [$startDate, $endDate]))
+        //     ->when($filter === 'month', fn($q)=>$q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
+        //     ->when($filter === 'year', fn($q)=>$q->whereYear('lp.created_at', now()->year))
+        //     ->sum('lti.interest');
 
-        $totalPenalty = DB::table('loan_tenure_penalty as ltp')
-            ->join('loan_payments as lp', 'lp.id', '=', 'ltp.payment_id')
-            ->where('lp.payment_status_id', 3)
-            ->when($filter === 'week', fn($q)=>$q->whereBetween('lp.created_at', [$startDate, $endDate]))
-            ->when($filter === 'month', fn($q)=>$q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
-            ->when($filter === 'year', fn($q)=>$q->whereYear('lp.created_at', now()->year))
-            ->sum('ltp.penalty');
+        // $totalPenalty = DB::table('loan_tenure_penalty as ltp')
+        //     ->join('loan_payments as lp', 'lp.id', '=', 'ltp.payment_id')
+        //     ->where('lp.payment_status_id', 3)
+        //     ->when($filter === 'week', fn($q)=>$q->whereBetween('lp.created_at', [$startDate, $endDate]))
+        //     ->when($filter === 'month', fn($q)=>$q->whereMonth('lp.created_at', now()->month)->whereYear('lp.created_at', now()->year))
+        //     ->when($filter === 'year', fn($q)=>$q->whereYear('lp.created_at', now()->year))
+        //     ->sum('ltp.penalty');
+
+         $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(money - sum(remaining)) remaining_money from (select 
+                                (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
+                                (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
+                                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                                    from loan_tenure alt 
+                                    inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                                    left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                                    where alt.loan_id = la.id 
+                                ) misc,
+                                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                                    from loan_tenure alt 
+                                    inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                                    left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                                    where alt.loan_id = la.id 
+                                ) * 0.10 tithes,
+                                (select sum(amount) from executive_account_balance where category = 1) money,
+                                la.* 
+                                from loan_application la ) a;
+
+            ");
 
         $quickStats = [
-            'available_money'=>0,
-            'balance'=>0,
-            'tithes'=>($totalInterest+$totalPenalty)*0.10,
-            'misc'=>($totalInterest+$totalPenalty)*0.10
+            'available_money' => $data->remaining_money,
+            'balance' => $data->remaining,
+            'tithes' => $data->tithes,
+            'misc' => $data->misc,
         ];
+
+        // $quickStats = [
+        //     'available_money'=>0,
+        //     'balance'=>0,
+        //     'tithes'=>($totalInterest+$totalPenalty)*0.10,
+        //     'misc'=>($totalInterest+$totalPenalty)*0.10
+        // ];
 
         // --- Excel Generation ---
         $spreadsheet = new Spreadsheet();
