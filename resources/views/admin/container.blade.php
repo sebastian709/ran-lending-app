@@ -217,7 +217,7 @@
                                         <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
                                             class="user-avatar me-2 object-fit-cover" style="object-fit: cover;">
                                     @else
-                                        <div class="user-avatar me-2">
+                                        <div class="user-avatar me-2 fullname_">
                                             {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
                                         </div>
                                     @endif
@@ -242,8 +242,13 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/executive">
+                                        <i class="ri-bank-line"></i> Executive Investment
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/blogpost">
-                                        <i class="bi bi-newspaper me-2"></i>Blogpost
+                                        <i class="bi bi-newspaper me-2"></i> Blogpost
                                     </a>
                                 </li>
                                 <li>

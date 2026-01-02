@@ -44,18 +44,18 @@
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: orange"><i class="bi bi-bar-chart-fill"></i></div>
-                    <div class="stat-label">Total Tithes</div>
-                    <div class="stat-value quick_tithes"></div>
+                    <div class="stat-icon" style="color: #d81c1c;"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="stat-label">Miscellaneous</div>
+                    <div class="stat-value quick_misc"></div>
                     <small class="text-muted">Interest + Penalty</small>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: #d81c1c;"><i class="bi bi-graph-up-arrow"></i></div>
-                    <div class="stat-label">Miscellaneous</div>
-                    <div class="stat-value quick_misc"></div>
-                    <small class="text-muted">Interest + Penalty</small>
+                    <div class="stat-icon" style="color: orange"><i class="bi bi-bar-chart-fill"></i></div>
+                    <div class="stat-label">Total Tithes</div>
+                    <div class="stat-value quick_tithes"></div>
+                    <small class="text-muted">(Interest + Penalty) 10%</small>
                 </div>
             </div>
         </div>

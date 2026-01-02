@@ -483,6 +483,7 @@ class AdminController extends Controller
             ->select(
                 'bank_name',
                 'account_number',
+                'loan_amount',
                 DB::raw("CONCAT('" . asset('storage') . "/', upload_qr_code_img) as upload_qr_code_img")
             )
             ->where('id', $loan_id)
@@ -496,11 +497,41 @@ class AdminController extends Controller
             $bank_details->processed_by = $user->firstname . ' ' . $user->lastname;
         }
 
+
+        $bank_details->data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(money - sum(remaining)) remaining_money from (select 
+                (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
+                (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
+                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                    from loan_tenure alt 
+                    inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                    left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                    where alt.loan_id = la.id 
+                ) misc,
+                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                    from loan_tenure alt 
+                    inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                    left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                    where alt.loan_id = la.id 
+                ) * 0.10 tithes,
+                (select sum(amount) from executive_account_balance where category = 1) money,
+                la.* 
+                from loan_application la ) a");
+
         return response()->json($bank_details);
     }
 
     public function transferMoeny(Request $request)
     {
+
+        // $hasmoney = DB::selectOne("SELECT sum(amount) from ");
+
+        
+        // return response()->json([
+        //     'success' => false,
+        //     'message' => 'Not Enough Money!',
+        // ]);
+
+
         $path = $request->file('screenshot')->store('uploads/money_transfer', 'public');
 
         $userId = auth()->id();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\executiveInvestment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
@@ -137,6 +138,18 @@ Route::prefix('admin')->group(function () {
         Route::post('cpas-view-more-info', [CustomerController::class, 'cpasViewMoreInfo']);
         Route::post('cpa-payment-details', [CustomerController::class, 'cpaPaymentDetails']);
     });
+
+    //Executive page
+    Route::get('/executive', [executiveInvestment::class, 'index']);
+
+
+
+
+
+
+
+
+
 });
 Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferralCode']);
 
@@ -174,8 +187,8 @@ Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauths
 Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->name('forgot.change.pass');
 
 # borrower routes
-Route::get('/apply-loan', [App\Http\Controllers\HomeController::class, 'loanApply'])->name('my-loan.apply');
-Route::get('/engagement-check', [App\Http\Controllers\HomeController::class, 'EngagementCheck'])->name('my-loan.engagement');
+Route::get('/apply-loan', [HomeController::class, 'loanApply'])->name('my-loan.apply');
+Route::get('/engagement-check', [HomeController::class, 'EngagementCheck'])->name('my-loan.engagement');
 
 # message pages
 Route::get('/loan-success', fn() => view('borrower.layouts.message'))->name('borrower.layouts.message');
@@ -271,3 +284,7 @@ Route::get('/admin/export-pdf', [DashboardController::class, 'exportPDF'])->name
 Route::get('/admin/export-excel', [DashboardController::class, 'exportExcel'])->name('applications.excel');
 Route::post('/payment/get-attachment', [PaymentController::class, 'getAttachment']);
 
+
+//EXECUTIVE
+Route::post('/executive/pull_data', [executiveInvestment::class, 'pull_data']);
+Route::post('/executive/add_investment', [executiveInvestment::class, 'add_investment']);

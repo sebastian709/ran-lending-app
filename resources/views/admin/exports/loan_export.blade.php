@@ -121,9 +121,9 @@
         <h3>Borrower Insight</h3>
         <ul>
             <li>Total Borrowers: {{ $borrower_insight['total_borrowers'] }}</li>
-            <li>Active Borrowers: {{ $borrower_insight['active_borrowers'] }}</li>
             <li>Good Payers: {{ $borrower_insight['good_payer'] }}</li>
-            <li>Violations: {{ $borrower_insight['violations'] }}</li>
+            <li>With Penalty: {{ $borrower_insight['with_penalty'] }}</li>
+            <li>with Violation: {{ $borrower_insight['with_violation'] }}</li>
         </ul>
     </div>
 </div>
@@ -141,7 +141,7 @@
 </tr>
 @endforeach
 </table>
-
+ 
 <!-- Recent Applications -->
 <!-- Recent Applications -->
 <h3>Recent Applications</h3>

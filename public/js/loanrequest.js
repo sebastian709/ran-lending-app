@@ -235,6 +235,10 @@ $(document).ready(function () {
                                             <p class="fs-5 mb-0">${ress.account_number}</p>
                                             <label class="form-label fw-semibold d-block text-muted">Account Number</label>
                                         </div>
+                                        <div>
+                                            <p class="fs-5 mb-0">₱ <span class="disburse_amount">${ress.loan_amount}</span></p>
+                                            <label class="form-label fw-semibold d-block text-muted">Amount</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -291,7 +295,7 @@ $(document).ready(function () {
                                 </div>
 
                                 <div class="d-flex justify-content-center mt-4">
-                                    <button type="button" class="btn btn-success px-4 transfer_money" data-loan_id="${loan_id}">Transfer Money<i class="ri-arrow-right-line ms-2"></i></button>
+                                    <button type="button" class="btn btn-success px-4 transfer_money" data-bank_amount="${ress.data.money}" data-loan_id="${loan_id}">Transfer Money<i class="ri-arrow-right-line ms-2"></i></button>
                                 </div>
                                 </form>
                             </div>
@@ -974,6 +978,19 @@ $(document).on("click", ".transfer_money", function () {
     let processedBy      = $('#processedBy').val();
     let monthlyDueDate   = $('#monthlyDueDate').val();
     let remarks          = $('#remarks').val();
+    let amount           = $('.disburse_amount').text();
+    let bank             = $(this).attr('data-bank_amount');
+
+    if (parseFloat(bank) < parseFloat(amount)) {
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Insufficient Fund !',
+            confirmButtonColor: '#3085d6'
+        });
+        return false;
+    }
 
     let formData = new FormData();
     formData.append('loan_id', loan_id);
