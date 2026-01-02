@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->float('amount');
             $table->integer('category');
-            $table->integer('category');
             $table->text('remarks');
             $table->integer('created_by');
             $table->timestamps();
