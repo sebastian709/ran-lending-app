@@ -156,7 +156,7 @@ class DashboardController extends Controller
             $interestQuery->whereYear('lp.created_at', now()->year);
             $penaltyQuery->whereYear('lp.created_at', now()->year);
         }
-        // dd(now()->year,now()->month);
+        // dd(now()->year,now()->month  );
         $totalInterest = $interestQuery->sum('lti.interest');
         $totalPenalty = $penaltyQuery->sum('ltp.penalty');
 
@@ -420,56 +420,18 @@ class DashboardController extends Controller
 
     public function QuickStats(Request $request)
     {
-        // $filter = $request->input('filter', 'month'); // default filter
 
-        // // Determine date range based on filter
-        // if ($filter === 'week') {
-        //     $startDate = now()->startOfWeek();
-        //     $endDate = now()->endOfWeek();
-        // } elseif ($filter === 'month') {
-        //     $startDate = now()->startOfMonth();
-        //     $endDate = now()->endOfMonth();
-        // } elseif ($filter === 'year') {
-        //     $startDate = now()->startOfYear();
-        //     $endDate = now()->endOfYear();
-        // }
-
-        // //PENALTY (PAID + CONFIRMED)
-        // $penaltyQuery = DB::table('loan_tenure_penalty')
-        //     ->where('payment_id', '!=', 0)
-        //     ->where('payment_status_id', 3);
-
-        // if (isset($startDate) && isset($endDate)) {
-        //     $penaltyQuery->whereBetween('updated_at', [$startDate, $endDate]);
-        // }
-
-        // $totalPenalty = $penaltyQuery->sum('penalty');
-
-        // //INTEREST (PAID + CONFIRMED)
-        // $interestQuery = DB::table('loan_tenure_interest')
-        //     ->where('payment_id', '!=', 0)
-        //     ->where('payment_status_id', 3);
-
-        // if (isset($startDate) && isset($endDate)) {
-        //     $interestQuery->whereBetween('updated_at', [$startDate, $endDate]);
-        // }
-
-        // $totalInterest = $interestQuery->sum('interest');
-
-        // //COMBINE & TIGTHES
-        // $totalAmount = $totalPenalty + $totalInterest;
-        // $percentage_amount = $totalAmount * 0.10;
 
         $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(money - sum(remaining)) remaining_money from (select 
                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
-                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
                     from loan_tenure alt 
                     inner join loan_tenure_interest alti on alti.tenure_id = alt.id
                     left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
                     where alt.loan_id = la.id 
                 ) misc,
-                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
                     from loan_tenure alt 
                     inner join loan_tenure_interest alti on alti.tenure_id = alt.id
                     left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
@@ -713,13 +675,13 @@ class DashboardController extends Controller
          $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(money - sum(remaining)) remaining_money from (select 
                                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
                                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
-                                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                                (select sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
                                     from loan_tenure alt 
                                     inner join loan_tenure_interest alti on alti.tenure_id = alt.id
                                     left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
                                     where alt.loan_id = la.id 
                                 ) misc,
-                                (select sum(if(alti.payment_id = 0,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                                (select sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
                                     from loan_tenure alt 
                                     inner join loan_tenure_interest alti on alti.tenure_id = alt.id
                                     left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
