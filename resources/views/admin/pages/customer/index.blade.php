@@ -9,14 +9,14 @@
                     <h3 class="mb-4 cp-page-title">Customer Management</h3>
 
                     <!-- Tabs -->
-                    <ul class="nav nav-tabs cp-status-tabs" id="cp-statusTab" role="tablist">
+                    <!-- <ul class="nav nav-tabs cp-status-tabs" id="cp-statusTab" role="tablist">
                         <li class="nav-item"><a class="nav-link active cp-tab-link" data-bs-toggle="tab" href="#cp-all" role="tab">All</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-active" role="tab">Active</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-scheduled" role="tab">Scheduled</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-closed" role="tab">Closed</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-rejected" role="tab">Rejected</a></li>
                         <li class="nav-item"><a class="nav-link cp-tab-link" data-bs-toggle="tab" href="#cp-cancelled" role="tab">Cancelled</a></li>
-                    </ul>
+                    </ul> -->
 
                     <!-- Tab Content -->
                     <div class="tab-content mt-4 cp-tab-content">

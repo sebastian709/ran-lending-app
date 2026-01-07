@@ -1243,23 +1243,35 @@ function renderAll() {
       let tbody = "";
       if (parseInt(res.length) > 0) {
         res.forEach(item => {
-          tbody += `
-                <tr>
-                    <td><center>${item.borrower_name}</center></td>
-                    <td><center>${item.loan_amount}</center></td>
-                    <td><center>${item.loan_tenure}</center></td>
-                    <td><center>${item.loan_type}</center></td>
-                    <td><center>${item.created_at}</center></td>
-                    <td><center>${item.referral}</center></td>
-                    <td><center>${item.interest_rate}</center></td>
-                    <td>
-                      <center><span class="badge bg-success">${item.loan_status_by_name}</span></center>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-primary cp-view-more" data-tab_type="0" data-user_id="${item.loan_applicant}">View More</button>
-                        <button class="btn btn-sm btn-danger cp-delete" data-user_id="${item.loan_applicant}">Delete</button>
-                    </td>
-                </tr>`;
+          const v = (val) => val ?? '-';
+
+        tbody += `
+              <tr>
+                  <td><center>${v(item.borrower_name)}</center></td>
+                  <td><center>${v(item.loan_amount)}</center></td>
+                  <td><center>${v(item.loan_tenure)}</center></td>
+                  <td><center>${v(item.loan_type)}</center></td>
+                  <td><center>${v(item.created_at)}</center></td>
+                  <td><center>${v(item.referral)}</center></td>
+                  <td><center>${v(item.interest_rate)}</center></td>
+                  <td>
+                      <center>
+                          <span class="badge bg-success">${v(item.loan_status_by_name)}</span>
+                      </center>
+                  </td>
+                  <td>
+                      <button class="btn btn-sm btn-primary cp-view-more"
+                          data-tab_type="0"
+                          data-user_id="${item.loan_applicant}">
+                          View More
+                      </button>
+                      <button class="btn btn-sm btn-danger cp-delete"
+                          data-user_id="${item.loan_applicant}">
+                          Delete
+                      </button>
+                  </td>
+              </tr>`;
+
         });
       } else {
         tbody += `<tr><td class="text-center" colspan="9">No Data</td></tr>`;
@@ -1267,6 +1279,35 @@ function renderAll() {
 
       $("#cp-all-table thead").html(thead);
       $("#cp-all-table tbody").html(tbody);
+
+      $('#cp-all-table').DataTable({
+        responsive: true,
+        pageLength: 10,
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Loan Report',
+                className: 'btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Loan Report',
+                pageSize: 'A4',
+                className: 'btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            }
+        ]
+    });
+    
+
+
+
     },
     error: function (xhr) {
       const response = xhr.responseJSON;

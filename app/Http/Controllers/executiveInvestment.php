@@ -45,19 +45,37 @@ class executiveInvestment extends Controller
     }
     public function pull_data(Request $request)
     {
-        $data['lending_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where category = 1'); //lending fund
-        $data['shared_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where category = 2'); //shared fund
+        $userId = auth()->id();
+        $data['lending_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where created_by = ?',[$userId]); //lending fund
+        // dd($data);
+        $data['shared_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance '); //shared fund
 
-        $data['my_investment'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where created_by = 3'); //total Investment
-        
         $data['fund_management'] = DB::select("SELECT eab.*,concat(firstname,' ',lastname) name,
                                     if(category = 1,'Lending Fund','Shared Fund') categories,
                                     DATE_FORMAT(eab.created_at, '%b %d, %Y, %h:%i %p') readable_date
                                     from executive_account_balance eab
                                     inner join users u on u.id = eab.created_by order by eab.id desc"); //Fund Management
 
+        $data['data'] = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,((IFNULL(money,0) - IFNULL(SUM(remaining),0)) + IFNULL(SUM(misc),0)) remaining_money from (select 
+            (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
+            (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
+            (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                where alt.loan_id = la.id 
+            ) misc,
+            (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                where alt.loan_id = la.id 
+            ) * 0.10 tithes,
+            (select sum(amount) from executive_account_balance where category = 1) money,
+            la.* 
+            from loan_application la ) a");
 
-        // dd($data);
+        // dd($data['data']);
         return response()->json([
             'data' => $data
         ]);

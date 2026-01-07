@@ -130,42 +130,112 @@ class DashboardController extends Controller
         return response()->json($recentPayments);
     }
 
+    // public function financialOverview(Request $request)
+    // {   
+    //     // dd( now()->year);
+    //     $filter = $request->input('filter', 'month'); 
+
+    //     $interestQuery = DB::table('loan_tenure_interest as lti')
+    //         ->join('loan_payments as lp', 'lp.id', '=', 'lti.payment_id')
+    //         ->where(function ($query) {
+    //             $query->where('lti.payment_id', '>',0);
+    //                 ->orWhere('lti.payment_status_id', 4);
+    //         });
+
+
+    //     $penaltyQuery = DB::table('loan_tenure_penalty as ltp')
+    //         ->join('loan_payments as lp', 'lp.id', '=', 'ltp.payment_id')
+    //         ->where('ltp.payment_id','>', 0);
+
+    //     // Apply filter
+    //     if ($filter === 'week') {
+    //         $interestQuery->whereBetween('lp.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+    //         $penaltyQuery->whereBetween('lp.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+    //     } elseif ($filter === 'month') {
+    //         $interestQuery->whereMonth('lp.created_at', now()->month)
+    //                     ->whereYear('lp.created_at', now()->year);
+    //         $penaltyQuery->whereMonth('lp.created_at', now()->month)
+    //                     ->whereYear('lp.created_at', now()->year);
+    //     } elseif ($filter === 'year') {
+    //         $interestQuery->whereYear('lp.created_at', now()->year);
+    //         $penaltyQuery->whereYear('lp.created_at', now()->year);
+    //     }
+    //     // dd(now()->year,now()->month  );
+    //     $totalInterest = $interestQuery->sum('lti.interest');
+    //     $totalPenalty = $penaltyQuery->sum('ltp.penalty');
+
+    //     return response()->json([
+    //         'interest_earned' => $totalInterest,
+    //         'penalties_collected' => $totalPenalty,
+    //         'revenue' => $totalInterest + $totalPenalty,
+    //     ]);
+    // }
+
+
     public function financialOverview(Request $request)
-    {   
-        // dd( now()->year);
-        $filter = $request->input('filter', 'month'); 
+    {
+        $filter = $request->input('filter', 'month');
 
-        $interestQuery = DB::table('loan_tenure_interest as lti')
-            ->join('loan_payments as lp', 'lp.id', '=', 'lti.payment_id')
-            ->where('lti.payment_id', '>',0);
+        // Date conditions
+        $interestDateSql = '';
+        $penaltyDateSql  = '';
+        $bindings = [];
 
-        $penaltyQuery = DB::table('loan_tenure_penalty as ltp')
-            ->join('loan_payments as lp', 'lp.id', '=', 'ltp.payment_id')
-            ->where('ltp.payment_id','>', 0);
-
-        // Apply filter
         if ($filter === 'week') {
-            $interestQuery->whereBetween('lp.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-            $penaltyQuery->whereBetween('lp.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            $start = now()->startOfWeek()->format('Y-m-d H:i:s');
+            $end   = now()->endOfWeek()->format('Y-m-d H:i:s');
+
+            $interestDateSql = " AND lp.created_at BETWEEN ? AND ? ";
+            $penaltyDateSql  = " AND lp.created_at BETWEEN ? AND ? ";
+
+            $bindings = [$start, $end];
+
         } elseif ($filter === 'month') {
-            $interestQuery->whereMonth('lp.created_at', now()->month)
-                        ->whereYear('lp.created_at', now()->year);
-            $penaltyQuery->whereMonth('lp.created_at', now()->month)
-                        ->whereYear('lp.created_at', now()->year);
+            $interestDateSql = " AND MONTH(lp.created_at) = ? AND YEAR(lp.created_at) = ? ";
+            $penaltyDateSql  = " AND MONTH(lp.created_at) = ? AND YEAR(lp.created_at) = ? ";
+
+            $bindings = [now()->month, now()->year];
+
         } elseif ($filter === 'year') {
-            $interestQuery->whereYear('lp.created_at', now()->year);
-            $penaltyQuery->whereYear('lp.created_at', now()->year);
+            $interestDateSql = " AND YEAR(lp.created_at) = ? ";
+            $penaltyDateSql  = " AND YEAR(lp.created_at) = ? ";
+
+            $bindings = [now()->year];
         }
-        // dd(now()->year,now()->month  );
-        $totalInterest = $interestQuery->sum('lti.interest');
-        $totalPenalty = $penaltyQuery->sum('ltp.penalty');
+
+        /* ==========================
+        TOTAL INTEREST
+        ========================== */
+        $interestSql = "
+            SELECT SUM(lti.interest) AS total_interest
+            FROM loan_tenure_interest AS lti
+            JOIN loan_payments AS lp ON lp.id = lti.payment_id
+            WHERE (lti.payment_id > 0 and lti.payment_status_id != 4)
+            $interestDateSql
+        ";
+
+        $totalInterest = DB::select($interestSql, $bindings)[0]->total_interest ?? 0;
+
+        /* ==========================
+        TOTAL PENALTY
+        ========================== */
+        $penaltySql = "
+            SELECT SUM(ltp.penalty) AS total_penalty
+            FROM loan_tenure_penalty AS ltp
+            JOIN loan_payments AS lp ON lp.id = ltp.payment_id
+            WHERE ltp.payment_id > 0
+            $penaltyDateSql
+        ";
+
+        $totalPenalty = DB::select($penaltySql, $bindings)[0]->total_penalty ?? 0;
 
         return response()->json([
-            'interest_earned' => $totalInterest,
-            'penalties_collected' => $totalPenalty,
-            'revenue' => $totalInterest + $totalPenalty,
+            'interest_earned'      => (float) $totalInterest,
+            'penalties_collected'  => (float) $totalPenalty,
+            'revenue'              => (float) ($totalInterest + $totalPenalty),
         ]);
     }
+
 
     public function topBorrowers(Request $request)
     {
@@ -422,7 +492,7 @@ class DashboardController extends Controller
     {
 
 
-        $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(IFNULL(money,0) - IFNULL(SUM(remaining),0)) remaining_money from (select 
+        $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,((IFNULL(money,0) - IFNULL(SUM(remaining),0)) + IFNULL(SUM(misc),0)) remaining_money from (select 
                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
                 (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
@@ -672,7 +742,7 @@ class DashboardController extends Controller
         // $totalAmount = $totalPenalty + $totalInterest;
         // $percentageAmount = $totalAmount * 0.10;
 
-         $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,(money - sum(remaining)) remaining_money from (select 
+         $data = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,((IFNULL(money,0) - IFNULL(SUM(remaining),0)) + IFNULL(SUM(misc),0)) remaining_money from (select 
                                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
                                 (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
                                 (select sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)

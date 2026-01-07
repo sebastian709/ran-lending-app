@@ -68,29 +68,29 @@ class CustomerController extends Controller
 
 
 
-    public function getCpActive(Request $request)
-    {
+    // public function getCpActive(Request $request)
+    // {
 
-        $loan_application = DB::table('loan_application')
-            ->select(
-                DB::raw("(SELECT CONCAT(users.firstname, ' ', users.lastname) FROM users WHERE users.id = loan_application.loan_applicant) as borrower_name"),
-                DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
-                DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
-                "loan_application.loan_type",
-                DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
-                DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
-                DB::raw("CONCAT(FORMAT(loan_application.interest_rate, 2) * 100, '%') as interest_rate"),
-                "loan_application.loan_status",
-                DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
-                "loan_application.loan_applicant"
-            )
-            ->where('status', 1)
-            ->where('loan_type', 'Express')
-            ->where('loan_application.loan_status', 5)
-            ->get();
+    //     $loan_application = DB::table('loan_application')
+    //         ->select(
+    //             DB::raw("(SELECT CONCAT(users.firstname, ' ', users.lastname) FROM users WHERE users.id = loan_application.loan_applicant) as borrower_name"),
+    //             DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
+    //             DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
+    //             "loan_application.loan_type",
+    //             DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
+    //             DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
+    //             DB::raw("CONCAT(FORMAT(loan_application.interest_rate, 2) * 100, '%') as interest_rate"),
+    //             "loan_application.loan_status",
+    //             DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
+    //             "loan_application.loan_applicant"
+    //         )
+    //         ->where('status', 1)
+    //         ->where('loan_type', 'Express')
+    //         ->where('loan_application.loan_status', 5)
+    //         ->get();
 
-        return response()->json($loan_application);
-    }
+    //     return response()->json($loan_application);
+    // }
 
     public function cpDelete(Request $request)
     {   
@@ -98,29 +98,29 @@ class CustomerController extends Controller
         return response()->json($request->id);
     }
 
-    public function getCpScheduled(Request $request)
-    {
+    // public function getCpScheduled(Request $request)
+    // {
 
-        $loan_application = DB::table('loan_application')
-            ->select(
-                DB::raw("(SELECT CONCAT(users.firstname, ' ', users.lastname) FROM users WHERE users.id = loan_application.loan_applicant) as borrower_name"),
-                DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
-                DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
-                "loan_application.loan_type",
-                DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
-                DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
-                DB::raw("CONCAT(FORMAT(loan_application.interest_rate, 2) * 100, '%') as interest_rate"),
-                "loan_application.loan_status",
-                DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
-                "loan_application.loan_applicant"
-            )
-            ->where('status', 1)
-            ->where('loan_type', 'Scheduled')
-            ->where('loan_application.loan_status', 4)
-            ->get();
+    //     $loan_application = DB::table('loan_application')
+    //         ->select(
+    //             DB::raw("(SELECT CONCAT(users.firstname, ' ', users.lastname) FROM users WHERE users.id = loan_application.loan_applicant) as borrower_name"),
+    //             DB::raw("FORMAT(loan_application.loan_amount, 2) as loan_amount"),
+    //             DB::raw("CONCAT(loan_application.loan_tenure, ' months') as loan_tenure"),
+    //             "loan_application.loan_type",
+    //             DB::raw("DATE_FORMAT(loan_application.created_at, '%b %d, %Y') as created_at"),
+    //             DB::raw("CONCAT(UCASE(LEFT(loan_application.referral, 1)), LCASE(SUBSTRING(loan_application.referral, 2))) as referral"),
+    //             DB::raw("CONCAT(FORMAT(loan_application.interest_rate, 2) * 100, '%') as interest_rate"),
+    //             "loan_application.loan_status",
+    //             DB::raw("(SELECT loan_status FROM loan_status WHERE loan_status.id = loan_application.loan_status LIMIT 1) as loan_status_by_name"),
+    //             "loan_application.loan_applicant"
+    //         )
+    //         ->where('status', 1)
+    //         ->where('loan_type', 'Scheduled')
+    //         ->where('loan_application.loan_status', 4)
+    //         ->get();
 
-        return response()->json($loan_application);
-    }
+    //     return response()->json($loan_application);
+    // }
 
     public function cpasViewMoreInfo(Request $request)
     {

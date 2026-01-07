@@ -749,6 +749,7 @@ class PaymentPageController extends Controller
                 
                 where lp.id = ? limit 1",[$request->pay_id]);
 
+        
         $data['payment'] = DB::select("SELECT 
                     DATE_FORMAT(date(lt.date), '%M %Y') tenure_date,
                     date(lt.updated_at) lt_paid_date,
@@ -780,11 +781,12 @@ class PaymentPageController extends Controller
         $data['total_interest']  = array_sum(array_column($data['payment'], 'paid_interest'));
         $data['total_penalty']  = array_sum(array_column($data['payment'], 'paid_penalty'));
 
+        $data['totalpaid'] = $data['total_principal'] + $data['total_interest'] + $data['total_penalty'];
+
         $data['total_principal'] = number_format($data['total_principal'], 2);
         $data['total_interest'] = number_format($data['total_interest'], 2);
         $data['total_penalty'] = number_format($data['total_penalty'], 2);
 
-        $data['totalpaid'] = $data['total_principal'] + $data['total_interest'] + $data['total_penalty'];
 
         $data['raw_principal'] = 0 ;
         $data['raw_interest'] = 0 ;
@@ -794,11 +796,11 @@ class PaymentPageController extends Controller
         $data['interest']  = array_sum(array_column($data['payment'], 'interest'));
         $data['penalty']  = array_sum(array_column($data['payment'], 'penalty'));
 
+        $data['totalrawpaid'] = $data['principal'] + $data['interest'] + $data['penalty'];
+        
         $data['raw_principal'] = number_format($data['raw_principal'], 2);
         $data['raw_interest'] = number_format($data['raw_interest'], 2);
         $data['raw_penalty'] = number_format($data['raw_penalty'], 2);
-
-        $data['totalrawpaid'] = $data['principal'] + $data['interest'] + $data['penalty'];
 
 
 
