@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Executive Investment</title>
+    <title>Executive Investment </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32-ran.png') }}">
@@ -33,7 +33,7 @@
 
     <!-- PAGE TITLE -->
     <div class="mb-4">
-        <h3 class="fw-bold">Executive Investment</h3>
+        <h3 class="fw-bold">Executive Investment <button class="btn btn-xs btn-primary money_status hidden">Hide</button></h3>
         <small class="text-muted">Admin Profile → Executive Investment</small>
     </div>
 
@@ -41,32 +41,52 @@
     <!-- 1. KEY METRICS -->
     <!-- ===================== -->
     <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-3" title="Includes Interest and Penalty">
+            <div class="card metric-card shadow-sm">
+                <div class="card-body">
+                    <h6>Total Fund</h6>
+                    <h4>₱ <span class="total_fund">0.00</span></h4>
+                    <!-- <small class="text-muted">Includes Interest and Penalty</small> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card metric-card shadow-sm">
+                <div class="card-body">
+                    <h6>Remaining Fund</h6>
+                    <h4 class="loan_fund">₱ <span class="remaining_fund">0.00</span></h4>
+                    <!-- <small class="text-muted">Money allotted for lending</small> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card metric-card shadow-sm">
+                <div class="card-body">
+                    <h6>Ongoing Loan</h6>
+                    <h4>₱ <span class="ongoing_fund">0.00</span></h4>
+                    <!-- <small class="text-muted">Outside business expenses</small> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card metric-card shadow-sm">
+                <div class="card-body">
+                    <h6>Tithes</h6>
+                    <h4>₱ <span class="tithes">0.00</span></h4>
+                    <!-- <small class="text-muted">Outside business expenses</small> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
             <div class="card metric-card shadow-sm">
                 <div class="card-body">
                     <h6>My Shared Fund</h6>
                     <h4>₱ <span class="shared_fund">0.00</span></h4>
-                    <small class="text-muted">My Investment Amount</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card metric-card shadow-sm">
-                <div class="card-body">
-                    <h6>Total Loan Fund</h6>
-                    <h4 class="loan_fund">₱ <span class="loan_fund">0.00</span></h4>
-                    <small class="text-muted">Money allotted for lending</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card metric-card shadow-sm">
-                <div class="card-body">
-                    <h6>Miscellaneous Expense</h6>
-                    <h4>₱ <span class="expenses">0.00</span></h4>
-                    <small class="text-muted">Outside business expenses</small>
+                    <!-- <small class="text-muted">My Investment Amount</small> -->
                 </div>
             </div>
         </div>
@@ -75,8 +95,8 @@
             <div class="card metric-card shadow-sm">
                 <div class="card-body">
                     <h6>My Dividend</h6>
-                    <h4 class="dividend">₱ 0.00</h4>
-                    <small class="text-muted">My Dividend</small>
+                    <h4>₱ <span class="dividend">0.00</span></h4>
+                    <!-- <small class="text-muted">Money allotted for lending</small> -->
                 </div>
             </div>
         </div>
@@ -84,9 +104,9 @@
         <div class="col-md-3">
             <div class="card metric-card shadow-sm">
                 <div class="card-body">
-                    <h6>My Shared Fund</h6>
-                    <h4>₱ <span class="shared_fund">0.00</span></h4>
-                    <small class="text-muted">My Investment Amount</small>
+                    <h6>Interest Fund</h6>
+                    <h4>₱ <span class="interest_fund">0.00</span></h4>
+                    <!-- <small class="text-muted">My Dividend</small> -->
                 </div>
             </div>
         </div>
@@ -94,29 +114,9 @@
         <div class="col-md-3">
             <div class="card metric-card shadow-sm">
                 <div class="card-body">
-                    <h6>Total Loan Fund</h6>
-                    <h4 class="loan_fund">₱ <span class="loan_fund">0.00</span></h4>
-                    <small class="text-muted">Money allotted for lending</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card metric-card shadow-sm">
-                <div class="card-body">
-                    <h6>Miscellaneous Expense</h6>
-                    <h4>₱ <span class="expenses">0.00</span></h4>
-                    <small class="text-muted">Outside business expenses</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card metric-card shadow-sm">
-                <div class="card-body">
-                    <h6>My Dividend</h6>
-                    <h4 class="dividend">₱ 0.00</h4>
-                    <small class="text-muted">My Dividend</small>
+                    <h6>Penalty Fund</h6>
+                    <h4>₱ <span class="penalty_fund">0.00</span></h4>
+                    <!-- <small class="text-muted">My Dividend</small> -->
                 </div>
             </div>
         </div>
@@ -134,7 +134,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <strong>Total Investment:</strong> ₱ <span class="total_investment_me">0.00</span>
-                </div>
+                </div>  
                 <div class="col-md-6">
                     <strong>Total Dividend:</strong> ₱ <span class="total_dividend_me">0.00</span>
                 </div>
@@ -236,8 +236,24 @@ $(function() {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 success: function (res) {
-                    $('.loan_fund').text(res.data.lending_fund.amount)
-                    $('.shared_fund').text(res.data.shared_fund.amount)
+                    if (parseInt(res.data.hide_money.hide_money) === 1) {
+                        $('.money_status').removeClass('hidden').text('Show Money')
+                        $('.dividend,.total_fund,.shared_fund,.remaining_fund,.tithes,.ongoing_fund,.interest_fund,.penalty_fund').text('***.***')
+                    }else{
+                        $('.money_status').removeClass('hidden').text('Hide Money')
+                        $('.total_fund').text(res.data.total_fund.amount + res.data.data.misc)
+                        $('.shared_fund').text(res.data.shared_fund.amount)
+                        $('.remaining_fund').text(res.data.data.remaining_money)
+                        $('.tithes').text(res.data.data.tithes)
+                        $('.ongoing_fund').text(res.data.data.remaining)
+                        $('.interest_fund').text(res.data.data.interest)
+                        $('.penalty_fund').text(res.data.data.penalty)
+                        $('.dividend').text(0)
+
+
+                    }    
+                    
+
 
                     var fund_management;
                     $.each(res.data.fund_management, function (k, v) {
@@ -560,41 +576,63 @@ $(function() {
         });
 
         $(document).on('click', '.openWithdraw', function () {
-        $.confirm({
-            title: 'Withdraw Funds',
-            type: 'red',
-            content: `
-                <input class="form-control mb-2" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}" disabled>
+            $.confirm({
+                title: 'Withdraw Funds',
+                type: 'red',
+                content: `
+                    <input class="form-control mb-2" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}" disabled>
 
-                <input type="number" class="form-control mb-2 openWithdraw_amount" placeholder="Amount">
+                    <input type="number" class="form-control mb-2 openWithdraw_amount" placeholder="Amount">
 
-                <input class="form-control mb-2 openWithdraw_remarks" placeholder="Reason">
+                    <input class="form-control mb-2 openWithdraw_remarks" placeholder="Reason">
 
-                <select class="form-select openWithdraw_category">
-                    <option value="3">Expense</option>
-                    <option value="4">Personal</option>
-                </select>
-            `,
-            buttons: {
-                submit: {
-                    text: 'Submit',
-                    btnClass: 'btn-danger openWithdraw_submit',
-                    action: function () {
-                        // Add your AJAX here if needed
-                        console.log({
-                            amount: $('.withdraw_amount').val(),
-                            reason: $('.withdraw_reason').val(),
-                            type: $('.withdraw_type').val()
-                        });
+                    <select class="form-select openWithdraw_category">
+                        <option value="3">Expense</option>
+                        <option value="4">Personal</option>
+                    </select>
+                `,
+                buttons: {
+                    submit: {
+                        text: 'Submit',
+                        btnClass: 'btn-danger openWithdraw_submit',
+                        action: function () {
+                            // Add your AJAX here if needed
+                            console.log({
+                                amount: $('.withdraw_amount').val(),
+                                reason: $('.withdraw_reason').val(),
+                                type: $('.withdraw_type').val()
+                            });
+                        }
+                    },
+                    cancel: {
+                        btnClass: 'btn-secondary'
                     }
-                },
-                cancel: {
-                    btnClass: 'btn-secondary'
                 }
-            }
+            });
         });
-    });
+        
+
+        $(document).off('click', '.money_status').on('click', '.money_status', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/executive/money_status',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                },
+                success: function (res) {
+                    
+                },
+                complete: function () {
+                    pull_data();
+                }
+            });
+        });
+
 });
+
+
+
 </script>
 
 </body>

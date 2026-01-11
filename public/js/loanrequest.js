@@ -950,6 +950,9 @@ $(document).on("change", "#loan_status_admin", function () {
                             });
                             originalStatus = newStatus; // update stored value
                             $select.prop("disabled", true); // lock again if you want
+                            setTimeout(function () {
+                                $('#loanSubNav').click();
+                            }, 2000); 
                         },
                         error: function () {
                             $.alert('Error updating loan status.');

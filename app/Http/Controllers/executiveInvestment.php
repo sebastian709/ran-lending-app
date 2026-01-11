@@ -46,9 +46,10 @@ class executiveInvestment extends Controller
     public function pull_data(Request $request)
     {
         $userId = auth()->id();
-        $data['lending_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where created_by = ?',[$userId]); //lending fund
+        $data['hide_money'] = DB::selectOne('SELECT hide_money  from users where id = ?',[$userId]); //shareds fund
+        $data['total_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance '); //total fund
+        $data['shared_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where created_by = ?',[$userId]); //shareds fund
         // dd($data);
-        $data['shared_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance '); //shared fund
 
         $data['fund_management'] = DB::select("SELECT eab.*,concat(firstname,' ',lastname) name,
                                     if(category = 1,'Lending Fund','Shared Fund') categories,
@@ -56,7 +57,7 @@ class executiveInvestment extends Controller
                                     from executive_account_balance eab
                                     inner join users u on u.id = eab.created_by order by eab.id desc"); //Fund Management
 
-        $data['data'] = DB::selectOne("SELECT  sum(remaining) remaining,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,((IFNULL(money,0) - IFNULL(SUM(remaining),0)) + IFNULL(SUM(misc),0)) remaining_money from (select 
+        $data['data'] = DB::selectOne("SELECT  sum(remaining) remaining,sum(interest) interest,sum(penalty) penalty,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,((IFNULL(money,0) - IFNULL(SUM(remaining),0)) + IFNULL(SUM(misc),0)) remaining_money from (select 
             (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
             (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
             (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
@@ -65,6 +66,17 @@ class executiveInvestment extends Controller
                 left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
                 where alt.loan_id = la.id 
             ) misc,
+            (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                where alt.loan_id = la.id 
+            ) interest,
+            (select ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                where alt.loan_id = la.id 
+            ) penalty,
             (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
                 from loan_tenure alt 
                 inner join loan_tenure_interest alti on alti.tenure_id = alt.id
@@ -80,4 +92,24 @@ class executiveInvestment extends Controller
             'data' => $data
         ]);
     }
+    public function money_status(Request $request){
+        $userId = auth()->id();
+        $hide_money = DB::selectOne('SELECT hide_money  from users where id = ?',[$userId]); 
+
+        if($hide_money->hide_money === 1){
+            $status = 0;
+        }else{
+            $status = 1;
+        }
+        user::where('id',  $userId)
+        ->update([
+            'hide_money' => $status,
+        ]);
+        
+        return response()->json([
+            'status' => $status
+        ]);
+    }
+
+
 }
