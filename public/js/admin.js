@@ -1228,6 +1228,9 @@ function renderAll() {
     processData: false,
     contentType: false,
     success: function (res) {
+      
+      $('.lrFirstReload').click();
+
       console.log(res)
       let thead = `<tr>
                       <th><center>Borrower’s Name</center></th>

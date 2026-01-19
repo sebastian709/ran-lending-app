@@ -29,9 +29,9 @@ class executiveInvestment extends Controller
     {   
         $userId = auth()->id();
 
-          DB::table('executive_account_balance')->insert([
+        DB::table('executive_account_balance')->insert([
             'amount' => $request->amount,
-            'category' => $request->category,
+            'category' => 1,
             'remarks' => $request->remarks,
             'created_by' => $userId,
             'created_at' => now(),
@@ -43,12 +43,34 @@ class executiveInvestment extends Controller
             'message' => 'Added successfully!',
         ]);
     }
+
+    public function withraw_investment(Request $request)
+    {   
+        $userId = auth()->id();
+
+          DB::table('executive_account_balance')->insert([
+            'amount' => -abs($request->amount),
+            'category' => 2,
+            'remarks' => $request->reason,
+            'created_by' => $userId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Added successfully!',
+        ]);
+    }
+
+
     public function pull_data(Request $request)
     {
         $userId = auth()->id();
-        $data['hide_money'] = DB::selectOne('SELECT hide_money  from users where id = ?',[$userId]); //shareds fund
-        $data['total_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance '); //total fund
-        $data['shared_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where created_by = ?',[$userId]); //shareds fund
+        $data['hide_money'] = DB::selectOne('SELECT hide_money from users where id = ?',[$userId]); //shareds fund
+        $data['total_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where category = 1'); //total fund
+        $data['withrawn_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where category = 2'); //total fund
+        $data['shared_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where created_by = ? and  category = 1',[$userId]); //shareds fund
         // dd($data);
 
         $data['fund_management'] = DB::select("SELECT eab.*,concat(firstname,' ',lastname) name,
@@ -87,7 +109,13 @@ class executiveInvestment extends Controller
             la.* 
             from loan_application la ) a");
 
-        // dd($data['data']);
+        //GET DIVIDEND
+
+        $data['dividendpercent'] = ($data['shared_fund']->amount / $data['total_fund']->amount) * 100;
+        
+            
+
+
         return response()->json([
             'data' => $data
         ]);

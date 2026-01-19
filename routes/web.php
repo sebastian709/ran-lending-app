@@ -288,4 +288,5 @@ Route::post('/payment/get-attachment', [PaymentController::class, 'getAttachment
 //EXECUTIVE
 Route::post('/executive/pull_data', [executiveInvestment::class, 'pull_data']);
 Route::post('/executive/add_investment', [executiveInvestment::class, 'add_investment']);
+Route::post('/executive/withraw_investment', [executiveInvestment::class, 'withraw_investment']);
 Route::post('/executive/money_status', [executiveInvestment::class, 'money_status']);
