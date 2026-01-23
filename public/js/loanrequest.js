@@ -492,7 +492,7 @@ $(document).ready(function () {
                                                             <strong>Purpose:</strong> ${loan.purpose_of_loan}<br>
                                                             <strong>Created At:</strong> ${loan.created_at}<br>
                                                             <strong>Last Updated:</strong> ${loan.updated_at}<br>
-                                                            <strong>Referral:</strong> ${loan.referral}
+                                                            <strong>Referral:</strong> ${loan.referral ?? 'N/A'}
                                                         </div>
                                                     </div>
                                                     <div class="mt-3 d-flex align-items-center" style="max-width:30%;">
@@ -612,7 +612,7 @@ $(document).ready(function () {
                                                                 <li><strong>Total Loans Taken:</strong> ${loan.loan_taken}</li>
                                                                 <li><strong>Total Loan Amount:</strong> ₱${loan.total_loan_amount}</li>
                                                                 <li><strong>Date of First Loan:</strong> ${loan.first_loan_date}</li>
-                                                                <li><strong>Referral:</strong> ${loan.referral}</li>
+                                                                <li><strong>Referral:</strong> ${loan.referral ?? 'N/A'}</li>
                                                                 <br>
                                                                 <li><strong>Violations:</strong>  ${grade.violations}
                                                                     <div class="text-muted small ms-3">→ 3 consecutive months of no payment = 1 violation</div>
@@ -1054,6 +1054,13 @@ $(document).on("click", ".transfer_money", function () {
                                     // close modal, refresh table, etc.
                                     $('#transferModal').modal('hide'); 
                                     location.reload(); 
+                                });
+                            }else{
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Failed',
+                                    text: 'Insufficient Fund !',
+                                    confirmButtonColor: '#3085d6'
                                 });
                             }
                         }

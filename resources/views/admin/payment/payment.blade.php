@@ -390,12 +390,11 @@
 
 
 <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
-
-<!-- DataTables -->
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js" defer></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js" defer></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 $(document).ready(function () {
@@ -602,38 +601,6 @@ $(document).on('click', '#payment-tab', function () {
         },
         success: function (response) {
 
-          // var principal = 0;
-          // $.each(response.data.loan_tenure , function( k , v ){
-          //     principal += v.principal;
-          // });
-
-          // var interest = 0;
-          // $.each(response.data.loan_tenure_interest , function( k , v ){
-          //     interest += v.interest;
-          // });
-
-          // let [datePart, timePart] = (response.data.created_at).split(" ");
-          // $('.pt_date').text(convertToReadableDate(datePart));
-          // $('.pt_time').text( convertTo12HourFormat( timePart ) );
-          // $('.pt_type').text(response.data.type);
-
-          // if (response.data.payment_type_id === 2) {
-          //   $('.pt_outstanding').closest('tr').removeClass('hidden')
-          // }else{
-          //   $('.pt_outstanding').closest('tr').addClass('hidden')
-          // }
-
-          // $('.pt_amount').text(formatMoney(response.data.amount_sent));
-          // $('.pt_principal').text(formatMoney(principal));
-          // $('.pt_interest').text(formatMoney(interest));
-          // $('.pt_outstanding').text(formatMoney(response.data.total_balance));
-          // $('.pt_ref').text(response.data.reference_code);
-          // $('.pt_rem').text(response.data.remarks);
-
-          
-          console.log(response.data.behavior)
-          // let [datePart, timePart] = (response.data.behavior.created_at).split(" ");
-          // $('.pt_time').text( convertTo12HourFormat( timePart ) );
 
           let phtTime = convertToPHT(response.data.behavior.created_at);
           $('.pt_time').text(phtTime);
@@ -995,66 +962,6 @@ $(document).on('click', '.view_payment_attachment', function () {
 
 });
 
-
-// $(document).on('click', '.revision_view', function () {
-
-//     var id = $(this).attr('data-id');
-//   var pay_id = $(this).attr('data-pay_id');
-
-//     $.ajax({
-//         url: '/get_rejected_page_data_view_more',
-//         method: 'POST',
-//         data: {
-//             id : id,
-//             pay_id : pay_id,
-//         },
-//         headers: {
-//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//         },
-//         success: function (response) {
-            
-//               $.confirm({
-//                   title: 'Payment Revision Confirmation',
-//                   columnClass: 'col-md-6 col-md-offset-3',
-//                   theme: 'modern',
-//                   type: 'orange',
-//                   icon: 'fa fa-pen-to-square',
-//                   content: `
-//                       <div style="text-align:left;">
-//                           <p><strong>Payment Type:</strong> <span id="payment_type">${response.data.behavior[0].payment_type}</span></p>
-//                           <p><strong>Month Coverage:</strong> <span id="month_coverage">${response.data.from} - ${response.data.to}</span></p>
-//                           <p><strong>Amount Submitted vs Actual Amount:</strong><br>
-//                             <span id="amounts">₱${(parseFloat(response.data.totalpaid)).toFixed(2)} submitted / ₱${(parseFloat(response.data.behavior[0].actual_amount)).toFixed(2)} actual</span>
-//                           </p>
-//                           <p><strong>Revision Reason:</strong><br>
-//                                 <span id="rejection_reason">${response.data.behavior[0].reason}</span>
-//                           </p>
-//                           <p><strong>Additional Remarks:</strong><br>
-//                                 <span id="remarks">${response.data.behavior[0].remarks}</span>
-//                           </p>
-//                       </div>
-//                   `,
-//                   buttons: {
-//                       cancel: {
-//                           text: 'Cancel',
-//                           btnClass: 'btn-secondary'
-//                       },
-//                       confirm: {
-//                           text: 'Confirm',
-//                           btnClass: 'btn-warning',
-//                           action: function () {
-//                               // your confirm logic here
-//                               console.log('Revision confirmed');
-//                           }
-//                       }
-//                   }
-//               });
-
-            
-//           },
-//       });
-
-// });
 
   </script>
 

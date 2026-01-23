@@ -38,7 +38,7 @@
             <div class="col-md-6 col-lg-3">
                 <div class="stat-card">
                     <div class="stat-icon" style="color: var(--success);">✓</div>
-                    <div class="stat-label">Balance</div>
+                    <div class="stat-label">Ongoing Loan</div>
                     <div class="stat-value quick_balance"></div>
                 </div>
             </div>

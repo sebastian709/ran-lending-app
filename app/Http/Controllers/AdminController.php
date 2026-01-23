@@ -523,14 +523,45 @@ class AdminController extends Controller
     public function transferMoeny(Request $request)
     {
 
-        // $hasmoney = DB::selectOne("SELECT sum(amount) from ");
-
+        $data['loan_amount'] = DB::selectOne('SELECT loan_amount  from loan_application where id = ?',[$request->loan_id]); //total fund
+        $data['total_fund'] = DB::selectOne('SELECT sum(amount) amount from executive_account_balance where category = 1'); //total fund
+        $data['data'] = DB::selectOne("SELECT  sum(remaining) remaining,sum(interest) interest,sum(penalty) penalty,sum(paid) paid,sum(misc) misc,sum(tithes) tithes,money,((IFNULL(money,0) - IFNULL(SUM(remaining),0)) + IFNULL(SUM(misc),0)) remaining_money from (select 
+            (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id = 0) remaining ,
+            (select ifnull(sum(principal),0) from loan_tenure where loan_id = la.id and payment_id != 0) paid ,
+            (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                where alt.loan_id = la.id 
+            ) misc,
+            (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                where alt.loan_id = la.id 
+            ) interest,
+            (select ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                where alt.loan_id = la.id 
+            ) penalty,
+            (select ifnull(sum(if(alti.payment_id = 0 or alti.payment_status_id = 4,0,interest)),0) + ifnull(sum(if(altp.penalty = 0,0,penalty)),0)
+                from loan_tenure alt 
+                inner join loan_tenure_interest alti on alti.tenure_id = alt.id
+                left join loan_tenure_penalty altp on altp.tenure_id = alt.id 
+                where alt.loan_id = la.id 
+            ) * 0.10 tithes,
+            (select sum(amount) from executive_account_balance where category = 1) money,
+            la.* 
+            from loan_application la ) a");
         
-        // return response()->json([
-        //     'success' => false,
-        //     'message' => 'Not Enough Money!',
-        // ]);
 
+        if (((double)$data['total_fund']->amount + (double)$data['data']->misc) - (double)$data['data']->remaining < (double)$data['loan_amount']->loan_amount) {
+                 return response()->json([
+                    'success' => false,
+                    'message' => 'Not Enough Money!',
+                ]);
+            }
 
         $path = $request->file('screenshot')->store('uploads/money_transfer', 'public');
 

@@ -158,7 +158,7 @@ $(function() {
                     let gain = ((res.data.data.interest + res.data.data.penalty) + res.data.withrawn_fund.amount) - res.data.data.tithes;
 
                     $('.money_status').removeClass('hidden').text('Hide Money');
-                    $('.total_fund').text(formatMoney(res.data.total_fund.amount + res.data.data.misc));
+                    $('.total_fund').text(formatMoney(res.data.total_fund.amount + res.data.data.misc ));
                     $('.shared_fund').text(formatMoney(res.data.shared_fund.amount));
                     $('.remaining_fund').text(formatMoney(res.data.data.remaining_money));
                     $('.tithes').text(formatMoney(res.data.data.tithes));
