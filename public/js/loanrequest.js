@@ -732,6 +732,8 @@ $(document).on('click', '#approveBtn', function () {
                                                             comment: comment,
                                                         },
                                                         success: function(response) {
+                                                            $('#closePopup').click();
+                                                            $('.lrFirstReload').click();
                                                             $.alert({
                                                                 title: 'Success',
                                                                 content: 'The loan request has been rejected successfully.',
@@ -789,6 +791,8 @@ $(document).on('click', '#approveBtn', function () {
                                         },
                                         success: function (response) {
                                             console.log('Updated approved_by_admins:', response.approved_by_admins);
+                                            $('#closePopup').click();
+                                            $('.lrFirstReload').click();
                                             $.alert({
                                                 title: 'Success',
                                                 content: 'Loan approved successfully.',
@@ -948,6 +952,8 @@ $(document).on("change", "#loan_status_admin", function () {
                                 text: 'Loan status updated successfully!',
                                 confirmButtonColor: '#3085d6'
                             });
+                            $('#closePopup').click();
+                            $('.lrFirstReload').click();
                             originalStatus = newStatus; // update stored value
                             $select.prop("disabled", true); // lock again if you want
                             setTimeout(function () {
