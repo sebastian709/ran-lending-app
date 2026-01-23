@@ -1207,3 +1207,8 @@ img.user-avatar {
     border-bottom: none !important;
 }
 
+
+#payment{
+    max-height: 50vh;
+    overflow-x: auto;
+}

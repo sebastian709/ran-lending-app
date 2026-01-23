@@ -16,7 +16,7 @@ return new class extends Migration
             $table->float('amount');
             $table->integer('category');
             $table->text('remarks')->nullable();
-            $table->integer('created_by');
+            $table->integer('created_by')->index();
             $table->timestamps();
         });
     }

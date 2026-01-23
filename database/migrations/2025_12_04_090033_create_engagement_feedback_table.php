@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('engagement_feedback', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->unsignedBigInteger('loan_id'); // Assuming it links to loans table
+            $table->unsignedBigInteger('loan_id')->index(); // Assuming it links to loans table
             $table->string('referral')->nullable();
             $table->string('social_media')->nullable();
             $table->timestamp('created_at')->useCurrent(); 

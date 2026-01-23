@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id(); 
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('loan_id')->nullable();
+            $table->unsignedBigInteger('loan_id')->nullable()->index();
             $table->string('action'); 
             $table->text('description')->nullable(); 
             $table->string('ip_address')->nullable(); 

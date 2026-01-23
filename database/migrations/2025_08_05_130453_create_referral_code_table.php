@@ -12,10 +12,10 @@ return new class extends Migration {
             $table->string('referral_code', 255);
             $table->text('description')->nullable();
             $table->timestamp('availability')->nullable();
-            $table->integer('created_by')->nullable();
+            $table->integer('created_by')->nullable()->index();
             $table->unsignedBigInteger('loan_id_claimant')->nullable(); // loan_id foreign key
-            $table->tinyInteger('is_active')->default(1);
-            $table->tinyInteger('status')->default(1);
+            $table->tinyInteger('is_active')->default(1)->index();
+            $table->tinyInteger('status')->default(1)->index();
             $table->timestamps();
         });
     }

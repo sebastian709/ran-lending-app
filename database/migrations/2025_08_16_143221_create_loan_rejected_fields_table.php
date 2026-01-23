@@ -13,7 +13,7 @@ return new class extends Migration
     {
          Schema::create('loan_rejected_fields', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('loan_id'); // link to loans table
+            $table->unsignedBigInteger('loan_id')->index(); // link to loans table
 
             // Rejected fields
             $table->decimal('amount_amount', 15, 2)->nullable();

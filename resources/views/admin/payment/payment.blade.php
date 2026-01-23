@@ -154,7 +154,7 @@
 <!-- Modal -->
 <div class="modal fade" id="loanModal" tabindex="-1" aria-labelledby="loanModalLabel" aria-hidden="true" data-bs-backdrop="false">
   <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
+    <div class="payment_modal modal-content shadow-lg border-0 rounded-4 overflow-hidden">
 
       <!-- Header -->
       <div class="modal-header bg-primary text-white py-3">

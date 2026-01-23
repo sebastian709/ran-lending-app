@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('admin_money_transfer', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('loan_id');            // related loan
-            $table->unsignedBigInteger('processed_by');           // who processed (auth user)
+            $table->unsignedBigInteger('loan_id')->index();            // related loan
+            $table->unsignedBigInteger('processed_by')->index();           // who processed (auth user)
             $table->string('reference_number')->unique();     // transaction ref no.
             $table->string('proof_of_transfer')->nullable();    // uploaded screenshot path
             $table->date('transfer_date');                    // actual transfer date
