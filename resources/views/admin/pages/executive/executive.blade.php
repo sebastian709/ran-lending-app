@@ -182,7 +182,7 @@ $(function() {
                             <td>${v.name}</td>
                             <td><b>₱ ${formatMoney(v.amount)}</b></td>
                             <td>${btn}</td>
-                            <td>${v.remarks}</td>
+                            <td>${v.remarks ?? 'N/A'}</td>
                             <td>${v.readable_date}</td>
                         </tr>
                     `;

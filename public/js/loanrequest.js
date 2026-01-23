@@ -627,7 +627,7 @@ $(document).ready(function () {
                                                         </li>
                                                     </ul>
                                                     <div class="text-center mt-4">
-                                                        <a href="/admin/customer/123" class="btn btn-primary px-4">See More</a>
+                                                        <a href="/admin/customer/123" class="btn btn-primary px-4 hidden">See More</a>
                                                     </div>
                                                 </div>`;
 
