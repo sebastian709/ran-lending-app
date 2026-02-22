@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/payment.css') }}">
 @endsection
@@ -51,7 +48,7 @@
                             <span class="status-badge me-2">{{ $payment['status'] }}</span>
 
                             <div>
-                                <strong class="me-2">₱{{ number_format($payment['amount_due'], 2) }}</strong>
+                                <strong class="me-2">&#8369;{{ number_format($payment['amount_due'], 2) }}</strong>
                                 <span class="text-muted">{{ $payment['month_coverage'] }} - {{ $payment['payment_category'] }}</span>
                             </div>
                         </div>
@@ -76,13 +73,13 @@
 
                         {{-- Breakdown --}}
                         <div class="row mb-2">
-                            <div class="col-md-3"><strong>Monthly Due:</strong> ₱{{ number_format($payment['breakdown']['monthly_due'], 2) }}</div>
-                            <div class="col-md-3"><strong>Interest:</strong> ₱{{ number_format($payment['breakdown']['interest'], 2) }}</div>
-                            <div class="col-md-3"><strong>Penalty:</strong> ₱{{ number_format($payment['breakdown']['penalty'], 2) }}</div>
-                            <div class="col-md-3"><strong>Principal:</strong> ₱{{ number_format($payment['breakdown']['principal'], 2) }}</div>
+                            <div class="col-md-3"><strong>Monthly Due:</strong> &#8369;{{ number_format($payment['breakdown']['monthly_due'], 2) }}</div>
+                            <div class="col-md-3"><strong>Interest:</strong> &#8369;{{ number_format($payment['breakdown']['interest'], 2) }}</div>
+                            <div class="col-md-3"><strong>Penalty:</strong> &#8369;{{ number_format($payment['breakdown']['penalty'], 2) }}</div>
+                            <div class="col-md-3"><strong>Principal:</strong> &#8369;{{ number_format($payment['breakdown']['principal'], 2) }}</div>
                         </div>
 
-                        <div class="mb-2"><strong>Amount Paid:</strong> ₱{{ number_format($payment['amount_paid'], 2) }}</div>
+                        <div class="mb-2"><strong>Amount Paid:</strong> &#8369;{{ number_format($payment['amount_paid'], 2) }}</div>
 
                         {{-- Attachment --}}
                         <div class="mb-2">
@@ -137,7 +134,5 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/payment.js') }}"></script>
 @endsection

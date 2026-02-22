@@ -250,39 +250,6 @@
         </div>        
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ asset('js/home.js') }}"></script>
-    
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let currentFilter = 'month'; // default
-
-    // When a date button is clicked
-    document.querySelectorAll('.btn-date').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove active from all
-            document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Update current filter
-            currentFilter = this.dataset.filter;
-
-            // Update export links
-            document.querySelectorAll('.btn-export').forEach(link => {
-                let url = new URL(link.href);
-                url.searchParams.set('filter', currentFilter);
-                link.href = url.toString();
-            });
-        });
-    });
-
-    // Initialize export links with default filter
-    document.querySelectorAll('.btn-export').forEach(link => {
-        let url = new URL(link.href);
-        url.searchParams.set('filter', currentFilter);
-        link.href = url.toString();
-    });
-});
-</script>
 @endsection
+
+

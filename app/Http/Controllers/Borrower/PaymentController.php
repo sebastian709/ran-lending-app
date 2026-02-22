@@ -16,6 +16,11 @@ use App\Http\Controllers\HomeController;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function isValidAmount($value)
     {
         return is_numeric($value) && $value != 0;
@@ -30,6 +35,10 @@ class PaymentController extends Controller
             ->where('status', 1)
             ->orderBy('id', 'desc')
             ->first();
+
+        if (!$data['loan_application']) {
+            return view('borrower.layouts.payment-state', compact('loanStatus'));
+        }
 
         $payment_status = DB::selectOne("SELECT payment_status_id FROM loan_payments where loan_application_id = ? and payment_status_id != 3 and cancelled_approved_date is null", [$data['loan_application']->id]);
         // dd($payment_status);
@@ -564,10 +573,12 @@ class PaymentController extends Controller
             FROM loan_payments lp
             LEFT JOIN loan_payment_statuses lps ON lps.id = lp.payment_status_id
             LEFT JOIN loan_payment_types lpt ON lpt.id = lp.payment_type_id
+            INNER JOIN loan_application la ON la.id = lp.loan_application_id
             LEFT JOIN loan_tenure lt ON lt.loan_id = lp.loan_application_id AND lt.payment_id = lp.id 
             LEFT JOIN loan_tenure_interest lti ON lti.tenure_id = lt.id
             LEFT JOIN loan_tenure_penalty ltp ON ltp.tenure_id = lt.id
-            ORDER BY lt.id DESC");
+            WHERE la.loan_applicant = ?
+            ORDER BY lt.id DESC", [auth()->id()]);
 
         /**
          * Convert stdClass objects → array
@@ -612,8 +623,23 @@ class PaymentController extends Controller
 
     public function getPaymentComments(Request $request)
     {
+        $request->validate([
+            'payment_id' => 'required|integer',
+            'tenure_id' => 'required|integer',
+        ]);
+
         $paymentId = $request->input('payment_id');
         $tenureId = $request->input('tenure_id');
+
+        $allowed = DB::table('loan_payments as lp')
+            ->join('loan_application as la', 'la.id', '=', 'lp.loan_application_id')
+            ->where('lp.id', $paymentId)
+            ->where('la.loan_applicant', auth()->id())
+            ->exists();
+
+        if (!$allowed) {
+            return response()->json([], 403);
+        }
 
         // Kunin ang comments kasama ang fullname ng user
         $comments = DB::table('loan_payment_comments as c')
@@ -623,7 +649,8 @@ class PaymentController extends Controller
             ->orderBy('c.id', 'asc')
             ->select(
                 'c.comment',
-                DB::raw("CONCAT(u.firstname, ' ', u.lastname) as author"),
+                'u.firstname',
+                'u.lastname',
                 'c.created_at'
             )
             ->get();
@@ -631,7 +658,7 @@ class PaymentController extends Controller
         // I-format para sa frontend
         $formatted = $comments->map(function ($c) {
             return [
-                'author' => $c->author, // fullname ng user
+                'author' => trim(($c->firstname ?? '') . ' ' . ($c->lastname ?? '')),
                 'message' => $c->comment,
                 'timestamp' => \Carbon\Carbon::parse($c->created_at)->format('M d, Y H:i A'),
             ];
@@ -649,6 +676,19 @@ class PaymentController extends Controller
         ]);
 
         $userId = auth()->id(); // current logged in user
+
+        $allowed = DB::table('loan_payments as lp')
+            ->join('loan_application as la', 'la.id', '=', 'lp.loan_application_id')
+            ->where('lp.id', $request->payment_id)
+            ->where('la.loan_applicant', $userId)
+            ->exists();
+
+        if (!$allowed) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Forbidden',
+            ], 403);
+        }
 
         $comment = \DB::table('loan_payment_comments')->insert([
             'payment_id' => $request->payment_id,
@@ -669,8 +709,14 @@ class PaymentController extends Controller
 
      public function getAttachment(Request $request)
     {
-        $payment = Loan_payment::select('attachment')
-            ->where('id', $request->payment_id)
+        $request->validate([
+            'payment_id' => 'required|integer',
+        ]);
+
+        $payment = Loan_payment::select('loan_payments.attachment')
+            ->join('loan_application', 'loan_application.id', '=', 'loan_payments.loan_application_id')
+            ->where('loan_payments.id', $request->payment_id)
+            ->where('loan_application.loan_applicant', auth()->id())
             ->first();
 
         return response()->json([

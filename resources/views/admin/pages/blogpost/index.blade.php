@@ -2,6 +2,10 @@
 
 @section('content')
 
+    <div class="container-fluid p-4">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-newspaper-line me-2"></i> Blogpost
+        </div>
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -64,6 +68,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
 @endsection

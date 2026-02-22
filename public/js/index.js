@@ -46,6 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const slides = document.querySelectorAll('.carousel-slide');
 const dots = document.querySelectorAll('.carousel-dot');
+let currentSlide = 0;
+let autoplayInterval = null;
 
 function showSlide(index) {
     slides.forEach((slide, i) => {
@@ -62,15 +64,120 @@ function showSlide(index) {
         dot.classList.toggle('bg-white', i === index);
         dot.classList.toggle('bg-white/50', i !== index);
     });
+
+    currentSlide = index;
 }
 
-dots.forEach((dot) => {
-    dot.addEventListener('click', () => {
-        const index = parseInt(dot.getAttribute('data-index'));
-        showSlide(index);
+function stopAutoplay() {
+    if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        autoplayInterval = null;
+    }
+}
+
+function startAutoplay() {
+    if (!slides.length) {
+        return;
+    }
+    stopAutoplay();
+    autoplayInterval = setInterval(function () {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }, 5000);
+}
+
+if (dots.length) {
+    dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.getAttribute('data-index'), 10);
+            showSlide(index);
+            startAutoplay();
+        });
+    });
+}
+
+if (slides.length && dots.length) {
+    showSlide(0);
+    startAutoplay();
+
+    const carousel = document.querySelector('.carousel-container');
+    if (carousel) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carousel.addEventListener('touchstart', function (e) {
+            touchStartX = e.touches[0].clientX;
+            stopAutoplay();
+        }, false);
+
+        carousel.addEventListener('touchend', function (e) {
+            touchEndX = e.changedTouches[0].clientX;
+            const swipeThreshold = 50;
+            const difference = touchStartX - touchEndX;
+
+            if (Math.abs(difference) > swipeThreshold) {
+                if (difference > 0) {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                } else {
+                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                }
+                showSlide(currentSlide);
+            }
+
+            startAutoplay();
+        }, false);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const navbar = document.querySelector("nav");
+    if (navbar) {
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > 50) {
+                navbar.classList.add("shadow-lg");
+                navbar.classList.add("bg-primary");
+                navbar.classList.remove("bg-gradient-to-r");
+            } else {
+                navbar.classList.remove("shadow-lg");
+                navbar.classList.remove("bg-primary");
+                navbar.classList.add("bg-gradient-to-r");
+            }
+        });
+    }
+
+    const loanAmount = document.getElementById('loanAmount');
+    const loanTerm = document.getElementById('loanTerm');
+    const interestRate = document.getElementById('interestRate');
+    const calculateBtn = document.getElementById('calculateLoan');
+    const monthlyPaymentEl = document.getElementById('monthlyPayment');
+    const totalInterestEl = document.getElementById('totalInterest');
+    const totalPaymentEl = document.getElementById('totalPayment');
+
+    if (!loanAmount || !loanTerm || !interestRate || !calculateBtn || !monthlyPaymentEl || !totalInterestEl || !totalPaymentEl) {
+        return;
+    }
+
+    calculateBtn.addEventListener('click', function () {
+        const principal = parseFloat(loanAmount.value);
+        const term = parseFloat(loanTerm.value) * 12;
+        const rate = parseFloat(interestRate.value) / 100 / 12;
+
+        if (isNaN(principal) || isNaN(term) || isNaN(rate)) {
+            monthlyPaymentEl.textContent = '$0.00';
+            totalInterestEl.textContent = '$0.00';
+            totalPaymentEl.textContent = '$0.00';
+            return;
+        }
+
+        const monthlyPayment = (principal * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1);
+        const totalPayment = monthlyPayment * term;
+        const totalInterest = totalPayment - principal;
+
+        monthlyPaymentEl.textContent = `$${monthlyPayment.toFixed(2)}`;
+        totalInterestEl.textContent = `$${totalInterest.toFixed(2)}`;
+        totalPaymentEl.textContent = `$${totalPayment.toFixed(2)}`;
     });
 });
-showSlide(0);
 
 $(document).on('click', '.hpReadmoreBP', function (e) {
     e.preventDefault();

@@ -2,17 +2,21 @@
 
 @section('content')
 
-    <div class="container-fluid">
+    <div class="container-fluid p-4">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-key-2-line me-2"></i> Change Password
+        </div>
+
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
-                <div class="card shadow-sm rounded-3">
+                <div class="table-card rounded-3">
                     <div class="card-body">
                         <div class="position-relative mb-4">
                             <button type="button" data-url="/admin/profile"
                                 class="btn small position-absolute start-0 top-50 translate-middle-y p-0">
                                 <i class="ri-arrow-go-back-line"></i> Back
                             </button>
-                            <h4 class="text-center text-primary m-0">Change Password</h4>
+                            <h4 class="text-center text-primary m-0 d-none">Change Password</h4>
                         </div>
                         <form id="change-password-form" data-action="{{ route('admin.pages.change-password.update') }}"
                             data-logout="{{ route('logout') }}">

@@ -13,7 +13,6 @@ function updateTotal() {
         total_principal += parseFloat($(this).attr('data-principal')) || 0;
         total_penalty += parseFloat($(this).attr('data-penalty')) || 0;
     });
-    console.log(1, total, total_interest, total_interest, total_penalty, total_principal)
 
     if ($('.payment-option-advance input[type="checkbox"]:checked').length > 0) {
         $('.payment-option input[type="checkbox"]:checked').each(function () {
@@ -30,12 +29,10 @@ function updateTotal() {
         });
         $('.payment-total').attr('data-partial', 0);
     }
-    console.log(3, total, total_interest, total_interest, total_penalty, total_principal)
 
     // Collect checked partial payments
     if ($('.partially-pay[type="checkbox"]:checked').length > 0) {
         $('.payment-total').attr('data-partial', 1);
-        console.log('partially-pay')
         $('.payment-option-advance input[type="checkbox"]:checked').prop('checked', false);
         resetTotal()
 
@@ -45,10 +42,8 @@ function updateTotal() {
             total_principal += parseFloat(dis.find('.partial-principal[type="checkbox"]:checked').attr('data-amount')) || 0;
             total_penalty += parseFloat(dis.find('.partial-penalty[type="checkbox"]:checked').attr('data-amount')) || 0;
             total = total_interest + total_principal + total_penalty;
-            console.log(4, total_interest, total_interest, total_penalty, total_principal)
         });
 
-        console.log(5, total, total_interest, total_interest, total_penalty, total_principal)
     }
 
 
@@ -89,7 +84,6 @@ $(document).on('change', '.partially-pay', function () {
     const $changedPartial = $(this);
     $('#payAllCheck').prop('checked', false);
     const tenure = $(this).closest('.next_par').find('.due_payment').attr('data-tenure_id');
-    // console.log(tenure)
     // Find the index of the .partial-months container this checkbox belongs to
     const $partialMonths = $('.partial-months');
     let currentMonthIndex = -1;
@@ -111,7 +105,6 @@ $(document).on('change', '.partially-pay', function () {
     if (monthsWithCheckedPartialPay.length > 0) {
 
         const maxCheckedMonth = Math.max(...monthsWithCheckedPartialPay);
-        console.log('test')
         $('.due_payment').each(function (index) {
             if (index < maxCheckedMonth) {
                 $(this).prop('checked', true);
@@ -348,7 +341,6 @@ function removeImage() {
 }
 
 $(document).on('click', '.loan_payment_confirm', function () {
-    console.log('click');
 
 
     if ($('.payment-total').attr('data-amount') == 0) {
@@ -376,7 +368,6 @@ $(document).on('click', '.loan_payment_confirm', function () {
     const advanceChecked = $advanceChecks.filter(':checked').length;
     const allAdvanceChecked = advanceChecked === $advanceChecks.length;
 
-    console.log(isPartial + 'tetest')
     let categoryText = 'Normal Payment';
     let categoryType = 4;
 
@@ -462,7 +453,6 @@ $(document).on('click', '#submit_payment', function () {
             paymentPar.push(data);
         }
     });
-    console.log(paymentPar);
 
     $($('.payment-option-advance input[type="checkbox"]:checked')).each(function () {
         var id = $(this).attr('data-tenure_id');
@@ -543,7 +533,6 @@ $(document).on('change', '.partial-months .partially-pay', function () {
     if (total === checked) {
         $(this).closest('.next_par').find('.due_payment').prop('checked', true);
         $(this).closest('.next_par').find('.partially-pay').prop('checked', false);
-        console.log('All checkboxes in this .partial-months are checked!');
         $('.payment-total').attr('data-partial', 0);
 
     }

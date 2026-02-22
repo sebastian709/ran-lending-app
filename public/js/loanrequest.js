@@ -3,6 +3,7 @@ $(document).ready(function () {
     const itemsPerPage = 10;
     let currentPage = 1;
     let filteredData = [];
+    const loanRequestBasePath = '/admin/loan-request';
 
     function renderStatusBadge(status, status_name) {
         const classMap = {
@@ -72,7 +73,15 @@ $(document).ready(function () {
     function renderPagination() {
         const totalPages = Math.ceil(filteredData.length / itemsPerPage);
         const $pagination = $('#pagination');
+        const $paginationNav = $pagination.closest('nav');
         $pagination.empty();
+
+        if (totalPages <= 1) {
+            $paginationNav.hide();
+            return;
+        }
+
+        $paginationNav.show();
 
         for (let i = 1; i <= totalPages; i++) {
             const pageItem = `
@@ -84,31 +93,7 @@ $(document).ready(function () {
         }
     }
 
-    $(document).on('click', '.page-btn', function () {
-        currentPage = parseInt($(this).data('page'));
-        window.renderTable();
-    });
-
-    // ✅ Fixed search (matches your actual DB fields)
-    $('#search').on('input', function () {
-        const query = $(this).val().toLowerCase();
-        filteredData = loanData.filter(item =>
-            ('LN-' + String(item.id).padStart(5, '0')).toLowerCase().includes(query) ||
-            item.loan_applicant.toLowerCase().includes(query) ||
-            (item.referral || '').toLowerCase().includes(query)
-        );
-        currentPage = 1;
-        window.renderTable();
-    });
-
-    // ====== Load data with filter when nav clicked ======
-    $(document).off('click', '#loanSubNav a').on('click', '#loanSubNav a', function (e) {
-        e.preventDefault();
-        $('#loanSubNav a').removeClass('active');
-        $(this).addClass('active');
-
-        let loan_status = $(this).data('loan_status') || '';
-
+    function fetchLoanRequestData(loan_status = '') {
         $.ajax({
             url: '/admin/loan-request/data',
             method: 'GET',
@@ -125,23 +110,65 @@ $(document).ready(function () {
                 $('#emptyState').show();
             }
         });
+    }
+
+    function initLoanRequestList() {
+        if (!$('#loanBody').length) {
+            return;
+        }
+
+        const $links = $('#loanSubNav a').filter(function () {
+            return !$(this).is('[hidden]');
+        });
+
+        let $activeLink = $links.filter('.active').first();
+        if (!$activeLink.length) {
+            $activeLink = $links.first();
+        }
+
+        if (!$activeLink.length) {
+            fetchLoanRequestData('');
+            return;
+        }
+
+        $('#loanSubNav a').removeClass('active');
+        $activeLink.addClass('active');
+        fetchLoanRequestData($activeLink.data('loan_status') || '');
+    }
+
+    window.initLoanRequestList = initLoanRequestList;
+
+    $(document).on('click', '.page-btn', function () {
+        currentPage = parseInt($(this).data('page'));
+        window.renderTable();
     });
 
-    // // ✅ Initial load (all loans)
-    // $.ajax({
-    //     url: '/admin/loan-request/data',
-    //     method: 'GET',
-    //     dataType: 'json',
-    //     success: function (data) {
-    //         loanData = data;
-    //         filteredData = [...loanData];
-    //         window.renderTable();
-    //     },
-    //     error: function (xhr, status, error) {
-    //         console.error('Error fetching data:', error);
-    //         $('#emptyState').show();
-    //     }
-    // });
+    $(document).off('input', '#search').on('input', '#search', function () {
+        const query = $(this).val().toLowerCase();
+        filteredData = loanData.filter(item =>
+            ('LN-' + String(item.id).padStart(5, '0')).toLowerCase().includes(query) ||
+            item.loan_applicant.toLowerCase().includes(query) ||
+            (item.referral || '').toLowerCase().includes(query)
+        );
+        currentPage = 1;
+        window.renderTable();
+    });
+
+    $(document).off('click', '#loanSubNav a').on('click', '#loanSubNav a', function (e) {
+        e.preventDefault();
+        $('#loanSubNav a').removeClass('active');
+        $(this).addClass('active');
+        fetchLoanRequestData($(this).data('loan_status') || '');
+    });
+
+    initLoanRequestList();
+
+    $(document).on('admin:content-loaded', function (event, url) {
+        if (typeof url === 'string' && !url.startsWith(loanRequestBasePath)) {
+            return;
+        }
+        initLoanRequestList();
+    });
 });
 
 $(document).ready(function () {
@@ -151,7 +178,6 @@ $(document).ready(function () {
 
         let loan_status = $(this).attr('data-loan-status');
 
-        console.log('loan_status: ',loan_status)
         $('.navbar-custom').css('z-index', 0);
         let loan_id = $(this).attr('data-loan_id');
         let complete_loan_id = 'LN-'+String(loan_id).padStart(5, '0');
@@ -190,7 +216,6 @@ $(document).ready(function () {
                 },
                 dataType: 'json',
                 success: function (ress) {
-                    console.log(ress);
 
                     let rqrCode = ress.upload_qr_code_img;
 
@@ -389,11 +414,6 @@ $(document).ready(function () {
             $('#customLoanPopup').attr('data-loan_id', loan_id);
             $('.alr_loan_id').text(complete_loan_id);
 
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
             $.ajax({
                 url: '/admin/loan-request/get-loan-data',
                 method: 'POST',
@@ -413,7 +433,6 @@ $(document).ready(function () {
                     let disapprovedAdmins = r.disapproved_by; 
                     let grade = r.grade; 
 
-                    // console.log('test', loan_status)
                     if (parseInt(loan.loan_status) > 1) {
                         $('#approveBtn').attr('hidden', true);
                     } else {
@@ -446,31 +465,24 @@ $(document).ready(function () {
                         if (status.id == 1) {
                             ls_hidden = loan_stat_access.pending == 1 ? '' : 'hidden';
 
-                            console.log(loan_stat_access.pending)
                         } else if (status.id == 2) {
                             ls_hidden = loan_stat_access.for_interview == 1 ? '' : 'hidden';
 
-                            console.log(loan_stat_access.for_interview)
                         } else if (status.id == 3) {
                             ls_hidden = loan_stat_access.for_revision == 1 ? '' : 'hidden';
                             ls_is_disabled = "disabled";
-                            console.log(loan_stat_access.for_revision)
                         } else if (status.id == 4) {
                             ls_hidden = loan_stat_access.waiting == 1 ? '' : 'hidden';
 
-                            console.log(loan_stat_access.waiting)
                         } else if (status.id == 5) {
                             ls_hidden = loan_stat_access.transferred_and_processed == 1 ? '' : 'hidden';
 
-                            console.log(loan_stat_access.transferred_and_processed)
                         } else if (status.id == 6) {
                             ls_hidden = loan_stat_access.rejected == 1 ? '' : 'hidden';
 
-                            console.log(loan_stat_access.rejected)
                         } else if (status.id == 7) {
                             ls_hidden = loan_stat_access.closed == 1 ? '' : 'hidden';
 
-                            console.log(loan_stat_access.closed)
                         }
                         if (status.id == 5) {
                             var is_hidden_opt = 'hidden';
@@ -739,7 +751,6 @@ $(document).on('click', '#approveBtn', function () {
                                                                 content: 'The loan request has been rejected successfully.',
                                                                 type: 'green'
                                                             });
-                                                            console.log('Updated disapproved_by_admins:', response.disapproved_by_admins);
                                                         }
                                                     });
                                                     
@@ -790,7 +801,6 @@ $(document).on('click', '#approveBtn', function () {
                                             admin_id: admin_id,
                                         },
                                         success: function (response) {
-                                            console.log('Updated approved_by_admins:', response.approved_by_admins);
                                             $('#closePopup').click();
                                             $('.lrFirstReload').click();
                                             $.alert({

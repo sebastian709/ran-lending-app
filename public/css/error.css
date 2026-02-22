@@ -1,26 +1,100 @@
- body {
-    background-color: #f8f9fa;
-    height: 100vh;
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --surface: #ffffff;
+    --bg-a: #eef4ff;
+    --bg-b: #f8fbff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Inter", Arial, sans-serif;
+    background: linear-gradient(155deg, var(--bg-a), var(--bg-b));
+    color: var(--text-main);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
 }
-.error-container {
+
+.error-page {
+    width: min(920px, 100% - 2rem);
+    margin: auto;
     text-align: center;
-    max-width: 500px;
-    padding: 30px;
 }
-.error-container img {
-    width: 150px;
-    margin-bottom: 20px;
+
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
-.error-title {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #dc3545;
+
+.brand-logo img {
+    width: 34px;
+    height: 34px;
 }
-.error-message {
-    font-size: 1.25rem;
-    margin-bottom: 20px;
-    color: #6c757d;
+
+.brand-logo span {
+    font-family: "Pacifico", cursive;
+    font-size: 1.65rem;
+    color: var(--primary-dark);
+}
+
+.error-card {
+    margin: 0 auto;
+    max-width: 520px;
+    background: var(--surface);
+    border: 1px solid #dde7ff;
+    border-radius: 18px;
+    padding: 2.25rem 1.5rem;
+}
+
+.error-card h1 {
+    margin: 0;
+    font-size: clamp(3rem, 7vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--primary);
+}
+
+.error-card h2 {
+    margin: 0.75rem 0 0.5rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.error-card p {
+    margin: 0 0 1.5rem;
+    color: var(--text-muted);
+}
+
+.btn-primary-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.68rem 1.05rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-primary-custom:hover {
+    background: var(--primary-dark);
+    color: #fff;
+}
+
+.error-footer {
+    text-align: center;
+    padding: 1rem 0 1.25rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }

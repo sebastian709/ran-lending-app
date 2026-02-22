@@ -23,6 +23,7 @@
     <title>RAN</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32-ran.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16-ran.png') }}">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
@@ -280,8 +281,16 @@
 
 
         <!-- Dynamic Content -->
-        <div id="content" class="" style="padding-top: 30px;">
-            @yield('content')
+        <div id="contentArea" class="content-area">
+            <div id="contentLoader" class="content-loader d-none" aria-live="polite" aria-busy="true">
+                <div class="content-loader-inner">
+                    <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                    <span>Loading content...</span>
+                </div>
+            </div>
+            <div id="content" class="" style="padding-top: 30px;">
+                @yield('content')
+            </div>
         </div>
 
 
@@ -290,7 +299,6 @@
 
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
     <!-- Bootstrap JS (Dropdowns need this) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -327,69 +335,21 @@
 
 
 
+    <script src="{{ asset('js/common/ajax-setup.js') }}"></script>
+
     <script src="{{ asset('js/components/global-notification.js') }}"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="{{ asset('js/blogpost.js') }}"></script>
     <script src="{{ asset('js/loanrequest.js') }}"></script>
     <script src="{{ asset('js/customer.js') }}"></script>
+    <script src="{{ asset('js/admin/appeal-list.js') }}"></script>
+    <script src="{{ asset('js/admin/executive-page.js') }}"></script>
+    <script src="{{ asset('js/admin/payment-page.js') }}"></script>
+    <script src="{{ asset('js/admin/dashboard-export-filter.js') }}"></script>
     @stack('sb-scripts')
 
-    <script type="module">
-        // Import Firebase SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getDatabase, ref, query, orderByChild, startAt, onChildAdded }
-            from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-
-        // Your Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyDI5V6np4Xstxl01DbS9j2PCV3tFmttbHw",
-            authDomain: "ran-realtime.firebaseapp.com",
-            databaseURL: "https://ran-realtime-default-rtdb.firebaseio.com",
-            projectId: "ran-realtime",
-            storageBucket: "ran-realtime.firebasestorage.app",
-            messagingSenderId: "678506273903",
-            appId: "1:678506273903:web:f7979289e002145776c19a",
-            measurementId: "G-THBZK5DGGR"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // === TIMESTAMP MARKER (oras ng pag-load ng page) ===
-        const pageLoadTimestamp = Math.floor(Date.now() / 1000);
-
-        // === LISTENER SETUP ===
-        const table_id = "notifications";
-        const notifRef = query(
-            ref(database, table_id),
-            orderByChild("timestamp"),
-            startAt(pageLoadTimestamp) // 👉 kuha lang ng >= timestamp
-        );
-
-        // Listen for new child (na >= pageLoadTimestamp)
-        onChildAdded(notifRef, (snapshot) => {
-            const AuthID = parseInt($('#getAuthID').val());
-            const notif = snapshot.val();
-
-            if (notif.user_ids.includes(AuthID)) {
-                // console.log("🔥 New notification:", notif.user_ids, "at", notif.timestamp);
-
-                let sound = document.getElementById("notifSound");
-                sound.currentTime = 0;
-                sound.play().catch(err => {
-                    console.warn("Sound play blocked by browser:", err);
-                });
-                window.general_notification_count();
-                window.general_notification_data(10, 0, false);
-            }
-        });
-
-        $(document).ready(function(){
-            window.general_notification_count();
-        });
-    </script>
+    <script type="module" src="{{ asset('js/admin/firebase-notifications.js') }}"></script>
 </body>
 
 </html>

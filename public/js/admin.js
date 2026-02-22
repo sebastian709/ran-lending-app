@@ -1,18 +1,52 @@
 let currentView = window.innerWidth <= 768 ? 'card' : 'list';
+let isAreaLoading = false;
+const LOAN_REQUEST_BASE_PATH = '/admin/loan-request';
+
+function normalizePath(path) {
+  if (!path) {
+    return '/';
+  }
+  const normalized = String(path).replace(/\/+$/, '');
+  return normalized === '' ? '/' : normalized;
+}
+
+function setAreaLoading(isLoading) {
+  const $loader = $('#contentLoader');
+  const $content = $('#content');
+
+  if (!$loader.length || !$content.length) {
+    return;
+  }
+
+  if (isLoading) {
+    isAreaLoading = true;
+    $loader.removeClass('d-none');
+    $content.addClass('is-loading');
+    return;
+  }
+
+  isAreaLoading = false;
+  $loader.addClass('d-none');
+  $content.removeClass('is-loading');
+}
 $(document).ready(function () {
   let currentPath = window.location.pathname;
 
 
+  const normalizedCurrentPath = normalizePath(currentPath);
   $('.sidebar .nav-link').each(function () {
-    const url = $(this).data('url');
+    const url = normalizePath($(this).data('url'));
 
-    // Set active if currentPath starts with data-url
-    if (currentPath.startsWith(url)) {
+    if (normalizedCurrentPath.startsWith(url)) {
       $(this).addClass('active');
     } else {
       $(this).removeClass('active');
     }
   });
+
+  if (normalizedCurrentPath.startsWith(LOAN_REQUEST_BASE_PATH)) {
+    $('#loanSubNav').addClass('show');
+  }
 
   initCKEditor();
   initBlogImageUpload();
@@ -40,24 +74,30 @@ $(document).ready(function () {
 
 $(document).on('click', '[data-url]', function (e) {
   e.preventDefault();
+
+  if (isAreaLoading) {
+    return;
+  }
+
   const url = $(this).data('url');
   const isSidebar = $(this).data('is-sidebar');
-  const path = window.location.pathname;
-  const parts = path.split('/').filter(Boolean); // ["admin", "loan-request"]
-  const lastSegment = parts[parts.length - 1];
   currentPath = window.location.pathname;
+  const normalizedUrl = normalizePath(url);
 
+  setAreaLoading(true);
 
-
-  $.get(url, function (data) {
+  $.get(url).done(function (data) {
     const content = $(data).find('#content').html(); // ito yung @yield('content')
     $('#content').html(content); // i-inject sa layout
+    $(document).trigger('admin:content-loaded', [url]);
     window.history.pushState({}, '', url);
 
     $('.sidebar .nav-link').removeClass('active');
 
     if (parseInt(isSidebar) == 1) {
-      $(`[data-url="${url}"]`).addClass('active');
+      $('.sidebar .nav-link').filter(function () {
+        return normalizePath($(this).data('url')) === normalizedUrl;
+      }).addClass('active');
     }
 
     if (url == "/home") {
@@ -82,29 +122,22 @@ $(document).on('click', '[data-url]', function (e) {
 
     } else if (url === '/admin/customer') {
       renderAll();
-    } else if (url === '/admin/loan-request/') {
-      $('.lrFirstReload').click();
+    } else if (normalizedUrl === LOAN_REQUEST_BASE_PATH) {
+      $('#loanSubNav').addClass('show');
+      if (typeof window.initLoanRequestList === 'function') {
+        window.initLoanRequestList();
+      }
     } else {
       $('#loanSubNav').collapse('hide');
     }
-
-    if (lastSegment == "loan-request") {
-      // ✅ Initial load (all loans)
-      $.ajax({
-        url: '/admin/loan-request/data',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-          loanData = data;
-          filteredData = [...loanData];
-          window.renderTable();
-        },
-        error: function (xhr, status, error) {
-          console.error('Error fetching data:', error);
-          $('#emptyState').show();
-        }
-      });
-    }
+  }).fail(function () {
+    $.alert({
+      title: 'Load Failed',
+      content: 'Unable to load this section right now. Please try again.',
+      type: 'red'
+    });
+  }).always(function () {
+    setTimeout(() => setAreaLoading(false), 120);
   });
 });
 
@@ -235,6 +268,7 @@ window.onpopstate = function () {
   $.get(location.pathname, function (data) {
     const content = $(data).find('#content').html();
     $('#content').html(content);
+    $(document).trigger('admin:content-loaded', [location.pathname]);
 
     $('.sidebar .nav-link').removeClass('active');
     $(`[data-url="${location.pathname}"]`).addClass('active');
@@ -605,7 +639,6 @@ $(document).on('click', '.a-btn-save', function () {
     case "as-loan-settings":
       const formData = new FormData($form[0]);
 
-      console.log(formData)
 
       $.ajax({
         url: '/admin/update-loan-settings',
@@ -1231,7 +1264,6 @@ function renderAll() {
       
       $('.lrFirstReload').click();
 
-      console.log(res)
       let thead = `<tr>
                       <th><center>Borrower’s Name</center></th>
                       <th><center>Loan Amount</center></th>
@@ -1286,12 +1318,16 @@ function renderAll() {
       $('#cp-all-table').DataTable({
         responsive: true,
         pageLength: 10,
-        dom: 'Bfrtip',
+        dom: '<"row g-2 align-items-center mb-3"<"col-md-6 d-flex align-items-center gap-2"B><"col-md-6 d-flex justify-content-md-end"f>>rt<"row g-2 align-items-center mt-3"<"col-md-6"i><"col-md-6 d-flex justify-content-md-end"p>>',
+        language: {
+          search: '',
+          searchPlaceholder: 'Search records...'
+        },
         buttons: [
             {
                 extend: 'excelHtml5',
                 title: 'Loan Report',
-                className: 'btn',
+                className: 'btn btn-sm btn-outline-primary-custom dt-export-btn',
                 exportOptions: {
                     columns: ':not(:last-child)'
                 }
@@ -1300,7 +1336,7 @@ function renderAll() {
                 extend: 'pdfHtml5',
                 title: 'Loan Report',
                 pageSize: 'A4',
-                className: 'btn',
+                className: 'btn btn-sm btn-outline-primary-custom dt-export-btn',
                 exportOptions: {
                     columns: ':not(:last-child)'
                 }
@@ -1331,7 +1367,6 @@ function renderActive() {
     processData: false,
     contentType: false,
     success: function (res) {
-      console.log(res)
       let thead = `<tr>
                       <th>Borrower’s Name</th>
                       <th>Loan Amount</th>
@@ -1388,7 +1423,6 @@ function renderScheduled() {
     processData: false,
     contentType: false,
     success: function (res) {
-      console.log(res)
       let thead = `<tr>
                       <th>Borrower’s Name</th>
                       <th>Loan Amount</th>

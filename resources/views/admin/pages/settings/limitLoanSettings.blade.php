@@ -1,17 +1,21 @@
 @extends('admin.container')
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid p-4">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-scales-3-line me-2"></i> Loan Limit Setting
+        </div>
+
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
+                <div class="table-card">
                     <div class="card-body">
                         <div class="position-relative mb-4">
                             <button type="button" data-url="/admin/settings"
                                 class="btn small position-absolute start-0 top-50 translate-middle-y p-0">
                                 <i class="ri-arrow-go-back-line"></i> Back
                             </button>
-                            <h4 class="text-center text-dark m-0">Loan Limit Setting</h4>
+                            <h4 class="text-center text-dark m-0 d-none">Loan Limit Setting</h4>
                         </div>
 
                         <div class="search-filter-container mb-3">

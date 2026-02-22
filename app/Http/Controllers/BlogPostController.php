@@ -39,7 +39,7 @@ class BlogPostController extends Controller
             'status' => $validated['status'], // ⬅️ dito mo isinasama ang status
             'featured_image' => $imagePath,
             'tags_json' => json_decode($validated['tags'] ?? '[]', true),
-            'added_by' => '1',
+            'added_by' => (string) auth()->id(),
             'updated_by' => '0',
             'deleted_by' => '0'
         ]);
@@ -130,6 +130,7 @@ class BlogPostController extends Controller
         $post->category = $validated['category'] ?? null;
         $post->status = $validated['status'];
         $post->tags_json = json_decode($validated['tags'] ?? '[]', true);
+        $post->updated_by = (string) auth()->id();
 
         $post->save();
 
@@ -184,4 +185,3 @@ class BlogPostController extends Controller
 
 
 }
-

@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     
 @endsection
@@ -51,7 +48,7 @@
                                         
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="income" class="form-label fw-medium">Current Income (₱)</label>
+                                        <label for="income" class="form-label fw-medium">Current Income (&#8369;)</label>
                                         <input type="text" class="form-control" id="income">
                                         
                                     </div>
@@ -177,7 +174,7 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="customAmount" class="form-label fw-medium">Desired Loan Amount (₱)</label>
+                                        <label for="customAmount" class="form-label fw-medium">Desired Loan Amount (&#8369;)</label>
                                         <input type="number" class="form-control form-control-lg" id="customAmount" value="5000" placeholder="Enter your desired amount">
                                         <div class="form-text">You can input any amount based on your needs</div>
                                     </div>
@@ -205,7 +202,7 @@
                                         <div class="col-6">
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Loan Amount:</span>
-                                                <span class="fw-medium">₱<span id="admin-summary-amount">5,000</span></span>
+                                                <span class="fw-medium">&#8369;<span id="admin-summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Interest Rate:</span>
@@ -219,7 +216,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between border-top pt-1">
                                                 <span class="fw-bold">Total Amount:</span>
-                                                <span class="fw-bold">₱<span id="admin-summary-total">5,250</span></span>
+                                                <span class="fw-bold">&#8369;<span id="admin-summary-total">5,250</span></span>
                                             </div>
                                         </div>
                                     </div>
@@ -237,19 +234,19 @@
                                         <i class="ri-money-dollar-circle-line text-white" style="font-size: 2.5rem;"></i>
                                     </div>
                                     <h3 class="h4 fw-bold text-primary-custom mb-2">
-                                        You're eligible for a loan up to ₱5,000 with an interest rate of 5%.
+                                        You're eligible for a loan up to &#8369;5,000 with an interest rate of 5%.
                                     </h3>
-                                    <p class="text-primary-custom">You can borrow up to ₱15,000 on your next loan!</p>
+                                    <p class="text-primary-custom">You can borrow up to &#8369;15,000 on your next loan!</p>
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label fw-medium mb-3">
-                                        Choose your loan amount: ₱<span id="loan-amount-display">5000</span>
+                                        Choose your loan amount: &#8369;<span id="loan-amount-display">5000</span>
                                     </label>
                                     <input type="range" class="form-range la_loan_amount_slider" id="loanAmountSlider" min="1000" max="5000" step="500" value="5000">
                                     <div class="d-flex justify-content-between small text-muted">
-                                        <span>₱1,000</span>
-                                        <span>₱5,000</span>
+                                        <span>&#8369;1,000</span>
+                                        <span>&#8369;5,000</span>
                                     </div>
                                 </div>
 
@@ -279,7 +276,7 @@
                                         <div class="col-6">
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Loan Amount:</span>
-                                                <span class="fw-medium">₱<span id="summary-amount">5,000</span></span>
+                                                <span class="fw-medium">&#8369;<span id="summary-amount">5,000</span></span>
                                             </div>
                                             <div class="d-flex justify-content-between mb-1">
                                                 <span>Interest Rate:</span>
@@ -293,7 +290,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between border-top pt-1">
                                                 <span class="fw-bold">Total Amount:</span>
-                                                <span class="fw-bold">₱<span id="summary-total">5,250</span></span>
+                                                <span class="fw-bold">&#8369;<span id="summary-total">5,250</span></span>
                                             </div>
                                         </div>
                                     </div>

@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Auth;
+
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -7,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Brevo\Client\Api\TransactionalEmailsApi;
 use Brevo\Client\Model\SendSmtpEmail;
 use Brevo\Client\Configuration;
@@ -15,24 +15,26 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class OtpVerificationController extends Controller
 {
-    // public function showForm(Request $request)
-    // {
-    //     return view('auth.verify-otp', ['email' => $request->email]);
-    // }
+    public function showForm(Request $request)
+    {
+        return view('auth.verify-otp', ['email' => $request->email]);
+    }
 
-    // REGISTER
-    public function regauthsend(Request $request){
-        
+    public function regauthsend(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
         $email = $request->email;
-        // dd(User::where('email', $email)->exists());
+
         if (User::where('email', $email)->exists()) {
-            return response()->json(2); //2 email exists already
+            return response()->json(2);
         }
 
         $otp = random_int(100000, 999999);
         $htmlContent = view('components.emails.registration_otp', ['otp' => $otp])->render();
-    
-        // Store OTP
+
         DB::table('password_otps')->updateOrInsert(
             ['email' => $email],
             [
@@ -42,20 +44,19 @@ class OtpVerificationController extends Controller
                 'updated_at' => now()
             ]
         );
+
         $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', config('services.brevo.key'));
-    
+            ->setApiKey('api-key', config('services.brevo.key'));
+
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
-        
+
         $emailObj = new SendSmtpEmail([
-            'subject' => '✅ Complete Your Registration - OTP Inside',
+            'subject' => 'Complete Your Registration - OTP Inside',
             'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
             'htmlContent' => $htmlContent
         ]);
-        
-        // $apiInstance->sendTransacEmail($emailObj);
-        
+
         try {
             $apiInstance->sendTransacEmail($emailObj);
             return response()->json(1);
@@ -63,9 +64,14 @@ class OtpVerificationController extends Controller
             return back()->withErrors(['email' => 'Failed to send email: ' . $e->getMessage()]);
         }
     }
-    
-    public function regauthcheck(Request $request){
-        // dd($request->all);
+
+    public function regauthcheck(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+        ]);
+
         $record = DB::table('password_otps')
             ->where('email', $request->email)
             ->where('otp', $request->otp)
@@ -73,18 +79,17 @@ class OtpVerificationController extends Controller
 
         if (!$record || Carbon::parse($record->expires_at)->isPast()) {
             return response()->json(0);
-        }else{
-            return response()->json(1);
-
         }
 
+        return response()->json(1);
     }
 
+    public function forgotauthsend(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-
-    
-    // REGISTER
-    public function forgotauthsend(Request $request){
         $otp = random_int(100000, 999999);
         $email = $request->email;
         $htmlContent = view('components.emails.password_reset', ['otp' => $otp])->render();
@@ -95,10 +100,8 @@ class OtpVerificationController extends Controller
 
         if ($exist == null) {
             return response()->json(0);
-            die();
         }
 
-        // Store OTP
         DB::table('password_otps')->updateOrInsert(
             ['email' => $email],
             [
@@ -108,19 +111,19 @@ class OtpVerificationController extends Controller
                 'updated_at' => now()
             ]
         );
+
         $config = Configuration::getDefaultConfiguration()
-        ->setApiKey('api-key', config('services.brevo.key'));
-    
+            ->setApiKey('api-key', config('services.brevo.key'));
+
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
-        
+
         $emailObj = new SendSmtpEmail([
-            'subject' => '🔐 Password Reset Request - OTP Inside',
+            'subject' => 'Password Reset Request - OTP Inside',
             'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
             'htmlContent' => $htmlContent
         ]);
 
-        
         try {
             $apiInstance->sendTransacEmail($emailObj);
             return response()->json(1);
@@ -128,9 +131,14 @@ class OtpVerificationController extends Controller
             return back()->withErrors(['email' => 'Failed to send email: ' . $e->getMessage()]);
         }
     }
-    
-    public function forgotauthcheck(Request $request){
-        // dd($request->all);
+
+    public function forgotauthcheck(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|digits:6',
+        ]);
+
         $record = DB::table('password_otps')
             ->where('email', $request->email)
             ->where('otp', $request->otp)
@@ -138,55 +146,72 @@ class OtpVerificationController extends Controller
 
         if (!$record || Carbon::parse($record->expires_at)->isPast()) {
             return response()->json(0);
-        }else{
-            return response()->json(1);
-
         }
 
+        return response()->json(1);
     }
 
     public function forgotchangepass(Request $request)
     {
-        // dd($request);
-        // Store OTP
-        DB::table('users')->updateOrInsert(
-            ['email' => $request->email],
-            [
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|digits:6',
+            'pass' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[^A-Za-z0-9]/',
+            ],
+        ]);
+
+        $record = DB::table('password_otps')
+            ->where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->first();
+
+        if (!$record || Carbon::parse($record->expires_at)->isPast()) {
+            return response()->json(0);
+        }
+
+        $updated = DB::table('users')
+            ->where('email', $request->email)
+            ->update([
                 'password' => Hash::make($request->pass),
                 'updated_at' => now()
-            ]
-        );
-        
-        // if () {
-        //     return response()->json(0);
-        // }else{
-            return response()->json(1);
+            ]);
 
-        // }
+        if (!$updated) {
+            return response()->json(0);
+        }
 
+        DB::table('password_otps')
+            ->where('email', $request->email)
+            ->delete();
 
+        return response()->json(1);
     }
 
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|digits:6'
+        ]);
 
-    // public function verify(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'otp' => 'required|digits:6'
-    //     ]);
+        $record = DB::table('password_otps')
+            ->where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->first();
 
-    //     $record = DB::table('password_otps')
-    //         ->where('email', $request->email)
-    //         ->where('otp', $request->otp)
-    //         ->first();
+        if (!$record || Carbon::parse($record->expires_at)->isPast()) {
+            return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+        }
 
-    //     if (!$record || Carbon::parse($record->expires_at)->isPast()) {
-    //         return back()->withErrors(['otp' => 'Invalid or expired OTP']);
-    //     }
+        $token = Password::createToken(User::where('email', $request->email)->first());
 
-    //     // OTP is valid — create reset token and redirect
-    //     $token = Password::createToken(\App\Models\User::where('email', $request->email)->first());
-
-    //     return redirect()->route('password.reset', ['token' => $token, 'email' => $request->email]);
-    // }
+        return redirect()->route('password.reset', ['token' => $token, 'email' => $request->email]);
+    }
 }

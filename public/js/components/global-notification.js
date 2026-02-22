@@ -1,10 +1,4 @@
 window.triggerNotif = function (table_id, target_type, level_id, user_id, group_user_id, icon, message, data_url) {
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     $.ajax({
         url: '/send-notification',
         method: 'POST',
@@ -19,7 +13,6 @@ window.triggerNotif = function (table_id, target_type, level_id, user_id, group_
             data_url: data_url
         },
         success: function (response) {
-            console.log("Notification sent:", response);
         },
         error: function (xhr) {
             console.error("Error:", xhr.responseText);
@@ -48,6 +41,30 @@ window.general_notification_count = function () {
 }
 
 window.general_notification_data = function (limit, offset, append) {
+    const escapeHtml = function (value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    };
+
+    const sanitizeIconMarkup = function (iconMarkup) {
+        const icon = String(iconMarkup ?? '').trim();
+        const match = icon.match(/^<i\s+class="([\w\s\-_]+)"><\/i>$/i);
+        if (!match) {
+            return '';
+        }
+
+        const classes = match[1]
+            .split(/\s+/)
+            .filter(Boolean)
+            .join(' ');
+
+        return classes ? `<i class="${classes}"></i>` : '';
+    };
+
     $.ajax({
         url: '/get-notification-data',
         type: 'GET',
@@ -72,23 +89,29 @@ window.general_notification_data = function (limit, offset, append) {
 
             response.data.forEach(function (item, index) {
                 let readClass = item.is_read == 0 ? "unread" : "read";
-                let dataUrlAttr = item.data_url ? `data-url="${item.data_url}"` : "";
+                let safeIcon = sanitizeIconMarkup(item.icon);
+                let safeMessage = escapeHtml(item.message);
+                let safeTimeAgo = escapeHtml(item.time_ago);
 
                 let notifHtml = `
-                    <div class="px-3 py-2 border-bottom items ${readClass} position-relative" ${dataUrlAttr}>
+                    <div class="px-3 py-2 border-bottom items ${readClass} position-relative">
                         <div class="d-flex align-items-start justify-content-between">
                             <div class="d-flex align-items-start">
-                                ${item.icon}
+                                ${safeIcon}
                                 <div>
-                                    <p class="mb-1 small">${item.message}</p>
-                                    <small class="text-muted">${item.time_ago}</small>
+                                    <p class="mb-1 small">${safeMessage}</p>
+                                    <small class="text-muted">${safeTimeAgo}</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
 
-                container.append(notifHtml);
+                const $notif = $(notifHtml);
+                if (item.data_url && String(item.data_url).startsWith('/')) {
+                    $notif.attr('data-url', String(item.data_url));
+                }
+                container.append($notif);
             });
 
             // update offset for next load
@@ -187,8 +210,6 @@ window.clear_all_notifications = function () {
         }
     });
 };
-
-
 
 
 

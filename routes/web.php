@@ -21,23 +21,25 @@ use App\Http\Controllers\DashboardController;
 
 
 // Route::get('/', [ChatTestController::class, 'login']);
-Route::get('/chat', [ChatTestController::class, 'index']);
-Route::post('/test-broadcast', [ChatTestController::class, 'broadcast']);
+if (app()->environment(['local', 'testing'])) {
+    Route::get('/chat', [ChatTestController::class, 'index'])->middleware(['auth', 'admin']);
+    Route::post('/test-broadcast', [ChatTestController::class, 'broadcast'])->middleware(['auth', 'admin']);
+    Route::get('/testingNotif', [NotificationController::class, 'testNotif'])->middleware(['auth', 'admin']);
 
-Route::get('/testingNotif', [NotificationController::class, 'testNotif']);
-Route::post('/send-notification', [NotificationController::class, 'send']);
-Route::get('/get-notification-data', [NotificationController::class, 'getNotificationData']);
-Route::post('/mark-all-read', [NotificationController::class, 'markAllRead']);
-Route::post('/clear-all-notifications', [NotificationController::class, 'clearAllNotifications']);
+    Route::get('/test-broadcast', function () {
+        if (!auth()->user() || (int) auth()->user()->is_admin !== 1) {
+            abort(403);
+        }
 
+        broadcast(new \App\Events\MessageSent('Sebas', 'Test message via GET route'));
+        return 'Test broadcasted!';
+    })->middleware(['auth', 'admin']);
+}
 
-
-
-
-Route::get('/test-broadcast', function () {
-    broadcast(new \App\Events\MessageSent('Sebas', 'Test message via GET route'));
-    return 'Test broadcasted!';
-});
+Route::post('/send-notification', [NotificationController::class, 'send'])->middleware(['auth', 'throttle:20,1']);
+Route::get('/get-notification-data', [NotificationController::class, 'getNotificationData'])->middleware('auth');
+Route::post('/mark-all-read', [NotificationController::class, 'markAllRead'])->middleware('auth');
+Route::post('/clear-all-notifications', [NotificationController::class, 'clearAllNotifications'])->middleware('auth');
 
 # Landing Page
 Route::get('/lending', fn() => view('index'))->name('index');
@@ -51,7 +53,6 @@ Route::get('/travel-and-tours', [NoAuthController::class, 'landingTAT']);
 Route::get('/blog/view', [NoAuthController::class, 'viewBlogPost'])->name('blog.view');
 
 #index page routes - Lending website
-Route::get('/login', fn() => view('admin.pages.main.index'))->name('admin.pages.main.index');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
 
@@ -59,9 +60,9 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Auth::routes();
 
 // admin routes
-Route::prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // dashboard
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.pages.main.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.pages.main.index');
 
     // testing only
     Route::get('/blankpage', [AdminController::class, 'blankTesting'])->name('admin.testing-only.blankpage');
@@ -70,7 +71,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/profile', [ProfileController::class, 'adminIndex'])->name('admin.pages.profile.index');
     Route::post('/update-profile', [ProfileController::class, 'adminUpdate'])->name('admin.profile.update');
 
-    Route::middleware(['auth'])->prefix('profile')->group(function () {
+    Route::prefix('profile')->group(function () {
         Route::get('/change-password', [ProfileController::class, 'adminChangePassword'])->name('admin.pages.change-password');
         Route::post('/change-password', [ProfileController::class, 'adminUpdatePassword'])->name('admin.pages.change-password.update');
         // referral management
@@ -140,7 +141,7 @@ Route::prefix('admin')->group(function () {
     });
 
     //Executive page
-    Route::get('/executive', [executiveInvestment::class, 'index'])->middleware('auth');
+    Route::get('/executive', [executiveInvestment::class, 'index']);
 
 
 
@@ -156,35 +157,38 @@ Route::post('check-referral-code', [ReferralCodeController::class, 'checkReferra
 Route::post('/upload', [BlogPostController::class, 'upload']);
 
 //DAN
-Route::resource('paymentpage', PaymentPageController::class);
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('paymentpage', PaymentPageController::class);
 
-Route::get('/get_pending_page_data', [PaymentPageController::class, 'get_pending_page_data'])->name('payment.get_pending_page_data');
-Route::get('/get_verified_page_data', [PaymentPageController::class, 'get_verified_page_data'])->name('payment.get_verified_page_data');
-Route::get('/get_rejected_page_data', [PaymentPageController::class, 'get_rejected_page_data'])->name('payment.get_rejected_page_data');
-Route::get('/get_revision_page_data', [PaymentPageController::class, 'get_revision_page_data'])->name('payment.get_revision_page_data');
-Route::get('/get_appeal_page_data', [PaymentPageController::class, 'get_appeal_page_data'])->name('payment.get_appeal_page_data');
+    Route::get('/get_pending_page_data', [PaymentPageController::class, 'get_pending_page_data'])->name('payment.get_pending_page_data');
+    Route::get('/get_verified_page_data', [PaymentPageController::class, 'get_verified_page_data'])->name('payment.get_verified_page_data');
+    Route::get('/get_rejected_page_data', [PaymentPageController::class, 'get_rejected_page_data'])->name('payment.get_rejected_page_data');
+    Route::get('/get_revision_page_data', [PaymentPageController::class, 'get_revision_page_data'])->name('payment.get_revision_page_data');
+    Route::get('/get_appeal_page_data', [PaymentPageController::class, 'get_appeal_page_data'])->name('payment.get_appeal_page_data');
 
-Route::post('/get_pending_page_data_view_more', [PaymentPageController::class, 'get_pending_page_data_view_more'])->name('payment.get_pending_page_data_view_more');
-Route::post('/get_verified_page_data_view_more', [PaymentPageController::class, 'get_verified_page_data_view_more'])->name('payment.get_verified_page_data_view_more');
-Route::post('/get_rejected_page_data_view_more', [PaymentPageController::class, 'get_rejected_page_data_view_more'])->name('payment.get_rejected_page_data_view_more');
-Route::post('/get_revision_page_data_view_more', [PaymentPageController::class, 'get_revision_page_data_view_more'])->name('payment.get_revision_page_data_view_more');
-Route::post('/get_appeal_page_data_view_more', [PaymentPageController::class, 'get_appeal_page_data_view_more'])->name('payment.get_appeal_page_data_view_more');
+    Route::post('/get_pending_page_data_view_more', [PaymentPageController::class, 'get_pending_page_data_view_more'])->name('payment.get_pending_page_data_view_more');
+    Route::post('/get_verified_page_data_view_more', [PaymentPageController::class, 'get_verified_page_data_view_more'])->name('payment.get_verified_page_data_view_more');
+    Route::post('/get_rejected_page_data_view_more', [PaymentPageController::class, 'get_rejected_page_data_view_more'])->name('payment.get_rejected_page_data_view_more');
+    Route::post('/get_revision_page_data_view_more', [PaymentPageController::class, 'get_revision_page_data_view_more'])->name('payment.get_revision_page_data_view_more');
+    Route::post('/get_appeal_page_data_view_more', [PaymentPageController::class, 'get_appeal_page_data_view_more'])->name('payment.get_appeal_page_data_view_more');
 
-Route::post('/get_pending_data', [PaymentPageController::class, 'get_pending_data'])->name('payment.pending.data');
-Route::post('/get_pending_data_two', [PaymentPageController::class, 'get_pending_data_two'])->name('payment.pending.data_two');
-Route::post('/paymentpage/verify/{id}/{value}', [PaymentPageController::class, 'verify'])->name('payment.pending.verify');
-Route::post('/checkappeal', [PaymentPageController::class, 'checkappeal'])->name('payment.pending.checkappeal');
-Route::post('/appealuser', [PaymentPageController::class, 'appealuser'])->name('payment.appeal');
+    Route::post('/get_pending_data', [PaymentPageController::class, 'get_pending_data'])->name('payment.pending.data');
+    Route::post('/get_pending_data_two', [PaymentPageController::class, 'get_pending_data_two'])->name('payment.pending.data_two');
+    Route::post('/paymentpage/verify/{id}/{value}', [PaymentPageController::class, 'verify'])->name('payment.pending.verify');
+    Route::post('/checkappeal', [PaymentPageController::class, 'checkappeal'])->name('payment.pending.checkappeal');
+    Route::post('/appealuser', [PaymentPageController::class, 'appealuser'])->name('payment.appeal');
+});
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('borrower.pages.home');
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('otp.verify');
 //AJAX
-Route::post('/register-auth-send', [OtpVerificationController::class, 'regauthsend'])->name('reg.auth.send');
-Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthcheck'])->name('reg.auth.check');
-Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauthsend'])->name('forgot.auth.send');
-Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->name('forgot.change.pass');
+Route::post('/register-auth-send', [OtpVerificationController::class, 'regauthsend'])->middleware('throttle:6,1')->name('reg.auth.send');
+Route::post('/register-auth-check', [OtpVerificationController::class, 'regauthcheck'])->middleware('throttle:10,1')->name('reg.auth.check');
+Route::post('/forgot-auth-send', [OtpVerificationController::class, 'forgotauthsend'])->middleware('throttle:6,1')->name('forgot.auth.send');
+Route::post('/forgot-auth-check', [OtpVerificationController::class, 'forgotauthcheck'])->middleware('throttle:10,1')->name('forgot.auth.check');
+Route::post('/forgot-auth-changepass', [OtpVerificationController::class, 'forgotchangepass'])->middleware('throttle:6,1')->name('forgot.change.pass');
 
 # borrower routes
 Route::get('/apply-loan', [HomeController::class, 'loanApply'])->name('my-loan.apply');
@@ -264,29 +268,32 @@ Route::post('/borrower/submit-appeal', [HomeController::class, 'saveAppeal']);
 Route::post('/rejectaccept', [HomeController::class, 'rejectaccept']);
 Route::post('/borrower/engagement-feedback', [HomeController::class, 'EngagementSubmit']);
 
-Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived']);
-Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment']);
+Route::post('/admin/appeal/mark-received', [AdminController::class, 'markReceived'])->middleware(['auth', 'admin']);
+Route::post('/admin/get-rejected-comments', [AdminController::class, 'rejectedComment'])->middleware(['auth', 'admin']);
 
-Route::get('/admin/dashboard', [DashboardController::class, 'index']);
-Route::get('/admin/get-total-applications', [DashboardController::class, 'getTotalApplications']);
-Route::get('/admin/get-scheduled-loans', [DashboardController::class, 'getScheduledLoans']);
-Route::get('/admin/get-recent-application', [DashboardController::class, 'getRecentApplications']);
-Route::get('/admin/get-recent-payments', [DashboardController::class, 'getRecentPayments']);
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/get-total-applications', [DashboardController::class, 'getTotalApplications']);
+    Route::get('/admin/get-scheduled-loans', [DashboardController::class, 'getScheduledLoans']);
+    Route::get('/admin/get-recent-application', [DashboardController::class, 'getRecentApplications']);
+    Route::get('/admin/get-recent-payments', [DashboardController::class, 'getRecentPayments']);
 
-Route::get('/admin/get-top-borrowers', [DashboardController::class, 'topBorrowers']);
-Route::get('/admin/get-financial-overview', [DashboardController::class, 'financialOverview']);
-Route::get('/admin/get-calendar', [DashboardController::class, 'getLoanDates']);
-Route::get('/admin/get-insight', [DashboardController::class, 'getBorrowerInsight']);
-Route::get('/admin/get-loan-insight', [DashboardController::class, 'LoanInsight']);
-Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);
+    Route::get('/admin/get-top-borrowers', [DashboardController::class, 'topBorrowers']);
+    Route::get('/admin/get-financial-overview', [DashboardController::class, 'financialOverview']);
+    Route::get('/admin/get-calendar', [DashboardController::class, 'getLoanDates']);
+    Route::get('/admin/get-insight', [DashboardController::class, 'getBorrowerInsight']);
+    Route::get('/admin/get-loan-insight', [DashboardController::class, 'LoanInsight']);
+    Route::get('/admin/get-statistics', [DashboardController::class, 'QuickStats']);
 
-Route::get('/admin/export-pdf', [DashboardController::class, 'exportPDF'])->name('applications.pdf');
-Route::get('/admin/export-excel', [DashboardController::class, 'exportExcel'])->name('applications.excel');
-Route::post('/payment/get-attachment', [PaymentController::class, 'getAttachment']);
+    Route::get('/admin/export-pdf', [DashboardController::class, 'exportPDF'])->name('applications.pdf');
+    Route::get('/admin/export-excel', [DashboardController::class, 'exportExcel'])->name('applications.excel');
 
+    //EXECUTIVE
+    Route::post('/executive/pull_data', [executiveInvestment::class, 'pull_data']);
+    Route::post('/executive/add_investment', [executiveInvestment::class, 'add_investment']);
+    Route::post('/executive/withraw_investment', [executiveInvestment::class, 'withraw_investment']);
+    Route::post('/executive/money_status', [executiveInvestment::class, 'money_status']);
+});
 
-//EXECUTIVE
-Route::post('/executive/pull_data', [executiveInvestment::class, 'pull_data'])->middleware('auth');
-Route::post('/executive/add_investment', [executiveInvestment::class, 'add_investment']);
-Route::post('/executive/withraw_investment', [executiveInvestment::class, 'withraw_investment']);
-Route::post('/executive/money_status', [executiveInvestment::class, 'money_status']);
+Route::middleware(['auth'])->group(function () {
+    Route::post('/payment/get-attachment', [PaymentController::class, 'getAttachment']);
+});

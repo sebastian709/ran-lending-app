@@ -1,7 +1,11 @@
 @extends('admin.container')
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid p-4">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-coupon-3-line me-2"></i> Referral Management
+        </div>
+
         <div class="row">
             <div class="col-lg-12">
                 <a class="btn btn-light fw-semibold text-primary float-end create-referral-code">
@@ -11,10 +15,10 @@
         </div>
         <div class="row my-2">
             <div class="col-lg-12">
-                <div class="card shadow-sm">
+                <div class="table-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-                            <h4 class="mb-3 mb-md-0">
+                            <h4 class="mb-3 mb-md-0 d-none">
                                 Referral Management
                             </h4>
                         </div>

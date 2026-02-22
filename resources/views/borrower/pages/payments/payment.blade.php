@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
  <link rel="stylesheet" href="css/payment.css">
 <style>
@@ -23,7 +20,7 @@
         <!-- PAYMENT TYPE -->
         <div class="card-section">
             <span class="section-title">Total Amount to Pay</span>
-            <div class="amount-display" id="totalAmount" data-amount="">₱ <span></span></div>
+            <div class="amount-display" id="totalAmount" data-amount="">&#8369; <span></span></div>
         </div>
         
         <!-- NEXT PAYMENT -->
@@ -42,7 +39,7 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="fw-bold text-success">₱ {{ number_format($to_pay->total,2) }}</div>
+                                <div class="fw-bold text-success">&#8369; {{ number_format($to_pay->total,2) }}</div>
                                 
                                 <button title="Partial Payment" class="togglePartials togglePartials-{{ $to_pay->id }} btn btn-outline-primary btn-sm  @if(!$loop->last) d-none @endif" aria-label="Toggle partial payments">
                                     <i class="bi bi-chevron-down"></i>
@@ -60,7 +57,7 @@
                                 <small class="text-muted">Accrued interest amount</small>
                                 </div>
                             </div>
-                            <div class="fw-bold text-success fs-6">₱ {{ number_format($to_pay->interest, 2) }}</div>
+                            <div class="fw-bold text-success fs-6">&#8369; {{ number_format($to_pay->interest, 2) }}</div>
                             </label>
 
                             <!-- Penalty -->
@@ -72,7 +69,7 @@
                                 <small class="text-muted">Late payment charges</small>
                                 </div>
                             </div>
-                            <div class="fw-bold text-success fs-6">₱ {{ number_format($to_pay->penalty ?? 0, 2) }}</div>
+                            <div class="fw-bold text-success fs-6">&#8369; {{ number_format($to_pay->penalty ?? 0, 2) }}</div>
                             </label>
 
                             <!-- Principal -->
@@ -84,7 +81,7 @@
                                 <small class="text-muted">Remaining loan balance</small>
                                 </div>
                             </div>
-                            <div class="fw-bold text-success fs-6">₱ {{ number_format($to_pay->principal, 2) }}</div>
+                            <div class="fw-bold text-success fs-6">&#8369; {{ number_format($to_pay->principal, 2) }}</div>
                             </label>
                         </div>
                     </div>
@@ -115,7 +112,7 @@
                             <small class="text-muted">{{ $record['count'] }}/ Payment</small>
                         </div>
                     </div>
-                    <div class="fw-bold text-success">₱ {{ number_format($record['interest'] + $record['principal'],2) }}</div>
+                    <div class="fw-bold text-success">&#8369; {{ number_format($record['interest'] + $record['principal'],2) }}</div>
                 </label>
                 @endforeach
                 <!-- All -->
@@ -144,26 +141,26 @@
                 <li class="breakdown-item d-flex align-items-center">
                     <span class="label">Principal</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="payment-principal">₱</span>
+                    <span class="payment-principal">&#8369;</span>
                 </li>
                 <li class="breakdown-item d-flex align-items-center">
                     <span class="label">Interest</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="payment-interest">₱</span>
+                    <span class="payment-interest">&#8369;</span>
                 </li>
                 <li class="breakdown-item d-flex align-items-center rebate d-none">
                     <span class="label">Wave Interest</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="payment-rebate">₱ 0.00</span>
+                    <span class="payment-rebate">&#8369; 0.00</span>
                 </li>
                 <li class="breakdown-item d-flex align-items-center">
                     <span class="label">Penalty</span>
                     <span class="flex-line mx-2"></span>
-                    <span class="payment-penalty">₱</span>
+                    <span class="payment-penalty">&#8369;</span>
                 </li>
                 <li class="d-flex justify-content-between fw-bold border-top mt-2 pt-2 text-muted">
                     <span>Total</span>
-                    <span class="payment-total">₱</span>
+                    <span class="payment-total">&#8369;</span>
                 </li>
             </ul>
         </div>
@@ -172,7 +169,7 @@
         <div class="card-section d-none">
             <div id="partialSummary" class="border rounded p-3 bg-white">
                 <strong>Category:</strong> <span id="summaryCategory">Interest</span><br>
-                <strong>Total Amount:</strong> ₱<span id="summaryAmount">0.00</span><br>
+                <strong>Total Amount:</strong> &#8369;<span id="summaryAmount">0.00</span><br>
                 <strong>Covered Months:</strong> <span id="summaryMonths">0</span>
             </div>
         </div>
@@ -197,7 +194,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <h6 class="text-muted">Total Amount</h6>
-                                <p class="fs-3 fw-bold text-success mb-0 total_amount_summary" id="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 position-relative ">₱5,000</p>
+                                <p class="fs-3 fw-bold text-success mb-0 total_amount_summary" id="list-group-item d-flex align-items-center justify-content-between gap-3 mb-2 position-relative ">&#8369;5,000</p>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Payment Category</h6>
@@ -319,9 +316,7 @@
 
 
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('js/payment.js') }}"></script>
 
 

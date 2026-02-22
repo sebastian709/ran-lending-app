@@ -8,6 +8,18 @@ use Illuminate\Support\Facades\Log;
 
 class ChatTestController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user() || (int) auth()->user()->is_admin !== 1) {
+                abort(403);
+            }
+
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         return view('admin.testing-only.chat');

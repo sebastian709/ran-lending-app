@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         /* Prevent horizontal scroll */
@@ -130,7 +127,7 @@
                                                                     </div>
                                                                     <div class="me-5">
                                                                         <div class="fw-bold text-dark small">Amount</div>
-                                                                        <div class="text-dark fw-medium">₱{{ number_format($loan->amount, 2) }}
+                                                                        <div class="text-dark fw-medium">&#8369;{{ number_format($loan->amount, 2) }}
                                                                         </div>
                                                                     </div>
                                                                     <div class="me-5">
@@ -146,15 +143,15 @@
                                                                 <hr class="w-75">
                                                                 <div class="d-flex flex-column flex-md-row flex-wrap text-muted small">
                                                                     <div class="me-3"><strong>Approved:</strong>
-                                                                        {{ $loan->approved_at ? \Carbon\Carbon::parse($loan->approved_at)->format('M d, Y') : '–' }}
+                                                                        {{ $loan->approved_at ? \Carbon\Carbon::parse($loan->approved_at)->format('M d, Y') : '-' }}
                                                                     </div>
                                                                     <div class="me-3"><strong>Disbursed:</strong>
-                                                                        {{ $loan->disbursed_at ? \Carbon\Carbon::parse($loan->disbursed_at)->format('M d, Y') : '–' }}
+                                                                        {{ $loan->disbursed_at ? \Carbon\Carbon::parse($loan->disbursed_at)->format('M d, Y') : '-' }}
                                                                     </div>
                                                                     <div class="me-3"><strong>Closed:</strong>
-                                                                        {{ $loan->closed_at ? \Carbon\Carbon::parse($loan->closed_at)->format('M d, Y') : '–' }}
+                                                                        {{ $loan->closed_at ? \Carbon\Carbon::parse($loan->closed_at)->format('M d, Y') : '-' }}
                                                                     </div>
-                                                                    <div><strong>Remarks:</strong> {{ $loan->remarks ?? '–' }}</div>
+                                                                    <div><strong>Remarks:</strong> {{ $loan->remarks ?? '-' }}</div>
                                                                 </div>
                                                             </div>
 

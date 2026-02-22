@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
@@ -97,7 +94,7 @@
                                     </div>
                                     <!-- <div class="text-center">
                                         <label class="small text-muted mb-0 w-100">Max Credit Limit:</label>
-                                        <label class="fs-5 fw-semibold text-muted mb-0 w-10">₱100,000</label>
+                                        <label class="fs-5 fw-semibold text-muted mb-0 w-10">&#8369;100,000</label>
                                     </div> -->
                                     <!-- </div> -->
 
@@ -124,7 +121,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-3 mx-3">
                                     <div>
                                         <h4 class="fw-bold mb-0">Personal Information</h4>
-                                        <small class="text-muted">Here’s what we know about you.</small>
+                                        <small class="text-muted">Here's what we know about you.</small>
                                     </div>
                                     <!-- <button class="btn btn-outline-secondary btn-sm rounded-pill" id="edit-profile-btn">
                                                         <i class="ri-edit-line me-1"></i> Edit
@@ -148,7 +145,7 @@
                                                 ['colSize' => 'col-lg-4', 'label' => 'Province', 'name' => 'province', 'value' => $usersInformation->province],
 
                                                 ['colSize' => 'col-lg-6', 'label' => 'Occupation / Source of Income', 'name' => 'occupation', 'value' => $usersInformation->occupation],
-                                                ['colSize' => 'col-lg-6', 'label' => 'Monthly Income', 'name' => 'income', 'value' => '₱' . $usersInformation->income],
+                                                ['colSize' => 'col-lg-6', 'label' => 'Monthly Income', 'name' => 'income', 'value' => '&#8369;' . $usersInformation->income],
                                             ];
                                         @endphp
                                         @foreach($fields as $field)

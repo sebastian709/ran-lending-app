@@ -13,32 +13,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <style>
-    .form-step {
-      display: none;
-    }
-    .form-step.active {
-      display: block;
-      animation: fadeInLeft 0.5s ease-in-out;
-    }
-    @keyframes fadeInLeft {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-    .progress-bar {
-      height: 6px;
-      background-color: var(--primary-color);
-      transition: width 0.3s ease;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ asset('css/auth/register.css') }}">
 </head>
-<body>
+<body data-reg-send-url="{{ route('reg.auth.send') }}" data-reg-check-url="{{ route('reg.auth.check') }}">
   <div class="d-flex flex-column min-vh-100">
     <header class="bg-white shadow-sm">
       <div class="container py-3">
@@ -260,116 +237,6 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
   <script src="{{ asset('js/auth.js') }}"></script>
-  <script>
-
-    // CHECK IF REGISTERED > REDIRECT TO OTP
-    $(document).ready(function() {
-        let success = $('.success_register').text();
-        if (success) {
-            nextStep(5)
-        }
-    });
-
-    const steps = document.querySelectorAll('.form-step');
-    const progressBar = document.getElementById('form-progress');
-
-    function nextStep(n) {
-      if (n > 1 && !validateStep(n)) return; 
-
-      steps.forEach(step => step.classList.remove('active'));
-      document.getElementById(`step-${n}`).classList.add('active');
-      progressBar.style.width = `${n * 20}%`;
-    }
-
-    function prevStep(n) {
-      steps.forEach(step => step.classList.remove('active'));
-      document.getElementById(`step-${n}`).classList.add('active');
-      progressBar.style.width = `${n * 20}%`;
-    }
-
-    //OTP GENERATE
-  $(document).on('click' , '.authreggen' , function (e) {
-    let dis = $(this);
-    let email = $('input[name="email"]').val();
-    const emailField = $('input[name="email"]');
-    const emailError = $('#email-error');
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email || !emailRegex.test(email)) {
-      emailField.addClass('is-invalid');
-      emailError.removeClass('d-none');
-      return; 
-    } else {
-      emailField.removeClass('is-invalid');
-      emailError.addClass('d-none');
-    }
-    
-    $.ajax({
-      url: '{{ route("reg.auth.send") }}',
-        method: 'POST',
-        data: {
-            email : email,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (res) {
-          if (res == 1) {
-            if (dis.hasClass('authreggenresend')) {
-                 $('#otp-alert')
-                .removeClass('d-none')
-                .fadeIn();
-                 setTimeout(function () {
-                // Hide alert
-                $('#otp-alert').fadeOut(function () {
-                    $(this).addClass('d-none');
-                });}, 3000);
-            }else{
-              prevStep(4)
-            }
-          }else if(res == 2){
-            console.log('test');
-            $('#email-exists-error').removeClass('d-none');
-          }else{
-            alert('error contact admin')
-          }
-        },
-        error: function (xhr) {
-        }
-    });
-  });
-
-  //OTP VALIDATE
-  $(document).on('click' , '#regauthcheck' , function (e) {
-
-
-    let rawValue = $('#income').val().replace(/,/g, '');
-    $('#income').val(rawValue); // set raw numeric value
-    let email = $('input[name="email"]').val();
-    let otp = '';
-    $('.otp-input').each(function () {
-        otp += $(this).val();
-    });
-
-    $.ajax({
-      url: '{{ route("reg.auth.check") }}',
-        method: 'POST',
-        data: {
-            email : email,
-            otp : otp,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (res) {
-          if (res == 1) {
-            $('#register-form').submit();
-          }else{
-            $('#otp-error').removeClass('d-none');
-          }
-        },
-        error: function (xhr) {
-        }
-    });
-  });
-
-  </script>
+  <script src="{{ asset('js/auth/register-page.js') }}"></script>
 </body>
 </html>

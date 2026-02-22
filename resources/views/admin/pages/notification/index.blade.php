@@ -1,10 +1,14 @@
 @extends('admin.container')
 
 @section('content')
-    <div class="container-md notif-page">
+    <div class="container-fluid p-4 notif-page">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-notification-3-line me-2"></i> Notifications
+        </div>
+
         <div class="row my-2">
             <div class="col-lg-12 py-1">
-                <div class="card">
+                <div class="table-card">
                     <div class="card-body">
                         <div class="row">
                             <!-- Header Row -->

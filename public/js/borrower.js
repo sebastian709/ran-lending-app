@@ -336,7 +336,6 @@ $(function () {
                 loan_application_id = r.loan_application_id;
                 gb_refferal_type = r.referral_type;
 
-                console.log(gb_refferal_type, loan_application_id);
             },
             error: function () {
                 console.error('Failed to save precheck data.');
@@ -1300,7 +1299,6 @@ $(document).on('keyup', '#referralCode', function () {
     let $input = $(this);
     let this_value = $input.val();
 
-    console.log(this_value);
 
     $.ajax({
         url: '/check-referral-code',
@@ -1617,8 +1615,6 @@ $(document).on("click", ".submit_feedback", function () {
         return;
     }
 
-    console.log("Social Media:", socialMedia);
-    console.log("Referral:", referral);
 
       $.ajax({
        url: "/borrower/engagement-feedback",

@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/payment.css') }}">
     <style>
@@ -42,7 +39,7 @@
                         <div class="loan-status-icon mb-4">
                             <i class="bi bi-wallet2"></i>
                         </div>
-                        <h2 class="mb-3">Looks like you don’t have a loan yet</h2>
+                        <h2 class="mb-3">Looks like you don't have a loan yet</h2>
                         <p class="text-muted mb-4">
                             Once you apply and your loan is approved, all your details will show up here.<br>
                             Need help getting started?
@@ -60,7 +57,7 @@
                         </div>
                         <h2 class="mb-3">Your loan application is under review</h2>
                         <p class="text-muted">
-                            We’re reviewing your application. You’ll be notified once it's approved.<br>
+                            We're reviewing your application. You'll be notified once it's approved.<br>
                             You can check the status in your <a href="{{ url('my-loan') }}">My Loan</a> section page.
                         </p>
                     </div>
@@ -87,7 +84,7 @@
                         <h2>Approved</h2>
                         <h5 class="mb-3 text-muted">Waiting for Disbursement</h5>
                         <p class="text-muted">
-                            Your loan application has been approved. Please wait — you will be notified once the funds have been
+                            Your loan application has been approved. Please wait - you will be notified once the funds have been
                             transferred and processed.
                         </p>
                     </div>

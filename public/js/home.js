@@ -1,7 +1,11 @@
 var calendarInitialized = false;
-$(document).ready(function() {
+function initAdminDashboardHome() {
 
-     $('.btn-date').off('click').on('click', function() {
+    if (!$('.ran_dashboard').length) {
+        return;
+    }
+
+     $('.btn-date').off('click.homeDashboard').on('click.homeDashboard', function() {
         
         $('.btn-date').removeClass('active');
 
@@ -25,10 +29,13 @@ $(document).ready(function() {
         load_dashboard(filter);
     });
 
-    var scrollTimer;  
+    var scrollTimer;
     const stickyFilter = document.querySelector('.sticky-filters');
 
-    window.addEventListener('scroll', function() {
+    $(window).off('scroll.homeDashboard').on('scroll.homeDashboard', function() {
+        if (!stickyFilter) {
+            return;
+        }
 
         clearTimeout(scrollTimer);
 
@@ -183,7 +190,6 @@ $(document).ready(function() {
                 });
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -266,7 +272,6 @@ $(document).ready(function() {
                 $('#scheduled_div').html(html);
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
 
@@ -398,7 +403,6 @@ $(document).ready(function() {
                 $('#recent_div').html(html);
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -485,7 +489,6 @@ $(document).ready(function() {
                 $('#recentPayments_div').html(html);
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -512,7 +515,6 @@ $(document).ready(function() {
             
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -574,7 +576,6 @@ $(document).ready(function() {
                 $('#top_borrowers').html(html);
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -613,7 +614,6 @@ $(document).ready(function() {
 
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -644,7 +644,6 @@ $(document).ready(function() {
             $('.expected_amount').html('₱ ' + Number(response.upcoming_balance).toLocaleString());
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
@@ -675,14 +674,13 @@ $(document).ready(function() {
             $('.quick_misc').html('₱ ' + Number(response.misc).toLocaleString());
             },
             error: function(xhr) {
-                console.log("Error:", xhr);
             }
         });
     }
 
 
 
-    $(document).off('click', '#calendar-float-icon').on('click', '#calendar-float-icon', function(e) {
+    $(document).off('click.homeDashboard', '#calendar-float-icon').on('click.homeDashboard', '#calendar-float-icon', function(e) {
 
         e.stopPropagation(); 
         $('#calendar-popup').fadeToggle(200);
@@ -704,7 +702,6 @@ $(document).ready(function() {
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js';
         script.onload = () => {
-            console.log('FullCalendar loaded.');
             callback();
         };
         script.onerror = () => console.error('Failed to load FullCalendar.');
@@ -765,4 +762,7 @@ $(document).ready(function() {
         calendar.render();
     }
 
-});
+}
+
+$(document).ready(initAdminDashboardHome);
+$(document).on('admin:content-loaded', initAdminDashboardHome);

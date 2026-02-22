@@ -31,7 +31,11 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+        <main id="forgot-password-page"
+            class="flex-grow-1 d-flex align-items-center justify-content-center py-5"
+            data-send-url="{{ route('forgot.auth.send') }}"
+            data-check-url="{{ route('forgot.auth.check') }}"
+            data-change-url="{{ route('forgot.change.pass') }}">
 
             <!-- Forgot Password Step 1 -->
             <div class="w-100" style="max-width: 400px;" id="forgot-step1-container">
@@ -181,151 +185,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/auth.js') }}"></script>
-<script>
-
-$(document).ready(function() {
-    let timer;
-    const timerElement = document.getElementById('timer');
-    const resendCodeBtn = document.getElementsByClassName('resend-code-btn');
-
-    function startTimer() {
-        console.log('startTimer')
-        let seconds = 59;
-        timerElement.textContent = `(${seconds}s)`;
-        resendCodeBtn.disabled = true;
-        resendCodeBtn.classList.add('opacity-50');
-        
-        timer = setInterval(function() {
-            seconds--;
-            timerElement.textContent = `(${seconds}s)`;
-            
-            if (seconds <= 0) {
-                clearInterval(timer);
-                timerElement.textContent = '';
-                resendCodeBtn.disabled = false;
-                resendCodeBtn.classList.remove('opacity-50');
-            }
-        }, 1000);
-    }
-});
-    //OTP GENERATE
-    $(document).on('click' , '.authgen' , function (e) {
-        let dis = $(this);
-        let email = $('input[name="email"]').val();
-        const emailField = $('input[name="email"]');
-        const emailError = $('#email-error');
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!email || !emailRegex.test(email)) {
-        emailField.addClass('is-invalid');
-        emailError.removeClass('d-none');
-        return; 
-        } else {
-        emailField.removeClass('is-invalid');
-        emailError.addClass('d-none');
-        }
-        
-        $.ajax({
-        url: '{{ route("forgot.auth.send") }}',
-            method: 'POST',
-            data: {
-                email : email,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (res) {
-            if (res == 1) {
-                if (dis.hasClass('resend-code-btn')) {
-                    $('.resend-code-btn').text('Code Has Been Sent.')
-                    setTimeout(function () {
-                    $('.resend-code-btn').text('Resend Code')
-                    }, 3000);
-                }else{
-                    $('#forgot-step1-container').addClass('d-none')
-                    $('#forgot-step2-container').removeClass('d-none')
-                }
-            }else{
-                $('#no-email-error').removeClass('d-none')
-            }
-            },
-            error: function (xhr) {
-            }
-        });
-    });
-
-$(document).on('click' , '#authcheck' , function (e) {
-    let email = $('input[name="email"]').val();
-    let otp = '';
-    $('.otp-input').each(function () {
-        otp += $(this).val();
-    });
-
-    $.ajax({
-      url: '{{ route("reg.auth.check") }}',
-        method: 'POST',
-        data: {
-            email : email,
-            otp : otp,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (res) {
-          if (res == 1) {
-            $('#forgot-step2-container').addClass('d-none')
-            $('#forgot-step3-container').removeClass('d-none')
-          }
-        },
-        error: function (xhr) {
-        }
-    });
-  });
-
-  $(document).on('click' , '#changepass' , function (e) {
- 
-    let email = $('input[name="email"]').val();
-    let pass1 = $('#new-password').val();
-    let pass2 = $('#confirm-password').val();
-
-    if (pass1 != pass2) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Password mismatch',
-            text: 'Your new password and confirmation do not match.'
-        });
-        alert()
-        return false;
-    }
-
-    $.ajax({
-      url: '{{ route("forgot.change.pass") }}',
-        method: 'POST',
-        data: {
-            email : email,
-            pass : pass2,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (res) {
-          if (res == 1) {
-            $('#forgot-step3-container').addClass('d-none')
-            $('#success-container').removeClass('d-none')
-
-          }else{
-            Swal.fire({
-                icon: 'error',
-                title: 'Update failed',
-                text: 'Something went wrong while updating your password.'
-            });
-            alert()
-          }
-        },
-        error: function (xhr) {
-        }
-    });
-  });
-
-
-
-
-  </script>
+<script src="{{ asset('js/auth/forgot-password.js') }}"></script>
 </body>
 </html>
-

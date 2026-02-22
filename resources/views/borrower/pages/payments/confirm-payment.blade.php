@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
  <link rel="stylesheet" href="css/payment.css">
 <style>
@@ -30,7 +27,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <h6 class="text-muted">Total Amount</h6>
-                                <p class="fs-3 fw-bold text-success mb-0" id="confirmTotal">₱5,000</p>
+                                <p class="fs-3 fw-bold text-success mb-0" id="confirmTotal">&#8369;5,000</p>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Payment Category</h6>
@@ -145,7 +142,6 @@
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('js/payment.js') }}"></script>
 
 

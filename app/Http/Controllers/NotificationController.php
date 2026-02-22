@@ -34,43 +34,97 @@ class NotificationController extends Controller
 
     public function send(Request $request)
     {
+        $request->validate([
+            'table_id' => 'required|string|max:100',
+            'target_type' => 'required|integer|in:1,2,3',
+            'level_id' => 'nullable|integer|in:1,2',
+            'user_id' => 'nullable|integer|exists:users,id',
+            'group_user_id' => 'nullable|array|max:200',
+            'group_user_id.*' => 'integer|exists:users,id',
+            'icon' => 'nullable|string|max:255',
+            'message' => 'required|string|max:500',
+            'data_url' => ['nullable', 'string', 'max:255', 'regex:/^(\/[A-Za-z0-9_\-\/\?\=\&\.\#]*)?$/'],
+        ]);
+
+        $isAdmin = (int) auth()->user()->is_admin === 1;
+        $targetType = (int) $request->target_type;
+
+        // Non-admin users cannot broadcast to whole role groups.
+        if (!$isAdmin && $targetType === 1) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $userIds = [];
-        switch ($request->target_type) {
+        switch ($targetType) {
             case 1:
-
-                if ($request->level_id == 1) {
-
+                if ((int) $request->level_id === 1) {
                     $userIds = DB::table('users')
                         ->where('is_admin', 1)
+                        ->where('status', 1)
                         ->pluck('id')
                         ->toArray();
-                } else if ($request->level_id == 2) {
-
+                } elseif ((int) $request->level_id === 2) {
                     $userIds = DB::table('users')
                         ->where('is_admin', 0)
+                        ->where('status', 1)
                         ->pluck('id')
                         ->toArray();
+                } else {
+                    return response()->json(['message' => 'Invalid level_id for target_type 1'], 422);
                 }
-
                 break;
             case 2:
+                if (empty($request->user_id)) {
+                    return response()->json(['message' => 'user_id is required for target_type 2'], 422);
+                }
+
+                $exists = DB::table('users')
+                    ->where('id', (int) $request->user_id)
+                    ->where('status', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    return response()->json(['message' => 'Target user does not exist'], 422);
+                }
+
                 $userIds = [(int) $request->user_id];
                 break;
             case 3:
-                $userIds = $request->group_user_id;
+                if (empty($request->group_user_id) || !is_array($request->group_user_id)) {
+                    return response()->json(['message' => 'group_user_id is required for target_type 3'], 422);
+                }
+
+                $candidateIds = array_values(array_unique(array_map('intval', $request->group_user_id)));
+                if (!$isAdmin && count($candidateIds) > 20) {
+                    return response()->json(['message' => 'Forbidden'], 403);
+                }
+                $userIds = DB::table('users')
+                    ->whereIn('id', $candidateIds)
+                    ->where('status', 1)
+                    ->pluck('id')
+                    ->toArray();
                 break;
             default:
                 break;
         }
+
+        if (empty($userIds)) {
+            return response()->json(['message' => 'No recipients found for notification'], 422);
+        }
+
+        $message = $this->sanitizeMessage((string) $request->message);
+        $icon = $this->sanitizeIcon((string) $request->icon);
+        $dataUrl = trim((string) $request->data_url);
+
         $this->firebase->sendNotification($request->table_id, $userIds);
 
         foreach ($userIds as $userId) {
             DB::table('notification_data')->insert([
                 'user_id' => $userId,
                 'is_read' => 0,
-                'icon' => $request->icon,
-                'message' => $request->message,
-                'data_url' => $request->data_url,
+                'icon' => $icon,
+                'message' => $message,
+                'data_url' => $dataUrl,
                 'status' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -81,11 +135,45 @@ class NotificationController extends Controller
         return response()->json(['status' => 'Notification sent!']);
     }
 
+    private function sanitizeIcon(string $icon): string
+    {
+        $icon = trim($icon);
+        if ($icon === '') {
+            return '';
+        }
+
+        // Only allow a single <i class="..."></i> icon snippet.
+        if (preg_match('/^<i\\s+class="[\w\s\-\_]+"><\\/i>$/i', $icon) === 1) {
+            return $icon;
+        }
+
+        return '';
+    }
+
+    private function sanitizeMessage(string $message): string
+    {
+        $message = trim($message);
+        $message = strip_tags($message, '<p><b><strong><i><em><span><br>');
+
+        // Remove inline event handlers (onclick, onerror, etc.)
+        $message = preg_replace('/\son\w+\s*=\s*("|\').*?\\1/i', '', $message);
+        $message = preg_replace('/\son\w+\s*=\s*[^\s>]+/i', '', $message);
+
+        // Remove javascript: URIs if ever present in any attribute.
+        $message = preg_replace('/javascript\s*:/i', '', $message);
+
+        return $message;
+    }
+
     public function getNotificationData(Request $request)
     {
         $userId = auth()->id();
-        $limit = $request->get('limit', 10);
-        $offset = $request->get('offset', 0);
+        $limit = (int) $request->get('limit', 10);
+        $offset = (int) $request->get('offset', 0);
+
+        // Defensive bounds to prevent abusive large pagination windows.
+        $limit = max(1, min($limit, 50));
+        $offset = max(0, min($offset, 10000));
 
         // Total count ng lahat ng notifications (na may status = 1)
         $totalCount = DB::table('notification_data')
@@ -112,6 +200,10 @@ class NotificationController extends Controller
             ->limit($limit)
             ->get()
             ->map(function ($item) {
+                $item->icon = $this->sanitizeIcon((string) $item->icon);
+                $item->message = trim(strip_tags((string) $item->message));
+                $item->data_url = $this->sanitizeDataUrl((string) $item->data_url);
+
                 $created = Carbon::parse($item->created_at);
                 $diffInSeconds = $created->diffInSeconds(Carbon::now());
 
@@ -132,8 +224,22 @@ class NotificationController extends Controller
 
         return response()->json([
             'total' => $totalCount,
-            'data' => $result
+            'data' => $result,
+            'limit' => $limit,
+            'offset' => $offset,
         ]);
+    }
+
+    private function sanitizeDataUrl(string $dataUrl): string
+    {
+        $dataUrl = trim($dataUrl);
+        if ($dataUrl === '') {
+            return '';
+        }
+
+        return preg_match('/^(\/[A-Za-z0-9_\-\/\?\=\&\.\#]*)$/', $dataUrl) === 1
+            ? $dataUrl
+            : '';
     }
 
     public function markAllRead()

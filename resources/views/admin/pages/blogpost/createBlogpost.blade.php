@@ -2,6 +2,11 @@
 
 @section('content')
 
+    <div class="container-fluid p-4">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-quill-pen-line me-2"></i> Create Blogpost
+        </div>
+
     <div class="container sticky-desktop">
         <div class="row">
             <div class="col-lg-12">
@@ -211,4 +216,5 @@
         </div>
     </div>
     </form>
+    </div>
 @endsection

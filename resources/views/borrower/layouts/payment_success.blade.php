@@ -1,26 +1,7 @@
 @extends('borrower.app')
 
 @section('styles')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-<style>
-    .success-wrapper {
-        max-width: 600px;
-        margin: 0 auto;
-        padding-top: 4rem;
-        text-align: center;
-    }
-
-    .success-icon {
-        font-size: 4rem;
-        color: #28a745;
-    }
-
-    .success-card {
-        border-radius: 1rem;
-        box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/borrower/payment-success.css') }}">
 @endsection
 
 @section('content')
@@ -34,7 +15,7 @@
             <h3 class="fw-bold mb-3">Thank you!</h3>
             <p class="text-muted mb-4">
                 We've received your payment submission.<br>
-                Our team will verify the transaction within <strong>1–2 business days</strong>.
+                Our team will verify the transaction within <strong>1-2 business days</strong>.
             </p>
 
             <a href="/repayment-schedule" class="btn btn-primary">
@@ -50,18 +31,5 @@
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="{{ asset('js/components/confetti.js') }}"></script>
-<script>
-    let seconds = 15;
-    const countdownEl = document.getElementById('countdown');
-    const redirectUrl = "/repayment-schedule";
-
-    const interval = setInterval(() => {
-        seconds--;
-        if (countdownEl) countdownEl.textContent = seconds;
-        if (seconds <= 0) {
-            clearInterval(interval);
-            window.location.href = redirectUrl;
-        }
-    }, 1000);
-</script>
+<script src="{{ asset('js/borrower/payment-success.js') }}"></script>
 @endsection

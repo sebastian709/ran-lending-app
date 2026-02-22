@@ -2,10 +2,14 @@
 
 @section('content')
 
-    <div class="container-fluid">
+    <div class="container-fluid p-4">
+        <div class="section-title d-flex align-items-center">
+            <i class="ri-user-settings-line me-2"></i> Profile
+        </div>
+
         <div class="row my-2">
             <div class="col-lg-12 py-1">
-                <div class="card">
+                <div class="table-card">
                     <div class="card-body">
                         <div class="row">
                             <!-- Sidebar Profile -->

@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
 @endsection
 
@@ -43,7 +40,7 @@
                         <div class="text-primary-custom mb-2">
                             <i class="ri-bank-card-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">₱ {{ number_format($data->total_all_raw,2) }}</div>
+                        <div class="h4 fw-bold mb-1">&#8369; {{ number_format($data->total_all_raw,2) }}</div>
                         <div class="small text-muted">Total Loan Amount</div>
                     </div>
                 </div>
@@ -61,7 +58,7 @@
                         <div class="text-warning mb-2">
                             <i class="ri-wallet-3-line" style="font-size: 2rem;"></i>
                         </div>
-                        <div class="h4 fw-bold mb-1">₱ {{ number_format($data->raw_total,2) }}</div>
+                        <div class="h4 fw-bold mb-1">&#8369; {{ number_format($data->raw_total,2) }}</div>
                         <div class="small text-muted">Monthly Due Amount</div>
                     </div>
                 </div>
@@ -90,7 +87,7 @@
                                 @elseif(!$nextPayment && $isnew > 0)
                                 Current Month is Already Paid
                                 @else
-                                    ₱ {{ number_format($nextPayment->total_all, 2) }}
+                                    &#8369; {{ number_format($nextPayment->total_all, 2) }}
                                 @endif
                                 </h4>
                             </h5>

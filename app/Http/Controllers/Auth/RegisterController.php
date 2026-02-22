@@ -32,6 +32,34 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'middlename' => 'required|string|max:255',
+            'contactnumber' => 'required|string|max:20',
+            'referral_source' => 'nullable|integer',
+            'referral_names' => 'nullable|integer',
+            'email' => 'required|email|unique:users,email',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[^A-Za-z0-9]/',
+            ],
+            'house_no' => 'nullable|string|max:255',
+            'street' => 'required|string|max:255',
+            'barangay' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'province' => 'required|string|max:255',
+            'occupation' => 'required|string|max:255',
+            'income' => 'required|numeric|min:0',
+            'employment_status' => 'required|integer',
+            'specify_others' => 'nullable|string|max:255',
+        ]);
+
         $user = User::create([
             'firstname'           => $request->firstname,
             'lastname'            => $request->lastname,
@@ -40,7 +68,7 @@ class RegisterController extends Controller
             'is_referral'         => $request->referral_source,
             'referral_source_id'  => $request->referral_names,
             'email'               => $request->email,
-            'emai_verified_at'    => now(),
+            'email_verified_at'   => now(),
             'password'            => Hash::make($request->password),
         ]);
 

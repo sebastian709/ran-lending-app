@@ -1,8 +1,12 @@
 @extends('admin.container')
 
 @section('content')
-<div class="container">
-    <div class="card shadow-sm">
+<div class="container-fluid p-4 lr-page">
+    <div class="section-title d-flex align-items-center">
+        <i class="ri-file-list-3-line me-2"></i> Loan Requests
+    </div>
+
+    <div class="table-card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
                 <h4 class="mb-3 mb-md-0">
@@ -161,12 +165,4 @@
     </div>
 </div>
 
-
-<!-- sample data muna -->
-<!-- Lightbox2 JS -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="{{ asset('js/loanrequest.js') }}"></script> -->
-
 @endsection
-

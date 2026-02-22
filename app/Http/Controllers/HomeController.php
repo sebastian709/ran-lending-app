@@ -56,7 +56,6 @@ class HomeController extends Controller
             return view('borrower.pages.home',  compact('loanStatus', 'hasFeedback','loanApplication'));
         }
 
-        DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
         $data = DB::table('loan_application as la')
             ->leftJoin('loan_tenure as lt', 'lt.loan_id', '=', 'la.id')
             ->leftJoin('loan_tenure_interest as lti', 'lti.tenure_id', '=', 'lt.id')
@@ -1014,4 +1013,3 @@ class HomeController extends Controller
 
 
 }
-

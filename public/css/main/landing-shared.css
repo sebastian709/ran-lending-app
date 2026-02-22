@@ -1,0 +1,54 @@
+:where([class^="ri-"])::before {
+    content: "\f3c2";
+}
+
+body {
+    font-family: "Inter", sans-serif;
+}
+
+.social-sidebar {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+}
+
+#heroGrid > div {
+    transition: all 0.5s ease-in-out;
+}
+
+#heroGrid > div:hover {
+    flex-grow: 2;
+}
+
+@media (max-width: 768px) {
+    #heroGrid {
+        height: calc(100vh - 5rem);
+    }
+
+    #heroGrid > div {
+        height: 25%;
+    }
+
+    #heroGrid > div:hover {
+        height: 40%;
+    }
+}
+
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+.card-hover {
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+}

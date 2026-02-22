@@ -20,6 +20,18 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class executiveInvestment extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user() || (int) auth()->user()->is_admin !== 1) {
+                abort(403);
+            }
+
+            return $next($request);
+        });
+    }
+
     public function index()
     {   
           return view('admin.pages.executive.executive');

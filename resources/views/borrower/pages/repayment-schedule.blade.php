@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
 @endsection
 
@@ -56,7 +53,7 @@
                     @foreach($results as $index => $data)
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($data->date)->format('F j, Y') }}</td>
-                            <td>₱ {{ number_format($data->total,2) }}</td>
+                            <td>&#8369; {{ number_format($data->total,2) }}</td>
                             <td>
                                 @if($data->verification === 1)
                                     <span class="badge bg-primary">For Verification</span>
@@ -75,7 +72,7 @@
                                 @endif
                             </td>
                             <td>{{ $data->paid_date }}</td>
-                            <td>₱ {{ number_format($data->penalty,2) }}</td>
+                            <td>&#8369; {{ number_format($data->penalty,2) }}</td>
                             <td>
                                 @if($data->payment_status == 2  && !$shownPayLink)
                                     <a href="payment" class="btn btn-sm btn-outline-primary">Pay</a>

@@ -1,4 +1,10 @@
 //LOGIN
+$.ajaxSetup({
+  headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+  }
+});
+
 $(document).on('click', '.password-toggle', function () {
     const input = $(this).siblings('input'); // Get the input next to the toggle
     const icon = $(this).find('i');

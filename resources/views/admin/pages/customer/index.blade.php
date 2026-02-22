@@ -1,12 +1,16 @@
 @extends('admin.container')
 
 @section('content')
-<div class="container-fluid cp-customer-container">
+<div class="container-fluid p-4 cp-customer-container">
+    <div class="section-title d-flex align-items-center">
+        <i class="ri-user-community-line me-2"></i> Customer Management
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="mb-4 cp-page-title">Customer Management</h3>
+            <div class="table-card">
+                <div class="card-body pt-2">
+                    <h3 class="mb-4 cp-page-title d-none">Customer Management</h3>
 
                     <!-- Tabs -->
                     <!-- <ul class="nav nav-tabs cp-status-tabs" id="cp-statusTab" role="tablist">
@@ -19,7 +23,7 @@
                     </ul> -->
 
                     <!-- Tab Content -->
-                    <div class="tab-content mt-4 cp-tab-content">
+                    <div class="tab-content cp-tab-content">
                         <div class="tab-pane fade show active cp-tab-pane" id="cp-all" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped cp-table" id="cp-all-table">
@@ -28,7 +32,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="tab-pane fade show active cp-tab-pane" id="cp-active" role="tabpanel">
+                        <div class="tab-pane fade cp-tab-pane" id="cp-active" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped cp-table" id="cp-active-table">
                                     <thead></thead>

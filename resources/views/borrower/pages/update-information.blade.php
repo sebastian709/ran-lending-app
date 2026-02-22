@@ -1,9 +1,6 @@
 @extends('borrower.app')
 
 @section('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     
 @endsection
@@ -26,14 +23,14 @@
                             <i class="ri-money-dollar-circle-line text-white" style="font-size: 2.5rem;"></i>
                         </div>
                         <h3 class="h4 fw-bold text-primary-custom mb-2">
-                            We’re sorry, you are only eligible to borrow up to ₱{{ $max_amount }}.
+                            We're sorry, you are only eligible to borrow up to &#8369;{{ $max_amount }}.
                         </h3>
                         <p class="text-primary-custom">Please choose an amount within this limit and click Continue to proceed with your application.</p>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label fw-medium mb-3">
-                            Choose your loan amount: ₱<span id="loan-amount-display">{{ $first_amount }}</span>
+                            Choose your loan amount: &#8369;<span id="loan-amount-display">{{ $first_amount }}</span>
                         </label>
 
                         <input type="range" class="form-range la_loan_amount_slider new_slider" 
@@ -44,8 +41,8 @@
                             value="{{ $first_amount }}">
 
                         <div class="d-flex justify-content-between small text-muted">
-                            <span>₱1000</span>
-                            <span>₱{{ $max_amount }}</span>
+                            <span>&#8369;1000</span>
+                            <span>&#8369;{{ $max_amount }}</span>
                         </div>
                     </div>
 
@@ -76,7 +73,7 @@
                             <div class="col-6">
                                 <div class="d-flex justify-content-between mb-1">
                                     <span>Loan Amount:</span>
-                                    <span class="fw-medium">₱<span id="summary-amount">{{ $max_amount }}</span></span>
+                                    <span class="fw-medium">&#8369;<span id="summary-amount">{{ $max_amount }}</span></span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1">
                                     <span>Interest Rate:</span>
@@ -90,7 +87,7 @@
                                 </div>
                                 <div class="d-flex justify-content-between border-top pt-1">
                                     <span class="fw-bold">Total Amount:</span>
-                                    <span class="fw-bold">₱<span id="summary-total">{{ $summary_total }}</span></span>
+                                    <span class="fw-bold">&#8369;<span id="summary-total">{{ $summary_total }}</span></span>
                                 </div>
                             </div>
                         </div>
