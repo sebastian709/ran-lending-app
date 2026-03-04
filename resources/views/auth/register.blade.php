@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
   <link rel="stylesheet" href="{{ asset('css/auth/register.css') }}">
 </head>
 <body data-reg-send-url="{{ route('reg.auth.send') }}" data-reg-check-url="{{ route('reg.auth.check') }}">
@@ -31,7 +31,7 @@
     <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
       <div class="w-100" style="max-width: 600px;">
         <div class="text-center mb-4">
-          <a href="#" class="font-pacifico text-primary-custom text-decoration-none" style="font-size: 2.5rem;">RAN Lending</a>
+          <a href="{{ url('/') }}" class="font-pacifico text-primary-custom text-decoration-none" style="font-size: 2.5rem;">RAN Lending</a>
           <h1 class="h2 fw-bold mb-2">Create Your Account</h1>
         </div>
 
@@ -146,9 +146,9 @@
             <div class="mb-3">
               <div class="position-relative">
                 <input type="password" class="form-control reg_password" placeholder="Password" name="password" id="password" required>
-                <div class="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3" style="cursor: pointer;">
+                <button type="button" class="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3 border-0 bg-transparent p-0" aria-label="Show password" aria-pressed="false" style="cursor: pointer;">
                   <i class="ri-eye-line text-muted"></i>
-                </div>
+                </button>
               </div>
               <div class="mt-3 bg-light p-3 rounded">
                 <p class="small fw-medium text-dark mb-2">Password must include:</p>
@@ -175,7 +175,7 @@
             A new verification code has been sent to your email!
         </div>
           <div class="text-center mb-4">
-            <h4 class="fw-bold">RAN Serenity Lending Account verification</h4>
+            <h4 class="fw-bold">RAN Lending Account Verification</h4>
             <p class="text-muted small">We've sent a 6-digit verification code to your email or phone.<br>This code is valid for 3 minutes.</p>
           </div>
           <!-- <form onsubmit="event.preventDefault(); nextStep(5);"> -->
@@ -198,7 +198,7 @@
                 <!-- <button type="button" class="btn d-flex align-items-center gap-2 text-muted" onclick="prevStep(3)">
                   <i class="ri-arrow-left-line"></i>Previous
                 </button> -->
-                <button type="button" class="btn d-flex align-items-center gap-2 d-none text-muted " onclicks="nextStep(4)">
+                <button type="button" class="btn d-flex align-items-center gap-2 d-none text-muted" onclick="nextStep(4)">
                   Save and Verify <i class="ri-arrow-right-line"></i>
                 </button>
             </div>

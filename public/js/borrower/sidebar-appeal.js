@@ -55,6 +55,7 @@
 
             $('#appealModal').find('#adminRemarks').attr('value', response.data?.paymentlog?.reason);
             $('#appealModal').find('#adminImage').attr('src', response.image);
+            $('#appealModal').find('#adminImageLink').attr('href', response.image);
             $('#appealModal').find('#paymentReference').attr('value', response.data?.paymentlog?.id);
             $('#confirmRejectBtn').attr('value', response.data?.paymentlog?.id);
 

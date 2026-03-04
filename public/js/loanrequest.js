@@ -1,3 +1,32 @@
+function parseDateInput(dateValue) {
+    if (!dateValue) {
+        return new Date(NaN);
+    }
+
+    const value = String(dateValue).trim();
+    const ymdMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (ymdMatch) {
+        return new Date(Number(ymdMatch[1]), Number(ymdMatch[2]) - 1, Number(ymdMatch[3]));
+    }
+
+    return new Date(value);
+}
+
+function getTodayInPhilippines() {
+    const phNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+    phNow.setHours(0, 0, 0, 0);
+    return phNow;
+}
+
+function formatDateInPhilippines(date) {
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Manila',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }).format(date);
+}
+
 $(document).ready(function () {
     let loanData = [];
     const itemsPerPage = 10;
@@ -31,12 +60,11 @@ $(document).ready(function () {
         } else {
             $('#emptyState').hide();
             $.each(currentItems, function (_, item) {
-                let scheduledDateObj = new Date(item.scheduled_date);
+                let scheduledDateObj = parseDateInput(item.scheduled_date);
                 let twoDaysBefore = new Date(scheduledDateObj);
                 twoDaysBefore.setDate(scheduledDateObj.getDate() - 2);
 
-                let today = new Date();
-                today.setHours(0, 0, 0, 0);
+                let today = getTodayInPhilippines();
 
                 let statusTd = '';
 
@@ -184,27 +212,20 @@ $(document).ready(function () {
 
         let loan_type = $(this).attr('data-loan_type');
         let scheduled_date = $(this).attr('data-scheduled_date');
-        let scheduledDateObj = new Date(scheduled_date);
+        let scheduledDateObj = parseDateInput(scheduled_date);
 
         // Kunin ang "2 days before" ng scheduled date
         let twoDaysBefore = new Date(scheduledDateObj);
         twoDaysBefore.setDate(scheduledDateObj.getDate() - 2);
 
         // Today
-        let today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Format function para maging "September 21, 2025"
-        function formatDate(date) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
-        }
+        let today = getTodayInPhilippines();
 
         if (parseInt(loan_status) == 4 && loan_type == 'Scheduled' && today < twoDaysBefore) {
             Swal.fire({
                 icon: 'info',
                 title: 'Transfer Not Available Yet',
-                text: 'Transfer money will only be available 2 days before the scheduled date (' + formatDate(scheduledDateObj) + ').',
+                text: 'Transfer money will only be available 2 days before the scheduled date (' + formatDateInPhilippines(scheduledDateObj) + ').',
                 confirmButtonText: 'OK'
             });
         } else if (parseInt(loan_status) == 4 || (loan_type == 'Scheduled' && today > twoDaysBefore)) {
@@ -223,7 +244,9 @@ $(document).ready(function () {
                         ? `
                             <div>
                                 <div class="p-1 border rounded-3 bg-light d-inline-block shadow-sm">
-                                    <img src="${rqrCode}" alt="Bank QR Code" width="160" height="160">
+                                    <a href="${rqrCode}" data-lightbox="bank-qr-${loan_id}" data-title="Bank QR Code">
+                                        <img src="${rqrCode}" alt="Bank QR Code" width="160" height="160" style="cursor: zoom-in;">
+                                    </a>
                                 </div>
                             </div>
                         `
@@ -241,11 +264,16 @@ $(document).ready(function () {
                                     Transfer Money
                                 </button>
                             </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#activityTransferTab" type="button">
+                                    Activity Log
+                                </button>
+                            </li>
                         </ul>
                         <!-- Tab Content -->
                         <div class="tab-content mt-4">
                             <!-- Bank Tab -->
-                            <div class="tab-pane fade show active" id="bankTab">
+                            <div class="tab-pane fade show active" id="bankTab" role="tabpanel">
                                 <div class="card shadow-sm border-0 rounded-4 p-5 text-center">
                                     <h4 class="fw-bold text-primary mb-4"><i class="ri-bank-line"></i> Bank Details</h4>
                                     <div class="justify-content-center gap-5 mb-4 flex-wrap">
@@ -268,7 +296,7 @@ $(document).ready(function () {
                                 </div>
                             </div>
                             <!-- Transfer Tab -->
-                            <div class="tab-pane fade" id="transferTab">
+                            <div class="tab-pane fade" id="transferTab" role="tabpanel">
                             <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="fw-bold text-success mb-0">Transfer Money</h4>
@@ -310,7 +338,8 @@ $(document).ready(function () {
                                     class="form-control" 
                                     id="monthlyDueDate" 
                                     name="monthly_due_date" 
-                                    onfocus="this.showPicker()" 
+                                    onfocus="this.showPicker()"
+                                >
                                 </div>
 
                                 <!-- Remarks -->
@@ -324,6 +353,15 @@ $(document).ready(function () {
                                 </div>
                                 </form>
                             </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="activityTransferTab" role="tabpanel">
+                                <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5">
+                                    <h4 class="fw-bold text-primary mb-3">Activity Log</h4>
+                                    <ul id="transferActivityLog" class="list-group">
+                                        <li class="list-group-item text-muted">Loading activity logs...</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>`;
                     
@@ -393,11 +431,38 @@ $(document).ready(function () {
                                 next.setDate(day - 1); // dito yung bawas na -1
                                 return next;
                             }
+                            const $modalContent = this.$content;
                             // Autopopulate Monthly Due Date when modal content is ready
                             const now = new Date();
                             const due = nextMonthMinusOneDay(now);
-                            $('#monthlyDueDate').val(toYMD(due));
-                            $('#transferDate').val(toYMD(now));
+                            $modalContent.find('#monthlyDueDate').val(toYMD(due));
+                            $modalContent.find('#transferDate').val(toYMD(now));
+
+                            const renderTransferActivityLogs = function () {
+                                const $logList = $modalContent.find('#transferActivityLog');
+                                if ($logList.attr('data-loaded') === '1') {
+                                    return;
+                                }
+
+                                const logs = Array.isArray(ress.logs) ? ress.logs : [];
+                                let html = '';
+
+                                if (!logs.length) {
+                                    html = '<li class="list-group-item text-muted">No activity logs found.</li>';
+                                } else {
+                                    logs.forEach(log => {
+                                        html += `<li class="list-group-item">${log.created_at}: [${log.user_name}] ${log.description}</li>`;
+                                    });
+                                }
+
+                                $logList.html(html).attr('data-loaded', '1');
+                            };
+
+                            $modalContent.find('button[data-bs-target="#activityTransferTab"]')
+                                .off('click.transferLog')
+                                .on('click.transferLog', function () {
+                                    renderTransferActivityLogs();
+                                });
                         },
 
 
@@ -491,53 +556,39 @@ $(document).ready(function () {
 
                         loanStatusDropdowns += `<option value="${status.id}" ${loan.loan_status == status.id ? "selected" : ""} ${ls_hidden} ${ls_is_disabled} ${is_hidden_opt}>${status.loan_status}</option>`;
                     });
-                    let rlt_request_date = `<strong>Requested Date:</strong> ${loan.scheduled_date}`
-                    let loan_detail_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
-                                                    <div class="row g-3">
-                                                        <div class="col-md-6">
-                                                            <strong>Requested Amount:</strong> ₱<span class="changeEditLR">${loan.loan_amount && Math.floor(loan.loan_amount).toLocaleString('en-US')}</span> <i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i><br>
-                                                            <strong>Loan Term:</strong> ${parseInt(loan.loan_tenure)} months<br>
-                                                            <strong>Interest:</strong> ${loan.interest_rate * 100}% <br>
-                                                            ${loan.loan_type == 'Scheduled' ? rlt_request_date : ''}
+                    let loan_detail_content = `<div class="card border-0 shadow-sm mt-2">
+                                                    <div class="card-body">
+                                                        <table class="table table-bordered table-sm align-middle">
+                                                            <tr>
+                                                                <th>Requested Amount</th>
+                                                                <td>
+                                                                    PHP <span class="changeEditLR">${loan.loan_amount && Math.floor(loan.loan_amount).toLocaleString('en-US')}</span>
+                                                                    <i class="ri-pencil-fill text-danger ms-2 rejectData" style="cursor:pointer;" title="Reject this field" id="rejectAmount"></i>
+                                                                </td>
+                                                            </tr>
+                                                            <tr><th>Loan Term</th><td>${parseInt(loan.loan_tenure)} months</td></tr>
+                                                            <tr><th>Interest</th><td>${loan.interest_rate * 100}%</td></tr>
+                                                            ${loan.loan_type == 'Scheduled' ? `<tr><th>Requested Date</th><td>${loan.scheduled_date}</td></tr>` : ''}
+                                                            <tr><th>Purpose</th><td>${loan.purpose_of_loan}</td></tr>
+                                                            <tr><th>Created At</th><td>${loan.created_at}</td></tr>
+                                                            <tr><th>Last Updated</th><td>${loan.updated_at}</td></tr>
+                                                            <tr><th>Referral</th><td>${loan.referral ?? 'N/A'}</td></tr>
+                                                        </table>
+                                                        <div class="mt-3 d-flex align-items-center" style="max-width:320px;">
+                                                            <select id="loan_status_admin" 
+                                                                    name="loan_status" 
+                                                                    class="form-select flex-grow-1" disabled>
+                                                                ${loanStatusDropdowns}
+                                                            </select>
+                                                            <i class="ri-pencil-fill text-success ms-2 updateStatus" 
+                                                                style="cursor:pointer;" 
+                                                                title="Update Loan Status" 
+                                                            id="updateStatus" data-original_status="${loan.loan_status}"></i>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Purpose:</strong> ${loan.purpose_of_loan}<br>
-                                                            <strong>Created At:</strong> ${loan.created_at}<br>
-                                                            <strong>Last Updated:</strong> ${loan.updated_at}<br>
-                                                            <strong>Referral:</strong> ${loan.referral ?? 'N/A'}
-                                                        </div>
-                                                    </div>
-                                                    <div class="mt-3 d-flex align-items-center" style="max-width:30%;">
-                                                        <select id="loan_status_admin" 
-                                                                name="loan_status" 
-                                                                class="form-select flex-grow-1" disabled>
-                                                            ${loanStatusDropdowns}
-                                                        </select>
-                                                        <i class="ri-pencil-fill text-success ms-2 updateStatus" 
-                                                            style="cursor:pointer;" 
-                                                            title="Update Loan Status" 
-                                                        id="updateStatus" data-original_status="${loan.loan_status}"></i>
                                                     </div>
                                                 </div>`;
 
                     $('.alr_loan_details_content').empty().append(loan_detail_content);
-
-                    let qrCodess = loan.upload_qr_code_img;
-
-                    let qrContent = qrCodess && qrCodess.trim() !== ""
-                        ? `
-                            <img src="${qrCodess}" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
-                            <div>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-outline-danger rejectData ms-2 mt-4" 
-                                    id="rejectQRcode" 
-                                    title="Reject this field">
-                                    <i class="ri-pencil-fill"></i> Reject
-                                </button>
-                            </div>
-                        `
-                        : `<p>No QR Available</p>`;
 
                     let loan_documents_content = `<div class="mt-3">
                                                         <p class="text-center fw-bold mb-4">${loan.loan_applicant}'s Documents.</p>
@@ -559,7 +610,9 @@ $(document).ready(function () {
                                                         <!-- Tab Content -->
                                                         <div class="tab-content text-center">
                                                             <div class="tab-pane fade show active" id="incomeTab" role="tabpanel">
-                                                                <img src="${loan.payslip_img}" alt="Proof of Income" class="img-fluid border rounded" style="max-height: 300px;">
+                                                                <a href="${loan.payslip_img}" data-lightbox="loan-docs-${loan.id}" data-title="Proof of Income">
+                                                                    <img src="${loan.payslip_img}" alt="Proof of Income" class="img-fluid border rounded doc-preview-image" style="max-height: 300px; cursor: zoom-in;">
+                                                                </a>
                                                                 <div>
                                                                     <button 
                                                                         type="button" 
@@ -573,7 +626,9 @@ $(document).ready(function () {
                                                             
                                                             <div class="tab-pane fade" id="qrTab" role="tabpanel">
                                                                 
-                                                                <img src="${loan.upload_qr_code_img}" alt="QR Code" class="img-fluid border rounded" style="max-height: 300px;">
+                                                                <a href="${loan.upload_qr_code_img}" data-lightbox="loan-docs-${loan.id}" data-title="QR Code">
+                                                                    <img src="${loan.upload_qr_code_img}" alt="QR Code" class="img-fluid border rounded doc-preview-image" style="max-height: 300px; cursor: zoom-in;">
+                                                                </a>
                                                                 <div>
                                                                     <button 
                                                                         type="button" 
@@ -585,7 +640,9 @@ $(document).ready(function () {
                                                                 </div>
                                                             </div>
                                                             <div class="tab-pane fade" id="idTab" role="tabpanel">
-                                                                <img src="${loan.government_id_img}" alt="Government ID" class="img-fluid border rounded" style="max-height: 300px;">
+                                                                <a href="${loan.government_id_img}" data-lightbox="loan-docs-${loan.id}" data-title="Government ID">
+                                                                    <img src="${loan.government_id_img}" alt="Government ID" class="img-fluid border rounded doc-preview-image" style="max-height: 300px; cursor: zoom-in;">
+                                                                </a>
                                                                 <div>
                                                                     <button 
                                                                         type="button" 
@@ -597,7 +654,9 @@ $(document).ready(function () {
                                                                 </div>
                                                             </div>
                                                             <div class="tab-pane fade" id="supportTab" role="tabpanel">
-                                                                <img src="${loan.billing_statement_img}" alt="Supporting Documents" class="img-fluid border rounded" style="max-height: 300px;">
+                                                                <a href="${loan.billing_statement_img}" data-lightbox="loan-docs-${loan.id}" data-title="Supporting Documents">
+                                                                    <img src="${loan.billing_statement_img}" alt="Supporting Documents" class="img-fluid border rounded doc-preview-image" style="max-height: 300px; cursor: zoom-in;">
+                                                                </a>
                                                                 <div>
                                                                     <button 
                                                                         type="button" 
@@ -613,43 +672,48 @@ $(document).ready(function () {
 
                     $('#documentsTab').empty().append(loan_documents_content);
 
-                    let loan_history_content = `<div class="mt-4 px-3 py-4 border rounded bg-light shadow-sm">
-                                                    <h5 class="mb-4">
-                                                        <i class="bi bi-journal-text me-2"></i> Loan History
-                                                    </h5>
-
-                                                    <ul class="list-unstyled">
-                                                        <li class="mb-3">
-                                                            <ul class="list-unstyled ms-3">
-                                                                <li><strong>Total Loans Taken:</strong> ${loan.loan_taken}</li>
-                                                                <li><strong>Total Loan Amount:</strong> ₱${loan.total_loan_amount}</li>
-                                                                <li><strong>Date of First Loan:</strong> ${loan.first_loan_date}</li>
-                                                                <li><strong>Referral:</strong> ${loan.referral ?? 'N/A'}</li>
-                                                                <br>
-                                                                <li><strong>Violations:</strong>  ${grade.violations}
-                                                                    <div class="text-muted small ms-3">→ 3 consecutive months of no payment = 1 violation</div>
-                                                                </li>
-                                                                <li><strong>Penalties:</strong> ${grade.penalties}
-                                                                    <div class="text-muted small ms-3">→ Every 7 days after monthly due date = 1 penalty</div>
-                                                                </li>
-
-                                                                <li><strong>Last Loan Date: </strong>${loan.last_loan_date}</li><br>
-                                                                <li><strong>Remarks:</strong> <span class="badge bg-success">Excellent</span></li>
-                                                            </ul>
-                                                        </li>
-                                                    </ul>
-                                                    <div class="text-center mt-4">
-                                                        <a href="/admin/customer/123" class="btn btn-primary px-4 hidden">See More</a>
+                    let loan_history_content = `<div class="card border-0 shadow-sm mt-2">
+                                                    <div class="card-body">
+                                                        <h5 class="mb-3"><i class="bi bi-journal-text me-2"></i>Loan History</h5>
+                                                        <table class="table table-bordered table-sm align-middle">
+                                                            <tr><th>Total Loans Taken</th><td>${loan.loan_taken}</td></tr>
+                                                            <tr><th>Total Loan Amount</th><td>PHP ${loan.total_loan_amount}</td></tr>
+                                                            <tr><th>Date of First Loan</th><td>${loan.first_loan_date}</td></tr>
+                                                            <tr><th>Last Loan Date</th><td>${loan.last_loan_date}</td></tr>
+                                                            <tr><th>Referral</th><td>${loan.referral ?? 'N/A'}</td></tr>
+                                                            <tr><th>Violations</th><td>${grade.violations} <small class="text-muted d-block">3 consecutive months of no payment = 1 violation</small></td></tr>
+                                                            <tr><th>Penalties</th><td>${grade.penalties} <small class="text-muted d-block">Every 7 days after monthly due date = 1 penalty</small></td></tr>
+                                                            <tr><th>Remarks</th><td><span class="badge bg-success">Excellent</span></td></tr>
+                                                        </table>
                                                     </div>
                                                 </div>`;
 
                     $('#historyTab').empty().append(loan_history_content);
                         
-                    let activity_logs_content = `<ul id="activityLogCustom" class="list-group mt-3">`;
-                            logs.forEach(log => {
-                                activity_logs_content += `<li class="list-group-item">${log.created_at}: [${log.user_name}] ${log.description}</li>`;
-                            });
-                    activity_logs_content += `</ul>`;
+                    let activity_logs_content = `<div class="card border-0 shadow-sm mt-2">
+                                                    <div class="card-body p-0">
+                                                        <div id="activityLogCustom" class="table-responsive">
+                                                            <table class="table table-bordered table-sm align-middle mb-0">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th style="width:24%;">Date</th>
+                                                                        <th style="width:24%;">By</th>
+                                                                        <th>Activity</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>`;
+                    if (logs.length) {
+                        logs.forEach(log => {
+                            activity_logs_content += `<tr><td>${log.created_at}</td><td>${log.user_name}</td><td>${log.description}</td></tr>`;
+                        });
+                    } else {
+                        activity_logs_content += `<tr><td colspan="3" class="text-center text-muted">No activity logs found.</td></tr>`;
+                    }
+                    activity_logs_content += `                 </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
 
                     $('#activityTab').empty().append(activity_logs_content);
 

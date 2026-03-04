@@ -33,12 +33,23 @@
 
     <!-- $.confirm -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
     <!-- borrower css -->
     <link rel="stylesheet" href="{{ asset('css/borrower.css') }}">
     @stack('sb-styles')
 </head>
 
-<body>
+<body data-theme-enabled="1">
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('site_theme') || localStorage.getItem('admin_theme') || 'light';
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <div id="app">
         {{-- Navbar (optional: can customize this if needed) --}}
         <input type="hidden" id="gb_user_id" value="{{ Auth::id() }}">
@@ -101,12 +112,17 @@
 
                     <!-- User Dropdown -->
                     @auth
-                        <div class="dropdown">
-                            <button class="btn p-0 border-0 bg-transparent" type="button" data-bs-toggle="dropdown">
+                        <div class="dropdown borrower-profile-dropdown">
+                            <button class="borrower-profile-trigger" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
                                 <div class="d-flex align-items-center">
                                     @if (Auth::user()->profile_src)
                                         <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
-                                            class="user-avatar me-2 object-fit-cover" style="object-fit: cover;">
+                                            class="user-avatar me-2 object-fit-cover" style="object-fit: cover;"
+                                            onerror="this.setAttribute('hidden','hidden'); var fb=this.nextElementSibling; if(fb){ fb.removeAttribute('hidden'); }">
+                                        <div class="user-avatar me-2 user-avatar-fallback" hidden>
+                                            {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
+                                        </div>
                                     @else
                                         <div class="user-avatar me-2">
                                             {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
@@ -163,6 +179,7 @@
     <script src="{{ asset('js/index.js') }}"></script>
     <script src="{{ asset('js/borrower.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/session-guard.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

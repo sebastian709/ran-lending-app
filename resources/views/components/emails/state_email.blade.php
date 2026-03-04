@@ -1,76 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Password Reset</title>
-   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAN Lending - Application Processing</title>
 </head>
-<body style="margin: 0; padding: 0; background: #f2f4f6; font-family: Arial, sans-serif;">
-   <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 0px; overflow: hidden;">
-      
-      <!-- Header -->
-      <div style="background: rgba(59, 130, 244, 0.9); padding: 20px; text-align: center; color: white;">
-         <h1 style="font-family: 'Pacifico', cursive, Arial, sans-serif; font-size: 28px; margin: 0;">RAN Serenity</h1>
-      </div>
-      
-      <!-- Main Content -->
-      <div style="padding: 30px; text-align: left; color: #333;">
-         <h1 style="color: #4A90E2; font-size: 20px; margin-top: 0;">Loan Application Update</h1>
-         <p>Hello,</p>
-         <p>We’re happy to let you know that your loan application is now being processed.</p>
-         <p>Our team is currently reviewing your submitted information. We’ll notify you as soon as a decision has been made.</p>
-         <p>If you have any questions or need to provide additional documents, please don’t hesitate to reach out to us.</p>
-         <br>
-         <p>Thank you for choosing Ran Serenity.<br>The Ran Serenity Team</p>
-         <p style="margin-top: 30px;">Take care,<br><strong>RAN Serenity Team</strong></p>
-      </div>
-      
-      <!-- Ads Section -->
-      <div style="padding: 20px; text-align: center; background: #f9f9f9;">
-         <p style="color: #999; font-size: 14px;">Explore more from RAN Serenity:</p>
-         <table align="center" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 600px;">
-            <tr>
-               <td style="width: 50%; padding: 10px;" align="center">
-                  <a href="/jewelry" target="_blank" style="text-decoration: none; color: inherit;">
-                     <div style="background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px;">
-                        <p style="margin: 10px 0 0; font-size: 14px; font-weight: bold;">RAN Serenity Jewelry</p>
-                     </div>
-                  </a>
-               </td>
-               <td style="width: 50%; padding: 10px;" align="center">
-                  <a href="/travel-and-tours" target="_blank" style="text-decoration: none; color: inherit;">
-                     <div style="background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px;">
-                        <p style="margin: 10px 0 0; font-size: 14px; font-weight: bold;">RAN Serenity Travel and Tours</p>
-                     </div>
-                  </a>
-               </td>
-            </tr>
-            <tr>
-               <td style="width: 50%; padding: 10px;" align="center">
-                  <a href="/hub" target="_blank" style="text-decoration: none; color: inherit;">
-                     <div style="background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px;">
-                        <p style="margin: 10px 0 0; font-size: 14px; font-weight: bold;">RAN Serenity Hub</p>
-                     </div>
-                  </a>
-               </td>
-               <td style="width: 50%; padding: 10px;" align="center">
-                  <a href="/shop" target="_blank" style="text-decoration: none; color: inherit;">
-                     <div style="background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px;">
-                        <p style="margin: 10px 0 0; font-size: 14px; font-weight: bold;">RAN Serenity Shop</p>
-                     </div>
-                  </a>
-               </td>
-            </tr>
-         </table>
-      </div>
-      
-      <!-- Footer -->
-      <div style="font-size: 12px; color: #aaa; text-align: center; padding: 20px;">
-         You’re receiving this email because you have an account with <strong>RAN Serenity</strong>.<br>
-         Prefer fewer emails? <a href="https://yourdomain.com/unsubscribe" style="color: #aaa; text-decoration: underline;">Adjust your preferences</a>.<br><br>
-         &copy; {{ date('Y') }} RAN Serenity. All rights reserved.
-      </div>
-   </div>
+<body style="margin:0;padding:0;background:#f3f6fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f3f6fb;padding:24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px;background:#ffffff;border:1px solid #e3ebf7;border-radius:14px;overflow:hidden;">
+          <tr>
+            <td style="padding:0;">
+              <div style="background:linear-gradient(135deg,#0056b3 0%,#1e4fa8 60%,#ff8c00 100%);padding:22px 26px;text-align:center;">
+                <div style="font-size:28px;line-height:1;color:#ffffff;font-weight:700;letter-spacing:0.4px;">RAN Lending</div>
+                <div style="margin-top:10px;font-size:13px;color:#dbeafe;">Loan Application Update</div>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:28px 26px 8px 26px;">
+              <h1 style="margin:0 0 12px 0;font-size:22px;line-height:1.3;color:#0f172a;">Your Application Is Being Processed</h1>
+              <p style="margin:0 0 12px 0;font-size:15px;line-height:1.7;color:#334155;">
+                We are reviewing the details and documents you submitted for your loan application.
+              </p>
+              <p style="margin:0 0 12px 0;font-size:15px;line-height:1.7;color:#334155;">
+                We'll notify you as soon as there is an update or if we need additional information.
+              </p>
+              <div style="padding:12px 14px;background:#eef6ff;border:1px solid #cfe4ff;border-radius:10px;font-size:14px;line-height:1.6;color:#1e4fa8;">
+                Status: Processing. No action required from you at this time.
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:14px 26px 18px 26px;">
+              <p style="margin:0;font-size:14px;line-height:1.7;color:#475569;">
+                Thanks,<br><strong style="color:#0f172a;">RAN Lending Team</strong>
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:16px 26px;background:#f8fafc;border-top:1px solid #e5edf8;text-align:center;">
+              <p style="margin:0;font-size:12px;line-height:1.7;color:#64748b;">
+                &copy; {{ date('Y') }} RAN Lending. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>

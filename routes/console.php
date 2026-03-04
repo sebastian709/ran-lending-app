@@ -9,7 +9,14 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::command('notifications:clear-old')->everyFiveMinutes();
+Schedule::command('notifications:clear-old')
+    ->timezone('Asia/Manila')
+    ->everyFiveMinutes();
 
-Schedule::command('app:check-delayed-payments')->dailyAt('01:00');
-Schedule::command('app:violation-task')->dailyAt('01:00');
+Schedule::command('app:check-delayed-payments')
+    ->timezone('Asia/Manila')
+    ->dailyAt('01:00');
+
+Schedule::command('app:violation-task')
+    ->timezone('Asia/Manila')
+    ->dailyAt('01:00');

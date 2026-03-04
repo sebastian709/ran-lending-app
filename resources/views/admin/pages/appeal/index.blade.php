@@ -60,11 +60,11 @@
             <div class="mb-4">
                 <small class="text-muted mb-2 d-block"><i class="ri-attachment-2 me-1"></i> Uploaded Proof</small>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{{ asset('storage/' . $appeal->uploaded_proof ) }}" target="_blank" class="appeal-proof-link rounded-4 overflow-hidden">
+                    <a href="{{ asset('storage/' . $appeal->uploaded_proof ) }}" data-lightbox="appeal-proof-{{ $appeal->appeal_id }}" data-title="Appeal Uploaded Proof" class="appeal-proof-link rounded-4 overflow-hidden">
                         <img src="{{ asset('storage/' . $appeal->uploaded_proof ) }}" 
                              alt="Proof Screenshot" 
                              class="img-fluid rounded-4" 
-                             style="width: 320px; height: 320px; object-fit: cover;">
+                             style="width: 320px; height: 320px; object-fit: cover; cursor: zoom-in;">
                     </a>
                 </div>
             </div>

@@ -54,6 +54,16 @@
 </head>
 
 <body>
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('site_theme') || localStorage.getItem('admin_theme') || 'light';
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <input type="hidden" id="getAuthID" value="{{ Auth::user()->id }}" />
     <audio id="notifSound" src="{{ asset('sound/Default.mp3') }}" preload="auto"></audio>
 
@@ -66,7 +76,7 @@
         </a>
         <ul class="nav flex-column list-unstyled">
             <li class="nav-item">
-                <a href="#" class="nav-link"  data-url="/admin/loan-request/" data-bs-toggle="collapse" data-bs-target="#loanSubNav"
+                <a href="#" class="nav-link" data-is-sidebar="1" data-url="/admin/loan-request/" data-bs-toggle="collapse" data-bs-target="#loanSubNav"
                     aria-expanded="false" aria-controls="loanSubNav">
                     <i class="bi bi-table me-2"></i> Loan Request
                     <i class="bi bi-chevron-down ms-auto"></i>
@@ -112,6 +122,7 @@
         </a> -->
         <a href="#" class="nav-link" data-is-sidebar="1" data-url="/paymentpage">
             <i class="ri-wallet-3-line"></i> Payment Page
+        </a>
         <a href="#" data-url="/admin/appeal-request/" class="nav-link" data-is-sidebar="1">
             <i class="bi bi-exclamation-triangle-fill"></i> Appeal Request
         </a>
@@ -147,6 +158,10 @@
 
 
                 <div class="d-flex align-items-center gap-4 ms-auto pe-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary admin-theme-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
+                        <i class="bi bi-moon-stars-fill"></i>
+                        <span class="d-none d-md-inline ms-1">Dark</span>
+                    </button>
                     <!-- 🔔 Notification Bell -->
                     <div class="dropdown">
                         <button class="btn btn-outline-primary-custom position-relative" type="button" id="notifDropdown"
@@ -219,44 +234,50 @@
                     <!-- 👤 Profile Image -->
                     @auth
                         <div class="dropdown">
-                            <button class="btn p-0 border-0 bg-white py-1 px-2" type="button" data-bs-toggle="dropdown">
-                                <div class="d-flex align-items-center">
-                                    @if (Auth::user()->profile_src)
-                                        <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
-                                            class="user-avatar me-2 object-fit-cover" style="object-fit: cover;">
-                                    @else
-                                        <div class="user-avatar me-2 fullname_">
-                                            {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
-                                        </div>
-                                    @endif
-
-                                    <div class="d-none d-md-block text-start">
-                                        <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
-                                        </div>
-                                        <div class="small text-muted"></div>
+                            <button type="button" class="admin-profile-trigger" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if (Auth::user()->profile_src)
+                                    <img src="{{ asset('storage/' . Auth::user()->profile_src) }}" alt="Profile Picture"
+                                        class="user-avatar me-2 object-fit-cover" style="object-fit: cover;"
+                                        onerror="this.setAttribute('hidden','hidden'); var fb=this.nextElementSibling; if(fb){ fb.removeAttribute('hidden'); }">
+                                    <div class="user-avatar me-2 fullname_ user-avatar-fallback" hidden>
+                                        {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
                                     </div>
-                                    <i class="ri-arrow-down-s-line ms-2 text-muted"></i>
+                                @else
+                                    <div class="user-avatar me-2 fullname_">
+                                        {{ strtoupper(substr(Auth::user()->firstname, 0, 1) . substr(Auth::user()->lastname, 0, 1)) }}
+                                    </div>
+                                @endif
+
+                                <div class="d-none d-md-block text-start">
+                                    <div class="fw-medium">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
+                                    </div>
+                                    <div class="small text-muted"></div>
                                 </div>
+                                <i class="ri-arrow-down-s-line ms-2 text-muted"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end admin-profile-menu">
                                 <li>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/home">
-                                        <i class="ri-loop-left-line me-2"></i>Borrower Mode
+                                        <i class="ri-loop-left-line"></i>
+                                        <span>Borrower Mode</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/profile">
-                                        <i class="ri-user-line me-2"></i>Profile
+                                        <i class="ri-user-line"></i>
+                                        <span>Profile</span>
                                     </a>
                                 </li>
                                 <li >
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/executive">
-                                            <i class="ri-bank-line "></i> Executive Investment
+                                        <i class="ri-bank-line"></i>
+                                        <span>Executive Investment</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#" data-is-sidebar="0" data-url="/admin/blogpost">
-                                        <i class="bi bi-newspaper me-2"></i> Blogpost
+                                        <i class="bi bi-newspaper"></i>
+                                        <span>Blogpost</span>
                                     </a>
                                 </li>
                                 <li>
@@ -265,7 +286,8 @@
                                 <li>
                                     <a class="dropdown-item text-danger" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        <i class="ri-logout-box-line me-2"></i>Logout
+                                        <i class="ri-logout-box-line"></i>
+                                        <span>Logout</span>
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
@@ -306,6 +328,7 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script src="https://unpkg.com/browser-image-compression@latest/dist/browser-image-compression.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/session-guard.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

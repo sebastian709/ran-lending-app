@@ -6,6 +6,29 @@ $(document).ready(function () {
     }
 });
 
+$(document).on('click', '.borrower-profile-trigger', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const trigger = this;
+    const dropdownRoot = trigger.closest('.dropdown');
+    if (!dropdownRoot) {
+        return;
+    }
+
+    if (window.bootstrap && typeof window.bootstrap.Dropdown !== 'undefined') {
+        const instance = window.bootstrap.Dropdown.getOrCreateInstance(trigger);
+        instance.toggle();
+        return;
+    }
+
+    dropdownRoot.classList.toggle('show');
+    const menu = dropdownRoot.querySelector('.dropdown-menu');
+    if (menu) {
+        menu.classList.toggle('show');
+    }
+});
+
 $(function () {
     let current_routes = window.location.pathname;
     const userId = $('#gb_user_id').val();
@@ -18,6 +41,42 @@ $(function () {
         loanAmount: 5000,
         tenure: 1
     };
+
+    function isImagePath(path) {
+        if (!path) return false;
+        return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(path);
+    }
+
+    function buildLightboxPreview(url, label, groupId) {
+        const safeLabel = label || 'Preview';
+
+        if (!isImagePath(url)) {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${safeLabel}</a>`;
+        }
+
+        return `
+            <a href="${url}" data-lightbox="${groupId}" data-title="${safeLabel}">
+                <img src="${url}" class="img-thumbnail" style="max-width:150px;cursor:zoom-in;" alt="${safeLabel}">
+            </a>
+        `;
+    }
+
+    function handleActiveLoanConflict(xhr) {
+        if (!xhr || xhr.status !== 409) {
+            return false;
+        }
+
+        const message = xhr.responseJSON?.message || 'You already have an active loan application.';
+        Swal.fire({
+            icon: 'info',
+            title: 'Application Blocked',
+            text: message
+        }).then(() => {
+            window.location.href = '/home';
+        });
+
+        return true;
+    }
     if (current_routes === '/apply-loan') {
         if (userId) {
             $.ajax({
@@ -78,7 +137,8 @@ $(function () {
 
                     // Final step
                     if (res.payslip_img) {
-                        $('#payslipPreview').html(`<a href="/storage/${res.payslip_img}" target="_blank">View Payslip</a>`);
+                        const payslipUrl = `/storage/${res.payslip_img}`;
+                        $('#payslipPreview').html(buildLightboxPreview(payslipUrl, 'Payslip', 'borrower-docs'));
                     }
 
                     if (res.bank_name) {
@@ -90,7 +150,8 @@ $(function () {
                     }
 
                     if (res.upload_qr_code_img) {
-                        $('#qrPreview').html(`<img src="/storage/${res.upload_qr_code_img}" class="img-thumbnail" style="max-width:150px;">`);
+                        const qrUrl = `/storage/${res.upload_qr_code_img}`;
+                        $('#qrPreview').html(buildLightboxPreview(qrUrl, 'QR Code', 'borrower-docs'));
                     }
 
                     if (res.government_type_id) {
@@ -98,11 +159,13 @@ $(function () {
                     }
 
                     if (res.government_id_img) {
-                        $('#govIdPreview').html(`<img src="/storage/${res.government_id_img}" class="img-thumbnail" style="max-width:150px;">`);
+                        const govIdUrl = `/storage/${res.government_id_img}`;
+                        $('#govIdPreview').html(buildLightboxPreview(govIdUrl, 'Government ID', 'borrower-docs'));
                     }
 
                     if (res.billing_statement_img) {
-                        $('#billingPreview').html(`<a href="/storage/${res.billing_statement_img}" target="_blank">View Billing Statement</a>`);
+                        const billingUrl = `/storage/${res.billing_statement_img}`;
+                        $('#billingPreview').html(buildLightboxPreview(billingUrl, 'Billing Statement', 'borrower-docs'));
                     }
 
                     if (res.signature_img) {
@@ -337,7 +400,10 @@ $(function () {
                 gb_refferal_type = r.referral_type;
 
             },
-            error: function () {
+            error: function (xhr) {
+                if (handleActiveLoanConflict(xhr)) {
+                    return;
+                }
                 console.error('Failed to save precheck data.');
                 proceedToEligibility(); // still continue even if saving failed
             }
@@ -409,8 +475,15 @@ $(function () {
                     showStep('full-loan-application');
                 }
             },
-            error: function () {
-                alert('Failed to update loan details.');
+            error: function (xhr) {
+                if (handleActiveLoanConflict(xhr)) {
+                    return;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: 'Failed to update loan details.'
+                });
             }
         });
     });
@@ -516,6 +589,9 @@ $(function () {
                 }
             },
             error: function (xhr) {
+                if (handleActiveLoanConflict(xhr)) {
+                    return;
+                }
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     if (errors) {
@@ -592,11 +668,19 @@ $(function () {
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = function (e) {
+                        const previewSrc = e.target.result;
                         const $img = $('<img>')
-                            .attr('src', e.target.result)
-                            .addClass('h-32 w-auto object-contain mx-auto rounded-md shadow'); // 👈 SAKTO LANG
+                            .attr('src', previewSrc)
+                            .addClass('h-32 w-auto object-contain mx-auto rounded-md shadow')
+                            .css('cursor', 'zoom-in');
 
-                        $preview.append($img);
+                        const $link = $('<a>')
+                            .attr('href', previewSrc)
+                            .attr('data-lightbox', `borrower-preview-${previewContainerId}`)
+                            .attr('data-title', file.name || 'Document Preview');
+
+                        $link.append($img);
+                        $preview.append($link);
                     };
                     reader.readAsDataURL(file);
                 } else {
@@ -605,8 +689,6 @@ $(function () {
             });
         });
     }
-
-
     // Apply to each input-preview pair
     previewImage('payslipInput', 'payslipPreview');
     previewImage('qrInput', 'qrPreview');
@@ -650,13 +732,21 @@ $(document).ready(function () { // profile page
     let $editBtn = $('#edit-profile-btn');
     let $updateControls = $('#update-controls');
     let $cancelBtn = $('#cancel-edit-btn');
+    let profileUploadInProgress = false;
+
+    function buildSafeFormData() {
+        const $disabledFields = $form.find('input:disabled, select:disabled, textarea:disabled');
+        $disabledFields.prop('disabled', false);
+        const formData = new FormData($form[0]);
+        $disabledFields.prop('disabled', true);
+        return formData;
+    }
 
     // Enable edit
     $editBtn.on('click', function () {
         $inputs.prop('disabled', false);
         $select.prop('disabled', false);
         $updateControls.removeClass('d-none');
-        $changePhoto.removeAttr('hidden');
     });
 
     // Cancel edit
@@ -672,7 +762,6 @@ $(document).ready(function () { // profile page
                 }
             });
         }).prop('disabled', true);
-        $changePhoto.attr('hidden', ' ');
         $updateControls.addClass('d-none');
     });
 
@@ -689,7 +778,7 @@ $(document).ready(function () { // profile page
                     text: 'Save',
                     btnClass: 'btn-primary',
                     action: function () {
-                        const formData = new FormData($form[0]); // include all form fields and file
+                        const formData = buildSafeFormData();
 
                         $.ajax({
                             url: '/update-profile',
@@ -744,15 +833,79 @@ $(document).ready(function () { // profile page
         $('#profile-picture-input').click();
     });
 
+    $('.profile-photo-zone').on('click', function (e) {
+        if ($(e.target).closest('#change-picture-btn').length) {
+            return;
+        }
+        $('#profile-picture-input').click();
+    });
+
     $('#profile-picture-input').on('change', function () {
+        if (!this.files || !this.files.length) {
+            return;
+        }
+
+        if (profileUploadInProgress) {
+            return;
+        }
+
+        const selectedFile = this.files[0];
         const reader = new FileReader();
         reader.onload = function (e) {
             $('#profile-picture-preview').attr('src', e.target.result);
         };
-        reader.readAsDataURL(this.files[0]);
+        reader.readAsDataURL(selectedFile);
 
-        $("#profile-picture-preview").removeAttr('hidden')
+        $('#profile-picture-preview').removeAttr('hidden');
         $(".user-avatar-profile-view").attr('hidden', ' ');
+
+        profileUploadInProgress = true;
+        $('#change-picture-btn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Uploading...');
+
+        const picData = new FormData();
+        picData.append('profile_picture', selectedFile);
+
+        $.ajax({
+            url: '/update-profile-picture',
+            method: 'POST',
+            data: picData,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            if (res?.success) {
+                if (res.profile_url) {
+                    const cacheBustedUrl = `${res.profile_url}?t=${Date.now()}`;
+                    $('#profile-picture-preview').removeAttr('hidden').attr('src', cacheBustedUrl);
+                    $('.navbar .user-avatar.object-fit-cover').attr('src', cacheBustedUrl).removeAttr('hidden');
+                    $('.user-avatar-fallback').attr('hidden', 'hidden');
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Profile Photo Updated',
+                    text: 'Your profile picture was updated successfully.',
+                    timer: 1800,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload Failed',
+                    text: res?.message || 'Failed to update profile picture.'
+                });
+            }
+        }).fail(function (xhr) {
+            const message = xhr.responseJSON?.message || 'Failed to upload profile picture.';
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload Failed',
+                text: message
+            });
+        }).always(function () {
+            profileUploadInProgress = false;
+            $('#change-picture-btn').prop('disabled', false).html('<i class="ri-camera-line me-1"></i> Change Photo');
+            $('#profile-picture-input').val('');
+        });
     });
 
     $('.close-profile-notif').on('click', function () {

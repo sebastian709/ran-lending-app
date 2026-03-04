@@ -21,6 +21,11 @@ use App\Helpers\ActivityLogger;
 class HomeController extends Controller
 {
     /**
+     * Loan statuses that are considered completed/closed and allow new application.
+     */
+    private const REAPPLY_ALLOWED_STATUSES = [6, 7, 9]; // Rejected, Closed, Cancelled
+
+    /**
      * Create a new controller instance.
      *
      * @return void
@@ -190,6 +195,18 @@ class HomeController extends Controller
 
     public function loanApply()
     {
+        $userId = auth()->id();
+        $existingOpenLoan = DB::table('loan_application')
+            ->where('loan_applicant', $userId)
+            ->where('status', 1)
+            ->whereNotIn('loan_status', self::REAPPLY_ALLOWED_STATUSES)
+            ->orderByDesc('id')
+            ->first();
+
+        if ($existingOpenLoan) {
+            return redirect('/home')->with('error', 'You already have an active loan application.');
+        }
+
         $government_type = DB::table('government_type')
             ->where('status', 1)
             ->get();
@@ -303,6 +320,22 @@ class HomeController extends Controller
             'scheduled_date' => 'nullable|date',
         ]);
 
+        $existingOpenLoan = DB::table('loan_application')
+            ->where('loan_applicant', $userId)
+            ->where('status', 1)
+            ->whereNotIn('loan_status', self::REAPPLY_ALLOWED_STATUSES)
+            ->orderByDesc('id')
+            ->first();
+
+        if ($existingOpenLoan && (int) $existingOpenLoan->loan_status !== 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You already have an active loan application.',
+                'loan_application_id' => (int) $existingOpenLoan->id,
+                'loan_status' => (int) $existingOpenLoan->loan_status,
+            ], 409);
+        }
+
         $existing = DB::table('loan_application')
             ->where('loan_applicant', $userId)
             ->where('loan_status', 0)
@@ -317,7 +350,7 @@ class HomeController extends Controller
                     'occupation' => $validated['occupation'],
                     'income' => $validated['income'],
                     'employment_status' => $validated['employmentStatus'],
-                    'specified_others' => $validated['specify_others'],
+                    'specified_others' => $validated['specify_others'] ?? null,
                     'updated_at' => now()
                 ]);
 
@@ -325,12 +358,12 @@ class HomeController extends Controller
             DB::table('loan_application')
                 ->where('id', $existing->id)
                 ->update([
-                    'purpose_of_loan' => $validated['purpose_of_loan'],
-                    'referral' => $validated['referral'],
-                    'referral_code_id' => $validated['referral_code_id'],
+                    'purpose_of_loan' => $validated['purpose_of_loan'] ?? null,
+                    'referral' => $validated['referral'] ?? null,
+                    'referral_code_id' => $validated['referral_code_id'] ?? null,
                     'load_step' => $validated['load_step'],
-                    'loan_type' => $validated['loan_type'],
-                    'scheduled_date' => $validated['scheduled_date'],
+                    'loan_type' => $validated['loan_type'] ?? null,
+                    'scheduled_date' => $validated['scheduled_date'] ?? null,
                     'updated_at' => now()
                 ]);
 
@@ -346,7 +379,7 @@ class HomeController extends Controller
                         'occupation' => $validated['occupation'],
                         'income' => $validated['income'],
                         'employment_status' => $validated['employmentStatus'],
-                        'specified_others' => $validated['specify_others'],
+                        'specified_others' => $validated['specify_others'] ?? null,
                         'updated_at' => now()
                     ]
                 );
@@ -354,12 +387,12 @@ class HomeController extends Controller
             $loanId = DB::table('loan_application')->insertGetId([
                 'load_step' => $validated['load_step'],
                 'loan_applicant' => $userId,
-                'purpose_of_loan' => $validated['purpose_of_loan'],
-                'referral' => $validated['referral'],
-                'referral_code_id' => $validated['referral_code_id'],
+                'purpose_of_loan' => $validated['purpose_of_loan'] ?? null,
+                'referral' => $validated['referral'] ?? null,
+                'referral_code_id' => $validated['referral_code_id'] ?? null,
                 'loan_status' => 0,
-                'loan_type' => $validated['loan_type'],
-                'scheduled_date' => $validated['scheduled_date'],
+                'loan_type' => $validated['loan_type'] ?? null,
+                'scheduled_date' => $validated['scheduled_date'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -367,7 +400,7 @@ class HomeController extends Controller
 
         }
 
-        if ($validated['referral_code_id']) {
+        if (!empty($validated['referral_code_id'])) {
             DB::table('referral_code')
                 ->where('id', $validated['referral_code_id'])
                 ->update([
@@ -380,7 +413,7 @@ class HomeController extends Controller
         return response()->json([
             'success' => true,
             'loan_application_id' => $loanId,
-            'referral_type' => $validated['referral']
+            'referral_type' => $validated['referral'] ?? null
         ]);
     }
 
@@ -402,6 +435,7 @@ class HomeController extends Controller
             // UPDATE flow
             $updated = DB::table('loan_application')
                 ->where('id', $loanApplicationId)
+                ->where('loan_applicant', $userId)
                 ->update([
                     'load_step' => $validated['load_step'],
                     'loan_amount' => $validated['loan_amount'],
@@ -416,6 +450,22 @@ class HomeController extends Controller
                 'message' => $updated ? 'Loan details updated successfully.' : 'No changes made.',
             ]);
         } else {
+            $existingOpenLoan = DB::table('loan_application')
+                ->where('loan_applicant', $userId)
+                ->where('status', 1)
+                ->whereNotIn('loan_status', self::REAPPLY_ALLOWED_STATUSES)
+                ->orderByDesc('id')
+                ->first();
+
+            if ($existingOpenLoan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You already have an active loan application.',
+                    'loan_application_id' => (int) $existingOpenLoan->id,
+                    'loan_status' => (int) $existingOpenLoan->loan_status,
+                ], 409);
+            }
+
             // CREATE flow
             $newId = DB::table('loan_application')->insertGetId([
                 'load_step' => $validated['load_step'],
@@ -488,6 +538,25 @@ class HomeController extends Controller
             }
 
             // Data to update
+            $loanToSubmit = DB::table('loan_application')
+                ->where('id', $request->loan_application_id)
+                ->where('loan_applicant', $userId)
+                ->first();
+
+            if (!$loanToSubmit) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Loan application not found for this user.'
+                ], 404);
+            }
+
+            if ((int) $loanToSubmit->loan_status !== 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This loan application is already submitted or in progress.'
+                ], 409);
+            }
+
             $data = [
                 'load_step' => $request->load_step,
                 'loan_status' => 1,
@@ -556,8 +625,8 @@ class HomeController extends Controller
             $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
             $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
             $emailObj = new SendSmtpEmail([
-                'subject' => '✅ Your Loan Application is Now Being Processed',
-                'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+                'subject' => 'RAN Lending Application Processing Update',
+                'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
                 'to' => [['email' => $email]],
                 'htmlContent' => $htmlContent
             ]);
@@ -971,8 +1040,6 @@ class HomeController extends Controller
     }
     
     public function rejectaccept(Request $request){
-        date_default_timezone_set('Asia/Manila');
-        
         $payment_id = DB::selectOne("SELECT * from loan_payment_approval_logs where id = ?",[$request->log_id]);
         
         DB::update('UPDATE loan_payments SET cancelled_approved_date = ? WHERE id = ?', [ Carbon::now() ,$payment_id->id]);
@@ -1013,3 +1080,4 @@ class HomeController extends Controller
 
 
 }
+

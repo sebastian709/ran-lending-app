@@ -52,3 +52,285 @@ input:focus {
 .card-hover:hover {
     transform: translateY(-5px);
 }
+
+.landing-profile-dropdown {
+    position: relative;
+}
+
+.landing-profile-dropdown summary {
+    list-style: none;
+}
+
+.landing-profile-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+.landing-profile-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.landing-profile-trigger:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.75);
+}
+
+.landing-profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #0056b3, #ff8c00);
+    color: #ffffff;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.landing-profile-name {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.landing-profile-chevron {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    transition: transform 0.2s ease;
+}
+
+.landing-profile-dropdown[open] .landing-profile-chevron {
+    transform: rotate(180deg);
+}
+
+.landing-profile-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 220px;
+    background: #ffffff;
+    border: 1px solid #d9e3f3;
+    border-radius: 0.65rem;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.landing-profile-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.62rem 0.8rem;
+    color: #1f2937;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.landing-profile-menu a:hover {
+    background: #f1f5f9;
+}
+
+.landing-profile-menu a i {
+    width: 1rem;
+    text-align: center;
+}
+
+.landing-profile-dropdown.is-mobile .landing-profile-trigger {
+    width: 100%;
+}
+
+.landing-profile-dropdown.is-mobile .landing-profile-menu {
+    left: 0;
+    right: auto;
+    width: 100%;
+}
+
+.landing-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+    background: rgba(15, 23, 42, 0.25);
+    padding: 0.5rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.landing-theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.65);
+}
+
+.site-theme-fab {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    background: rgba(15, 23, 42, 0.75);
+    border-radius: 9999px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+}
+
+body.landing-dark .site-theme-fab {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+body.landing-dark {
+    background: #0b1220 !important;
+    color: #dbe6ff;
+}
+
+body.landing-dark .bg-gray-50,
+body.landing-dark .bg-white,
+body.landing-dark .bg-\[\#e7e2e2\] {
+    background-color: #0f172a !important;
+}
+
+body.landing-dark .text-gray-900,
+body.landing-dark .text-gray-800 {
+    color: #f1f5ff !important;
+}
+
+body.landing-dark .text-gray-700,
+body.landing-dark .text-gray-600,
+body.landing-dark .text-gray-500 {
+    color: #9fb2cf !important;
+}
+
+body.landing-dark .border,
+body.landing-dark .border-gray-100,
+body.landing-dark .border-gray-200,
+body.landing-dark .border-gray-300 {
+    border-color: #2a3a52 !important;
+}
+
+body.landing-dark .shadow-md,
+body.landing-dark .shadow-lg,
+body.landing-dark .shadow-xl,
+body.landing-dark .shadow-sm {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.landing-dark .bg-primary\/10 {
+    background-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+body.landing-dark .text-primary {
+    color: #93c5fd !important;
+}
+
+body.landing-dark .bg-purple-100 {
+    background-color: #1f2d45 !important;
+}
+
+body.landing-dark .text-purple-700,
+body.landing-dark .text-purple-600 {
+    color: #a5b4fc !important;
+}
+
+body.landing-dark .prose,
+body.landing-dark .prose p,
+body.landing-dark .prose li,
+body.landing-dark .prose strong,
+body.landing-dark .prose h1,
+body.landing-dark .prose h2,
+body.landing-dark .prose h3,
+body.landing-dark .prose h4 {
+    color: #dbe6ff !important;
+}
+
+.hero-image-panel {
+    background-color: rgba(15, 23, 42, 0.12);
+}
+
+body.landing-dark .hero-image-panel {
+    background-color: rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.landing-dark .hero-bottom-fade {
+    background: linear-gradient(to top, #0f172a 0%, rgba(15, 23, 42, 0) 100%) !important;
+}
+
+body.landing-dark .modal-content {
+    background: #0f172a;
+    border: 1px solid #2c3f5b;
+    color: #dbe6ff;
+}
+
+body.landing-dark .modal-header,
+body.landing-dark .modal-footer {
+    border-color: #2c3f5b;
+}
+
+body.landing-dark .modal-title,
+body.landing-dark .modal-body,
+body.landing-dark .modal-body p,
+body.landing-dark .modal-body label,
+body.landing-dark .modal-body small {
+    color: #dbe6ff;
+}
+
+body.landing-dark .modal .btn-close {
+    filter: invert(1) grayscale(1) brightness(1.2);
+}
+
+/* Dark mode contrast safety for utility classes */
+body.landing-dark .text-dark,
+body.landing-dark .text-body,
+body.landing-dark .text-black,
+body.landing-dark .text-black-50,
+body.landing-dark .text-secondary {
+    color: #dbe6ff !important;
+}
+
+body.landing-dark .form-text,
+body.landing-dark small,
+body.landing-dark .small {
+    color: #9fb2cf !important;
+}
+
+body.landing-dark a:not(.btn):not(.nav-link):not(.dropdown-item) {
+    color: #93c5fd;
+}
+
+body.landing-dark .form-control::placeholder,
+body.landing-dark .form-select::placeholder,
+body.landing-dark input::placeholder,
+body.landing-dark textarea::placeholder {
+    color: #8fa5c6 !important;
+    opacity: 1;
+}
+
+body.landing-dark .bg-light,
+body.landing-dark .bg-white {
+    background-color: #111c2f !important;
+}
+
+body.landing-dark .badge.bg-light,
+body.landing-dark .bg-light.text-dark,
+body.landing-dark .badge.text-dark {
+    background-color: #1f2d45 !important;
+    color: #dbe6ff !important;
+    border: 1px solid #31435d;
+}

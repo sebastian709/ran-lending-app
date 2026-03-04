@@ -117,6 +117,7 @@
                         <th>Amount</th>
                         <th>Type</th>
                         <th>Notes</th>
+                        <th>Attachment</th>
                         <th>Date</th>
                     </tr> 
                 </thead>

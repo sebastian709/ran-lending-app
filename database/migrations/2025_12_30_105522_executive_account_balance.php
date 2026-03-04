@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('executive_account_balance', function (Blueprint $table) {
             $table->id();
-            $table->float('amount');
+            $table->decimal('amount', 15, 2);
             $table->integer('category');
             $table->text('remarks')->nullable();
             $table->integer('created_by')->index();
@@ -26,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('executive_account_balance', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('executive_account_balance');
     }
 };

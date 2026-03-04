@@ -8,13 +8,16 @@ $.ajaxSetup({
 $(document).on('click', '.password-toggle', function () {
     const input = $(this).siblings('input'); // Get the input next to the toggle
     const icon = $(this).find('i');
+    const isHidden = input.attr('type') === 'password';
 
-    if (input.attr('type') === 'password') {
+    if (isHidden) {
         input.attr('type', 'text');
         icon.removeClass('ri-eye-line').addClass('ri-eye-off-line');
+        $(this).attr('aria-label', 'Hide password').attr('aria-pressed', 'true');
     } else {
         input.attr('type', 'password');
         icon.removeClass('ri-eye-off-line').addClass('ri-eye-line');
+        $(this).attr('aria-label', 'Show password').attr('aria-pressed', 'false');
     }
 });
 

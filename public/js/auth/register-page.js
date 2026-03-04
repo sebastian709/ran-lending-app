@@ -10,6 +10,12 @@
     }
   });
 
+  $(document).on('input', 'input[name="email"]', function () {
+    $('#email-exists-error').addClass('d-none');
+    $('#email-error').addClass('d-none');
+    $(this).removeClass('is-invalid');
+  });
+
   const steps = document.querySelectorAll('.form-step');
   const progressBar = document.getElementById('form-progress');
 
@@ -42,6 +48,7 @@
     emailField.removeClass('is-invalid');
     emailError.addClass('d-none');
 
+    dis.prop('disabled', true);
     $.ajax({
       url: regSendUrl,
       method: 'POST',
@@ -59,13 +66,21 @@
               });
             }, 3000);
           } else {
-            prevStep(4);
+            nextStep(4);
           }
         } else if (res == 2) {
           $('#email-exists-error').removeClass('d-none');
+        } else if (res && res.message) {
+          alert(res.message);
         } else {
           alert('error contact admin');
         }
+      },
+      error: function () {
+        alert('Unable to send OTP right now. Please try again.');
+      },
+      complete: function () {
+        dis.prop('disabled', false);
       }
     });
   });
@@ -90,10 +105,14 @@
       },
       success: function (res) {
         if (res == 1) {
+          $('#otp-error').addClass('d-none');
           $('#register-form').submit();
         } else {
           $('#otp-error').removeClass('d-none');
         }
+      },
+      error: function () {
+        $('#otp-error').removeClass('d-none').text('Unable to verify OTP right now. Please try again.');
       }
     });
   });

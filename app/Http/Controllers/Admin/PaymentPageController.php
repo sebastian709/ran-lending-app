@@ -18,6 +18,26 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class PaymentPageController extends Controller
 {
+    private function renderSystemEmail(string $title, string $message): string
+    {
+        return '
+            <div style="margin:0;padding:24px 12px;background:#f3f6fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+                <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e3ebf7;border-radius:14px;overflow:hidden;">
+                    <div style="background:linear-gradient(135deg,#0056b3 0%,#1e4fa8 60%,#ff8c00 100%);padding:22px 26px;text-align:center;">
+                        <div style="font-size:28px;line-height:1;color:#ffffff;font-weight:700;letter-spacing:0.4px;">RAN Lending</div>
+                    </div>
+                    <div style="padding:28px 26px 20px 26px;">
+                        <h1 style="margin:0 0 12px 0;font-size:22px;line-height:1.3;color:#0f172a;">' . e($title) . '</h1>
+                        <div style="margin:0;font-size:15px;line-height:1.7;color:#334155;">' . $message . '</div>
+                    </div>
+                    <div style="padding:16px 26px;background:#f8fafc;border-top:1px solid #e5edf8;text-align:center;">
+                        <p style="margin:0;font-size:12px;line-height:1.7;color:#64748b;">&copy; ' . date('Y') . ' RAN Lending. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        ';
+    }
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -672,10 +692,10 @@ class PaymentPageController extends Controller
 
 
                 $emailObj = new SendSmtpEmail([
-                    'subject' => 'Congratulations! Your Loan Has Been Fully Paid',
-                    'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+                    'subject' => 'RAN Lending: Loan Fully Paid',
+                    'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
                     'to' => [['email' => $loan_info->email]],
-                    'htmlContent' => $content,
+                    'htmlContent' => $this->renderSystemEmail('Loan Fully Paid', $content),
                 ]);
 
                 $apiInstance->sendTransacEmail($emailObj);
@@ -723,10 +743,10 @@ class PaymentPageController extends Controller
         }
 
         $emailObj = new SendSmtpEmail([
-            'subject' => 'Payment Confirmation',
-            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'subject' => 'RAN Lending Payment Confirmation',
+            'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $loan_info->email]],
-            'htmlContent' => $content,
+            'htmlContent' => $this->renderSystemEmail('Payment Update', $content),
         ]);
 
         $apiInstance->sendTransacEmail($emailObj);
@@ -944,12 +964,19 @@ class PaymentPageController extends Controller
         // -- 4	Rejected
         // -- 5	For Revision
         // -- 6	For Apppeal
-        date_default_timezone_set('Asia/Manila');
-        
         $data['loanid'] = DB::selectOne("SELECT id from loan_application 
                         where loan_applicant = ?
                         order by id desc limit 1",[auth()->id()]);
-        
+
+        if (empty($data['loanid'])) {
+            return response()->json([
+                'success' => false,
+                'data' => '',
+                'image' => '',
+                'message' => 'No loan application found for this user.'
+            ]);
+        }
+
         $data['paymentid'] = DB::selectOne("SELECT id,payment_status_id 
                         from loan_payments 
                         where loan_application_id = ?
@@ -960,7 +987,8 @@ class PaymentPageController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => '',
-                'image' =>  ''
+                'image' =>  '',
+                'message' => 'No payment record found.'
             ]);
         }
 
@@ -1051,10 +1079,10 @@ class PaymentPageController extends Controller
         $content = "Appeal Has been Sent to the Admin . Please Wait for the Verdict.";
 
         $emailObj = new SendSmtpEmail([
-            'subject' => 'Appeal Sent Confirmation',
-            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'subject' => 'RAN Lending Appeal Confirmation',
+            'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $data['email']->email]],
-            'htmlContent' => $content,
+            'htmlContent' => $this->renderSystemEmail('Appeal Submitted', $content),
         ]);
         // dd($emailObj);
         $apiInstance->sendTransacEmail($emailObj);

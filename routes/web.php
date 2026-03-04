@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatTestController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\Auth\OtpVerificationController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Borrower\PaymentController;
 
 use App\Http\Controllers\ProfileController;
@@ -51,10 +50,6 @@ Route::get('/hub', [NoAuthController::class, 'landingHub']);
 Route::get('/travel-and-tours', [NoAuthController::class, 'landingTAT']);
 
 Route::get('/blog/view', [NoAuthController::class, 'viewBlogPost'])->name('blog.view');
-
-#index page routes - Lending website
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
-
 
 //AUTH
 Auth::routes();
@@ -134,7 +129,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('cp-all', [CustomerController::class, 'getCpAll']);
         // Route::get('cp-active', [CustomerController::class, 'getCpActive']);
-        // Route::post('cp-delete', [CustomerController::class, 'cpDelete']);
+        Route::post('cp-delete', [CustomerController::class, 'cpDelete']);
         // Route::get('cp-scheduled', [CustomerController::class, 'getCpScheduled']);
         Route::post('cpas-view-more-info', [CustomerController::class, 'cpasViewMoreInfo']);
         Route::post('cpa-payment-details', [CustomerController::class, 'cpaPaymentDetails']);
@@ -250,6 +245,7 @@ Route::get('/repayment-schedule', [HomeController::class, 'repayment_schedule'])
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('borrower.pages.profile');
 Route::post('/update-profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('/update-profile-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.picture.update');
 
 # change password
 Route::middleware(['auth'])->prefix('borrower')->name('borrower.')->group(function () {
@@ -296,4 +292,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/payment/get-attachment', [PaymentController::class, 'getAttachment']);
+    Route::get('/session/ping', function () {
+        return response()->json(['ok' => true]);
+    })->name('session.ping');
 });

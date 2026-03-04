@@ -19,6 +19,7 @@
             },
         };
     </script>
+    <link rel="stylesheet" href="{{ asset('css/main/landing-shared.css') }}">
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -119,10 +120,7 @@
                     <a href="/lending#Blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
 
-                    <button type="button" data-url="/login"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Get
-
-                        Started</button>
+                    <x-landing-auth-control guest-label="Get Started" />
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
                     <i class="ri-menu-line ri-2x"></i>
@@ -136,9 +134,7 @@
                     <a href="/lending#About" class="text-white hover:text-white/80 font-medium">About</a>
                     <a href="/lending#Blog" class="text-white hover:text-white/80 font-medium">Blog</a>
 
-                    <button type="button" data-url="/login"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Get
-                        Started</button>
+                    <x-landing-auth-control guest-label="Get Started" :mobile="true" />
                 </div>
             </div>
         </div>

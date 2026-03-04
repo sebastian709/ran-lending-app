@@ -408,8 +408,8 @@ class AdminController extends Controller
 
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
         $emailObj = new SendSmtpEmail([
-            'subject' => 'Loan Request Review – Additional Information Needed',
-            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'subject' => 'RAN Lending Loan Revision Needed',
+            'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
             'htmlContent' => $htmlContent
         ]);
@@ -516,6 +516,18 @@ class AdminController extends Controller
                 (select sum(amount) from executive_account_balance where category = 1) money,
                 la.* 
                 from loan_application la ) a");
+
+        $bank_details->logs = DB::table('activity_logs')
+            ->join('users', 'activity_logs.user_id', '=', 'users.id')
+            ->where('activity_logs.loan_id', $loan_id)
+            ->where('activity_logs.action', '!=', 'comment')
+            ->orderBy('activity_logs.created_at', 'desc')
+            ->select(
+                DB::raw("DATE_FORMAT(activity_logs.created_at, '%b %e, %Y %h:%i %p') as created_at"),
+                DB::raw("CONCAT(users.firstname, ' ', users.lastname) as user_name"),
+                'activity_logs.description'
+            )
+            ->get();
 
         return response()->json($bank_details);
     }
@@ -734,3 +746,4 @@ class AdminController extends Controller
     }
 
 }
+

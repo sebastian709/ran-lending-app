@@ -163,6 +163,55 @@ class ProfileController extends Controller
         }
     }
 
+    public function updateProfilePicture(Request $request)
+    {
+        $userId = auth()->id();
+
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $user = DB::table('users')->where('id', $userId)->first();
+            $oldPath = $user->profile_src ?? null;
+
+            $file = $request->file('profile_picture');
+            $filename = uniqid('profile_', true) . '.' . $file->getClientOriginalExtension();
+
+            if (!Storage::disk('public')->exists('upload/profile_picture')) {
+                Storage::disk('public')->makeDirectory('upload/profile_picture');
+            }
+
+            $path = $file->storeAs('upload/profile_picture', $filename, 'public');
+
+            DB::table('users')->where('id', $userId)->update([
+                'profile_src' => $path,
+                'updated_at' => now()
+            ]);
+
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'profile_src' => $path,
+                'profile_url' => Storage::url($path),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Profile picture update failed.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function adminUpdate(Request $request)
     {
         $userId = auth()->id();

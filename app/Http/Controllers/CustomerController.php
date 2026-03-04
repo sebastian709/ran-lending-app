@@ -93,9 +93,30 @@ class CustomerController extends Controller
     // }
 
     public function cpDelete(Request $request)
-    {   
-        DB::update('UPDATE users SET status = 0 WHERE id = ?', [$request->id]);
-        return response()->json($request->id);
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:users,id',
+        ]);
+
+        $updated = DB::table('users')
+            ->where('id', $request->id)
+            ->update([
+                'status' => 0,
+                'updated_at' => now(),
+            ]);
+
+        if (!$updated) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to delete customer account.',
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer account deleted successfully.',
+            'id' => (int) $request->id,
+        ]);
     }
 
     // public function getCpScheduled(Request $request)

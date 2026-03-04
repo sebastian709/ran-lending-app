@@ -9,6 +9,79 @@ $(document).ready(function () {
     });
 });
 
+const LANDING_THEME_KEY = 'landing_theme';
+const SITE_THEME_KEY = 'site_theme';
+
+function ensureThemeFabButton() {
+    const hasInlineToggle = document.getElementById('landingThemeToggle') || document.getElementById('landingThemeToggleMobile');
+    if (hasInlineToggle || document.getElementById('siteThemeFab')) {
+        return;
+    }
+
+    const btn = document.createElement('button');
+    btn.id = 'siteThemeFab';
+    btn.className = 'site-theme-fab';
+    btn.type = 'button';
+    btn.innerHTML = '<i class="ri-moon-line"></i><span>Dark</span>';
+    document.body.appendChild(btn);
+}
+
+function applyLandingTheme(theme) {
+    const isDark = theme === 'dark';
+    document.body.classList.toggle('landing-dark', isDark);
+    document.body.classList.toggle('dark-mode', isDark);
+    document.body.classList.toggle('site-dark', isDark);
+
+    document.querySelectorAll('#landingThemeToggle, #landingThemeToggleMobile, #siteThemeFab').forEach((btn) => {
+        const icon = btn.querySelector('i');
+        const label = btn.querySelector('span');
+        if (icon) {
+            icon.className = isDark ? 'ri-sun-line' : 'ri-moon-line';
+        }
+        if (label) {
+            label.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const themeEnabled = document.body?.dataset?.themeEnabled === '1';
+    if (!themeEnabled) {
+        document.querySelectorAll('#landingThemeToggle, #landingThemeToggleMobile, #siteThemeFab').forEach((btn) => btn.remove());
+        document.body.classList.remove('landing-dark', 'dark-mode', 'site-dark');
+        return;
+    }
+
+    ensureThemeFabButton();
+    const savedTheme = localStorage.getItem(SITE_THEME_KEY) || localStorage.getItem(LANDING_THEME_KEY) || 'light';
+    applyLandingTheme(savedTheme);
+
+    document.querySelectorAll('#landingThemeToggle, #landingThemeToggleMobile, #siteThemeFab').forEach((btn) => {
+        btn.addEventListener('click', function () {
+            const nextTheme = document.body.classList.contains('site-dark') ? 'light' : 'dark';
+            localStorage.setItem(LANDING_THEME_KEY, nextTheme);
+            localStorage.setItem(SITE_THEME_KEY, nextTheme);
+            applyLandingTheme(nextTheme);
+        });
+    });
+});
+
+document.addEventListener('click', function (event) {
+    document.querySelectorAll('.landing-profile-dropdown[open]').forEach((dropdown) => {
+        if (!dropdown.contains(event.target)) {
+            dropdown.removeAttribute('open');
+        }
+    });
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('.landing-profile-dropdown[open]').forEach((dropdown) => {
+            dropdown.removeAttribute('open');
+        });
+    }
+});
+
 $(document).on('click', '[data-url]', function (e) {
     e.preventDefault();
     const url = $(this).data('url');

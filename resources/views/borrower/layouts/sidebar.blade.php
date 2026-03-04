@@ -55,7 +55,9 @@
         <div class="mb-3">
           <label class="form-label">Image from Admin</label>
           <div>
-            <img id="adminImage" src="placeholder.jpg" alt="Admin Image" style="max-height:500px;width:auto" class="img-fluid rounded">
+            <a id="adminImageLink" href="{{ asset('images/placeholder.jpg') }}" data-lightbox="appeal-admin-image" data-title="Admin Uploaded Image">
+              <img id="adminImage" src="{{ asset('images/placeholder.jpg') }}" alt="Admin Image" style="max-height:500px;width:auto;cursor:zoom-in;" class="img-fluid rounded">
+            </a>
           </div>
         </div>
         <div class="mb-3">

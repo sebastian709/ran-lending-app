@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - RAN Lending</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32-ran.png') }}">
@@ -34,11 +35,16 @@
         <div class="w-100" style="max-width: 400px;" id="login-container">
             <div class="text-center mb-4">
                 <a href="{{ url('/') }}" class="font-pacifico text-primary-custom text-decoration-none" style="font-size: 2.5rem;">RAN Lending</a>
-                <h1 class="h2 fw-bold mb-2">Welcome to RAN Serenity</h1>
+                <h1 class="h2 fw-bold mb-2">Welcome to RAN Lending</h1>
                 <p class="text-muted">Experience hassle-free loans with peace of mind.</p>
             </div>
 
             <div class="form-container rounded-custom p-4">
+                @if (session('status'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
@@ -61,9 +67,9 @@
                             <input type="password" id="password" name="password"
                                    class="form-control @error('password') is-invalid @enderror"
                                    placeholder="Enter your password" required>
-                            <div class="password-toggle">
+                            <button type="button" class="password-toggle border-0 bg-transparent p-0" aria-label="Show password" aria-pressed="false">
                                 <i class="ri-eye-line text-muted"></i>
-                            </div>
+                            </button>
                             @error('password')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -74,7 +80,7 @@
 
                     <div class="mb-3">
                         <div class="form-check d-flex align-items-center">
-                            <input type="checkbox" id="remember" name="remember"
+                            <input type="checkbox" id="remember" name="remember" value="1"
                                    class="form-check-input me-2" {{ old('remember') ? 'checked' : '' }}>
                             <label for="remember" class="form-check-label small text-muted">
                                 Remember me for 15 days
@@ -110,8 +116,31 @@
         </div>
     </footer>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('js/auth.js') }}"></script>
+@if (session('session_conflict_message'))
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const conflictMessage = @json(session('session_conflict_message'));
+        const isDark = document.body.classList.contains('dark-mode')
+            || document.body.classList.contains('site-dark')
+            || document.body.classList.contains('landing-dark');
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+            Swal.fire({
+                icon: 'info',
+                title: 'Session Ended',
+                text: conflictMessage,
+                confirmButtonText: 'OK',
+                background: isDark ? '#0f172a' : '#ffffff',
+                color: isDark ? '#e2e8f0' : '#111827',
+                confirmButtonColor: isDark ? '#3b82f6' : '#2563eb'
+            });
+            return;
+        }
+        alert(conflictMessage);
+    });
+</script>
+@endif
 </body>
 </html>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
-<script src="{{ asset('js/auth.js') }}"></script>

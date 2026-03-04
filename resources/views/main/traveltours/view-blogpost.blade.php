@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="stylesheet" href="{{ asset('css/main/landing-shared.css') }}">
     <script>
         tailwind.config = {
             theme: {
@@ -156,10 +157,7 @@
                     <a href="/travel-and-tours#blog"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a>
 
-                    <button type="button" data-url="/login"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">
-                        Book Now
-                    </button>
+                    <x-landing-auth-control guest-label="Book Now" />
                 </div>
 
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
@@ -174,10 +172,7 @@
                     <a href="/travel-and-tours#about" class="text-white hover:text-white/80 font-medium">About</a>
                     <a href="/travel-and-tours#blog" class="text-white hover:text-white/80 font-medium">Blog</a>
 
-                    <button type="button" data-url="/login"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">
-                        Book Now
-                    </button>
+                    <x-landing-auth-control guest-label="Book Now" :mobile="true" />
                 </div>
             </div>
         </div>

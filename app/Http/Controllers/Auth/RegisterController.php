@@ -4,22 +4,19 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use App\Models\UserDetails;
 use App\Models\UserIncome;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Brevo\Client\Api\TransactionalEmailsApi;
-use Brevo\Client\Model\SendSmtpEmail;
-use Brevo\Client\Configuration;
-use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Carbon;
-
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    private const REG_OTP_VERIFIED_EMAIL_KEY = 'reg_otp_verified_email';
+    private const REG_OTP_VERIFIED_AT_KEY = 'reg_otp_verified_at';
+    private const REG_OTP_WINDOW_MINUTES = 10;
+
     public function __construct()
     {
         $this->middleware('guest');
@@ -32,13 +29,24 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $request->merge([
+            'email' => strtolower(trim((string) $request->input('email'))),
+            'income' => str_replace(',', '', (string) $request->input('income')),
+            'referral_names' => (string) $request->input('referral_source') === '2'
+                ? $request->input('referral_names')
+                : null,
+            'specify_others' => (string) $request->input('employment_status') === '4'
+                ? $request->input('specify_others')
+                : null,
+        ]);
+
+        $validated = $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'middlename' => 'required|string|max:255',
-            'contactnumber' => 'required|string|max:20',
-            'referral_source' => 'nullable|integer',
-            'referral_names' => 'nullable|integer',
+            'contactnumber' => ['required', 'regex:/^09\d{9}$/'],
+            'referral_source' => 'required|in:1,2',
+            'referral_names' => 'nullable|integer|min:1|required_if:referral_source,2',
             'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
@@ -55,83 +63,63 @@ class RegisterController extends Controller
             'city' => 'required|string|max:255',
             'province' => 'required|string|max:255',
             'occupation' => 'required|string|max:255',
-            'income' => 'required|numeric|min:0',
-            'employment_status' => 'required|integer',
-            'specify_others' => 'nullable|string|max:255',
+            'income' => 'required|numeric|min:0|max:99999999.99',
+            'employment_status' => 'required|in:1,2,3,4',
+            'specify_others' => 'nullable|string|max:255|required_if:employment_status,4',
         ]);
 
-        $user = User::create([
-            'firstname'           => $request->firstname,
-            'lastname'            => $request->lastname,
-            'middlename'          => $request->middlename,
-            'contactno'           => $request->contactnumber,
-            'is_referral'         => $request->referral_source,
-            'referral_source_id'  => $request->referral_names,
-            'email'               => $request->email,
-            'email_verified_at'   => now(),
-            'password'            => Hash::make($request->password),
+        $email = $validated['email'];
+        $verifiedEmail = strtolower((string) $request->session()->get(self::REG_OTP_VERIFIED_EMAIL_KEY, ''));
+        $verifiedAtRaw = $request->session()->get(self::REG_OTP_VERIFIED_AT_KEY);
+        $verifiedAt = $verifiedAtRaw ? Carbon::parse($verifiedAtRaw) : null;
+
+        if (
+            $verifiedEmail !== $email ||
+            !$verifiedAt ||
+            $verifiedAt->lt(now()->subMinutes(self::REG_OTP_WINDOW_MINUTES))
+        ) {
+            return back()
+                ->withInput($request->except('password'))
+                ->withErrors([
+                    'email' => 'Please verify your OTP before creating an account.',
+                ]);
+        }
+
+        DB::transaction(function () use ($validated, $email) {
+            $user = User::create([
+                'firstname' => $validated['firstname'],
+                'lastname' => $validated['lastname'],
+                'middlename' => $validated['middlename'],
+                'contactno' => $validated['contactnumber'],
+                'is_referral' => (int) $validated['referral_source'],
+                'referral_source_id' => (int) ($validated['referral_names'] ?? 0),
+                'email' => $email,
+                'password' => Hash::make($validated['password']),
+            ]);
+
+            UserDetails::create([
+                'user_id' => $user->id,
+                'house_no' => $validated['house_no'] ?? null,
+                'street' => $validated['street'],
+                'barangay' => $validated['barangay'],
+                'city' => $validated['city'],
+                'province' => $validated['province'],
+            ]);
+
+            UserIncome::create([
+                'user_id' => $user->id,
+                'occupation' => $validated['occupation'],
+                'income' => $validated['income'],
+                'employment_status' => (int) $validated['employment_status'],
+                'specified_others' => $validated['specify_others'] ?? null,
+            ]);
+        });
+
+        $request->session()->forget([
+            self::REG_OTP_VERIFIED_EMAIL_KEY,
+            self::REG_OTP_VERIFIED_AT_KEY,
         ]);
 
-        UserDetails::create([
-            'user_id'  => $user->id,
-            'house_no' => $request->house_no,
-            'street'   => $request->street,
-            'barangay' => $request->barangay,
-            'city'     => $request->city,
-            'province' => $request->province,
-        ]);
-
-        UserIncome::create([
-            'user_id'           => $user->id,
-            'occupation'        => $request->occupation,
-            'income'            => $request->income,
-            'employment_status' => $request->employment_status,
-            'specified_others' => $request->specify_others
-        ]);
-
-        
-    //     $otp = random_int(100000, 999999);
-    //     $email = $request->email;
-    
-    //     // Store OTP
-    //     DB::table('password_otps')->updateOrInsert(
-    //         ['email' => $email],
-    //         [
-    //             'otp' => $otp,
-    //             'expires_at' => Carbon::now()->addMinutes(10),
-    //             'created_at' => now(),
-    //             'updated_at' => now()
-    //         ]
-    //     );
-    //     $config = Configuration::getDefaultConfiguration()
-    //     ->setApiKey('api-key', env('BREVO_API_KEY'));
-    
-    // $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
-    
-    // $emailObj = new SendSmtpEmail([
-    //     'subject' => '✅ Complete Your Registration - OTP Inside',
-    //     'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
-    //     'to' => [['email' => $email]],
-    //     'htmlContent' => "
-    //         <div style='font-family: Arial, sans-serif; color: #333; padding: 20px; max-width: 600px;'>
-    //             <h2 style='color: #4A90E2;'>Welcome to Ran Serenity!</h2>
-    //             <p>To complete your registration, please use the verification code below:</p>
-    //             <p style='font-size: 28px; font-weight: bold; color: #4A90E2; letter-spacing: 2px;'>$otp</p>
-    //             <p>This code will expire in <strong>10 minutes</strong>, so please enter it promptly.</p>
-    //             <p>If you didn’t request this registration, you can safely ignore this email.</p>
-    //             <br>
-    //             <p>Thank you,<br>The Ran Serenity </p>
-    //         </div>
-    //     ",
-    // ]);
-    
-    // $apiInstance->sendTransacEmail($emailObj);
-    
-    // try {
-    //     $apiInstance->sendTransacEmail($emailObj);
-    // } catch (\Exception $e) {
-    //     return back()->withErrors(['email' => 'Failed to send email: ' . $e->getMessage()]);
-    // }
-        return back()->with('success', 'Registration successful! Please log in.');
+        return redirect()->route('login')->with('status', 'Registration successful! Please log in.');
     }
 }

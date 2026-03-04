@@ -72,7 +72,7 @@ class violationTask extends Command
                 if ($penaltiesDue > 0 && (int)$value->red_flag === 0) {
 
                     DB::table('loan_application')
-                    ->where('id', $v->id)
+                    ->where('id', $value->id)
                     ->update(['red_flag' => 1]);
 
                 echo "Months late: $monthsDelayed, Penalties due: $penaltiesDue\n";

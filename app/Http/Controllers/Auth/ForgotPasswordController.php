@@ -44,11 +44,16 @@ class ForgotPasswordController extends Controller
 
 $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
 
+$htmlContent = view('components.emails.password_reset', [
+    'otp' => $otp,
+    'expiryMinutes' => 10,
+])->render();
+
 $emailObj = new SendSmtpEmail([
-    'subject' => 'Your OTP Code',
-    'sender' => ['name' => 'YourApp', 'email' => 'lordanniel@gmail.com'],
+    'subject' => 'RAN Lending Password Reset OTP',
+    'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
     'to' => [['email' => $email]],
-    'htmlContent' => "<p>Your OTP is <strong>$otp</strong>. It will expire in 10 minutes.</p>",
+    'htmlContent' => $htmlContent,
 ]);
 
 try {

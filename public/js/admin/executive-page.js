@@ -12,6 +12,20 @@
     }).format(Number(value));
   }
 
+  function escapeHtml(value) {
+    return String(value || '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function isImageAttachment(path) {
+    if (!path) return false;
+    return /\.(jpg|jpeg|png|webp)$/i.test(path);
+  }
+
   function initExecutivePage() {
     const $page = $('.executive-page');
     if (!$page.length || !$.fn.DataTable) {
@@ -55,9 +69,8 @@
       } else {
         const totalFund = Number(payload?.total_fund?.amount || 0);
         const sharedFund = Number(payload?.shared_fund?.amount || 0);
-        const withrawnFund = Number(payload?.withrawn_fund?.amount || 0);
         const data = payload?.data || {};
-        const gain = (Number(data.interest || 0) + Number(data.penalty || 0) + withrawnFund) - Number(data.tithes || 0);
+        const gain = (Number(data.interest || 0) + Number(data.penalty || 0)) - Number(data.tithes || 0);
         const ratio = totalFund > 0 ? sharedFund / totalFund : 0;
 
         $('.money_status').removeClass('hidden').text('Hide Money');
@@ -77,15 +90,23 @@
         const badge = Number(item.category) === 1
           ? '<span class="btn btn-sm btn-primary" style="pointer-events:none">Add Investment</span>'
           : '<span class="btn btn-sm btn-danger" style="pointer-events:none">Withdraw Fund</span>';
+        const hasAttachment = !!item.attachment;
+        const attachmentUrl = hasAttachment ? `/storage/${item.attachment}` : '';
+        const attachmentLabel = hasAttachment
+          ? (isImageAttachment(item.attachment)
+            ? `<a href="${attachmentUrl}" data-lightbox="exec-attachment-${item.id}" data-title="Investment Attachment #${item.id}" class="btn btn-sm btn-outline-primary">View</a>`
+            : `<a href="${attachmentUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">View</a>`)
+          : '<span class="text-muted">N/A</span>';
 
         return `
           <tr>
             <td>${item.id}</td>
-            <td>${item.name}</td>
+            <td>${escapeHtml(item.name)}</td>
             <td><b>PHP ${formatMoney(item.amount)}</b></td>
             <td>${badge}</td>
-            <td>${item.remarks || 'N/A'}</td>
-            <td>${item.readable_date}</td>
+            <td>${escapeHtml(item.remarks || 'N/A')}</td>
+            <td>${attachmentLabel}</td>
+            <td>${escapeHtml(item.readable_date)}</td>
           </tr>
         `;
       }).join('');
@@ -119,22 +140,41 @@
         title: 'Add Investment',
         columnClass: 'large',
         type: 'blue',
+        backgroundDismiss: false,
+        boxWidth: '560px',
+        useBootstrap: true,
         content: `
-          <div class="mb-2">
-            <label>Admin Name</label>
-            <input class="form-control" value="${adminName}" disabled>
-          </div>
-          <div class="mb-2">
-            <label>Amount</label>
-            <input type="number" step="0.01" class="form-control executive_add_amount">
-          </div>
-          <div class="mb-2">
-            <label>Date</label>
-            <input class="form-control" value="${currentDate}" disabled>
-          </div>
-          <div class="mb-2">
-            <label>Remarks</label>
-            <textarea class="form-control executive_add_remarks"></textarea>
+          <div class="executive-add-modal">
+            <div class="p-3 rounded border mb-3" style="background:#f8fbff;">
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold mb-1">Admin Name</label>
+                  <input class="form-control" value="${escapeHtml(adminName)}" disabled>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold mb-1">Date</label>
+                  <input class="form-control" value="${escapeHtml(currentDate)}" disabled>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1">Amount <span class="text-danger">*</span></label>
+              <input type="number" step="0.01" class="form-control executive_add_amount" placeholder="Enter amount">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1">Remarks</label>
+              <textarea class="form-control executive_add_remarks" rows="3" placeholder="Optional note..."></textarea>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold mb-1">Attachment (optional)</label>
+              <input type="file" class="form-control executive_add_attachment" accept=".jpg,.jpeg,.png,.webp,.pdf">
+              <small class="text-muted">Allowed: JPG, PNG, WEBP, PDF (max 4MB)</small>
+            </div>
+
+            <div class="mb-2 executive_attachment_preview d-none"></div>
           </div>
         `,
         buttons: {
@@ -149,6 +189,8 @@
       const $btn = $(this);
       const $amount = $('.executive_add_amount');
       const $remarks = $('.executive_add_remarks');
+      const attachmentInput = $('.executive_add_attachment')[0];
+      const selectedFile = attachmentInput && attachmentInput.files ? attachmentInput.files[0] : null;
 
       $amount.add($remarks).removeClass('is-invalid');
       if (!$amount.val().trim()) {
@@ -172,12 +214,20 @@
             btnClass: 'btn-primary',
             action: function () {
               $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Saving...');
+              const formData = new FormData();
+              formData.append('amount', $amount.val());
+              formData.append('remarks', $remarks.val());
+              if (selectedFile) {
+                formData.append('attachment', selectedFile);
+              }
 
               $.ajax({
                 url: '/executive/add_investment',
                 type: 'POST',
                 dataType: 'json',
-                data: { amount: $amount.val(), remarks: $remarks.val() }
+                data: formData,
+                processData: false,
+                contentType: false
               }).done(function () {
                 $.confirm({ title: 'Success', content: 'Investment has been added successfully.', type: 'green', buttons: { ok: { btnClass: 'btn-success' } } });
                 pullExecutiveData();
@@ -191,6 +241,70 @@
           cancel: { text: 'Cancel', btnClass: 'btn-secondary' }
         }
       });
+    });
+
+    $(document).on('change', '.executive_add_attachment', function () {
+      const file = this.files && this.files[0] ? this.files[0] : null;
+      const $preview = $('.executive_attachment_preview');
+      $preview.empty();
+
+      if (!file) {
+        $preview.addClass('d-none');
+        return;
+      }
+
+      const sizeMb = file.size / (1024 * 1024);
+      if (sizeMb > 4) {
+        $preview
+          .removeClass('d-none')
+          .html(`
+            <div class="border border-danger rounded p-2">
+              <div class="text-danger small">File is too large. Maximum size is 4MB.</div>
+            </div>
+          `);
+        this.value = '';
+        return;
+      }
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          $preview
+            .removeClass('d-none')
+            .html(`
+              <div class="border rounded p-2" style="background:#fff;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="small text-muted">Image Preview</div>
+                  <button type="button" class="btn btn-sm btn-outline-danger executive_remove_attachment">Remove</button>
+                </div>
+                <img src="${evt.target.result}" alt="Attachment Preview" style="max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 6px; display:block; margin:auto;">
+              </div>
+            `);
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      $preview
+        .removeClass('d-none')
+        .html(`
+          <div class="border rounded p-2" style="background:#fff;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="small text-muted">Selected File</div>
+                <div class="fw-semibold">${escapeHtml(file.name)}</div>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-danger executive_remove_attachment">Remove</button>
+            </div>
+          </div>
+        `);
+    });
+
+    $(document).on('click', '.executive_remove_attachment', function () {
+      const $input = $('.executive_add_attachment');
+      const $preview = $('.executive_attachment_preview');
+      $input.val('');
+      $preview.addClass('d-none').empty();
     });
 
     $(document).on('click', '.openWithdraw', function () {

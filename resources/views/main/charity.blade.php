@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="stylesheet" href="{{ asset('css/main/landing-shared.css') }}">
     <script>
         tailwind.config = {
             theme: {

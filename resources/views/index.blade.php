@@ -23,6 +23,9 @@
 </head>
 
 <body class="bg-gray-50">
+    @php
+        $entryUrl = auth()->check() ? (auth()->user()->is_admin ? '/admin/dashboard' : '/home') : '/login';
+    @endphp
     <!-- Social Sidebar -->
     <div class="social-sidebar hidden lg:flex flex-col gap-4 bg-primary p-3 rounded-r-lg">
         <a href="#"
@@ -50,8 +53,7 @@
                     <a href="#about"
                         class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">About</a>
                     <!-- <a href="#Blog" class="text-white hover:text-white/80 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all">Blog</a> -->
-                    <button data-url="/login" type="button"
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Login</button>
+                    <x-landing-auth-control guest-label="Login" />
                 </div>
                 <button id="menuToggle" class="md:hidden text-white focus:outline-none">
                     <i class="ri-menu-line ri-2x"></i>
@@ -63,8 +65,7 @@
                     <a href="#" class="text-white hover:text-white/80 font-medium">Home</a>
                     <a href="#about" class="text-white hover:text-white/80 font-medium">About</a>
                     <!-- <a href="#Blog" class="text-white hover:text-white/80 font-medium">Blog</a> -->
-                    <button data-url="/login" type="button" 
-                        class="bg-white text-primary px-5 py-2 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap w-full">Login</button>
+                    <x-landing-auth-control guest-label="Login" :mobile="true" />
                 </div>
             </div>
         </div>
@@ -78,20 +79,21 @@
                         Confidence</h1>
                     <p class="text-xl mb-8">Experience hassle-free loans with peace of mind.</p>
                     <div class="flex flex-wrap gap-4">
-                        <button data-url="/login"
+                        <button data-url="{{ $entryUrl }}"
                             class="bg-white text-primary px-8 py-3 rounded-button font-medium hover:bg-white/90 transition-all whitespace-nowrap">Apply
                             Now</button>
-                        <button data-url="/login"
+                        <button data-url="{{ $entryUrl }}"
                             class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-button font-medium hover:bg-white/10 transition-all whitespace-nowrap">Get
                             Started</button>
                     </div>
                 </div>
                 <div class="relative">
-                    <div class="bg-[url('{{ asset('storage/stock_images/phMoney.jpg') }}')] bg-cover bg-center w-full h-[400px] rounded-lg shadow-xl"></div>
+                    <div class="hero-image-panel bg-cover bg-center w-full h-[400px] rounded-lg shadow-xl"
+                        style="background-image: url('{{ asset('storage/stock_images/phMoney.jpg') }}');"></div>
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 to-transparent"></div>
+        <div class="hero-bottom-fade absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 to-transparent"></div>
     </section>
 
     <!-- Loan Types Section -->
@@ -265,7 +267,7 @@
                 </div>
             </div>
             <div class="text-center mt-12">
-                <button data-url="/login"
+                <button data-url="{{ $entryUrl }}"
                     class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-primary/90 transition-all whitespace-nowrap">Start
                     Application</button>
             </div>
@@ -306,6 +308,39 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-3">Expert Support</h3>
                     <p class="text-gray-600">Our experienced lending specialists are here to guide you through every
                         step of the process.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application & Review Schedule -->
+    <section class="py-20 bg-white" id="schedule">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-gray-50 rounded-2xl shadow-sm border border-gray-200 p-8 md:p-10">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Application & Review Schedule</h2>
+                    <p class="text-gray-600">Loan applications are open anytime. Interview and application checking are done during business hours below.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <i class="ri-calendar-line text-primary ri-lg"></i>
+                            <span class="font-semibold text-gray-800">Interview & Checking</span>
+                        </div>
+                        <span class="text-gray-700 font-medium leading-tight text-right">
+                            <span class="block">Mon - Fri</span>
+                            <span class="block">8:00 AM - 5:00 PM</span>
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <i class="ri-calendar-line text-primary ri-lg"></i>
+                            <span class="font-semibold text-gray-800">Loan Application</span>
+                        </div>
+                        <span class="text-green-600 font-medium">Open Anytime</span>
+                    </div>
                 </div>
             </div>
         </div>

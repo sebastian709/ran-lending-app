@@ -1,6 +1,30 @@
 let currentView = window.innerWidth <= 768 ? 'card' : 'list';
 let isAreaLoading = false;
 const LOAN_REQUEST_BASE_PATH = '/admin/loan-request';
+const ADMIN_THEME_KEY = 'admin_theme';
+const SITE_THEME_KEY = 'site_theme';
+
+function getStoredTheme() {
+  return localStorage.getItem(SITE_THEME_KEY) || localStorage.getItem(ADMIN_THEME_KEY) || 'light';
+}
+
+function applyAdminTheme(theme) {
+  const isDark = theme === 'dark';
+  document.body.classList.toggle('dark-mode', isDark);
+
+  const $toggle = $('#darkModeToggle');
+  if ($toggle.length) {
+    const iconClass = isDark ? 'bi-sun-fill' : 'bi-moon-stars-fill';
+    const label = isDark ? 'Light' : 'Dark';
+    $toggle.find('i').attr('class', `bi ${iconClass}`);
+    $toggle.find('span').text(label);
+    $toggle.attr('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+  }
+}
+
+function initializeAdminTheme() {
+  applyAdminTheme(getStoredTheme());
+}
 
 function normalizePath(path) {
   if (!path) {
@@ -29,13 +53,50 @@ function setAreaLoading(isLoading) {
   $loader.addClass('d-none');
   $content.removeClass('is-loading');
 }
+
+function setLoanSubNavVisibility(isOpen) {
+  const subNav = document.getElementById('loanSubNav');
+  const trigger = document.querySelector('.sidebar .nav-link[data-bs-target="#loanSubNav"]');
+
+  if (!subNav) {
+    return;
+  }
+
+  if (window.bootstrap && window.bootstrap.Collapse) {
+    const instance = window.bootstrap.Collapse.getOrCreateInstance(subNav, { toggle: false });
+    if (isOpen) {
+      instance.show();
+    } else {
+      instance.hide();
+    }
+  } else {
+    subNav.classList.toggle('show', !!isOpen);
+  }
+
+  if (trigger) {
+    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+}
 $(document).ready(function () {
+  initializeAdminTheme();
+
+  $(document).off('click', '#darkModeToggle').on('click', '#darkModeToggle', function () {
+    const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+    localStorage.setItem(ADMIN_THEME_KEY, nextTheme);
+    localStorage.setItem(SITE_THEME_KEY, nextTheme);
+    applyAdminTheme(nextTheme);
+  });
+
   let currentPath = window.location.pathname;
 
 
   const normalizedCurrentPath = normalizePath(currentPath);
   $('.sidebar .nav-link').each(function () {
-    const url = normalizePath($(this).data('url'));
+    const rawUrl = $(this).data('url');
+    if (!rawUrl) {
+      return;
+    }
+    const url = normalizePath(rawUrl);
 
     if (normalizedCurrentPath.startsWith(url)) {
       $(this).addClass('active');
@@ -44,9 +105,7 @@ $(document).ready(function () {
     }
   });
 
-  if (normalizedCurrentPath.startsWith(LOAN_REQUEST_BASE_PATH)) {
-    $('#loanSubNav').addClass('show');
-  }
+  setLoanSubNavVisibility(normalizedCurrentPath.startsWith(LOAN_REQUEST_BASE_PATH));
 
   initCKEditor();
   initBlogImageUpload();
@@ -123,12 +182,12 @@ $(document).on('click', '[data-url]', function (e) {
     } else if (url === '/admin/customer') {
       renderAll();
     } else if (normalizedUrl === LOAN_REQUEST_BASE_PATH) {
-      $('#loanSubNav').addClass('show');
+      setLoanSubNavVisibility(true);
       if (typeof window.initLoanRequestList === 'function') {
         window.initLoanRequestList();
       }
     } else {
-      $('#loanSubNav').collapse('hide');
+      setLoanSubNavVisibility(false);
     }
   }).fail(function () {
     $.alert({
@@ -1582,7 +1641,7 @@ $(document).on('click', '.cp-delete', function (e) {
                 btnClass: 'btn-warning',
                 action: function () {
                     $.ajax({
-                        url: 'customer/cp-delete',
+                        url: '/admin/customer/cp-delete',
                         type: 'POST',
                         data: {id:id},
                         dataType: 'json',

@@ -64,6 +64,10 @@
 .navbar-custom {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: white !important;
+    position: sticky;
+    top: 0;
+    z-index: 1080;
+    overflow: visible;
 }
 
 .sidebar {
@@ -171,10 +175,34 @@ img.user-avatar {
     border-radius: 10%;
 }
 
+.borrower-profile-trigger {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.35rem;
+    border: 0;
+    background: transparent;
+    color: #1f2937 !important;
+    text-decoration: none;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.borrower-profile-trigger:focus-visible {
+    outline: 2px solid rgba(13, 110, 253, 0.35);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+}
+
+.borrower-profile-trigger .fw-medium {
+    color: #1f2937 !important;
+}
+
 .dropdown-menu {
     border: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    z-index: 2000;
 }
 
 .main-content {
@@ -256,6 +284,215 @@ img.user-avatar {
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.5rem;
+}
+
+.site-theme-fab {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border: 1px solid rgba(15, 23, 42, 0.2);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 9999px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+}
+
+body.dark-mode {
+    background: #0b1220;
+    color: #dbe6ff;
+}
+
+body.dark-mode .navbar-custom {
+    background: #111827 !important;
+    border-bottom: 1px solid #243244;
+}
+
+body.dark-mode .borrower-profile-trigger {
+    color: #dbe6ff !important;
+}
+
+body.dark-mode .borrower-profile-trigger .fw-medium,
+body.dark-mode .borrower-profile-trigger .text-muted,
+body.dark-mode .borrower-profile-trigger i {
+    color: #dbe6ff !important;
+}
+
+body.dark-mode .sidebar {
+    background: #0f172a;
+    border-right-color: #243244;
+}
+
+body.dark-mode .sidebar-nav a {
+    color: #c7d3ea;
+}
+
+body.dark-mode .sidebar-nav a:hover {
+    background-color: #1f2d45;
+    color: #f1f5ff;
+}
+
+body.dark-mode .main-content {
+    background-color: #111827;
+}
+
+body.dark-mode .dashboard-card {
+    background: #0f172a;
+    border-color: #26374d;
+    color: #dbe6ff;
+}
+
+body.dark-mode .dashboard-card .text-muted,
+body.dark-mode .text-muted {
+    color: #9fb2cf !important;
+}
+
+body.dark-mode .empty-state {
+    background: #0f172a;
+    border-color: #2f425f;
+}
+
+body.dark-mode .dropdown-menu {
+    background: #0f172a;
+    border: 1px solid #2f425f;
+}
+
+body.dark-mode .dropdown-item {
+    color: #dbe6ff;
+}
+
+body.dark-mode .dropdown-item:hover {
+    background: #1f2d45;
+    color: #ffffff;
+}
+
+body.dark-mode .btn-outline-primary-custom {
+    color: #dbe6ff;
+    border-color: #425f86;
+    background: #111c2f;
+}
+
+body.dark-mode .btn-outline-primary-custom:hover {
+    background: #1f2d45;
+    color: #ffffff;
+}
+
+body.dark-mode .site-theme-fab {
+    background: rgba(30, 41, 59, 0.92);
+    color: #f1f5ff;
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+body.dark-mode .loan-status-card {
+    background: #0f172a;
+    border: 1px solid #2c3f5b;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .loan-status-card a {
+    color: #93c5fd;
+}
+
+body.dark-mode .modal-content {
+    background: #0f172a;
+    border: 1px solid #2c3f5b;
+    color: #dbe6ff;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+    border-color: #2c3f5b;
+}
+
+body.dark-mode .modal-title,
+body.dark-mode .modal-body,
+body.dark-mode .modal-body p,
+body.dark-mode .modal-body label,
+body.dark-mode .modal-body small {
+    color: #dbe6ff;
+}
+
+body.dark-mode .modal .btn-close {
+    filter: invert(1) grayscale(1) brightness(1.2);
+}
+
+.jconfirm .jconfirm-box {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border: 1px solid #d9e3f3 !important;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2) !important;
+}
+
+.jconfirm .jconfirm-title,
+.jconfirm .jconfirm-content {
+    color: #1f2937 !important;
+}
+
+.jconfirm .jconfirm-content {
+    line-height: 1.45;
+}
+
+.jconfirm .jconfirm-buttons .btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+body.dark-mode .jconfirm .jconfirm-box {
+    background: #0f172a !important;
+    color: #dbe6ff !important;
+    border: 1px solid #2c3f5b !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.dark-mode .jconfirm .jconfirm-title,
+body.dark-mode .jconfirm .jconfirm-content {
+    color: #dbe6ff !important;
+}
+
+/* Dark mode contrast safety for utility classes */
+body.dark-mode .text-dark,
+body.dark-mode .text-body,
+body.dark-mode .text-black,
+body.dark-mode .text-black-50,
+body.dark-mode .text-secondary {
+    color: #dbe6ff !important;
+}
+
+body.dark-mode .form-text,
+body.dark-mode small,
+body.dark-mode .small {
+    color: #9fb2cf !important;
+}
+
+body.dark-mode a:not(.btn):not(.nav-link):not(.dropdown-item) {
+    color: #93c5fd;
+}
+
+body.dark-mode .form-control::placeholder,
+body.dark-mode .form-select::placeholder,
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #8fa5c6 !important;
+    opacity: 1;
+}
+
+body.dark-mode .bg-light,
+body.dark-mode .bg-white {
+    background-color: #111c2f !important;
+}
+
+body.dark-mode .badge.bg-light,
+body.dark-mode .bg-light.text-dark,
+body.dark-mode .badge.text-dark {
+    background-color: #1f2d45 !important;
+    color: #dbe6ff !important;
+    border: 1px solid #31435d;
 }
 
 .eligibility-success {
@@ -356,6 +593,137 @@ img.user-avatar {
     color: white;
     font-weight: bold;
     font-size: 100px;
+}
+
+.profile-shell {
+    background: #ffffff;
+}
+
+.profile-summary-card {
+    background: #f8fbff;
+    border: 1px solid #dce6f5;
+    border-radius: 1rem;
+    padding: 1.15rem;
+}
+
+.profile-summary-card #profile-picture-preview {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.profile-photo-zone {
+    cursor: pointer;
+}
+
+.profile-stat {
+    border: 1px solid #dce6f5;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    padding: 0.7rem 0.9rem;
+    text-align: center;
+}
+
+.profile-stat .label {
+    display: block;
+    font-size: 0.82rem;
+    color: #6b7d98;
+    margin-bottom: 0.2rem;
+}
+
+.profile-stat .value {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.profile-form-card {
+    background: #ffffff;
+    border: 1px solid #dce6f5;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.profile-section-title {
+    margin-bottom: 1rem;
+}
+
+.profile-section-title h4,
+.profile-summary-card h4 {
+    color: #1f2937;
+}
+
+.profile-section-title small {
+    color: #6b7d98 !important;
+}
+
+.profile-section-block {
+    border: 1px solid #e1e9f6;
+    background: #f9fbff;
+    border-radius: 0.85rem;
+    padding: 0.9rem;
+    margin-bottom: 0.95rem;
+}
+
+.profile-section-block .block-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #28415f;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.profile-page .form-label {
+    font-weight: 600;
+    color: #2a3b52;
+}
+
+body.dark-mode .profile-shell {
+    background: #0f172a;
+    border: 1px solid #233247;
+}
+
+body.dark-mode .profile-summary-card,
+body.dark-mode .profile-form-card {
+    background: #101a2b;
+    border-color: #2a3b54;
+}
+
+body.dark-mode .profile-section-block {
+    background: #0f172a;
+    border-color: #2a3b54;
+}
+
+body.dark-mode .profile-section-block .block-title {
+    color: #c7d3ea;
+}
+
+body.dark-mode .profile-page .form-label {
+    color: #c7d3ea;
+}
+
+body.dark-mode .profile-section-title h4,
+body.dark-mode .profile-summary-card h4 {
+    color: #f1f5ff;
+}
+
+body.dark-mode .profile-section-title small {
+    color: #9fb2cf !important;
+}
+
+body.dark-mode .profile-stat {
+    background: #0f172a;
+    border-color: #2a3b54;
+}
+
+body.dark-mode .profile-stat .label {
+    color: #9fb2cf;
+}
+
+body.dark-mode .profile-stat .value {
+    color: #f1f5ff;
 }
 
 #password-criteria li {

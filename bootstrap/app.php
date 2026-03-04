@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminOnly::class,
+            'single.session' => \App\Http\Middleware\EnsureSingleSession::class,
+        ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsureSingleSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

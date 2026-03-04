@@ -15,6 +15,9 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class OtpVerificationController extends Controller
 {
+    private const REG_OTP_VERIFIED_EMAIL_KEY = 'reg_otp_verified_email';
+    private const REG_OTP_VERIFIED_AT_KEY = 'reg_otp_verified_at';
+
     public function showForm(Request $request)
     {
         return view('auth.verify-otp', ['email' => $request->email]);
@@ -26,9 +29,9 @@ class OtpVerificationController extends Controller
             'email' => 'required|email',
         ]);
 
-        $email = $request->email;
+        $email = strtolower(trim((string) $request->email));
 
-        if (User::where('email', $email)->exists()) {
+        if (User::whereRaw('LOWER(email) = ?', [$email])->exists()) {
             return response()->json(2);
         }
 
@@ -51,17 +54,24 @@ class OtpVerificationController extends Controller
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
 
         $emailObj = new SendSmtpEmail([
-            'subject' => 'Complete Your Registration - OTP Inside',
-            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'subject' => 'RAN Lending Registration OTP',
+            'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
             'htmlContent' => $htmlContent
         ]);
 
         try {
             $apiInstance->sendTransacEmail($emailObj);
+            $request->session()->forget([
+                self::REG_OTP_VERIFIED_EMAIL_KEY,
+                self::REG_OTP_VERIFIED_AT_KEY,
+            ]);
             return response()->json(1);
         } catch (\Exception $e) {
-            return back()->withErrors(['email' => 'Failed to send email: ' . $e->getMessage()]);
+            return response()->json([
+                'status' => 0,
+                'message' => 'Failed to send OTP. Please try again.',
+            ], 500);
         }
     }
 
@@ -72,14 +82,22 @@ class OtpVerificationController extends Controller
             'otp' => 'required|digits:6',
         ]);
 
+        $email = strtolower(trim((string) $request->email));
         $record = DB::table('password_otps')
-            ->where('email', $request->email)
+            ->where('email', $email)
             ->where('otp', $request->otp)
             ->first();
 
         if (!$record || Carbon::parse($record->expires_at)->isPast()) {
             return response()->json(0);
         }
+
+        DB::table('password_otps')
+            ->where('email', $email)
+            ->delete();
+
+        $request->session()->put(self::REG_OTP_VERIFIED_EMAIL_KEY, $email);
+        $request->session()->put(self::REG_OTP_VERIFIED_AT_KEY, now()->toDateTimeString());
 
         return response()->json(1);
     }
@@ -92,7 +110,10 @@ class OtpVerificationController extends Controller
 
         $otp = random_int(100000, 999999);
         $email = $request->email;
-        $htmlContent = view('components.emails.password_reset', ['otp' => $otp])->render();
+        $htmlContent = view('components.emails.password_reset', [
+            'otp' => $otp,
+            'expiryMinutes' => 3,
+        ])->render();
 
         $exist = DB::table('users')
             ->where('email', $email)
@@ -118,8 +139,8 @@ class OtpVerificationController extends Controller
         $apiInstance = new TransactionalEmailsApi(new GuzzleClient(), $config);
 
         $emailObj = new SendSmtpEmail([
-            'subject' => 'Password Reset Request - OTP Inside',
-            'sender' => ['name' => 'Ran Serenity', 'email' => 'lordanniel@gmail.com'],
+            'subject' => 'RAN Lending Password Reset OTP',
+            'sender' => ['name' => 'RAN Lending', 'email' => 'lordanniel@gmail.com'],
             'to' => [['email' => $email]],
             'htmlContent' => $htmlContent
         ]);
